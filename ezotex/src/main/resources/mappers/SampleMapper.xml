@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ezotex.mappers.SampleMapper">
+<mapper namespace="com.ezotex.supply.mappers.SampleSupplyMapper">
 
-	
+	<select id="infoBom" resultType="SampleSupplyVO">
+		SELECT *
+		FROM   BOM
+	</select>
 
 </mapper>
