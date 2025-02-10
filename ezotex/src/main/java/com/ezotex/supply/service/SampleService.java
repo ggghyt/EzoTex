@@ -1,5 +1,5 @@
-package com.ezotex.service;
+package com.ezotex.supply.service;
 
 public interface SampleService {
-	
+
 }
