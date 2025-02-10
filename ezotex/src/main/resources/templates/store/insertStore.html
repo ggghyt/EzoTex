@@ -1,0 +1,163 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<style type="text/css">
+		
+			.scroll{
+				display: block; max-height: 100px; overflow-y: scroll;
+			}
+		
+			table thead, table tbody tr {
+			  display: table;
+			  width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="d-flex align-items-center">
+		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
+		<button class="btn btn-secondary" style="margin:10px;">자재 입고</button>
+		<button class="btn btn-secondary" style="margin:10px;">제품 입고</button>
+		</div>
+		<div class="card card-body mt-3">
+			<div class="col-12 card card-body m-2">
+				<div class="row g-3 align-items-center">
+			  		<div class="col-auto">
+			    		<label class="col-form-label">검색조건1</label>
+			  		</div>
+			  		<div class="col-auto">
+			    		<input type="text" id="" class="form-control">
+			  		</div>
+				</div>
+				<div class="row g-3 align-items-center">
+			  		<div class="col-auto">
+			    		<label class="col-form-label">검색조건2</label>
+			  		</div>
+			  		<div class="col-auto">
+			    		<input type="text" id="" class="form-control">
+			  		</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-5 card card-body m-2">
+					<p class="fs-5 fw-bolder">납품 목록</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<div class="col-5 card card-body m-2">
+					<p class="fs-5 fw-bolder mt-2">입고 등록</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody class="scroll">
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+					<p class="fs-5 fw-bolder mt-2">입고 수량 입력</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>색상/사이즈</th>
+								<th>S</th>
+								<th>M</th>
+								<th>L</th>
+								<th>XL</th>
+							</tr>
+						</thead>
+						<tbody class="text-center scroll">
+							<tr>
+								<th>화이트</th>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr>
+								<th>그레이</th>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr>
+								<th>블랙</th>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+							<tr>
+								<th>합계</th>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+					<p class="fs-5 fw-bolder mt-2">불량 발생 내역</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody class="scroll">
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="d-flex justify-content-end mt-2">
+						<button class="btn btn-primary">등록</button>
+						<button class="btn btn-secondary">초기화</button>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</body>
+</html>
