@@ -15,6 +15,7 @@ addEventListener("DOMContentLoaded", () => {
 	    // 1초 뒤에 로딩 완료
 	    setTimeout(function () {
 	    loadingSpinner.style.display = "none";
+	    
 	    isRegist = true;
         console.log(isRegist);
         
