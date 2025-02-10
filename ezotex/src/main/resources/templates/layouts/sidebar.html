@@ -1,0 +1,362 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      th:fragment="sidebar">
+      
+	<ul class="nav">
+	  <li class="nav-item">
+	    <a class="nav-link" href="/">
+	      <i class="menu-icon mdi mdi-bell-ring-outline"></i>
+	      <span class="menu-title">공지사항</span>
+	    </a>
+	  </li>
+	  
+	  <hr>
+	  
+	  <!--------------------------------- 기준정보 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#standard" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-wrench"></i>
+	      <span class="menu-title">기준정보</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="standard">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 공급 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#supply" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-timetable"></i>
+	      <span class="menu-title">공급</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="supply">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">자재명세서 관리</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/">공급계획서 등록</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/">공급계획서 조회</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 발주 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#matOrder" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-subdirectory-arrow-left"></i>
+	      <span class="menu-title">발주</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="matOrder">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">발주계획서 등록</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/">발주계획서 조회</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/">발주서 등록</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/">발주내역 조회</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 주문 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#order" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-tag-multiple"></i>
+	      <span class="menu-title">주문</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="order">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 입고 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#storeIn" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-printer-3d"></i>
+	      <span class="menu-title">입고</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="storeIn">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 출고 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#delivery" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-truck"></i>
+	      <span class="menu-title">출고</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="delivery">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 재고 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#store" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-grid"></i>
+	      <span class="menu-title">재고</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="store">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 반품 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#return" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-tumblr-reblog"></i>
+	      <span class="menu-title">반품</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="return">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  
+	  <!--------------------------------- 통계 --------------------------------->
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#chart" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-chart-line"></i>
+	      <span class="menu-title">통계</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="chart">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/">메뉴1</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+	  <!-- 참고용 페이지 -->
+	  <hr>
+	  <li class="nav-item">
+	    <a class="nav-link" href="/sample">
+	      <i class="menu-icon mdi mdi-arrow-right-drop-circle-outline"></i>
+	      <span class="menu-title">🍪모달/UI샘플</span>
+	    </a>
+	  </li>
+	  
+	  <!-- 아래는 원래 있던 샘플 -->
+	  <hr>
+	  
+	  <li class="nav-item nav-category">UI Elements</li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-floor-plan"></i>
+	      <span class="menu-title">UI Elements</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="ui-basic">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/pages/ui-features/buttons.html">Buttons</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/pages/ui-features/dropdowns.html">Dropdowns</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/pages/ui-features/typography.html">Typography</a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item nav-category">Forms and Datas</li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+	      <i class="menu-icon mdi mdi-card-text-outline"></i>
+	      <span class="menu-title">Form elements</span>
+	      <i class="menu-arrow"></i>
+	    </a>
+	    <div class="collapse" id="form-elements">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"><a class="nav-link" href="/pages/forms/basic_elements.html">Basic Elements</a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+	      <i class="menu-icon mdi mdi-chart-line"></i>
+	      <span class="menu-title">Charts</span>
+	      <i class="menu-arrow"></i>
+	    </a>
+	    <div class="collapse" id="charts">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/pages/charts/chartjs.html">ChartJs</a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+	      <i class="menu-icon mdi mdi-table"></i>
+	      <span class="menu-title">Tables</span>
+	      <i class="menu-arrow"></i>
+	    </a>
+	    <div class="collapse" id="tables">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/pages/tables/basic-table.html">Basic table</a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+	      <i class="menu-icon mdi mdi-layers-outline"></i>
+	      <span class="menu-title">Icons</span>
+	      <i class="menu-arrow"></i>
+	    </a>
+	    <div class="collapse" id="icons">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/pages/icons/mdi.html">Mdi icons</a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item nav-category">pages</li>
+	  <li class="nav-item">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+	      <i class="menu-icon mdi mdi-account-circle-outline"></i>
+	      <span class="menu-title">User Pages</span>
+	      <i class="menu-arrow"></i>
+	    </a>
+	    <div class="collapse" id="auth">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/pages/samples/login.html"> Login </a></li>
+	      </ul>
+	    </div>
+	  </li>
+	  <li class="nav-item nav-category">help</li>
+	  <li class="nav-item">
+	    <a class="nav-link" href="http://bootstrapdash.com/demo/star-admin2-free/docs/documentation.html">
+	      <i class="menu-icon mdi mdi-file-document"></i>
+	      <span class="menu-title">Documentation</span>
+	    </a>
+	  </li>
+	</ul>
+	
+</html>
