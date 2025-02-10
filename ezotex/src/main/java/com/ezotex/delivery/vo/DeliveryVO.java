@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SampleDeliveryVO {
+public class DeliveryVO {
 	private String bomCode;
 	private String productCode;
 	private String color;
