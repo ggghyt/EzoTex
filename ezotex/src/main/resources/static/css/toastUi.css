@@ -1,0 +1,30 @@
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    z-index: 1000;
+}
+
+.successToast {
+    background-color: rgba(52, 177, 170, 0.8);
+    color: #fff;
+    padding: 6px 30px;
+    border-radius: 5px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.failToast {
+    background-color: rgb(249, 95, 83, 0.8);
+    color: #fff;
+    padding: 6px 30px;
+    border-radius: 5px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.show {
+    opacity: 1;
+}
