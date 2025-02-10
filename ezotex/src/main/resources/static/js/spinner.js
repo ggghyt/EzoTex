@@ -5,7 +5,6 @@ function simulateLoading() {
 
     // 로딩 시작
     loadingSpinner.style.display = "flex";
-    loadingMessage.textContent = "로딩 중...";
     loadingMessage.style.color = "white";
 
     // 1초 뒤에 로딩 완료
