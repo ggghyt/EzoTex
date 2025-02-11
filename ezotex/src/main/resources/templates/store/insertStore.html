@@ -5,6 +5,8 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
+		<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 		<style type="text/css">
 		
 			.scroll{
@@ -45,27 +47,7 @@
 			
 			<div class="row">
 				<div class="col-5 card card-body m-2">
-					<p class="fs-5 fw-bolder">납품 목록</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>No</th>
-								<th>납품 코드</th>
-								<th>제품 종류 수</th>
-								<th>납품요청일</th>
-								<th>입고 예정일</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr >
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+					<div id="grid"></div>
 				</div>
 				
 				<div class="col-5 card card-body m-2">
@@ -168,5 +150,77 @@
 			</div>
 			
 		</div>
+		
+		
+		<!-- Toast UI Grid 스크립트 -->
+		<!-- model에 있는 데이터 그리드에 삽입 하는법 -->
+		<!-- <script th:inline="javascript">
+		    var gridData = /*[[${list}]]*/ [];  // Controller에서 넘긴 데이터를 JSON 형태로 변환
+		</script> -->
+
+		
+	    <script>   
+	   <!-- document.addEventListener("DOMContentLoaded", function () {
+	        const grid = new tui.Grid({
+	            el: document.getElementById('grid'),
+	            data: gridData,
+	            scrollX: false,
+	            scrollY: true,
+	            columns: [
+	                { header: 'LOT', name: 'lot' },
+	                { header: '제품코드', name: 'productCode' }
+	            ]
+	        });
+	    }); -->
+	    </script>
+	    <!-- Toast UI Grid 스크립트 -->
+	    <script>
+	        // Spring Boot REST API에서 데이터를 가져와서 Grid에 로드하는 코드
+	        // RestController로 데이터 가져와서 사용해야됨
+	        fetch('http://localhost:80/store/test2')
+	            .then(response => response.json())
+	            .then(data => {
+	                const grid = new tui.Grid({
+	                    el: document.getElementById('grid'),
+	                    data: data,
+	                    scrollX: false,	// 가로 스크롤 여부
+	                    scrollY: true,	// 세로 스크롤 여부
+	                    // 높이 설정
+	                    minBodyHeight: 1000,
+	                    // row 번호
+	                    rowHeaders: ['rowNum'],
+	                    // 페이징
+	                    pageOptions: {
+	                      perPage: 5
+	                    },
+	                    columns: [
+	                        { header: 'LOT', name: 'lot', width: 'auto'},
+	                        { header: '제품코드', name: 'productCode' , width: 'auto'},
+	                        // 필요한 컬럼을 추가합니다.
+	                    ],
+	                    // 열 크기 조정 가능 여부
+	                    columnOptions: {
+	                        resizable: false
+	                      },
+	                    header: {
+	                        align: 'left',
+	                        valign: 'top',
+	                    }
+	                });
+	            });
+	    </script>
+
+		<!-- 
+			sortable: true, = 컬럼의 정렬 여부
+			editor: 'text', = 수정가능 여부
+			formatter: 'listItemText', = select box 옵션
+			// 유효성 검증 옵션
+            validation: {
+               unique: true,               // [선택] 유일성 체크 확인 옵션
+               required: true,
+               dataType: 'string',
+               regExp: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+              },
+		 -->
 	</body>
 </html>

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/store/*")
 @RestController
-public class RestControllerTest {
+public class InventoryRestControllerTest {
 
 	private final InventoryService service;
 	
