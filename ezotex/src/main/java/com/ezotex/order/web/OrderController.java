@@ -21,12 +21,19 @@ public class OrderController {
 	
 	final OrderServiceImpl service;
 	
+	@GetMapping("/OrderDetailList")
+	public void OrderDetailList(Model model) {
+		List<OrderDTO> orderList = service.getOrderList();
+		model.addAttribute("getOrderList",orderList);
+	}
 	@GetMapping("/OrderManagement")
 	public void OrderManagement(Model model) {
-		List<OrderDTO> orderList = service.getOrderList();
-		model.addAttribute("orderList",orderList);
+		
 	}
-	
+	@GetMapping("/OrderDetailListModal")
+	public void OrderDetailListModal(Model model) {
+		
+	}
 //	@GetMapping("/OrderManagement")
 //	public String OrderManagement(Model model) {
 //		List<OrderVO> orderList = service.getOrderList();
