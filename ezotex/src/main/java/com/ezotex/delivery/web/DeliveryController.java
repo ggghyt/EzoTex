@@ -1,16 +1,21 @@
 package com.ezotex.delivery.web;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-//@Controller
+@Controller
 @Slf4j
-// @RequiredArgsConstructor
-// @RequestMapping("/내부주소/*")
+@AllArgsConstructor
+@RequestMapping("/delivery")
 public class DeliveryController {
 	
-//	@GetMapping("/")
-//	public String index() {
-//		return "index";
-//	}
+	@GetMapping("/regist")
+	public String index() {
+		return "delivery/DeliveryManagement";
+	}
 	
 }
