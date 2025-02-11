@@ -1,8 +1,11 @@
 package com.ezotex.store.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ezotex.store.service.InventoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/store/*")
-public class SampleController {
+public class InventoryController {
 
-	@GetMapping("test")
-	public String index() {
-		return "store/sample";
-	}
+	private final InventoryService service;
 
 	/**
 	 * ========================================= 
@@ -26,7 +26,8 @@ public class SampleController {
 
 	// 자재/제품 입고 등록 페이지
 	@GetMapping("insertStore")
-	public String storeInsert() {
+	public String storeInsert(Model model) {
+		model.addAttribute("list",service.list());
 		return "store/insertStore";
 	}
 

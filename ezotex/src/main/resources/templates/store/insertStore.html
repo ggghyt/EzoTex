@@ -49,13 +49,17 @@
 					<table class="table mt-3">
 						<thead class="table-light text-center">
 							<tr>
-								<th>필드1</th>
-								<th>필드2</th>
-								<th>필드3</th>
+								<th>No</th>
+								<th>납품 코드</th>
+								<th>제품 종류 수</th>
+								<th>납품요청일</th>
+								<th>입고 예정일</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
+							<tr >
+								<td>...</td>
+								<td>...</td>
 								<td>...</td>
 								<td>...</td>
 								<td>...</td>
@@ -69,26 +73,27 @@
 					<table class="table mt-3">
 						<thead class="table-light text-center">
 							<tr>
-								<th>필드1</th>
-								<th>필드2</th>
-								<th>필드3</th>
+								<th>No</th>
+								<th>제품 코드</th>
+								<th>제품명</th>
+								<th>납품 수량</th>
+								<th>입고량 합계</th>
+								<th>불량 합계</th>
+								<th>추천위치</th>
+								<th>창고위치</th>
 							</tr>
 						</thead>
 						<tbody class="scroll">
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
+							<tr th:each="list : ${list}">
+								<td th:text="${listStat.count}">...</td>
+								<td th:text="${list.productCode}">...</td>
+								<td th:text="${list.storeQy}">...</td>
+								<td th:text="${list.productColor}">...</td>
+								<td th:text="${list.productSize}">...</td>
+								<td th:text="${list.storeCharger}">...</td>
+								<td th:text="${list.storageLocation}">...</td>
+								<!-- 데이터 포맷 방법 -->
+								<td th:text="${#dates.format(list.storeDate,'yyyy-MM-dd')}">...</td>
 							</tr>
 						</tbody>
 					</table>
@@ -138,9 +143,13 @@
 					<table class="table mt-3">
 						<thead class="table-light text-center">
 							<tr>
-								<th>필드1</th>
-								<th>필드2</th>
-								<th>필드3</th>
+								<th>No</th>
+								<th>제품 코드</th>
+								<th>제품명</th>
+								<th>색상</th>
+								<th>사이즈</th>
+								<th>불량 수량</th>
+								<th>불량 사유</th>
 							</tr>
 						</thead>
 						<tbody class="scroll">
@@ -152,8 +161,8 @@
 						</tbody>
 					</table>
 					<div class="d-flex justify-content-end mt-2">
-						<button class="btn btn-primary">등록</button>
-						<button class="btn btn-secondary">초기화</button>
+						<button class="btn btn-primary" style="margin:10px;">등록</button>
+						<button class="btn btn-secondary" style="margin:10px;">초기화</button>
 					</div>
 				</div>
 			</div>
