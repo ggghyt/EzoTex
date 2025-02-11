@@ -20,5 +20,4 @@ public class MainController {
 	public String sample() {
 		return "UISample";
 	}
-	
 }
