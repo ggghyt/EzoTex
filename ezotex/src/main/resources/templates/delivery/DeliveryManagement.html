@@ -1,0 +1,50 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	</head>
+	<body>
+		<h3 class="fs-3 fw-bold">| 납품 관리</h3>
+		<div class="card card-body mt-3">
+			<div id="grid"></div>
+		</div>
+		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+		<script>
+		gridData = {Name:'1', Artist:'1', Type: '1', Release: '1', Genre:'1'};
+		
+	    const grid = new tui.Grid({
+	        el: document.getElementById('grid'),
+	        data: gridData,
+	        scrollX: false,
+	        scrollY: false,
+	        columns: [
+	          {
+	            header: 'Name',
+	            name: 'name'
+	          },
+	          {
+	            header: 'Artist',
+	            name: 'artist'
+	          },
+	          {
+	            header: 'Type',
+	            name: 'type'
+	          },
+	          {
+	            header: 'Release',
+	            name: 'release'
+	          },
+	          {
+	            header: 'Genre',
+	            name: 'genre'
+	          }
+	        ]
+	      });
+	    
+		</script>
+	</body>
+</html>

@@ -3,8 +3,7 @@
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
 	<select id="findAll" resultType="RegistDeliveryDTO">
-		SELECT *
-		FROM   BOM;
+		
 	</select>
 
 </mapper>
