@@ -20,5 +20,5 @@ public class InventoryDTO {
 	private String storageLocation;
 	private Date storeDate;
 	private String productSe;
-	private String deliveryCode;
+	private String deliveryCode; 
 }
