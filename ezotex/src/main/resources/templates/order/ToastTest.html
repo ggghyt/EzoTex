@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast UI Grid with Spring Boot</title>
+
+    <!-- Toast UI Grid 스타일 시트 -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.css">
+
+    <!-- 추가 스타일 (옵션) -->
+    <style>
+        #grid {
+            height: 500px;  /* 그리드 높이 설정 */
+            width: 100%;    /* 그리드 너비 설정 */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="grid"></div>  <!-- Grid가 렌더링될 요소 -->
+
+    <!-- Toast UI Grid 스크립트 -->
+    <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.js"></script>
+
+    <script>
+        // Spring Boot에서 제공하는 데이터를 가져오는 코드
+        fetch('http://localhost:8080/api/data')  // Spring Boot 백엔드 API 주소
+            .then(response => response.json())
+            .then(data => {
+                const grid = new tui.Grid({
+                    el: document.getElementById('grid'),
+                    data: data,  // API에서 받은 데이터
+                    columns: [
+                        { header: 'ID', name: 'id' },
+                        { header: 'Name', name: 'name' },
+                        // 필요한 컬럼을 여기에 추가
+                    ],
+                    rowHeaders: ['checkbox'],  // 선택란 추가 (옵션)
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+
+</body>
+</html>

@@ -33,5 +33,9 @@ public class OrderController {
 //		model.addAttribute("orderList",orderList);
 //		return "order/OrderManagement";
 //	}
+	@GetMapping("/ToastTest")
+	public void ToastTest(Model model) {
+		
+	}
 
 }
