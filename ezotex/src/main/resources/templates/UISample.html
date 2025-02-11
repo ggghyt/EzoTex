@@ -8,10 +8,10 @@
     <title>toastUi</title>
 </head>
 <body>
-		<h3 class="fs-3 fw-bolder mb-3">| 샘플 페이지</h3>
+		<h3 class="fs-3 fw-bolder">| 샘플 페이지</h3>
+		개발 시 참고할 샘플 페이지입니다.
 		
 		<div class="card card-body mt-3">
-			개발 시 참고할 샘플 페이지입니다.
 			
 			<!-- 버튼 종류 -->
 			<div class="mt-2">
@@ -23,8 +23,13 @@
 				
 				<button class="btn btn-danger btn-sm">삭제</button>
 				<button class="btn btn-secondary btn-sm">선택</button>
-				<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass" style="color: #646464;"></i></button>
-				<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat" style="color: #ffffff;"></i></button>
+				
+				<!-- *공통 커스텀 css파일 : comm.css (layout.html에 공통 적용) -->
+				<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+				<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				
+				<button class="btn btn-secondary mag-glass-btn btn-sm"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
+				<button class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
 				
 				<hr>
 			
@@ -37,7 +42,10 @@
 		    <button class="btn btn-outline-secondary" onclick="simulateLoading()">스피너 출력 예시</button>
 			</div>
 			
-			<hr>
+		</div>
+
+
+    <div class="card card-body mt-3">
 			<b>레이아웃 & 테이블 예시</b>
 			<div class="row">
 			
@@ -82,11 +90,7 @@
 				</div>
 				
 			</div>
-			
-		</div>
-
-
-    
+    </div>
     
     
     <!-- 모달 샘플 -->
