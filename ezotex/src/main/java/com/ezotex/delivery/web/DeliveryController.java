@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // @RequiredArgsConstructor
 // @RequestMapping("/내부주소/*")
-public class SampleController {
+public class DeliveryController {
 	
 //	@GetMapping("/")
 //	public String index() {

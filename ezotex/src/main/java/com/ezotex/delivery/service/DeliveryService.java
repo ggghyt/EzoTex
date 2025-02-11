@@ -1,5 +1,5 @@
 package com.ezotex.delivery.service;
 
-public interface SampleService {
+public interface DeliveryService {
 
 }
