@@ -2,12 +2,16 @@
 	width: 40px;
 }
 
-.fa-magnifying-glass {
+.icon-left {
 	position: relative;
 	right: 8px;
 }
 
-.fa-repeat {
+.icon-left-sm {
 	position: relative;
-	right: 8px;
+	right: 2px;
+}
+
+.pointer {
+	cursor: pointer;
 }
