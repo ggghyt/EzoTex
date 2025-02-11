@@ -1,4 +1,4 @@
-package com.ezotex.order.vo;
+package com.ezotex.order.dto;
 
 import java.util.Date;
 
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SampleOrderVO {
+public class SampleOrderDTO {
 	private String bomCode;
 	private String productCode;
 	private String color;
