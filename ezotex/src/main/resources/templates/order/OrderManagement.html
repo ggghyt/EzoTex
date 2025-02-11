@@ -1,0 +1,74 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 주문 관리</h3>
+	<div class="card card-body mt-3">
+		<div class="row">
+			<div class="col-5 card card-body m-2" style="background-color: #d3d3d3;">
+				<p class="fs-5 fw-bolder">주문 등록</p>
+				<table class="table mt-3">
+					<thead class="table-light text-center">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder">제품 목록</p>
+				<table class="table mt-3">
+					<thead class="table-light text-center">
+						<tr>
+							<th>NO</th>
+							<th>대분류</th>
+							<th>소분류</th>
+							<th>제품 코드</th>
+							<th>제품명</th>
+							<th>단가</th>
+							<th>주문 수량 합계</th>
+							<th>주문 금액</th>
+						</tr>
+					</thead>
+					<tbody class="text_center">
+						<tr th:each="order : ${getOrderList}">
+							<td th:text="${order.productOrderCode}">...</td>
+							<td th:text="${order.company}">...</td>
+							<td th:text="${order.companyRepresentative}">...</td>
+							<td th:text="${order.companyTel}">...</td>
+							<td th:text="${order.charger}">...</td>
+							<td th:text="${order.}">...</td>
+							<td th:text="${order.}">...</td>
+							<td th:text="${order.}">...</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder">선택한 제품</p>
+				<table class="table mt-3">
+					<thead class="table-light text-center">
+						<tr>
+							<th>필드1</th>
+							<th>필드2</th>
+							<th>필드3</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>...</td>
+							<td>...</td>
+							<td>...</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
