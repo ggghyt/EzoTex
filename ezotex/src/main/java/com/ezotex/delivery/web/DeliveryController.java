@@ -17,5 +17,6 @@ public class DeliveryController {
 	public String index() {
 		return "delivery/DeliveryManagement";
 	}
+	//수정
 	
 }
