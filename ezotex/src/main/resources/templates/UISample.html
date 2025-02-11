@@ -1,0 +1,195 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toastUi</title>
+</head>
+<body>
+		<h3 class="fs-3 fw-bolder mb-3">| 샘플 페이지</h3>
+		
+		<div class="card card-body mt-3">
+			개발 시 참고할 샘플 페이지입니다.
+			
+			<!-- 버튼 종류 -->
+			<div class="mt-2">
+				<button class="btn btn-success">확인</button>
+				<button class="btn btn-primary">등록</button>
+				<button class="btn btn-danger">삭제</button>
+				<button class="btn btn-warning">수정</button>
+				<button class="btn btn-secondary">취소/닫기/초기화</button>
+				
+				<button class="btn btn-danger btn-sm">삭제</button>
+				<button class="btn btn-secondary btn-sm">선택</button>
+				<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass" style="color: #646464;"></i></button>
+				
+				<hr>
+			
+				<!-- toast 토스트 UI -->
+		    <button class="btn btn-success" onclick="successToast('작업 성공')">성공 토스트</button>
+		    <button class="btn btn-secondary" onclick="failToast('작업 실패')">실패 토스트</button>
+				<!--toast UI 출력되는 부분-->
+		    <div id="toastContainer" class="toast-container"></div>
+		    <!-- 스피너 예시 -->
+		    <button class="btn btn-outline-secondary" onclick="simulateLoading()">스피너 출력 예시</button>
+			</div>
+			
+			<hr>
+			<b>레이아웃 & 테이블 예시</b>
+			<div class="row">
+			
+				<div class="col-5 card card-body m-2">
+					<p class="fs-5 fw-bolder">왼쪽</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<div class="col-5 card card-body m-2">
+					<p class="fs-5 fw-bolder mt-2">오른쪽</p>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+			</div>
+			
+		</div>
+
+
+    
+    
+    
+    <!-- 모달 샘플 -->
+    <div class="card card-body mt-3">
+    	<b>모달 예시</b>
+    	<div>
+		   	<!-- 등록 버튼 클릭 -->
+			  <button type="button" class="btn btn-primary registBtn" data-bs-toggle="modal" data-bs-target="#registModal">
+			    등록
+			  </button>
+		    <!-- 등록 모달 -->
+		    <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		      <div class="modal-dialog">
+		        <div class="modal-content">
+		          <div class="modal-header" style="height: 20px;">
+		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">등록 확인</h5>
+		            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		          </div>
+		          <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+		            <div>
+		              <img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+		            </div>
+		            <div>
+		              <p style="margin-top: 12px;
+		              font-size: 21px;
+		              font-weight: bold;">알림</p>
+		              <p>내용을 등록하시겠습니까?</p>
+		            </div>
+		          </div>
+		          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+		            <!---->
+		            <button type="button" class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+		            <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+		          </div>
+		        </div>
+		      </div>
+		    </div>
+		
+		
+		    <!-- 경고 버튼 클릭 -->
+			  <button type="button" class="btn btn-warning registBtn" data-bs-toggle="modal" data-bs-target="#modifyMOdal">
+			    수정
+			  </button>
+		      <!-- 수정 모달 -->
+		      <div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		        <div class="modal-dialog">
+		          <div class="modal-content">
+		            <div class="modal-header" style="height: 20px;">
+		              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
+		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+		              <div>
+		                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+		              </div>
+		              <div>
+		                <p style="margin-top: 12px;
+		                font-size: 21px;
+		                font-weight: bold;">알림</p>
+		                <p>내용을 수정하시겠습니까?</p>
+		              </div>
+		            </div>
+		            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+		              <!---->
+		              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">수정</button>
+		              <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+		
+		      <!-- 삭제 버튼 클릭 -->
+		      <button type="button" class="btn btn-danger registBtn" data-bs-toggle="modal" data-bs-target="#deleteModal">
+		        삭제
+		      </button>
+		      <!-- 삭제 모달 -->
+		      <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		        <div class="modal-dialog">
+		          <div class="modal-content">
+		            <div class="modal-header" style="height: 20px;">
+		              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">삭제 확인</h5>
+		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+		              <div>
+		                <img src="/images/modal/delete.png" alt="삭제확인이미지" style="width: 84px; height:84px; ">
+		              </div>
+		              <div>
+		                <p style="margin-top: 12px;
+		                font-size: 21px;
+		                font-weight: bold;">알림</p>
+		                <p>내용을 삭제하시겠습니까?</p>
+		              </div>
+		            </div>
+		            <div class="modal-footer delete" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+		              <!---->
+		              <button type="button" class="btn btn-outline-danger checkBtn" data-bs-dismiss="modal">삭제</button>
+		              <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">삭제</button>
+		            </div>
+		          </div>
+		        </div>
+		      </div>
+		      
+    	</div>
+   	</div>
+</body>
+</html>

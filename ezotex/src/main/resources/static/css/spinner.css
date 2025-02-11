@@ -1,0 +1,31 @@
+body{
+    margin: 0
+} 
+.loading-wrap {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.342);
+position: fixed;
+z-index: 10000;
+}
+.loading-spinner {
+width: 40px;
+height: 40px;
+border: 5px solid #34b1aa;
+border-top: 5px solid transparent;
+border-radius: 50%;
+animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+from {
+  transform: rotate(0deg);
+}
+to {
+  transform: rotate(360deg);
+}
+}
