@@ -27,7 +27,7 @@ function failToast(message) {
     
     toastContainer.appendChild(toast);
     
-    setTimeout(() => {
+    setTimeout(() => { 
         toast.classList.add('show');
     }, 100);
 
