@@ -1,4 +1,4 @@
-package com.ezotex.delivery.vo;
+package com.ezotex.delivery.dto;
 
 import java.util.Date;
 
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class DeliveryVO {
+public class RegistDeliveryDTO {
 	private String bomCode;
 	private String productCode;
 	private String color;
