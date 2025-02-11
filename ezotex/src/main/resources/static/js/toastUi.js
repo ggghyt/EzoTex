@@ -14,6 +14,7 @@ function successToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 500);
+        
     }, 2000);
 }
 
