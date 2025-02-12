@@ -35,7 +35,7 @@
 	  console.log(data);
 		const grid = new Grid({
 	    el: document.getElementById('grid'), // 해당 위치에 그리드 출력
-	    data: data,
+	    data: data, // data 안에 pagination, contents 객체 필요.
 	    columns: [
         { header: 'No', name: 'rno' },
         { header: '대분류', name: 'lclas' },

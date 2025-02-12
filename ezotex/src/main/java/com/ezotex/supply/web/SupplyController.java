@@ -1,13 +1,13 @@
 package com.ezotex.supply.web;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ezotex.supply.dto.BomDTO;
+import com.ezotex.comm.GridUtil;
 import com.ezotex.supply.service.impl.BomServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -29,8 +29,10 @@ public class SupplyController {
 	// bom 목록 데이터
 	@ResponseBody
 	@GetMapping("bomList")
-	public List<BomDTO> bomList() {
-		return service.listBom();
+	public Map<String, Object> bomList() {
+		Map<String, Object> map = GridUtil.grid(1, 10, service.listBom());
+		log.info(map.toString());
+		return map;
 	}
 	
 }
