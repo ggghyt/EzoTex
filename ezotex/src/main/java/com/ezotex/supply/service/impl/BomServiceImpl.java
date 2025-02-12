@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.dto.BomDTO;
 import com.ezotex.supply.mappers.BomMapper;
 import com.ezotex.supply.service.BomService;
@@ -26,6 +27,11 @@ public class BomServiceImpl implements BomService {
 	@Override
 	public BomDTO infoBom(String bomCode) {
 		return mapper.infoBom(bomCode);
+	}
+
+	@Override
+	public List<ProductDTO> listProductBom() {
+		return mapper.listProductBom();
 	}
 	
 }
