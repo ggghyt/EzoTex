@@ -2,6 +2,10 @@ package com.ezotex.order.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,9 +18,13 @@ public class OrderDTO {
 	private String companyRepresentative;
 	private String companyTel;
 	private String charger;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date deliveryRequestDeadline;
 	private String orderStatus;
 	private String companyCode;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date orderDate;
 	private String empCode;
 	
@@ -27,4 +35,11 @@ public class OrderDTO {
 	private String productSize;
 	private int qy;
 	private int unitPrice;
+	
+	//제품코드 조회
+	private String productName;
+	private String productType;
+	private int vl;
+	private String img;
+	private String unitName;
 }

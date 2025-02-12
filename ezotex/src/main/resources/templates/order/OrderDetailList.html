@@ -4,52 +4,97 @@
 <head>
 <meta charset="UTF-8">
 <title>이조텍스SCM</title>
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
 	<div class="card card-body mt-3">
 		<div class="row">
-			<div class="col-5 card card-body m-2">
+			<!-- Toast Grid를 표시할 div 추가 -->
+			<div class="col-12 card card-body m-2">
 				<p class="fs-5 fw-bolder">주문 목록</p>
-				<table class="table mt-3">
-					<thead class="table-light text-center">
-						<tr>
-							<th>No</th>
-							<th>주문코드</th>
-							<th>업체명</th>
-							<th>업체 담당자</th>
-							<th>주문 담당자</th>
-							<th>주문상태</th>
-							<th>요약</th>
-							<th>주문일</th>
-							<th>납기일</th>
-							<th>주문금액합계</th>
-							<th>상세보기</th>
-						</tr>
-					</thead>
-					<tbody class="text_center">
-						<tr th:each="order : ${getOrderList}">
-							<td th:text="${orderStat.count}"></td>
-							<td th:text="${order.productOrderCode}"></td>
-							<td th:text="${order.company}"></td>
-							<td th:text="${order.companyRepresentative}"></td>
-							<td th:text="${order.charger}"></td>
-							<td th:text="${order.orderStatus}"></td>
-							<td>요약</td>
-							<td th:text="${#dates.format(order.orderDate,'yyyy/MM/dd')}"></td>
-							<td
-								th:text="${#dates.format(order.deliveryRequestDeadline,'yyyy/MM/dd')}"></td>
-							<td>합계 계산해서 넣기</td>
-							<td>
-								<button type="button" class="btn btn-primary"
-									data-bs-toggle="modal" data-bs-target="#exampleModal2">상세보기</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<!-- 그리드를 표시할 div -->
+				<div id="orderGrid"></div>
 			</div>
 		</div>
 	</div>
+
+	<script th:inline="javascript">
+		// Thymeleaf에서 getOrderList 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const orderList = /*[[${getOrderList}]]*/[];
+
+		// 전달된 데이터 확인 (콘솔에 출력)
+		console.log(orderList);
+
+		// Toast Grid 설정
+		const grid = new tui.Grid(
+				{
+					el : document.getElementById('orderGrid'), // 그리드를 표시할 div
+					data : orderList, // 서버에서 전달된 데이터
+					columnOptions : {
+						resizable : true
+					// 컬럼 크기 조절 가능
+					},
+					rowHeaders:['rowNum'],
+					columns : [
+							{
+								header : '주문코드',
+								name : 'productOrderCode',
+								align : 'center'
+							},
+							{
+								header : '업체명',
+								name : 'company',
+								align : 'center'
+							},
+							{
+								header : '업체 담당자',
+								name : 'companyRepresentative',
+								align : 'center'
+							},
+							{
+								header : '주문 담당자',
+								name : 'charger',
+								align : 'center'
+							},
+							{
+								header : '주문상태',
+								name : 'orderStatus',
+								align : 'center'
+							},
+							{
+								header : '요약',
+								name : 'summary',
+								align : 'center'
+							},
+							{
+								header : '주문일',
+								name : 'orderDate',
+								align : 'center',
+							},
+							{
+								header : '납기일',
+								name : 'deliveryRequestDeadline',
+								align : 'center',
+							},
+							{
+								header : '주문금액합계',
+								name : 'totalAmount',
+								align : 'right',
+								formatter : 'money'
+							},
+							{
+								header : '상세보기',
+								name : 'details',
+								align : 'center',
+								formatter : function() {
+									return '<button type = "button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2">상세보기</button>';
+								}
+							} ]
+				});
+	</script>
 	<!-- 상세보기 모달 시작 -->
 	<div class="modal fade" id="exampleModal2" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -154,5 +199,7 @@
 		</div>
 	</div>
 	<!-- 상세보기 모달 끝 -->
+	<!-- 	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+		data-bs-target="#exampleModal2">ModalTest2</button> -->
 </body>
 </html>

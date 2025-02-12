@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
+@CrossOrigin("*")
 @RequiredArgsConstructor
 @RequestMapping("/order/*")
 public class OrderController {
@@ -27,8 +29,9 @@ public class OrderController {
 		model.addAttribute("getOrderList",orderList);
 	}
 	@GetMapping("/OrderManagement")
-	public void OrderManagement(Model model) {
-		
+	public void OrderManagement(Model model) {		
+		List<OrderDTO> productList = service.getProductList();
+		model.addAttribute("getProductList",productList);
 	}
 	@GetMapping("/OrderDetailListModal")
 	public void OrderDetailListModal(Model model) {
