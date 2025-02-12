@@ -85,17 +85,23 @@
 	    
 	    console.log(test);
 	    
-	    const Grid = tui.Grid;
+	    //const Grid = tui.Grid;
 	    
 	    
+	   
+	   	/*
+	   	*========================================================================
+	   	* 입고 대기 리스트 출력 및 그리드
+	   	*========================================================================
+	   	*/
 	    const dataSource = {
 	      api: {
-	          readData: { url: 'http://localhost:80/store/test2', method: 'GET' },
+	          readData: { url: 'http://localhost:80/store/deliveryList', method: 'GET' },
 	        },
 	      contentType: 'application/json',
 	    };  
 	    
-	    const grid = new Grid({
+	    const storeGrid = new Grid({
 	      el: document.getElementById('grid'), // 컨테이너 엘리먼트
 	      rowHeaders: ['rowNum'],
 	      columnOptions: {
@@ -103,31 +109,59 @@
 	      },
 	      columns: [ 
 	        { header: "납품 코드", name: "deliveryCode", align: "center"},
-	        { header: "제품 종류 수", name: "companySe", align: "center"},
+	        { header: "제품 종류 수", name: "deliveryQy", align: "center"},
 	        { header: "납품 요청일", name: "orderDate", align: "center"},
 	        { header: "입고 예정일", name: "dedt", align: "center"},
 	      ],
 	      data: dataSource,
 	    });
 	    
-	    const grid2 = new Grid({
+	    /*
+	   	*========================================================================
+	   	* 입고 대기 리스트 출력 및 그리드 END!!
+	   	*========================================================================
+	   	*/
+	    
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드
+	   	*========================================================================
+	   	*/
+	    const storegrid2 = new Grid({
 		      el: document.getElementById('grid2'), // 컨테이너 엘리먼트
-	            scrollY: true,
-		        scrollX: false,
 		      rowHeaders: ['rowNum'],
 		      columns: [ 
-		        { header: "제품 코드", name: "deliveryCode", editor: "text"},
-		        { header: "제품명", name: "productName", editor: "text"},
-		        { header: "납품 수량", name: "orderDate", editor: "text"},
-		        { header: "입고량 합계", name: "dedt", editor: "text"},
-		        { header: "불량 합계", name: "dedt", editor: "text"},
-		        { header: "추천 위치", name: "dedt", editor: "text"},
-		        { header: "창고위치", name: "dedt", editor: "text"},
-		      ],
-		      data: dataSource,
+			        { header: "제품 코드", name: "deliveryCode", align: "center"},
+			        { header: "제품명", name: "productName", align: "center"},
+			        { header: "납품 수량", name: "deliveryQy", align: "center"},
+			        { header: "입고량 합계", name: "", align: "center"},
+			        { header: "불량 합계", name: "", align: "center"},
+			        { header: "추천 위치", name: "dedt", align: "center"},
+			        { header: "창고위치", name: "", align: "center"},
+			  ],
+			  data: ""
 		    });
+	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
+	    storeGrid.on('click', ev => {
+	    	let data = storeGrid.getRow(ev.rowKey);
+	    	
+	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
+	    		.then(rep => rep.json())
+	    		.then(data => {
+	    				storegrid2.resetData(data);
+	    			})
+	    		})
+	    		
+	    /*
+	   	*========================================================================
+	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드 END!!
+	   	*========================================================================
+	   	*/		
 	    
-	    const grid3 = new Grid({
+	   	
+	   	
+	    const storegrid3 = new Grid({
 		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
 	            scrollY: true,
 		        scrollX: false,
@@ -146,7 +180,7 @@
 		        ]
 		    });
 	    
-	    const grid4 = new Grid({
+	    const storegrid4 = new Grid({
 		      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
 	            scrollY: true,
 		        scrollX: false,

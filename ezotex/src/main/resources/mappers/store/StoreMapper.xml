@@ -8,23 +8,23 @@
 		FROM inventory
 	</select>
 	
-	<!--  입고 예정 목록 리스트
-	<select id="DeliveryList" resultType="StoreDeliveryDTO">
+	<!-- 입고 예정 목록 리스트 -->
+	<!-- <select id="DeliveryList" resultType="StoreDeliveryDTO">
 		SELECT delivery_code,
 		       order_date,
 		       dedt
 		FROM delivery
-	</select>
+	</select> -->
 	
-	입고 예정 제품 종류 수
-	<select id="DeliveryQy" resultType="StoreDeliveryDTO">
+	<!-- 입고 예정 제품 종류 수 -->
+	<!-- <select id="DeliveryList" resultType="StoreDeliveryDTO">
 		SELECT count(product_code)
 		FROM DELIVERY_PRODUCT_DETAILS
 		GROUP by product_code
-	</select>
+	</select> -->
 	
-	위 두 쿼리 합친거(데이터 없어서 테스트 못해봄)
-	<select id="">
+	<!-- 위 두 쿼리 합친거(데이터 없어서 테스트 못해봄) -->
+	<select id="DeliveryList" resultType="StoreDeliveryDTO">
 		SELECT d.delivery_code,
 		       d.order_date,
 		       d.dedt,
@@ -37,14 +37,16 @@
 		         d.dedt
 	</select>
 	
-	납품코드를 기반으로 입고해야될 제품 기본정보 리스트
-	<select id="">
-		SELECT *
-		FROM DELIVERY_PRODUCT_DETAILS d join product_info p
+	<!-- 납품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
+	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
+		SELECT d.delivery_code,
+		       p.product_name,
+		       d.delivery_qy
+		FROM delivery_product_details d join product_info p
 		on d.product_code = p.product_code
-		WHERE delivery_code = #{deliveryCode}
-	</select> -->
-	
+		WHERE product_se = 'PT02'
+		and delivery_code = #{deliveryCode}
+	</select>
 	
 	
 </mapper>

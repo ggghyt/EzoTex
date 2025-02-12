@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.StoreDeliveryDTO;
+import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.mappers.InventoryMapper;
 import com.ezotex.store.service.InventoryService;
@@ -31,9 +32,10 @@ public class InventoryServiceImpl implements InventoryService {
 		return mapper.DeliveryList();
 	}
 
+	// 납품리스트 기반 입고 제품 상세 조회
 	@Override
-	public List<StoreDeliveryDTO> DeliveryQy() {
-		return mapper.DeliveryQy();
+	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
+		return mapper.findByDeliveryCode(DeliveryCode);
 	}
 	
 }
