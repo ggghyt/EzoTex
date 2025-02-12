@@ -4,7 +4,7 @@
 
 	<select id="findAll" resultType="RegistDeliveryDTO">
 		SELECT *
-		FROM   BOM;
+		FROM BOM;
 	</select>
 
 </mapper>

@@ -5,19 +5,27 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
+		<!-- timePicker -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+	    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+	  
+	    <!-- datePicker -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+	    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+	  
+	  	<!-- paging -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+	    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+	  
+	    <!-- toast grid -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 		<style type="text/css">
 		
-			.scroll{
-				display: block; max-height: 100px; overflow-y: scroll;
-			}
-		
-			table thead, table tbody tr {
-			  display: table;
-			  width: 100%;
-			}
 		</style>
 	</head>
 	<body>
+	
 		<div class="d-flex align-items-center">
 		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
 		<button class="btn btn-secondary" style="margin:10px;">자재 입고</button>
@@ -43,130 +51,117 @@
 				</div>
 			</div>
 			
+			
 			<div class="row">
 				<div class="col-5 card card-body m-2">
-					<p class="fs-5 fw-bolder">납품 목록</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>No</th>
-								<th>납품 코드</th>
-								<th>제품 종류 수</th>
-								<th>납품요청일</th>
-								<th>입고 예정일</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr >
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+					<div id="grid"></div>
+  					<div id="pagination" class="tui-pagination"></div>
 				</div>
 				
 				<div class="col-5 card card-body m-2">
 					<p class="fs-5 fw-bolder mt-2">입고 등록</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>No</th>
-								<th>제품 코드</th>
-								<th>제품명</th>
-								<th>납품 수량</th>
-								<th>입고량 합계</th>
-								<th>불량 합계</th>
-								<th>추천위치</th>
-								<th>창고위치</th>
-							</tr>
-						</thead>
-						<tbody class="scroll">
-							<tr th:each="list : ${list}">
-								<td th:text="${listStat.count}">...</td>
-								<td th:text="${list.productCode}">...</td>
-								<td th:text="${list.storeQy}">...</td>
-								<td th:text="${list.productColor}">...</td>
-								<td th:text="${list.productSize}">...</td>
-								<td th:text="${list.storeCharger}">...</td>
-								<td th:text="${list.storageLocation}">...</td>
-								<!-- 데이터 포맷 방법 -->
-								<td th:text="${#dates.format(list.storeDate,'yyyy-MM-dd')}">...</td>
-							</tr>
-						</tbody>
-					</table>
+						<div id="grid2"></div>
+						
 					<p class="fs-5 fw-bolder mt-2">입고 수량 입력</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>색상/사이즈</th>
-								<th>S</th>
-								<th>M</th>
-								<th>L</th>
-								<th>XL</th>
-							</tr>
-						</thead>
-						<tbody class="text-center scroll">
-							<tr>
-								<th>화이트</th>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr>
-								<th>그레이</th>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr>
-								<th>블랙</th>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-							<tr>
-								<th>합계</th>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+						<div id="grid3"></div>
+						
 					<p class="fs-5 fw-bolder mt-2">불량 발생 내역</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>No</th>
-								<th>제품 코드</th>
-								<th>제품명</th>
-								<th>색상</th>
-								<th>사이즈</th>
-								<th>불량 수량</th>
-								<th>불량 사유</th>
-							</tr>
-						</thead>
-						<tbody class="scroll">
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+						<div id="grid4"></div>
+						
 					<div class="d-flex justify-content-end mt-2">
 						<button class="btn btn-primary" style="margin:10px;">등록</button>
 						<button class="btn btn-secondary" style="margin:10px;">초기화</button>
 					</div>
+					
 				</div>
 			</div>
 			
 		</div>
+		
+	    <!-- Toast UI Grid 스크립트 -->
+	    <script>
+	    
+	    let test = document.getElementById('pagination')
+	    
+	    console.log(test);
+	    
+	    const Grid = tui.Grid;
+	    
+	    
+	    const dataSource = {
+	      api: {
+	          readData: { url: 'http://localhost:80/store/test2', method: 'GET' },
+	        },
+	      contentType: 'application/json',
+	    };  
+	    
+	    const grid = new Grid({
+	      el: document.getElementById('grid'), // 컨테이너 엘리먼트
+	      rowHeaders: ['rowNum'],
+	      columnOptions: {
+	          resizable: true
+	      },
+	      columns: [ 
+	        { header: "납품 코드", name: "deliveryCode", align: "center"},
+	        { header: "제품 종류 수", name: "companySe", align: "center"},
+	        { header: "납품 요청일", name: "orderDate", align: "center"},
+	        { header: "입고 예정일", name: "dedt", align: "center"},
+	      ],
+	      data: dataSource,
+	    });
+	    
+	    const grid2 = new Grid({
+		      el: document.getElementById('grid2'), // 컨테이너 엘리먼트
+	            scrollY: true,
+		        scrollX: false,
+		      rowHeaders: ['rowNum'],
+		      columns: [ 
+		        { header: "제품 코드", name: "deliveryCode", editor: "text"},
+		        { header: "제품명", name: "productName", editor: "text"},
+		        { header: "납품 수량", name: "orderDate", editor: "text"},
+		        { header: "입고량 합계", name: "dedt", editor: "text"},
+		        { header: "불량 합계", name: "dedt", editor: "text"},
+		        { header: "추천 위치", name: "dedt", editor: "text"},
+		        { header: "창고위치", name: "dedt", editor: "text"},
+		      ],
+		      data: dataSource,
+		    });
+	    
+	    const grid3 = new Grid({
+		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
+	            scrollY: true,
+		        scrollX: false,
+		        data: [
+		            { color: "화이트", S: "", M: "", L: "", XL: "" },
+		            { color: "그레이", S: "", M: "", L: "", XL: "" },
+		            { color: "블랙", S: "", M: "", L: "", XL: "" },
+		            { color: "합계", S: "", M: "", L: "", XL: "" }
+		        ],
+		        columns: [
+		            { header: "색상/사이즈", name: "color", width: 150 },
+		            { header: "S", name: "S", width: 100 },
+		            { header: "M", name: "M", width: 100 },
+		            { header: "L", name: "L", width: 100 },
+		            { header: "XL", name: "XL", width: 100 }
+		        ]
+		    });
+	    
+	    const grid4 = new Grid({
+		      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
+	            scrollY: true,
+		        scrollX: false,
+		      rowHeaders: ['rowNum'],
+		      columns: [ 
+		        { header: "제품 코드", name: "deliveryCode", editor: "text"},
+		        { header: "제품명", name: "companySe", editor: "text"},
+		        { header: "색상", name: "orderDate", editor: "text"},
+		        { header: "사이즈", name: "dedt", editor: "text"},
+		        { header: "불량 수량", name: "dedt", editor: "text"},
+		        { header: "불량 사유", name: "dedt", editor: "text"},
+		      ],
+		      data: dataSource,
+		    });
+	    
+	    </script>
 	</body>
 </html>
