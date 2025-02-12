@@ -50,7 +50,7 @@
 			<div class="row">
 			
 				<div class="col-5 card card-body m-2">
-					<p class="fs-5 fw-bolder">왼쪽</p>
+					<p class="fs-5 fw-bolder">일반</p>
 					<table class="table mt-3">
 						<thead class="table-light text-center">
 							<tr>
@@ -70,24 +70,47 @@
 				</div>
 				
 				<div class="col-5 card card-body m-2">
-					<p class="fs-5 fw-bolder mt-2">오른쪽</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>필드1</th>
-								<th>필드2</th>
-								<th>필드3</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+					<p class="fs-5 fw-bolder mt-2 mb-4">Toast UI Grid</p>
+					<div id="grid"></div>
+					<script>
+						// tui grid 출력
+				    // 공식 문서 : https://nhn.github.io/tui.grid/latest/tutorial-example01-basic 
+				    // GitHub Docs : https://github.com/nhn/tui.grid/blob/master/packages/toast-ui.grid/docs/ko/README.md
+						// 활용 예시 블로그 : https://adjh54.tistory.com/95
+						
+					  // clean 테마 적용 : layout.html에 적용해놓아서 필요없음.
+						// var Grid = tui.Grid;
+						// Grid.applyTheme('clean'); 
+						
+						const data = {
+							api: {
+								readData: {url: '', method: 'GET'} // RestController에서 json 데이터 읽어올 수 있음.
+							},
+							contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+						};
+					  
+						const grid = new Grid({
+					    el: document.getElementById('grid'), // 해당 위치에 그리드 출력
+					    data: [
+					    	{code: 'EZO0001', name: '이조텍스1'},
+					    	{code: 'EZO0002', name: '이조텍스2'}
+				    	],
+					    columns: [
+				        { header: '코드', name: 'code' },
+				        { header: '이름', name: 'name', editor: 'text' }
+					    ],
+					    pageOptions: {
+				        useClient: true, // 페이징을 위해 필요
+				        perPage: 10
+				      }
+						});
+						
+						// tui grid 메소드
+						// grid.appendRow({}); .setPerPage(10); .removeRow(1); .blur();
+						// grid.request('readData', {}); // 그리드에 변경사항 반영
+					</script>
 				</div>
+				
 				
 			</div>
     </div>

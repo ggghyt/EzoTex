@@ -11,23 +11,8 @@
 		<div class="row">
 			<div class="col">
 				<div class="card card-body mt-3">
-					<p class="fs-5 fw-bolder">제품 목록</p>
-					<table class="table mt-3">
-						<thead class="table-light text-center">
-							<tr>
-								<th>No</th>
-								<th>대분류</th>
-								<th>필드3</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>...</td>
-								<td>...</td>
-								<td>...</td>
-							</tr>
-						</tbody>
-					</table>
+					<p class="fs-5 fw-bolder mb-3">제품 목록</p>
+					<div id="grid"></div>
 				</div>
 			</div>
 			<div class="col">
@@ -38,4 +23,32 @@
 			
 		</div>
 	</body>
+	
+	<script>
+		// tui grid 출력
+		const data = {
+			api: {
+				readData: {url: 'http://localhost/supply/bomList', method: 'GET'} // RestController에서 json 데이터 읽어올 수 있음.
+			},
+			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+		};
+	  console.log(data);
+		const grid = new Grid({
+	    el: document.getElementById('grid'), // 해당 위치에 그리드 출력
+	    data: data,
+	    columns: [
+        { header: 'No', name: 'rno' },
+        { header: '대분류', name: 'lclas' },
+        { header: '소분류', name: 'sclas' },
+        { header: '제품코드', name: 'product_code' },
+        { header: '제품명', name: 'product_name' },
+        { header: '상태', name: 'status' },
+        { header: 'bomCode', name: 'bomCode' },
+	    ],
+	    pageOptions: {
+        useClient: true, // 페이징을 위해 필요
+        perPage: 10
+      }
+		});
+	</script>
 </html>

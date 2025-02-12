@@ -2,10 +2,10 @@ package com.ezotex.supply.dto;
 
 import java.util.Date;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class BomDTO {
 	private String bomCode;
