@@ -30,7 +30,7 @@ public class SupplyController {
 	@ResponseBody
 	@GetMapping("bomList")
 	public Map<String, Object> bomList() {
-		Map<String, Object> map = GridUtil.grid(1, 10, service.listBom());
+		Map<String, Object> map = GridUtil.grid(1, 10, service.listProductBom());
 		log.info(map.toString());
 		return map;
 	}

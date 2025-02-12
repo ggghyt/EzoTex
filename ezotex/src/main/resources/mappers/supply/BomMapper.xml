@@ -16,4 +16,17 @@
 		WHERE  b.bom_code = #{bomCode}
 	</select>
 
+	<select id="listProductBom" resultType="ProductDTO">
+		SELECT p.product_code,
+		       p.product_name,
+		       c.lclas,
+		       c.sclas,
+		       o.option_code,
+		       o.product_color, -- 옵션 함수 필요
+		       o.product_size
+		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
+		                      LEFT JOIN product_option o ON p.product_code = o.product_code
+		WHERE  product_type = 'PT02'
+	</select>
+
 </mapper>
