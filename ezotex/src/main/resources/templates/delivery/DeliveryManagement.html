@@ -84,7 +84,12 @@
 				justify-content: right;
 				margin-bottom: 10px;
 			}
-			
+			.btn-secondary {
+				background-color: #b1b1b1;
+			}
+			.btn-section button:nth-of-type(2) {
+				margin-left: 10px;
+			}
 		</style>
 		<!-- toast grid -->
         <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
@@ -99,7 +104,7 @@
 					
 					<b>납품 목록 검색</b>
 										
-					<!-- 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
+					<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
 					<div>
 						<span class="search-unit">
 							<span>주문 코드</span>
@@ -134,7 +139,7 @@
 						</span>
 					</div>
 					
-					<!-- 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
+					<!-- 검색조건2: 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
 					<div>
 						
 						<span class="search-unit">
@@ -166,8 +171,8 @@
 							<input type="date" class="form-control"> 
 						</span>
 						<div class="btn-section">						
-							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 						</div>
 					</div>
 				</div>
@@ -178,13 +183,30 @@
 			</div>	
 			<div class="col card card-body order-info">			
 				<div id="order-details">
-					
+					<b>납품 등록</b>
+					<table class="table mt-3">
+						<thead class="table-light text-center">
+							<tr>
+								<th>필드1</th>
+								<th>필드2</th>
+								<th>필드3</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>...</td>
+								<td>...</td>
+								<td>...</td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 				<div id="product-info">
+					<b>납품 제품 상세</b>
 				
 				</div>
 				<div id="product-details">
-				
+					<b>납품 수량 입력</b>
 				</div>
 			</div>
 		</div>
@@ -215,13 +237,6 @@
 	            data: list
 	        });
 
-
-
-
-
-
-
     	</script>
->>>>>>> branch 'CTB' of https://github.com/ggghyt/EzoTex.git
 	</body>
 </html>
