@@ -17,6 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 public class InventoryController {
 
 	private final InventoryService service;
+	
+	@GetMapping("test")
+	public String test(Model model) {
+		model.addAttribute("list", service.list());
+		return "store/agGridTest";
+	}
 
 	/**
 	 * ========================================= 
