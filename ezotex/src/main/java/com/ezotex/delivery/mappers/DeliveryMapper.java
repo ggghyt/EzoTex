@@ -2,9 +2,9 @@ package com.ezotex.delivery.mappers;
 
 import java.util.List;
 
-import com.ezotex.delivery.dto.RegistDeliveryDTO;
+import com.ezotex.delivery.dto.ProductDeliveryDTO;
 
 public interface DeliveryMapper {
 	
-	List<RegistDeliveryDTO> findAll();
+	List<ProductDeliveryDTO> findAll();
 }
