@@ -25,4 +25,9 @@ public class OrderServiceImpl implements OrderService {
 		return mapper.insertOrder(order) > 0;
 	}
 
+	@Override
+	public List<OrderDTO> getProductList() {
+		return mapper.getProductList();
+	}
+
 }
