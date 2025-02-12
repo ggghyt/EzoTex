@@ -3,6 +3,9 @@ package com.ezotex.store.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class InventoryDTO {
+	
 	private String lot;
 	private String productCode;
 	private int storeQy;
@@ -18,7 +22,10 @@ public class InventoryDTO {
 	private String productSize;
 	private String storeCharger;
 	private String storageLocation;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date storeDate;
 	private String productSe;
-	private String deliveryCode; 
+	private String deliveryCode;
+	
 }
