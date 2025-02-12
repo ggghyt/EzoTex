@@ -1,0 +1,158 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
+	<div class="card card-body mt-3">
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder">주문 목록</p>
+				<table class="table mt-3">
+					<thead class="table-light text-center">
+						<tr>
+							<th>No</th>
+							<th>주문코드</th>
+							<th>업체명</th>
+							<th>업체 담당자</th>
+							<th>주문 담당자</th>
+							<th>주문상태</th>
+							<th>요약</th>
+							<th>주문일</th>
+							<th>납기일</th>
+							<th>주문금액합계</th>
+							<th>상세보기</th>
+						</tr>
+					</thead>
+					<tbody class="text_center">
+						<tr th:each="order : ${getOrderList}">
+							<td th:text="${orderStat.count}"></td>
+							<td th:text="${order.productOrderCode}"></td>
+							<td th:text="${order.company}"></td>
+							<td th:text="${order.companyRepresentative}"></td>
+							<td th:text="${order.charger}"></td>
+							<td th:text="${order.orderStatus}"></td>
+							<td>요약</td>
+							<td th:text="${#dates.format(order.orderDate,'yyyy/MM/dd')}"></td>
+							<td
+								th:text="${#dates.format(order.deliveryRequestDeadline,'yyyy/MM/dd')}"></td>
+							<td>합계 계산해서 넣기</td>
+							<td>
+								<button type="button" class="btn btn-primary"
+									data-bs-toggle="modal" data-bs-target="#exampleModal2">상세보기</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- 상세보기 모달 시작 -->
+	<div class="modal fade" id="exampleModal2" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: gray;"></div>
+				<div class="card">
+					<div class="card-body">
+						<div>
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputPassword"
+										style="width: 200px;">
+								</div>
+							</div>
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputPassword"
+										style="width: 200px;">
+								</div>
+							</div>
+
+							<!-- 체크박스 -->
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value=""
+									id="flexCheckChecked" checked> <label
+									class="form-check-label" for="flexCheckChecked"> </label>
+								<!-- end 체크박스 -->
+
+								<!-- 라디오박스 -->
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault1"> <label
+										class="form-check-label" for="flexRadioDefault1">
+										Default radio </label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault2" checked>
+									<label class="form-check-label" for="flexRadioDefault2">
+										Default checked radio </label>
+								</div>
+								<!-- end 라디오 박스 -->
+							</div>
+						</div>
+						<div class="table-responsive" style="text-align: center;">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Profile</th>
+										<th>VatNo.</th>
+										<th>Created</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Jacob</td>
+										<td>53275531</td>
+										<td>12 May 2017</td>
+										<td><label class="badge badge-danger">Pending</label></td>
+									</tr>
+									<tr>
+										<td>Messsy</td>
+										<td>53275532</td>
+										<td>15 May 2017</td>
+										<td><label class="badge badge-warning">In
+												progress</label></td>
+									</tr>
+									<tr>
+										<td>John</td>
+										<td>53275533</td>
+										<td>14 May 2017</td>
+										<td><label class="badge badge-info">Fixed</label></td>
+									</tr>
+									<tr>
+										<td>Peter</td>
+										<td>53275534</td>
+										<td>16 May 2017</td>
+										<td><label class="badge badge-success">Completed</label></td>
+									</tr>
+									<tr>
+										<td>Dave</td>
+										<td>53275535</td>
+										<td>20 May 2017</td>
+										<td><label class="badge badge-warning">In
+												progress</label></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 상세보기 모달 끝 -->
+</body>
+</html>

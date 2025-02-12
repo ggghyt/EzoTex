@@ -19,7 +19,7 @@
 		</div>
 		<div class="row">
 			<div class="col-5 card card-body m-2">
-				<p class="fs-5 fw-bolder">제품 목록</p>
+				<p class="fs-5 fw-bolder">제품 목록<button style="margin-left: 1405px;">주문추가</button></p> 
 				<table class="table mt-3">
 					<thead class="table-light text-center">
 						<tr>
@@ -35,14 +35,14 @@
 					</thead>
 					<tbody class="text_center">
 						<tr th:each="order : ${getOrderList}">
-							<td th:text="${order.productOrderCode}">...</td>
-							<td th:text="${order.company}">...</td>
-							<td th:text="${order.companyRepresentative}">...</td>
-							<td th:text="${order.companyTel}">...</td>
-							<td th:text="${order.charger}">...</td>
-							<td th:text="${order.}">...</td>
-							<td th:text="${order.}">...</td>
-							<td th:text="${order.}">...</td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
+							<td th:text="${order.}"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -70,5 +70,6 @@
 			</div>
 		</div>
 	</div>
+	<div id="grid"> 토스트 그리드 </div>
 </body>
 </html>
