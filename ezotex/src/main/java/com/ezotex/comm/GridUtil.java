@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GridUtil {
 
 	
-	public static Map grid(int page, int total, List list) {
+	public static Map<String, Object> grid(int page, int total, List list) {
 		String str = """
 								{
 				  "result": true,
