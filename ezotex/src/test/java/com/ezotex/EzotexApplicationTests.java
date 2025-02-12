@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.ezotex.supply.mappers.BomMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -11,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 class EzotexApplicationTests {
 
 	@Autowired
-//	SampleSupplyMapper mapper;
+	BomMapper mapper;
 	
 	@Test
 	void contextLoads() {
-//		log.info(mapper.infoBom().toString());
+		log.info(mapper.listBom().toString());
 	}
 
 }

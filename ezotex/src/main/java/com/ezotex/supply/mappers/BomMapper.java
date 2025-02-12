@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ezotex.supply.dto.BomDTO;
 
-public interface SupplyMapper {
+public interface BomMapper {
 	List<BomDTO> listBom();
+	BomDTO infoBom(String bomCode);
 }
