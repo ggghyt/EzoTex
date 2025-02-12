@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		
+		<!-- cdn 방식 toast 적용 -->
+		<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+		
+	</head>
+	<body>
+		<h3 class="fs-3 fw-bold">| toast grid test</h3>
+		<div id="grid"></div>
+		
+		
+		 <!-- Toast UI Grid 스크립트 -->
+	    <script>
+	        // Spring Boot REST API에서 데이터를 가져와서 Grid에 로드하는 코드
+	        // RestController로 데이터 가져와서 사용해야됨
+	        fetch('http://localhost:80/store/test2')
+	            .then(response => response.json())
+	            .then(data => {
+	                const grid = new tui.Grid({
+	                    el: document.getElementById('grid'),
+	                    data: data,
+	                    columns: [
+	                        { header: 'LOT', name: 'lot' },
+	                        { header: '제품코드', name: 'productCode' },
+	                        // 필요한 컬럼을 추가합니다.
+	                    ]
+	                });
+	            });
+	    </script>
+		
+	</body>
+</html>

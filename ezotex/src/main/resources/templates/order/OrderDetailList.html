@@ -1,0 +1,205 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
+	<div class="card card-body mt-3">
+		<div class="row">
+			<!-- Toast Grid를 표시할 div 추가 -->
+			<div class="col-12 card card-body m-2">
+				<p class="fs-5 fw-bolder">주문 목록</p>
+				<!-- 그리드를 표시할 div -->
+				<div id="orderGrid"></div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		// Thymeleaf에서 getOrderList 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const orderList = /*[[${getOrderList}]]*/[];
+
+		// 전달된 데이터 확인 (콘솔에 출력)
+		console.log(orderList);
+
+		// Toast Grid 설정
+		const grid = new tui.Grid(
+				{
+					el : document.getElementById('orderGrid'), // 그리드를 표시할 div
+					data : orderList, // 서버에서 전달된 데이터
+					columnOptions : {
+						resizable : true
+					// 컬럼 크기 조절 가능
+					},
+					rowHeaders:['rowNum'],
+					columns : [
+							{
+								header : '주문코드',
+								name : 'productOrderCode',
+								align : 'center'
+							},
+							{
+								header : '업체명',
+								name : 'company',
+								align : 'center'
+							},
+							{
+								header : '업체 담당자',
+								name : 'companyRepresentative',
+								align : 'center'
+							},
+							{
+								header : '주문 담당자',
+								name : 'charger',
+								align : 'center'
+							},
+							{
+								header : '주문상태',
+								name : 'orderStatus',
+								align : 'center'
+							},
+							{
+								header : '요약',
+								name : 'summary',
+								align : 'center'
+							},
+							{
+								header : '주문일',
+								name : 'orderDate',
+								align : 'center',
+							},
+							{
+								header : '납기일',
+								name : 'deliveryRequestDeadline',
+								align : 'center',
+							},
+							{
+								header : '주문금액합계',
+								name : 'totalAmount',
+								align : 'right',
+								formatter : 'money'
+							},
+							{
+								header : '상세보기',
+								name : 'details',
+								align : 'center',
+								formatter : function() {
+									return '<button type = "button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2">상세보기</button>';
+								}
+							} ]
+				});
+	</script>
+	<!-- 상세보기 모달 시작 -->
+	<div class="modal fade" id="exampleModal2" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: gray;"></div>
+				<div class="card">
+					<div class="card-body">
+						<div>
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputPassword"
+										style="width: 200px;">
+								</div>
+							</div>
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputPassword"
+										style="width: 200px;">
+								</div>
+							</div>
+
+							<!-- 체크박스 -->
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value=""
+									id="flexCheckChecked" checked> <label
+									class="form-check-label" for="flexCheckChecked"> </label>
+								<!-- end 체크박스 -->
+
+								<!-- 라디오박스 -->
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault1"> <label
+										class="form-check-label" for="flexRadioDefault1">
+										Default radio </label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio"
+										name="flexRadioDefault" id="flexRadioDefault2" checked>
+									<label class="form-check-label" for="flexRadioDefault2">
+										Default checked radio </label>
+								</div>
+								<!-- end 라디오 박스 -->
+							</div>
+						</div>
+						<div class="table-responsive" style="text-align: center;">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Profile</th>
+										<th>VatNo.</th>
+										<th>Created</th>
+										<th>Status</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Jacob</td>
+										<td>53275531</td>
+										<td>12 May 2017</td>
+										<td><label class="badge badge-danger">Pending</label></td>
+									</tr>
+									<tr>
+										<td>Messsy</td>
+										<td>53275532</td>
+										<td>15 May 2017</td>
+										<td><label class="badge badge-warning">In
+												progress</label></td>
+									</tr>
+									<tr>
+										<td>John</td>
+										<td>53275533</td>
+										<td>14 May 2017</td>
+										<td><label class="badge badge-info">Fixed</label></td>
+									</tr>
+									<tr>
+										<td>Peter</td>
+										<td>53275534</td>
+										<td>16 May 2017</td>
+										<td><label class="badge badge-success">Completed</label></td>
+									</tr>
+									<tr>
+										<td>Dave</td>
+										<td>53275535</td>
+										<td>20 May 2017</td>
+										<td><label class="badge badge-warning">In
+												progress</label></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 상세보기 모달 끝 -->
+	<!-- 	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+		data-bs-target="#exampleModal2">ModalTest2</button> -->
+</body>
+</html>

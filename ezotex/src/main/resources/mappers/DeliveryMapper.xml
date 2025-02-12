@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
+
 	<select id="findAll" resultType="ProductDeliveryDTO">
 		SELECT  m.product_order_code,
 		        s.delivery_code,
@@ -22,6 +23,7 @@
 		FROM    order_list m LEFT JOIN delivery s
 		                            ON (m.product_order_code = s.product_order_code)
 		WHERE   m.product_order_code LIKE '%' || NVL(null, m.product_order_code) || '%'
+
 	</select>
 
 </mapper>

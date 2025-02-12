@@ -9,4 +9,8 @@
 <insert id = "insertOrder">
 </insert>
 
+<select id = "getProductList">
+	SELECT *
+	FROM PRODUCT_INFO
+</select>
 </mapper>
