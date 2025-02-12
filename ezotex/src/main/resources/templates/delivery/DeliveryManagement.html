@@ -6,45 +6,221 @@
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
 		<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+		<style>
+			.search-bar {
+				width: 800px;
+				height: 350px;
+				-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+				display: inline-block;
+				flex-direction:row;
+			}
+			.order-list {
+				width: 800px;
+				height: 500px;
+			}
+			.order-info{
+				margin-top: 0;
+				margin-left: 30px;
+				width: 500px;
+			}
+			.search-unit {
+				display: flex;
+				margin-bottom:5px;
+			}
+			.search-unit div {
+				display: inline-block;
+			}
+			.search-bar > div {
+			    display: inline-block;
+			    vertical-align: top; /* 정렬 보정 */
+			}
+			.search-bar div:nth-of-type(1) {
+				padding-left:10px;
+				width: 300px;
+			}
+			.search-bar div:nth-of-type(2) {
+				padding-left:10px;
+				width: 410px;
+			}
+			.search-unit span {
+				font-size: smaller;
+				line-height: 2.5;
+				width: 67px;
+			}
+			.search-bar div:nth-of-type(1) input{
+				margin-left: 10px;
+			}
+			.search-bar div:nth-of-type(1) input[type=text] {
+				width: 140px;
+			}
+			.search-bar select {
+				margin-left: 10px;
+				width: 140px;
+				border: 1px solid #dee2e6;
+			    font-weight: 400;
+			    font-size: 0.875rem;
+			    border-radius: 4px;
+			    height: 2rem;
+			}
+			input[type=date] {
+				width: 140px;
+			}
+			.dash {
+				line-height: 1.9;
+				margin-left: 2px;
+				margin-right: 2px;
+			}
+			.search-bar b {
+				display: block;
+				margin-bottom:5px;
+			}
+			.order-list b{
+				display: block;
+				margin-bottom:5px;
+			}
+			.search-bar .btn-section{
+				width: 390px !important;
+				display: flex;
+				justify-content: right;
+				margin-bottom: 10px;
+			}
+			
+		</style>
+		<!-- toast grid -->
+        <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+        <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+      
 	</head>
 	<body>
 		<h3 class="fs-3 fw-bold">| 납품 관리</h3>
-		<div class="card card-body mt-3">
-			<div id="grid"></div>
+		<div id="container row" style="display: flex;">
+			<div class="col">			
+				<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+					
+					<b>납품 목록 검색</b>
+										
+					<!-- 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
+					<div>
+						<span class="search-unit">
+							<span>주문 코드</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>납품 코드</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>제품 코드</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>제품명</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>주문담당자</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>남품담당자</span>
+							<input type="text" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>상태</span>
+							<select>
+								<option value="1">값</option>
+							</select>
+							
+						</span>
+					</div>
+					
+					<!-- 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
+					<div>
+						
+						<span class="search-unit">
+							<span>주문일</span>
+							<input type="date" class="form-control"> <b class="dash">-</b> 
+							<input type="date" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>납기일</span>
+							<input type="date" class="form-control"> <b class="dash">-</b> 
+							<input type="date" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>수량합계</span>
+							<input type="date" class="form-control"> <b class="dash">-</b> 
+							<input type="date" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>급액합계</span>
+							<input type="date" class="form-control"> <b class="dash">-</b> 
+							<input type="date" class="form-control">
+						</span>
+						<span class="search-unit">
+							<span>업체코드</span>
+							<input type="date" class="form-control"> 
+						</span>
+						<span class="search-unit">
+							<span>업체명</span>
+							<input type="date" class="form-control"> 
+						</span>
+						<div class="btn-section">						
+							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+						</div>
+					</div>
+				</div>
+				<div class="card card-body mt-3 order-list">
+					<b>주문 목록</b>
+					<div id="grid"></div>
+				</div>
+			</div>	
+			<div class="col card card-body order-info">			
+				<div id="order-details">
+					
+				</div>
+				<div id="product-info">
+				
+				</div>
+				<div id="product-details">
+				
+				</div>
+			</div>
 		</div>
-		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-		<script>
-		gridData = {Name:'1', Artist:'1', Type: '1', Release: '1', Genre:'1'};
 		
-	    const grid = new tui.Grid({
-	        el: document.getElementById('grid'),
-	        data: gridData,
-	        scrollX: false,
-	        scrollY: false,
-	        columns: [
-	          {
-	            header: 'Name',
-	            name: 'name'
-	          },
-	          {
-	            header: 'Artist',
-	            name: 'artist'
-	          },
-	          {
-	            header: 'Type',
-	            name: 'type'
-	          },
-	          {
-	            header: 'Release',
-	            name: 'release'
-	          },
-	          {
-	            header: 'Genre',
-	            name: 'genre'
-	          }
-	        ]
-	      });
-	    
-		</script>
+		
+		<script th:inline="javascript">
+			let list = [[${list}]];
+			
+	        var Grid = tui.Grid;
+	
+	        const grid = new Grid({
+	            el: document.getElementById('grid'),
+	            pageOptions: {
+	                useClient: true,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+	                perPage: 10
+	            },
+	            columns: [
+	                { header : "주문코드", name: "productOrderCode", editor: 'text'},
+	                { header : "납품코드", name: "deliveryCode", editor: 'text'},
+	                { header : "업체코드", name: "companyCode", editor: 'text'},
+	                { header : "구매업체명", name: "company", editor: 'text'},
+	                { header : "요약", name: "summary", editor: 'text'},
+	                { header : "상태", name: "orderStatus", editor: 'text'},
+	                { header : "남품담당자", name: "charger", editor: 'text'},
+	                { header : "주문일", name: "orderDate", editor: 'text'},
+	                { header : "납기일", name: "deliveryRequestDeadline", editor: 'text'}
+	            ],
+	            data: list
+	        });
+
+
+
+
+
+
+
+    	</script>
 	</body>
 </html>

@@ -1,5 +1,9 @@
 package com.ezotex.delivery.service;
 
-public interface DeliveryService {
+import java.util.List;
 
+import com.ezotex.delivery.dto.ProductDeliveryDTO;
+
+public interface DeliveryService {
+	public List<ProductDeliveryDTO> getList();
 }

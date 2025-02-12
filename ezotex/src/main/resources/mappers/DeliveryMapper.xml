@@ -3,11 +3,25 @@
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
 	<select id="findAll" resultType="ProductDeliveryDTO">
-		SELECT m.product_order_code,
-		
-		       company_code,
-		       company,
-		       
+		SELECT  m.product_order_code,
+		        s.delivery_code,
+		        m.company_code,
+		        m.company,
+		        (SELECT s.product_name
+		         FROM ( SELECT product_code 
+		                FROM order_product ) m JOIN product_info s
+		                                         ON ( m.product_code = s.product_code)
+		        WHERE ROWNUM = 1) || ' 외 ' || 
+		        (SELECT count(1)
+		         FROM   order_product
+		         WHERE  product_order_code = m.product_order_code) AS summary,
+		        m.order_status,
+		        s.charger_name,
+		        m.order_date,
+		        m.delivery_request_deadline
+		FROM    order_list m LEFT JOIN delivery s
+		                            ON (m.product_order_code = s.product_order_code)
+		WHERE   m.product_order_code LIKE '%' || NVL(null, m.product_order_code) || '%'
 	</select>
 
 </mapper>
