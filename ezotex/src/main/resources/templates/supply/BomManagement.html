@@ -39,8 +39,8 @@
 					</div>
 					
 					<div class="d-flex justify-content-center mt-2 mb-4">
-						<button type="button" id="prdSearchBtn" class="btn btn-secondary mag-glass-btn btn-sm me-2"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
-						<button type="reset" class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
+						<button type="button" id="prdSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+						<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 					</div>
 					
 					<div id="prdGrid"></div>
@@ -55,11 +55,11 @@
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<input type="text" class="form-control" readonly>
+							<input type="text" class="form-control" id="selectedPrdCode" readonly>
 						</div>
 						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품명</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<input type="text" class="form-control" readonly>
+							<input type="text" class="form-control" id="selectedPrdName" readonly>
 						</div>
 						
 						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">색상</label>
@@ -102,6 +102,11 @@
 							<input type="text" class="form-control" id="mtrilName" name="mtrilName">
 						</div>
 						
+						<div class="d-flex justify-content-center mt-2 mb-4">
+							<button type="button" id="prdSearchBtn" class="btn btn-secondary mag-glass-btn btn-sm me-2"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
+							<button type="reset" class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
+						</div>
+						
 						<div id="mtrGrid"></div>
 					</div>
 						
@@ -123,7 +128,8 @@
 		// tui grid 출력
 		const prdData = {
 			api: {
-				readData: { url: 'http://localhost/supply/bomList', method: 'GET' } // RestController에서 json 데이터 읽어올 수 있음.
+				// RestController에서 json 데이터 읽어올 수 있음.
+				readData: { url: 'http://localhost/supply/bomList', method: 'GET' }
 			},
 			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
 		};
@@ -162,17 +168,22 @@
          }
 		});
 		
-		let lastClicked = null; // 페이지 이동 시에도 이전 입력값 저장하기 위함.
+		let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 		
 		// 선택된 행 강조 & 정보 가져오기
 		prdGrid.on('focusChange', ev => {
-			console.log(ev);
-			console.log(prdGrid.getRow(ev.rowKey));
+			let selected = prdGrid.getRow(ev.rowKey);
+			console.log(selected);
 			
+			// 배경색 클래스 적용
 			let prdCode = prdGrid.getValue(ev.rowKey, 'productCode');
 			prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 			prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 			lastClicked = ev.rowKey; // 선택된 행 기억
+			
+			// 선택한 정보 가져오기
+			document.getElementById('selectedPrdCode').value = selected.PRODUCT_CODE;
+			document.getElementById('selectedPrdName').value = selected.PRODUCT_NAME;
 		});
 		
 		// 제품 목록 검색 적용
@@ -184,9 +195,46 @@
 					sclas: document.getElementById('sclas').value
 			};
 			
-			prdGrid.setRequestParams(dto); // 조회 조건 입력
-			prdGrid.reloadData(); // 그리드 재출력
+			prdGrid.setRequestParams(dto); // 조회 조건 전달
+			prdGrid.reloadData(); // 그리드 재출력 (readData)
 		});
 		
+		// BOM 자재 불러오기
+		const getBomList = function(){
+			const mtrData = {
+				api: {
+					// RestController에서 json 데이터 읽어올 수 있음.
+					readData: { url: 'http://localhost/supply/bomList', method: 'GET' }
+				},
+				contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+			};
+		  	
+			const mtrGrid = new Grid({
+			    el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
+			    data: prdData, // data 안에 pagination, contents 객체 필요
+			    columns: [
+			        { header: '자재코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
+			        { header: '자재명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
+			        { header: '선택', name: 'STATUS', width: 100, sortable: true}
+			    ],
+			    rowHeaders: ['checkbox'], // 체크박스 추가
+			    pageOptions: {
+			        useClient: true, // 페이징을 위해 필요
+			        perPage: 10
+	      	},
+	      	scrollX: false, // 가로 스크롤
+	      	summary: {
+	      		height: 40,
+	             position: 'bottom', // or 'top'
+	             columnContent: {
+	             		PRODUCT_CODE: { // 컬럼명
+	                     template: (valueMap) => {
+	                         return `총 ${valueMap.cnt}건`
+	                     }
+	                 }
+	             }
+	         }
+			});
+		};
 	</script>
 </html>

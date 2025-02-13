@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.ezotex.comm.dto.SearchDTO;
 import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.dto.BomDTO;
 import com.ezotex.supply.mappers.BomMapper;
