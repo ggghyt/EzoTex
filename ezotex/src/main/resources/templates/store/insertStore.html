@@ -160,6 +160,11 @@
 	   	*/
 	    
 	   	
+	   	
+	   	
+	   	
+	   	
+	   	
 	   	/*
 	   	*========================================================================
 	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드
@@ -218,33 +223,33 @@
 		              {
 		                header: 'S',
 		                name: 'stest',
-		                childNames: ['storeS', 's']
+		                childNames: ['sizeS', 's']
 		              },
 		              {
 			             header: 'M',
 			             name: 'mtest',
-			             childNames: ['입고할수량m', 'm']
+			             childNames: ['sizeM', 'm']
 			          },
 			          {
 				         header: 'L',
 				         name: 'ltest',
-				         childNames: ['입고할수량l', 'l']
+				         childNames: ['sizeL', 'l']
 				      },
 				      {
 					      header: 'XL',
 					      name: 'xltest',
-					      childNames: ['입고할수량xl', 'xl']
+					      childNames: ['sizeXl', 'xl']
 					  }
 		             ]},
 		        columns: [
 		            { header: "색상/사이즈", name: "productColor", align: "center" },
-		            { header: "입고할수량", name: "storeS", align: "center", editor: "text"},
+		            { header: "입고할수량", name: "sizeS", align: "center", editor: "text"},
 		            { header: "요청수량", name: "s", align: "center" },
-		            { header: "입고할수량", name: "입고할수량m", align: "center", editor: "text"},
+		            { header: "입고할수량", name: "sizeM", align: "center", editor: "text"},
 		            { header: "요청수량", name: "m", align: "center" },
-		            { header: "입고할수량", name: "입고할수량l", align: "center", editor: "text"},
+		            { header: "입고할수량", name: "sizeL", align: "center", editor: "text"},
 		            { header: "요청수량", name: "l", align: "center" },
-		            { header: "입고할수량", name: "입고할수량xl", align: "center", editor: "text"},
+		            { header: "입고할수량", name: "sizeXl", align: "center", editor: "text"},
 		            { header: "요청수량", name: "xl", align: "center" }
 		        ],
 	            data : ""
@@ -276,38 +281,45 @@
 	    	
 	    	
 	    // 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
-	    storeGrid3.on('afterChange', ev => {
-	    	console.log('선택 제품코드', productCode);
-		    if (!ev || !ev.changes) return; // ev 또는 변경된 데이터가 없는 경우 종료
-		    ev.changes.forEach(change => {
-		    	
-		    	// 변경되는 행 데이터 담기
-		        let data = storeGrid3.getRow(change.rowKey);
-		    	// 변경되는 셀 데이터
-		        let newValue = Number(change.value);
-		        // 변경되는 셀에 최대 값 
-		        let maxValue = Number(data["s"]);
-		        // 변경된 컬럼명
-		        let columnName = change.storeS; 
-		        
-		        
-		        console.log('기존값 ',maxValue);
-		        
-		        console.log('변경된 행 데이터:', newValue);
-		        
-		        // 🚨 입력값이 기존 값보다 크면 경고 후 변경 취소
-		        if (newValue > maxValue) {
-		            alert(`입력값은 ${maxValue}보다 클 수 없습니다.`);
-		            
-		            // 기존 값으로 되돌리기
-		            newValue = maxValue;				// 값은 변경 되는데.... 화면에 값이 변경이 안됨 해결좀 ;;
-		            
-		            // 기존 값으로 되돌리기
-		            storeGrid3.setValue(change.rowKey, columnName, maxValue);
-		            
-		        }
-		    });
-		});
+	    	storeGrid3.on('afterChange', ev => {
+	    	    console.log('선택 제품코드:', productCode);
+	    	    if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
+
+	    	    ev.changes.forEach(change => {
+	    	        let rowData = storeGrid3.getRow(change.rowKey); // 변경된 행 데이터 가져오기
+	    	        let columnName = change.columnName; // 변경된 컬럼명
+	    	        let newValue = Number(change.value); // 변경된 값
+	    	        let maxValue = 0; // 허용 최대 값 초기화
+
+	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
+	    	        switch (columnName) {
+	    	            case "sizeS":
+	    	                maxValue = Number(rowData["s"]); // S 요청 수량
+	    	                break;
+	    	            case "sizeM":
+	    	                maxValue = Number(rowData["m"]); // M 요청 수량
+	    	                break;
+	    	            case "sizeL":
+	    	                maxValue = Number(rowData["l"]); // L 요청 수량
+	    	                break;
+	    	            case "sizeXl":
+	    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
+	    	                break;
+	    	            default:
+	    	                return; // 변경된 컬럼이 입고 수량 관련이 아니면 무시
+	    	        }
+
+	    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
+	    	        if (newValue > maxValue) {
+					    alert(`입력값은 ${maxValue}보다 클 수 없습니다.`);
+					
+					    // 기존 값으로 되돌리기
+					    rowData[columnName] = maxValue;
+					    storeGrid3.setRow(change.rowKey, rowData);
+					}
+	    	    });
+	    	});
+
 
 	    
 	    /*
@@ -316,6 +328,21 @@
 	   	*========================================================================
 	   	*/	
 	    
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	
 	    const storeGrid4 = new Grid({
 		      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
 	            scrollY: true,
@@ -333,6 +360,21 @@
 		    });
 	    
 	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    /*
+	   	*========================================================================
+	   	* 창고위치 모달 그리드
+	   	*========================================================================
+	   	*/	
 	    const storeGrid5 = new Grid({
 	    	el: document.getElementById('modalGrid'),
 	    	rowHeaders: ['rowNum'],
@@ -344,7 +386,13 @@
 	    	data: ""
 	    })
 	    
-	 // Bootstrap 모달 이벤트 리스너 추가
+	    /*
+	   	*========================================================================
+	   	* 창고위치 모달 그리드 END!!
+	   	*========================================================================
+	   	*/
+	    
+	    // Bootstrap 모달 이벤트 리스너 추가
 		const modalElement = document.getElementById('exampleModal');
 
 		modalElement.addEventListener('show.bs.modal', function () {
