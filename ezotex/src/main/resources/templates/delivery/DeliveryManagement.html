@@ -52,7 +52,7 @@
 			.search-bar div:nth-of-type(1) input{
 				margin-left: 10px;
 			}
-			.search-bar div:nth-of-type(1) input[type=text] {
+			.search-bar div input[type=text] {
 				width: 140px;
 			}
 			.search-bar select {
@@ -154,27 +154,19 @@
 					<div>
 						<span class="search-unit">
 							<span>주문 코드</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control search-order-code">
 						</span>
 						<span class="search-unit">
 							<span>납품 코드</span>
-							<input type="text" class="form-control">
-						</span>
-						<span class="search-unit">
-							<span>제품 코드</span>
-							<input type="text" class="form-control">
-						</span>
-						<span class="search-unit">
-							<span>제품명</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control search-delivery-code">
 						</span>
 						<span class="search-unit">
 							<span>주문담당자</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control search-order-charger">
 						</span>
 						<span class="search-unit">
 							<span>남품담당자</span>
-							<input type="text" class="form-control">
+							<input type="text" class="form-control search-delivery-charger">
 						</span>
 
 					</div>
@@ -184,36 +176,38 @@
 						
 						<span class="search-unit">
 							<span>주문일</span>
-							<input type="date" class="form-control"> <b class="dash">-</b> 
-							<input type="date" class="form-control">
+							<input type="date" class="form-control search-order-date-start"> <b class="dash">-</b> 
+							<input type="date" class="form-control search-order-date-end">
 						</span>
 						<span class="search-unit">
 							<span>납기일</span>
-							<input type="date" class="form-control"> <b class="dash">-</b> 
-							<input type="date" class="form-control">
+							<input type="date" class="form-control search-order-dedt-start"> <b class="dash">-</b> 
+							<input type="date" class="form-control search-order-dedt-end">
 						</span>
 						<span class="search-unit">
 							<span>급액합계</span>
-							<input type="number" class="form-control"> <b class="dash">-</b> 
-							<input type="number" class="form-control">
+							<input type="number" class="form-control search-amount-start"> <b class="dash">-</b> 
+							<input type="number" class="form-control search-amount-end">
 						</span>
 						<span class="search-unit">
 							<span>업체코드</span>
-							<input type="date" class="form-control"> 
+							<input type="text" class="form-control search-company-code"> 
 						</span>
 						<span class="search-unit">
 							<span>업체명</span>
-							<input type="date" class="form-control"> 
+							<input type="text" class="form-control search-company-name"> 
 						</span>
 						<span class="search-unit">
 							<span>상태</span>
-							<select>
-								<option value="1">값</option>
+							<select class="search-status">
+								<option value="">전체</option>
+								<option value="RS01">등록전</option>
+								<option value="RS02">등록</option>
 							</select>
 							
 						</span>
 						<div class="btn-section">						
-							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+							<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 						</div>
 					</div>
@@ -331,6 +325,39 @@
 	            data: dataSource
 	        });
 	        
+	        /*
+	        	주문코드 search-order-code
+				납품 코드search-delivery-code
+				주문담당자 search-order-charger
+				남품담당자 search-delivery-charger
+				주문일1search-order-date-start
+				주문일2search-order-date-end
+				납기일1search-order-dedt-start
+				납기일2search-order-dedt-end
+				금액합계1search-amount-start
+				금액합계2search-amount-end
+				회사코드search-company-code
+				회사명search-company-name
+				상태search-status
+	        */
+	        function searchOrderList() {
+	        	grid.readData(1, {
+	        		searchOrderCode: document.querySelector('.search-order-code').value,
+	        		searchDeliveryCode: document.querySelector('.search-delivery-code').value,
+	        		searchOrderCharger:  document.querySelector('.search-order-charger').value,
+	        		searchDeliveryCharger: document.querySelector('.search-delivery-charger').value,
+	        		searchOrderDateStart: document.querySelector('.search-order-date-start').value,
+	        		searchOrderDateEnd: document.querySelector('.search-order-date-end').value,
+	        		searchOrderDedtStart: document.querySelector('.search-order-dedt-start').value,
+	        		searchOrderDedtEnd: document.querySelector('.search-order-dedt-end').value,
+	        		searchAmountStart: document.querySelector('.search-amount-start').value,
+	        		searchAmountEnd: document.querySelector('.search-amount-end').value,
+	        		searchCompanyCode: document.querySelector('.search-company-code').value,
+	        		searchCompanyName: document.querySelector('.search-company-name').value,
+	        		searchStatus: document.querySelector('.search-status').value
+	        		
+	        	}, true);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+	        }
 	        //여기서부터는 다른 파일로 빼도 될듯
 	        //제품 목록
 	        const productListgrid = new Grid({
