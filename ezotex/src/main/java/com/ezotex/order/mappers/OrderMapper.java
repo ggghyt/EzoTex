@@ -11,4 +11,8 @@ public interface OrderMapper {
 		int insertOrder(OrderDTO order);
 		// 제품 코드 조회
 		List<OrderDTO> getProductList();
+		// 업체 조회
+		List<OrderDTO> getCompanyList();
+		// 제품 옵션 조회
+		List<OrderDTO> getProductOption();
 }

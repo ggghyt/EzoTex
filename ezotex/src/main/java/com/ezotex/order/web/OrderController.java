@@ -32,10 +32,17 @@ public class OrderController {
 	public void OrderManagement(Model model) {		
 		List<OrderDTO> productList = service.getProductList();
 		model.addAttribute("getProductList",productList);
+		List<OrderDTO> companyList = service.getCompanyList();
+		model.addAttribute("getCompanyList",companyList);
 	}
 	@GetMapping("/OrderDetailListModal")
 	public void OrderDetailListModal(Model model) {
 		
+	}
+	@GetMapping("/ProductCode")
+	public void ProductCode(Model model) {
+		List<OrderDTO> productOption = service.getProductOption();
+		model.addAttribute("getProductOption",productOption);
 	}
 //	@GetMapping("/OrderManagement")
 //	public String OrderManagement(Model model) {
