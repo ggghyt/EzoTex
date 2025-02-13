@@ -64,7 +64,7 @@ function resetForm() {
 					</tbody>
 				</table>
 				<label class="col-form-label">비고</label> <input type="text"
-					id="orderStatus" class="form-control" placeholder="특이사항을 입력해주세요.">
+					id="remarks" class="form-control" placeholder="특이사항을 입력해주세요.">
 				<button type="button" onclick="resetForm()">초기화</button>
 			</div>
 		</div>
@@ -205,6 +205,11 @@ function resetForm() {
 						name : 'productName',
 						align : 'center'
 					},
+					{
+						header : '단가',
+						name : 'unitPrice',
+						align : 'center'
+					},
 					],
 				});
 	</script>
@@ -218,19 +223,50 @@ function resetForm() {
 </div>
 <!-- 제품코드 모달 끝 -->
 <script>
-    // 필터링 함수 (검색창에서 입력받은 텍스트로 필터링)
-    function filterGrid() {
-        const productCode = document.getElementById('productCodeSearch').value.toLowerCase();
-        const productName = document.getElementById('productNameSearch').value.toLowerCase();
-        
-        const filteredData = productData.filter(product => {
-            return product.productCode.toLowerCase().includes(productCode) &&
-                   product.productName.toLowerCase().includes(productName);
-        });
+//행 클릭 이벤트
+grid2.on('click', function(ev) {
+    const clickedRow = ev.rowKey; // 클릭된 행
+    const clickedData = grid2.getData()[clickedRow]; // 클릭된 행의 데이터
 
-        // 필터링된 데이터를 그리드에 적용
-        productGrid.resetData(filteredData);
-    }
+    // 선택된 제품을 기존 제품 목록에 추가
+    addProductToOrderList(clickedData);
+
+    // 모달을 닫기
+    $('#productCodeModal').modal('hide');
+});
+
+// 제품 목록에 데이터를 추가하는 함수
+function addProductToOrderList(product) {
+    const currentData = grid.getData();  // 기존의 제품 목록 데이터
+
+    // 새로운 데이터를 추가
+    currentData.push({
+        no: currentData.length + 1,  // NO (자동 증가)
+        productCode: product.productCode,
+        productName: product.productName,
+        unitPrice: product.unitPrice,
+        orderQuantity: 1,
+        orderAmount: product.unitPrice  // 주문 금액은 단가 * 수량
+    });
+
+    // 그리드 데이터 갱신
+    grid.resetData(currentData);
+}
+
+    // 필터링 함수 (검색창에서 입력받은 텍스트로 필터링)
+function filterGrid() {
+    const productCode = document.getElementById('productCodeSearch').value.toLowerCase();
+    const productName = document.getElementById('productNameSearch').value.toLowerCase();
+
+    // productList 변수를 사용하여 필터링 수행
+    const filteredData = productList.filter(product => {
+        return product.productCode.toLowerCase().includes(productCode) &&
+               product.productName.toLowerCase().includes(productName);
+    });
+
+    // 필터링된 데이터를 Toast Grid에 적용
+    grid2.resetData(filteredData);
+}
 </script>
 <!-- 업체코드 모달 -->
 <div class="modal fade" id="companyCodeModal" tabindex="-1"
@@ -261,6 +297,14 @@ function resetForm() {
 </div>
 <!-- 업체코드 모달 끝 -->
 <script>
+$('#productCodeModal').on('shown.bs.modal', function () {
+    console.log("🔍 모달이 열렸어요! Grid 리사이징 실행!");
+    setTimeout(() => {
+        grid2.refreshLayout();
+        console.log("✅ Grid 리사이징 완료!");
+    }, 100);
+});
+
   // 주문코드 모달 열기
   function showOrderCodeModal() {
     var orderCodeModal = new bootstrap.Modal(document.getElementById('orderCodeModal'));
@@ -269,9 +313,18 @@ function resetForm() {
 
   // 업체코드 모달 열기
   function showCompanyCodeModal() {
-    var companyCodeModal = new bootstrap.Modal(document.getElementById('companyCodeModal'));
-    companyCodeModal.show();
+	  $('#companyCodeModal').modal('show');x
   }
+  
 </script>
+<style>
+.modal {
+	display: block !important; /* Bootstrap 기본 동작 우회 */
+	visibility: hidden;
+}
 
+.modal.show {
+	visibility: visible;
+}
+</style>
 </html>
