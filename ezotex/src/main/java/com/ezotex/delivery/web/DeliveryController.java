@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ezotex.comm.GridUtil;
 import com.ezotex.delivery.service.DeliveryService;
 
 
@@ -15,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("/delivery")
+@RequestMapping("/delivery/*")
 public class DeliveryController {
 	
 
@@ -24,11 +25,10 @@ public class DeliveryController {
 	
 	
 	//납품 관리 페이지
-	@GetMapping("/regist")
-	public String index(Model model) {
+	@GetMapping("DeliveryManagement")
+	public String deliveryManagement(Model model) {
 		
-		model.addAttribute("list", service.getList());
-		
+		//model.addAttribute("list", service.getList());
 		return "delivery/DeliveryManagement";
 	}
 	
