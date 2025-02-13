@@ -29,7 +29,7 @@
 		       d.order_date,
 		       d.dedt,
 		       count(t.product_code) as deliveryQy
-		FROM delivery d join DELIVERY_PRODUCT_DETAILS t
+		FROM delivery d join DELIVERY_DETAILS t
 		on d.delivery_code = t.delivery_code
 		group by t.product_code,
 		         d.delivery_code,
@@ -39,13 +39,29 @@
 	
 	<!-- 납품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
-		SELECT d.delivery_code,
+		SELECT p.product_code,
 		       p.product_name,
-		       d.delivery_qy
-		FROM delivery_product_details d join product_info p
+		       sum(d.request_qy) as productQy
+		FROM delivery_details d join product_info p
 		on d.product_code = p.product_code
 		WHERE product_se = 'PT02'
 		and delivery_code = #{deliveryCode}
+		group by p.product_code,
+                 p.product_name
+	</select>
+	
+	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
+	<select id="findByProductCode">
+		with temp as
+		     (SELECT   product_color,
+		               product_size,
+		               request_qy
+		        FROM DELIVERY_DETAILS
+		        WHERE product_code = #{productCode})
+		select * from temp
+		pivot( sum(request_qy)
+		       for product_size in ('S' as S,'M' as M,'L' as L,'XL' as XL)
+		)pvt
 	</select>
 	
 	

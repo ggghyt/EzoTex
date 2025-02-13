@@ -19,5 +19,12 @@ public class StoreDeliveryDetailsDTO {
 	
 	// 제품명
 	private String productName;
+	private int productQy;
+	
+	//사이즈 별 수량
+	private int S;
+	private int M;
+	private int L;
+	private int XL;
 	
 }

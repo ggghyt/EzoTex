@@ -37,5 +37,11 @@ public class InventoryServiceImpl implements InventoryService {
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
 		return mapper.findByDeliveryCode(DeliveryCode);
 	}
+
+	// 제품코드 기반 옵션 리스트
+	@Override
+	public List<StoreDeliveryDetailsDTO> findByProductCode(String productCode) {
+		return mapper.findByProductCode(productCode);
+	}
 	
 }

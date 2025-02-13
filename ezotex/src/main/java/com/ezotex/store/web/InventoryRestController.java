@@ -46,10 +46,16 @@ public class InventoryRestController {
 		return GridUtil.grid(1, 100, service.DeliveryList());
 	}
 	
+	// 납품리스트 기반 입고 제품 상세 조회
 	@GetMapping("deliveryDetailsList")
 	public List<StoreDeliveryDetailsDTO> findByDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
 		return service.findByDeliveryCode(deliveryCode);
 	}
 
+	// 제품코드 기반 옵션 리스트
+	@GetMapping("productCodeList")
+	public List<StoreDeliveryDetailsDTO> findByProductCode(@RequestParam(name= "productCode")String productCode){
+		return service.findByProductCode(productCode);
+	}
 	
 }

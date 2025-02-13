@@ -17,4 +17,7 @@ public interface InventoryService {
 	// 납품리스트 기반 입고 제품 상세 조회
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode);
 	
+	// 제품코드 기반 옵션 리스트
+	public List<StoreDeliveryDetailsDTO> findByProductCode(String productCode);
+	
 }
