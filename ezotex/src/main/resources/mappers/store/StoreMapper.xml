@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.store.mappers.InventoryMapper">
+
+	<!-- 테스트 -->
+	<select id="list" resultType="InventoryDTO">
+		SELECT *
+		FROM inventory
+	</select>
+	
+	<!-- 입고 예정 목록 리스트 -->
+	<!-- <select id="DeliveryList" resultType="StoreDeliveryDTO">
+		SELECT delivery_code,
+		       order_date,
+		       dedt
+		FROM delivery
+	</select> -->
+	
+	<!-- 입고 예정 제품 종류 수 -->
+	<!-- <select id="DeliveryList" resultType="StoreDeliveryDTO">
+		SELECT count(product_code)
+		FROM DELIVERY_PRODUCT_DETAILS
+		GROUP by product_code
+	</select> -->
+	
+	<!-- 위 두 쿼리 합친거(데이터 없어서 테스트 못해봄) -->
+	<select id="DeliveryList" resultType="StoreDeliveryDTO">
+		SELECT d.delivery_code,
+		       d.order_date,
+		       d.dedt,
+		       count(t.product_code) as deliveryQy
+		FROM delivery d join DELIVERY_DETAILS t
+		on d.delivery_code = t.delivery_code
+		group by t.product_code,
+		         d.delivery_code,
+		         d.order_date,
+		         d.dedt
+	</select>
+	
+	<!-- 납품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
+	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
+		SELECT p.product_code,
+		       p.product_name,
+		       sum(d.request_qy) as productQy
+		FROM delivery_details d join product_info p
+		on d.product_code = p.product_code
+		WHERE product_se = 'PT02'
+		and delivery_code = #{deliveryCode}
+		group by p.product_code,
+                 p.product_name
+	</select>
+	
+	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
+	<select id="findByProductCode">
+		with temp as
+		     (SELECT   product_color,
+		               product_size,
+		               request_qy
+		        FROM DELIVERY_DETAILS
+		        WHERE product_code = #{productCode})
+		select * from temp
+		pivot( sum(request_qy)
+		       for product_size in ('S' as S,'M' as M,'L' as L,'XL' as XL)
+		)pvt
+	</select>
+	
+	
+</mapper>

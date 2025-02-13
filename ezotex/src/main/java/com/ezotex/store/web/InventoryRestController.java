@@ -1,5 +1,6 @@
 package com.ezotex.store.web;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
+import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.service.InventoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -23,7 +25,7 @@ public class InventoryRestController {
 
 	private final InventoryService service;
 	
-	@GetMapping("test2")
+	@GetMapping("deliveryList")
 	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
 			) throws JsonMappingException, JsonProcessingException {
 
@@ -42,8 +44,18 @@ public class InventoryRestController {
 //		paging.getPage());
 //		service.getCount(searchDTO));
 		return GridUtil.grid(1, 100, service.DeliveryList());
-		
+	}
+	
+	// 납품리스트 기반 입고 제품 상세 조회
+	@GetMapping("deliveryDetailsList")
+	public List<StoreDeliveryDetailsDTO> findByDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
+		return service.findByDeliveryCode(deliveryCode);
 	}
 
+	// 제품코드 기반 옵션 리스트
+	@GetMapping("productCodeList")
+	public List<StoreDeliveryDetailsDTO> findByProductCode(@RequestParam(name= "productCode")String productCode){
+		return service.findByProductCode(productCode);
+	}
 	
 }

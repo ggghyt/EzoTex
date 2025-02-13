@@ -21,10 +21,47 @@
 	    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 	    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 		<style type="text/css">
-		
+			#modalGrid {
+			    width: 100%;
+			    height: 400px; /* 또는 원하는 높이 설정 */
+			}
 		</style>
 	</head>
 	<body>
+	
+		<!-- Modal1 -->
+	   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	      <div class="modal-dialog modal-xl" >
+	         <div class="modal-content">
+	          <div class="modal-header">
+	             </div>
+	           <div class="card">
+	                <div class="card-body">
+	                  <div class="mb-3 row">
+	                <label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+	                <div class="col-sm-10">
+	                  <input type="text" class="form-control" id="inputPassword" style="width:200px;">
+	                </div>
+	              </div>
+	                  <div class="mb-3 row">
+	                <label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+	                <div class="col-sm-10">
+	                  <input type="text" class="form-control" id="inputPassword" style="width:200px;">
+	                </div>
+	              </div>
+	           
+	                  <div id="modalGrid"></div>
+	                 </div>
+	              </div>
+	            <div style="text-align: center; margin: 20px;">
+	               <button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+	               <button type="button" class="btn btn-inverse-dark btn-fw"data-bs-dismiss="modal">취소</button>
+	           </div>
+	         </div>
+	         </div>
+	      </div>
+	
+	
 	
 		<div class="d-flex align-items-center">
 		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
@@ -35,7 +72,7 @@
 			<div class="col-12 card card-body m-2">
 				<div class="row g-3 align-items-center">
 			  		<div class="col-auto">
-			    		<label class="col-form-label">검색조건1</label>
+			    		<label class="col-form-label">납품코드</label>
 			  		</div>
 			  		<div class="col-auto">
 			    		<input type="text" id="" class="form-control">
@@ -85,17 +122,23 @@
 	    
 	    console.log(test);
 	    
-	    const Grid = tui.Grid;
+	    //const Grid = tui.Grid;
 	    
 	    
+	   
+	   	/*
+	   	*========================================================================
+	   	* 입고 대기 리스트 출력 및 그리드
+	   	*========================================================================
+	   	*/
 	    const dataSource = {
 	      api: {
-	          readData: { url: 'http://localhost:80/store/test2', method: 'GET' },
+	          readData: { url: 'http://localhost:80/store/deliveryList', method: 'GET' },
 	        },
 	      contentType: 'application/json',
 	    };  
 	    
-	    const grid = new Grid({
+	    const storeGrid = new Grid({
 	      el: document.getElementById('grid'), // 컨테이너 엘리먼트
 	      rowHeaders: ['rowNum'],
 	      columnOptions: {
@@ -103,50 +146,171 @@
 	      },
 	      columns: [ 
 	        { header: "납품 코드", name: "deliveryCode", align: "center"},
-	        { header: "제품 종류 수", name: "companySe", align: "center"},
+	        { header: "제품 종류 수", name: "deliveryQy", align: "center"},
 	        { header: "납품 요청일", name: "orderDate", align: "center"},
 	        { header: "입고 예정일", name: "dedt", align: "center"},
 	      ],
 	      data: dataSource,
 	    });
 	    
-	    const grid2 = new Grid({
+	    /*
+	   	*========================================================================
+	   	* 입고 대기 리스트 출력 및 그리드 END!!
+	   	*========================================================================
+	   	*/
+	    
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드
+	   	*========================================================================
+	   	*/
+
+	   	
+	    const storeGrid2 = new Grid({
 		      el: document.getElementById('grid2'), // 컨테이너 엘리먼트
-	            scrollY: true,
-		        scrollX: false,
 		      rowHeaders: ['rowNum'],
 		      columns: [ 
-		        { header: "제품 코드", name: "deliveryCode", editor: "text"},
-		        { header: "제품명", name: "productName", editor: "text"},
-		        { header: "납품 수량", name: "orderDate", editor: "text"},
-		        { header: "입고량 합계", name: "dedt", editor: "text"},
-		        { header: "불량 합계", name: "dedt", editor: "text"},
-		        { header: "추천 위치", name: "dedt", editor: "text"},
-		        { header: "창고위치", name: "dedt", editor: "text"},
-		      ],
-		      data: dataSource,
+			        { header: "제품 코드", name: "productCode", align: "center"},
+			        { header: "제품명", name: "productName", align: "center"},
+			        { header: "요청 수량", name: "productQy", align: "center"},
+			        { header: "입고량 합계", name: "", align: "center"},
+			        { header: "불량 합계", name: "", align: "center"},
+			        { header: "추천 위치", name: "dedt", align: "center"},
+			        { header: "창고위치", name: "창고위치", align: "center"},
+			  ],
+			  data: ""
 		    });
+	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
+	    storeGrid.on('click', ev => {
+	    	
+	    	let data = storeGrid.getRow(ev.rowKey);
+	    	
+	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
+	    		.then(rep => rep.json())
+	    		.then(data => {
+	    				storeGrid2.resetData(data);
+	    			})
+	    		})
+	    		
+	    /*
+	   	*========================================================================
+	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드 END!!
+	   	*========================================================================
+	   	*/		
 	    
-	    const grid3 = new Grid({
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 대기 제품 옵션 리스트 출력 및 그리드
+	   	*========================================================================
+	   	*/
+	   	
+	    const storeGrid3 = new Grid({
 		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
 	            scrollY: true,
 		        scrollX: false,
-		        data: [
-		            { color: "화이트", S: "", M: "", L: "", XL: "" },
-		            { color: "그레이", S: "", M: "", L: "", XL: "" },
-		            { color: "블랙", S: "", M: "", L: "", XL: "" },
-		            { color: "합계", S: "", M: "", L: "", XL: "" }
-		        ],
+		        header: {
+		        height: 80,
+		            complexColumns: [
+		              {
+		                header: 'S',
+		                name: 'stest',
+		                childNames: ['storeS', 's']
+		              },
+		              {
+			             header: 'M',
+			             name: 'mtest',
+			             childNames: ['입고할수량m', 'm']
+			          },
+			          {
+				         header: 'L',
+				         name: 'ltest',
+				         childNames: ['입고할수량l', 'l']
+				      },
+				      {
+					      header: 'XL',
+					      name: 'xltest',
+					      childNames: ['입고할수량xl', 'xl']
+					  }
+		             ]},
 		        columns: [
-		            { header: "색상/사이즈", name: "color", width: 150 },
-		            { header: "S", name: "S", width: 100 },
-		            { header: "M", name: "M", width: 100 },
-		            { header: "L", name: "L", width: 100 },
-		            { header: "XL", name: "XL", width: 100 }
-		        ]
+		            { header: "색상/사이즈", name: "productColor", align: "center" },
+		            { header: "입고할수량", name: "storeS", align: "center", editor: "text"},
+		            { header: "요청수량", name: "s", align: "center" },
+		            { header: "입고할수량", name: "입고할수량m", align: "center", editor: "text"},
+		            { header: "요청수량", name: "m", align: "center" },
+		            { header: "입고할수량", name: "입고할수량l", align: "center", editor: "text"},
+		            { header: "요청수량", name: "l", align: "center" },
+		            { header: "입고할수량", name: "입고할수량xl", align: "center", editor: "text"},
+		            { header: "요청수량", name: "xl", align: "center" }
+		        ],
+	            data : ""
 		    });
 	    
-	    const grid4 = new Grid({
+	    // 선택한 제품코드 값 저장 변수
+	    let productCode = "";
+	    
+	    // 제품 상세보기 그리드 클릭 이벤트
+	    storeGrid2.on('click', ev => {
+	    	let data = storeGrid2.getRow(ev.rowKey);
+	    	
+	    	// 창고 위치 컬럼 클릭 시 모달 출력
+	    	if(ev.columnName === '창고위치'){
+	    		 let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+	    	     modal.show();
+	    	}else if(ev.columnName != '창고위치'){
+	    		
+	    		// 선택한 제품코드 저장
+	    		productCode = data.productCode
+	    		
+		    	fetch(`http://localhost:80/store/productCodeList?productCode=${data.productCode}`)
+		    		.then(rep => rep.json())
+		    		.then(data => {
+		    				storeGrid3.resetData(data);
+		    	})	
+	    	}
+	    	})
+	    	
+	    	
+	    // 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
+	    storeGrid3.on('afterChange', ev => {
+	    	console.log('선택 제품코드', productCode);
+		    if (!ev || !ev.changes) return; // ev 또는 변경된 데이터가 없는 경우 종료
+		    ev.changes.forEach(change => {
+		    	
+		    	// 변경되는 행 데이터 담기
+		        let data = storeGrid3.getRow(change.rowKey);
+		    	// 변경되는 셀 데이터
+		        let newValue = Number(change.value);
+		        // 변경되는 셀에 최대 값 
+		        let maxValue = Number(data["s"]);
+		        
+		        console.log('기존값 ',maxValue);
+		        
+		        console.log('변경된 행 데이터:', newValue);
+		        
+		        // 🚨 입력값이 기존 값보다 크면 경고 후 변경 취소
+		        if (newValue > maxValue) {
+		            alert(`입력값은 ${maxValue}보다 클 수 없습니다.`);
+		            
+		            // 기존 값으로 되돌리기
+		            newValue = maxValue;				// 값은 변경 되는데.... 화면에 값이 변경이 안됨 해결좀 ;;
+		            
+		        }
+		    });
+		});
+
+	    
+	    /*
+	   	*========================================================================
+	   	* 입고 대기 제품 옵션 리스트 출력 및 그리드 END!!
+	   	*========================================================================
+	   	*/	
+	    
+	    const storeGrid4 = new Grid({
 		      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
 	            scrollY: true,
 		        scrollX: false,
@@ -162,6 +326,38 @@
 		      data: dataSource,
 		    });
 	    
+	    
+	    const storeGrid5 = new Grid({
+	    	el: document.getElementById('modalGrid'),
+	    	rowHeaders: ['rowNum'],
+	    	columns: [
+	    		 { header: "창고위치", name: "dedt" },
+			     { header: "입고가능 수량", name: "dedt" },
+			     { header: "적재된 제품 종류 수", name: "dedt" },
+	    	],
+	    	data: ""
+	    })
+	    
+	 // Bootstrap 모달 이벤트 리스너 추가
+		const modalElement = document.getElementById('exampleModal');
+
+		modalElement.addEventListener('show.bs.modal', function () {
+		    modalElement.style.display = 'block'; // 모달을 블록으로 변경
+		    modalElement.style.opacity = '0'; // 투명하게 숨김
+		});
+		
+		modalElement.addEventListener('shown.bs.modal', function () {
+		    storeGrid5.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+		    modalElement.style.opacity = '1'; // 투명도 복원
+		});
+
+
+	    
 	    </script>
+	    
+	   <button type="button" class="btn btn-primary"
+                  data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  ModalTest2</button>
+	    
 	</body>
 </html>

@@ -3,6 +3,7 @@ package com.ezotex.store.service;
 import java.util.List;
 
 import com.ezotex.store.dto.StoreDeliveryDTO;
+import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.dto.InventoryDTO;
 
 public interface InventoryService {
@@ -13,7 +14,10 @@ public interface InventoryService {
 	// 입고 예정 리스트
 	public List<StoreDeliveryDTO> DeliveryList();
 	
-	// 입고 예정 제품 종류 수
-	public List<StoreDeliveryDTO> DeliveryQy();
+	// 납품리스트 기반 입고 제품 상세 조회
+	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode);
+	
+	// 제품코드 기반 옵션 리스트
+	public List<StoreDeliveryDetailsDTO> findByProductCode(String productCode);
 	
 }
