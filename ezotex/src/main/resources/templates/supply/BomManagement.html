@@ -49,9 +49,9 @@
 			
 			<div class="col">
 				<div class="card card-body mt-3">
-					<p class="fs-5 fw-bolder mb-4">선택한 제품</p>
 					
 					<!-- 제품 상세 정보 및 BOM 정보 -->
+					<p class="fs-5 fw-bolder mb-4">선택한 제품</p>
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
@@ -74,45 +74,48 @@
 								<option value="null">전체</option>
 							</select>
 						</div>
+					</div>
 						
-						<hr>
-						<!-- BOM 선택 -->
-						<p class="fs-5 fw-bolder mb-4">자재 목록</p>
+					<hr>
+					<!-- BOM 선택 -->
+					<p class="fs-5 fw-bolder mb-4">자재 목록</p>
+					<div class="row">
+						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<select class="form-control" id="mat-lclas" name="mat-lclas">
+								<option value="null">전체</option>
+							</select>
+						</div>
+						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<select class="form-control" id="mat-sclas" name="mat-sclas">
+								<option value="null">전체</option>
+							</select>
+						</div>
 						
-						<div class="row">
-							<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<select class="form-control" id="mat-lclas" name="mat-lclas">
-									<option value="null">전체</option>
-								</select>
-							</div>
-							<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<select class="form-control" id="mat-sclas" name="mat-sclas">
-									<option value="null">전체</option>
-								</select>
-							</div>
-							
-							<label for="mtrilCode" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재코드</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<input type="text" class="form-control" id="mtrilCode" name="mtrilCode">
-							</div>
-							<label for="mtrilName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재명</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<input type="text" class="form-control" id="mtrilName" name="mtrilName">
-							</div>
-							
-							<div id="mtrGrid"></div>
-							
-							<hr>
+						<label for="mtrilCode" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재코드</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<input type="text" class="form-control" id="mtrilCode" name="mtrilCode">
+						</div>
+						<label for="mtrilName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재명</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<input type="text" class="form-control" id="mtrilName" name="mtrilName">
+						</div>
+						
+						<div id="mtrGrid"></div>
+					</div>
+						
+					<hr style="height: 0.1px">
+					<div class="row">
+						<div class="col">
 							<!-- 해당 제품의 BOM에 등록할 자재 -->
 							<p class="fs-5 fw-bolder mb-4">선택한 자재</p>
 							<div id="selectedMtrGrid"></div>
-						
 						</div>
+					</div>
+					
 				</div>
 			</div>
-			
 		</div>
 	</body>
 	
@@ -120,14 +123,14 @@
 		// tui grid 출력
 		const prdData = {
 			api: {
-				readData: { url: `http://localhost/supply/bomList`, method: 'GET' } // RestController에서 json 데이터 읽어올 수 있음.
+				readData: { url: 'http://localhost/supply/bomList', method: 'GET' } // RestController에서 json 데이터 읽어올 수 있음.
 			},
 			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
 		};
 	  	
 		const prdGrid = new Grid({
 		    el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
-		    data: prdData, // data 안에 pagination, contents 객체 필요.
+		    data: prdData, // data 안에 pagination, contents 객체 필요
 		    columns: [
 		        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
 		        { header: '제품명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
@@ -135,7 +138,7 @@
 		          renderer: {
 	        	    styles: {
 	        	      fontWeight: 'bold',
-	        	      color: props => props.value == '완료' ? 'gray' : 'orange'
+	        	      color: props => props.value == '완료' ? '#aaa' : 'orange'
 	        	    }
 		          }
 		        }
@@ -143,20 +146,20 @@
 		    pageOptions: {
 		        useClient: true, // 페이징을 위해 필요
 		        perPage: 10
-	      	},
-	      	scrollX: false, // 가로 스크롤
-	      	scrollY: false, // 세로 스크롤
-	      	summary: {
-	      		height: 40,
-                position: 'bottom', // or 'top'
-                columnContent: {
-                	PRODUCT_CODE: { // 컬럼명
-                        template: (valueMap) => {
-                            return `총 ${valueMap.cnt}건`
-                        }
-                    }
-                }
-            },
+      	},
+      	scrollX: false, // 가로 스크롤
+      	scrollY: false, // 세로 스크롤
+      	summary: {
+      		height: 40,
+             position: 'bottom', // or 'top'
+             columnContent: {
+             		PRODUCT_CODE: { // 컬럼명
+                     template: (valueMap) => {
+                         return `총 ${valueMap.cnt}건`
+                     }
+                 }
+             }
+         }
 		});
 		
 		let lastClicked = null; // 페이지 이동 시에도 이전 입력값 저장하기 위함.
@@ -164,7 +167,7 @@
 		// 선택된 행 강조 & 정보 가져오기
 		prdGrid.on('focusChange', ev => {
 			console.log(ev);
-			console.log(prodGrid.getRow(ev.rowKey));
+			console.log(prdGrid.getRow(ev.rowKey));
 			
 			let prdCode = prdGrid.getValue(ev.rowKey, 'productCode');
 			prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
