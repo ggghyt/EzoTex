@@ -23,3 +23,8 @@
 .bg-blue {
 	background-color: #dceffa;
 }
+
+.form-control {
+	background-color: #fff !important;
+	color: black !important;
+}

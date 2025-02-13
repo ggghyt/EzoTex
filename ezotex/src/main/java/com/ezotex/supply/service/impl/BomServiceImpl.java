@@ -32,13 +32,13 @@ public class BomServiceImpl implements BomService {
 	}
 
 	@Override
-	public List<Map<String, Object>> listBomProduct(SearchDTO search) {
-		return mapper.listBomProduct(search);
+	public List<Map<String, Object>> listBomProduct(ProductDTO product) {
+		return mapper.listBomProduct(product);
 	}
 
 	@Override
-	public int countProduct(SearchDTO search) {
-		return mapper.countProduct(search);
+	public int countBomProduct(ProductDTO product) {
+		return mapper.countBomProduct(product);
 	}
 	
 }
