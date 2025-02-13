@@ -287,6 +287,9 @@
 		        let newValue = Number(change.value);
 		        // 변경되는 셀에 최대 값 
 		        let maxValue = Number(data["s"]);
+		        // 변경된 컬럼명
+		        let columnName = change.storeS; 
+		        
 		        
 		        console.log('기존값 ',maxValue);
 		        
@@ -298,6 +301,9 @@
 		            
 		            // 기존 값으로 되돌리기
 		            newValue = maxValue;				// 값은 변경 되는데.... 화면에 값이 변경이 안됨 해결좀 ;;
+		            
+		            // 기존 값으로 되돌리기
+		            storeGrid3.setValue(change.rowKey, columnName, maxValue);
 		            
 		        }
 		    });
