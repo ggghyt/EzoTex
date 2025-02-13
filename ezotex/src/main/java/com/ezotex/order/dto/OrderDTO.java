@@ -42,4 +42,24 @@ public class OrderDTO {
 	private int vl;
 	private String img;
 	private String unitName;
+	
+	// 업체 조회
+	private String companyId;
+	private String companyPassword;
+	private String companyExponent;
+	private String compnayCharger;
+	private String companyPhone;
+	private String companyEmail;
+	private String companyName;
+	private String addressSeq;
+	private String companyNumber;
+	private String companyImg;
+	private String section;
+	private int distance;
+	private int requireTime;
+	private String addressCode;
+	
+	// 제품 옵션 조회
+	private String optionCode;
+	private String discontinued;
 }
