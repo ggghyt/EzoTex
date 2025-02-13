@@ -26,29 +26,43 @@
   
   <!-- fontawesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!-- Toast UI Grid css -->
-  <link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.css">
-	<link rel="stylesheet" href="https://uicdn.toast.com/tui-grid/latest/tui-grid-clean.min.css">
-	<!-- Toast UI Grid -->
-  <script src="https://uicdn.toast.com/tui-grid/latest/tui-grid.min.js"></script>
+  <!-- Toast UI Paging - 먼저 import 되어야 함. -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+  <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+  <!-- Toast UI Grid -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+  <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
   <script> // Toast UI Grid 테마 공통 적용
   	var Grid = tui.Grid;
-		Grid.applyTheme('clean'); 
-	</script>
-	
-	<!-- comm.css (공통 css) -->
-	<link rel="stylesheet" href="/css/comm.css">
-	<!-- modal, toast 알림창, spinner... -->
-	<script src="/js/modal.js"></script>
-	<script src="/js/toastUi.js"></script>
-	<link rel="stylesheet" href="/css/toastUi.css">
-	<link rel="stylesheet" href="/css/spinner.css">
+		Grid.applyTheme('clean', {
+			cell : {
+				normal: {
+					showHorizontalBorder: true,
+					//showVerticalBorder: true
+				},
+				summary: {
+					background: '#f9f9f9'
+				},
+				currentRow: {
+					background: '#999'
+				}
+			}
+		}); 
+  </script>
+  
+  <!-- comm.css (공통 css) -->
+  <link rel="stylesheet" href="/css/comm.css">
+  <!-- modal, toast 알림창, spinner... -->
+  <script src="/js/modal.js"></script>
+  <script src="/js/toastUi.js"></script>
+  <link rel="stylesheet" href="/css/toastUi.css">
+  <link rel="stylesheet" href="/css/spinner.css">
   <script src="/js/spinner.js"></script>
 	
 </head>
 <body>
   <!-- Spinner 스피너 출력(최상단) -->
-	<div class="loading-wrap">
+  <div class="loading-wrap">
      <div class="loading-spinner"></div>
      <p id="loadingMessage"></p>
   </div>
