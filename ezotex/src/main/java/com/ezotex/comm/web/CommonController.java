@@ -1,8 +1,16 @@
 package com.ezotex.comm.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.ezotex.standard.dto.EmpLoginInfoDTO;
+import com.ezotex.standard.dto.IdPwDTO;
+import com.ezotex.standard.service.impl.StandardServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/login/*")
 public class CommonController {
 
+	final StandardServiceImpl service;
+	
     // 로그인 메인 페이지
 	@GetMapping("/main")
 	public String login() {
@@ -32,8 +42,17 @@ public class CommonController {
 	}
 
 	// 공급업체 회원가입 페이지
-	@GetMapping("register_emp")
+	@GetMapping("/register_emp")
 	public String register_emp() {
 		return "/login/register_emp.html";
+	}
+	
+	// 사원 로그인 정보 확인 페이지
+	@PostMapping("/idpw")
+	public String idpw(IdPwDTO idpw, Model model) {
+		System.out.println(idpw.toString());
+		EmpLoginInfoDTO empinfo = service.EmpLoginInfo(idpw.getId());
+		System.out.println(empinfo.toString());
+		return "redirect:/";
 	}
 }
