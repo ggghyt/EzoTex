@@ -14,5 +14,5 @@ public interface OrderMapper {
 		// 업체 조회
 		List<OrderDTO> getCompanyList();
 		// 제품 옵션 조회
-		List<OrderDTO> getProductOption();
+		List<OrderDTO> getProductOption(String productCode);
 }

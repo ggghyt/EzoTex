@@ -6,7 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ezotex.order.dto.OrderDTO;
 import com.ezotex.order.service.impl.OrderServiceImpl;
@@ -35,14 +37,12 @@ public class OrderController {
 		List<OrderDTO> companyList = service.getCompanyList();
 		model.addAttribute("getCompanyList",companyList);
 	}
-	@GetMapping("/OrderDetailListModal")
-	public void OrderDetailListModal(Model model) {
-		
-	}
 	@GetMapping("/ProductCode")
-	public void ProductCode(Model model) {
-		List<OrderDTO> productOption = service.getProductOption();
+	public String ProductCode(Model model , @RequestParam(name="productCode") String productCode) {
+		List<OrderDTO> productOption = service.getProductOption(productCode);
 		model.addAttribute("getProductOption",productOption);
+		return "/order/OrderManagement";
+		
 	}
 //	@GetMapping("/OrderManagement")
 //	public String OrderManagement(Model model) {
@@ -50,9 +50,5 @@ public class OrderController {
 //		model.addAttribute("orderList",orderList);
 //		return "order/OrderManagement";
 //	}
-	@GetMapping("/ToastTest")
-	public void ToastTest(Model model) {
-		
-	}
 
 }
