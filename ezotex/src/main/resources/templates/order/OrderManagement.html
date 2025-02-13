@@ -124,7 +124,7 @@ function resetForm() {
         const clickedRowKey = ev.rowKey; // 클릭한 행의 키
         const clickedData = grid.getRow(clickedRowKey); // 클릭한 행의 데이터
 		
-       	fetch(`http://localhost:80/order/productCode?productCode=${clickedData.productCode}`)
+       	fetch(`http://localhost:80/order/ProductCode?productCode=${clickedData.productCode}`)
         										.then(rep => rep.json())
         										.then(data => {
         											grid5.resetData(data);
