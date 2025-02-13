@@ -2,6 +2,10 @@ package com.ezotex.delivery.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +19,12 @@ public class ProductDeliveryDTO {
 	private String company;
 	private String Summary;
 	private String orderStatus;
-	private String charger;
+	private String chargerName;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date orderDate;
-	private Date deliveryRequestDeadline;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date dedt;
+	
 }
