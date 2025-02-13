@@ -8,4 +8,6 @@ public interface OrderService {
 	List<OrderDTO> getOrderList();
 	boolean insertOrder(OrderDTO order);
 	List<OrderDTO> getProductList();
+	List<OrderDTO> getCompanyList();
+	List<OrderDTO> getProductOption();
 }

@@ -30,4 +30,14 @@ public class OrderServiceImpl implements OrderService {
 		return mapper.getProductList();
 	}
 
+	@Override
+	public List<OrderDTO> getCompanyList() {
+		return mapper.getCompanyList();
+	}
+
+	@Override
+	public List<OrderDTO> getProductOption() {
+		return mapper.getProductOption();
+	}
+
 }

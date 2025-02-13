@@ -6,11 +6,20 @@
 	FROM ORDER_LIST
 </select>
 
-<insert id = "insertOrder">
-</insert>
 
 <select id = "getProductList">
 	SELECT *
 	FROM PRODUCT_INFO
 </select>
+<select id = "getCompanyList">
+	SELECT *
+	FROM COMPANY
+</select>
+<!-- <select id = "getProductOption">
+	SELECT *
+	FROM PRODUCT_OPTION
+	WHERE = #{}
+</select> -->
+<insert id = "insertOrder">
+</insert>
 </mapper>

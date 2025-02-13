@@ -6,6 +6,7 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <script>
 // 인풋 초기화 함수
@@ -52,7 +53,7 @@ function resetForm() {
 								<input type="text" id="companyTel" class="form-control">
 							</td>
 							<td class="col-auto"><label class="col-form-label">주문일</label>
-								<input type="date" id="orderDate" class="form-control">
+								<input type="date" id="orderDate" class="form-control" readonly>
 							</td>
 							<td class="col-auto"><label class="col-form-label">납기일</label>
 								<input type="date" id="deliveryRequestDeadline"
@@ -73,75 +74,91 @@ function resetForm() {
 				제품 목록
 				<button type="button" class="btn btn-info btn-sm"
 					data-bs-toggle="modal" data-bs-target="#productCodeModal"
-					style="margin-left: 1400px;">제품 추가</button>
+					style="margin-left: 1300px;">제품 추가</button>
+				<button id="btnDelete" class="btn btn-danger btn-sm">삭제</button>
 			</p>
-			<div id="grid" style="width: 100%; height: 400px;"></div>
+			<div id="grid" style="width: 100%;"></div>
 			<script>
     // 기본 옵션 설정
     const grid = new tui.Grid({
       el: document.getElementById('grid'), // 그리드를 표시할 엘리먼트
+      scrollX: false, // 가로 스크롤바 비활성화
+      scrollY: false, // 세로 스크롤바 비활성화
       rowHeight: 'auto',  // 행 높이를 자동으로 조정
+      rowHeaders: ['checkbox'],
       columns: [  // 컬럼 설정 (빈 컬럼으로 초기화)
         {
           header: 'NO',
-          name: 'no',
+          name: 'no',	
           align: 'center',
-          width: 80
         },
         {
           header: '제품 코드',
           name: 'productCode',
           align: 'center',
-          width: 120
         },
         {
           header: '제품명',
           name: 'productName',
           align: 'center',
-          width: 150
         },
         {
           header: '단가',
           name: 'unitPrice',
           align: 'right',
-          width: 100
         },
         {
           header: '주문 수량',
           name: 'orderQuantity',
           align: 'right',
-          width: 100
         },
         {
           header: '주문 금액',
           name: 'orderAmount',
           align: 'right',
-          width: 120
         }
       ],
-      data: [] // 빈 데이터로 초기화
+      data: [], // 빈 데이터로 초기화
     });
+    grid.on('click', function(ev) {
+        const clickedRowKey = ev.rowKey; // 클릭한 행의 키
+        const clickedData = grid.getRow(clickedRowKey); // 클릭한 행의 데이터
+		
+       	fetch(`http://localhost:80/order/productCode?productCode=${clickedData.productCode}`)
+        										.then(rep => rep.json())
+        										.then(data => {
+        											grid5.resetData(data);
+        										})
+        
+        // "선택한 제품" 입력 필드에 값 설정
+        document.getElementById('selectProductCode').value = clickedData.productCode;
+        document.getElementById('selectProductName').value = clickedData.productName;
+    });
+    document.getElementById("btnDelete").addEventListener("click", function () {
+    	  const checkedRows = grid.getCheckedRows(); // 선택된 행 가져오기
+    	  const rowKeys = checkedRows.map(row => row.rowKey); // 행 키 배열 만들기
+    	  console.log("삭제할 행 키:", rowKeys); // 삭제할 행 확인용 로그
+    	  rowKeys.forEach(rowKey => grid.removeRow(rowKey)); // 선택된 행 삭제
+    	});
   </script>
 		</div>
 		<div class="row">
 			<div class="col-5 card card-body m-2">
 				<p class="fs-5 fw-bolder">선택한 제품</p>
 				<table class="table mt-3">
-					<thead class="table-light text-center">
-						<tr>
-							<th>필드1</th>
-							<th>필드2</th>
-							<th>필드3</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>...</td>
-							<td>...</td>
-							<td>...</td>
-						</tr>
-					</tbody>
+					<tr class="d-flex">
+						<td class="d-flex align-items-center mr-3"><label
+							class="col-form-label mr-3">제품코드</label> <input type="text"
+							id="selectProductCode" class="form-control" style="width: 200px;"
+							placeholder="제품코드 입력"></td>
+						<td class="d-flex align-items-center"><label
+							class="col-form-label mr-3">제품명</label> <input type="text"
+							id="selectProductName" class="form-control" style="width: 200px;"
+							placeholder="제품명 입력"></td>
+					</tr>
 				</table>
+				<!-- 그리드 추가 -->
+				<div id="selectedProductGrid" style="width: 100%; margin-top: 30px;"></div>
 			</div>
 		</div>
 	</div>
@@ -149,7 +166,7 @@ function resetForm() {
 <!-- 제품추가 모달 -->
 <div class="modal fade" id="productCodeModal" tabindex="-1"
 	aria-labelledby="productCodeModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-lg">
+	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="productCodeModalLabel">제품 선택</h5>
@@ -176,21 +193,20 @@ function resetForm() {
 						</div>
 					</div>
 				</div>
-
 				<script th:inline="javascript">
 		// Thymeleaf에서 getProductList 데이터를 JSON으로 변환해서 JavaScript로 전달
 		const productList = /*[[${getProductList}]]*/[];
-
 		// 전달된 데이터 확인 (콘솔에 출력)
 		console.log(productList);
-
 		// Toast Grid 설정
 		const grid2 = new tui.Grid(
 				{
 					el : document.getElementById('productGrid'), // 그리드를 표시할 div
+					  scrollX: false, // 가로 스크롤바 비활성화
+					  scrollY: false, // 세로 스크롤바 비활성화
 					data : productList, // 서버에서 전달된 데이터
 					columnOptions : {
-						resizable : true
+						resizable : false
 					// 컬럼 크기 조절 가능
 					},
 					rowHeaders:['rowNum'],
@@ -198,7 +214,7 @@ function resetForm() {
 					{ 
 						header : '제품코드',
 						name : 'productCode',
-						align : 'center'
+						align : 'center',	
 					},
 					{
 						header : '제품명',
@@ -212,6 +228,10 @@ function resetForm() {
 					},
 					],
 				});
+		const modalElement = document.getElementById('productCodeModal');
+		modalElement.addEventListener('show.bs.modal', function () {
+		    grid2.refreshLayout(); // 모달이 열리기 전에 그리드 레이아웃 재조정
+		});
 	</script>
 			</div>
 			<div class="modal-footer">
@@ -227,18 +247,14 @@ function resetForm() {
 grid2.on('click', function(ev) {
     const clickedRow = ev.rowKey; // 클릭된 행
     const clickedData = grid2.getData()[clickedRow]; // 클릭된 행의 데이터
-
     // 선택된 제품을 기존 제품 목록에 추가
     addProductToOrderList(clickedData);
-
     // 모달을 닫기
     $('#productCodeModal').modal('hide');
 });
-
 // 제품 목록에 데이터를 추가하는 함수
 function addProductToOrderList(product) {
     const currentData = grid.getData();  // 기존의 제품 목록 데이터
-
     // 새로운 데이터를 추가
     currentData.push({
         no: currentData.length + 1,  // NO (자동 증가)
@@ -248,22 +264,18 @@ function addProductToOrderList(product) {
         orderQuantity: 1,
         orderAmount: product.unitPrice  // 주문 금액은 단가 * 수량
     });
-
     // 그리드 데이터 갱신
     grid.resetData(currentData);
 }
-
     // 필터링 함수 (검색창에서 입력받은 텍스트로 필터링)
 function filterGrid() {
     const productCode = document.getElementById('productCodeSearch').value.toLowerCase();
     const productName = document.getElementById('productNameSearch').value.toLowerCase();
-
     // productList 변수를 사용하여 필터링 수행
     const filteredData = productList.filter(product => {
         return product.productCode.toLowerCase().includes(productCode) &&
                product.productName.toLowerCase().includes(productName);
     });
-
     // 필터링된 데이터를 Toast Grid에 적용
     grid2.resetData(filteredData);
 }
@@ -274,7 +286,7 @@ function filterGrid() {
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="companyCodeModalLabel">업체코드 선택</h5>
+				<h5 class="modal-title" id="companyCodeModalLabel">업체 선택</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal"
 					aria-label="Close"></button>
 			</div>
@@ -282,11 +294,60 @@ function filterGrid() {
 				<!-- 업체코드 선택 리스트나 검색 -->
 				<input type="text" class="form-control" placeholder="검색 조건 입력" />
 				<!-- 예시: 업체코드 리스트 -->
-				<ul>
-					<li>업체코드1</li>
-					<li>업체코드2</li>
-					<li>업체코드3</li>
-				</ul>
+				<div class="card card-body mt-3">
+					<div class="row">
+						<!-- Toast Grid를 표시할 div 추가 -->
+						<div class="col-12 card card-body m-2">
+							<p class="fs-5 fw-bolder">업체 선택 모달</p>
+							<!-- 그리드를 표시할 div -->
+							<div id="companyGrid" style="width: 100%;"></div>
+						</div>
+					</div>
+				</div>
+				<script th:inline="javascript">
+		// Thymeleaf에서 getProductList 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const companyList = /*[[${getCompanyList}]]*/[];
+		// 전달된 데이터 확인 (콘솔에 출력)
+		console.log(companyList);
+		// Toast Grid 설정
+		const companyGrid = new tui.Grid(
+				{
+					el : document.getElementById('companyGrid'), // 그리드를 표시할 div
+					  scrollX: false, // 가로 스크롤바 비활성화
+					  scrollY: false, // 세로 스크롤바 비활성화
+					data : companyList, // 서버에서 전달된 데이터
+					columnOptions : {
+						resizable : false,
+					// 컬럼 크기 조절 가능
+					},
+					rowHeaders:['rowNum'],
+					columns : [
+					{ 
+						header : '업체코드',
+						name : 'companyCode',
+						align : 'center',
+					},
+					{
+						header : '업체명',
+						name : 'companyName',
+						align : 'center'
+					},
+					],
+				});
+		const companyModalElement = document.getElementById('companyCodeModal');
+		  companyModalElement.addEventListener('show.bs.modal', function () {
+		    companyGrid.refreshLayout(); // 모달이 열리기 전에 그리드 레이아웃 재조정
+		  });
+		companyGrid.on('click', function(ev) {
+		    const clickedRowKey = ev.rowKey; // 클릭된 행의 키
+		    const clickedData = companyGrid.getRow(clickedRowKey); // 클릭된 행의 데이터
+		    // '주문 등록' 섹션의 입력 필드에 값 설정
+		    document.getElementById('companyCode').value = clickedData.companyCode;
+		    document.getElementById('company').value = clickedData.companyName;
+		    // 모달 닫기
+		    $('#companyCodeModal').modal('hide');
+		});
+	</script>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary"
@@ -297,25 +358,10 @@ function filterGrid() {
 </div>
 <!-- 업체코드 모달 끝 -->
 <script>
-$('#productCodeModal').on('shown.bs.modal', function () {
-    console.log("🔍 모달이 열렸어요! Grid 리사이징 실행!");
-    setTimeout(() => {
-        grid2.refreshLayout();
-        console.log("✅ Grid 리사이징 완료!");
-    }, 100);
-});
-
-  // 주문코드 모달 열기
-  function showOrderCodeModal() {
-    var orderCodeModal = new bootstrap.Modal(document.getElementById('orderCodeModal'));
-    orderCodeModal.show();
-  }
-
   // 업체코드 모달 열기
   function showCompanyCodeModal() {
-	  $('#companyCodeModal').modal('show');x
+	  $('#companyCodeModal').modal('show');
   }
-  
 </script>
 <style>
 .modal {

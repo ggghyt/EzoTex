@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.comm.mappers.UserMapper">
+
+<resultMap type="UserDto" id="userMap">
+	<id column="id" property="id"/>
+	<result column="password" property="password"/>
+	<collection property="roles" column="id" ofType="RoleDto" select="getRole">
+	</collection>
+</resultMap>
+<select id="getUser" resultMap="userMap">
+select *
+from
+(select emp_id as id,
+       emp_password as password, 
+       emp_name as name
+from emp
+union
+select company_id, 
+       company_password,
+       company_name
+from company)
+where id = #{id}
+</select>
+
+<select id="getRole" resultType="RoleDto">
+select id, 
+       case when length(role) = 4 then 'ROLE_SUPPLY' else 'ROLE_EMP' end as role
+from
+(select emp_id as id,
+       dept_code as role
+from emp
+union
+select company_id, 
+       section
+from company)
+where id = #{id}
+</select>
+
+</mapper>
