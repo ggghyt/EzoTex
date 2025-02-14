@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.delivery.dto.ProductDeliveryDTO;
-import com.ezotex.delivery.dto.SearchDTO;
+import com.ezotex.delivery.dto.DeliveryOrderListSearchDTO;
 import com.ezotex.delivery.mappers.DeliveryMapper;
 import com.ezotex.delivery.service.DeliveryService;
 
@@ -20,13 +20,13 @@ public class DeliveryServiceImpl implements DeliveryService {
 	private final DeliveryMapper mapper;
 
 	@Override
-	public List<ProductDeliveryDTO> getList(SearchDTO searchDTO) {
+	public List<ProductDeliveryDTO> getList(DeliveryOrderListSearchDTO searchDTO) {
 		return mapper.findAll(searchDTO);
 	}
 
 	@Override
-	public int getCount() {
-		return mapper.getCount();
+	public int getCount(DeliveryOrderListSearchDTO searchDTO) {
+		return mapper.getCount(searchDTO);
 	}
 
 

@@ -47,7 +47,7 @@ public class OrderDTO {
 	private String companyId;
 	private String companyPassword;
 	private String companyExponent;
-	private String compnayCharger;
+	private String companyCharger;
 	private String companyPhone;
 	private String companyEmail;
 	private String companyName;
