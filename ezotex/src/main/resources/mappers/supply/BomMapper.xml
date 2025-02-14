@@ -2,20 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.supply.mappers.BomMapper">
 
-	<select id="listBom" resultType="BomDTO">
-		SELECT *
-		FROM   bom
-	</select>
-	
-	<select id="infoBom" resultType="BomDTO" parameterType="String">
-		SELECT d.bom_detail_code,
-		       d.bom_code,
-		       d.mtril_code,
-		       d.require_qy
-		FROM   bom_details d JOIN bom b ON d.bom_code = b.bom_code
-		WHERE  b.bom_code = #{bomCode}
-	</select>
-
 	<!-- BOM을 등록할 전체 제품 목록과 등록상태 -->
 	<select id="listBomProduct" resultType="map" parameterType="ProductDTO">
 		SELECT p.product_code,
@@ -39,30 +25,35 @@
 		ORDER  BY product_code DESC
 	</select>
 	
-	<!-- 해당 제품의 상세 정보 / 아직 미구현 -->
-	<select id="infoBomProduct" resultType="ProductDTO">
-		SELECT p.product_code,
-		       p.product_name,
-		       c.lclas,
-		       c.sclas,
-		       o.option_code,
-		       o.product_color, -- 옵션 함수 필요
-		       o.product_size
-		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
-		                      LEFT JOIN product_option o ON p.product_code = o.product_code
-		WHERE  product_type = 'PT02'
-	</select>
-	
 	<!-- 제품 목록 전체 개수 -->
 	<select id="countBomProduct" parameterType="ProductDTO">
 		SELECT COUNT(*)
 		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
 		                      LEFT JOIN product_option o ON p.product_code = o.product_code
-		WHERE  product_type = 'PT02' 
+		WHERE  product_type = #{productType} 
 		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
 		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
 	</select>
+	
+	<!-- 전체 자재 목록 + 해당 제폼-옵션 BOM 등록여부 조회 -->
+	<select id="listBomMaterial" resultType="map" parameterType="ProductDTO">
+		SELECT product_code mtril_code,
+		       product_name mtril_name,
+		       get_comm(unit_name) unit_name,
+		       CASE WHEN product_code IN
+		            (SELECT mtril_code
+		             FROM   bom_details
+		             WHERE  bom_code = (SELECT MAX(bom_code)
+		                                FROM   bom
+		                                WHERE  product_code = #{productCode}
+		                                  AND  product_size = #{productSize}
+		                                  AND  product_color = #{productColor}))
+		             THEN 1 ELSE 0 END as bom_status -- 가장 최신 bom에 있는 자재면 1, 아니면 0
+		FROM   product_info
+		WHERE  product_type = 'PT01'
+	</select>
+		
 
 </mapper>

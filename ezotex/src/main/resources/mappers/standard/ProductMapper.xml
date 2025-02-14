@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.standard.mappers.ProductMapper">
+
+	<select id="listProductOption" resultType="ProductOptionDTO" parameterType="String">
+		SELECT option_code,
+		       product_code,
+		       product_color,
+		       product_size,
+		       get_comm(product_size) size_name
+		FROM   product_option
+		WHERE  product_code = #{productCode}
+		  AND  discontinued = 'YN02'
+	</select>
+	
+	<select id="listLclas">
+		SELECT DISTINCT(lclas)
+		FROM   product_category
+	</select>
+	
+	<select id="listSclasByLclas">
+		SELECT DISTINCT(sclas)
+		FROM   product_category
+		WHERE  lclas = #{lclas}
+	</select>
+	
+</mapper>

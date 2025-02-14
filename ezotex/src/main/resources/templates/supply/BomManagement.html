@@ -15,13 +15,14 @@
 					
 					<!-- 제품 검색 조건 -->
 					<div class="row me-2">
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
+						<label for="lclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<select class="form-control" id="lclas" name="lclas">
 								<option value="null">전체</option>
+								<option th:each="lclas : ${lclasList}" th:value="${lclas}">[[ ${lclas} ]]</option>
 							</select>
 						</div>
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
+						<label for="sclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<select class="form-control" id="sclas" name="sclas">
 								<option value="null">전체</option>
@@ -62,13 +63,13 @@
 							<input type="text" class="form-control" id="selectedPrdName" readonly>
 						</div>
 						
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">색상</label>
+						<label for="color" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">색상</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<select class="form-control" id="color" name="color">
 								<option value="null">전체</option>
 							</select>
 						</div>
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">사이즈</label>
+						<label for="size" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">사이즈</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<select class="form-control" id="size" name="size">
 								<option value="null">전체</option>
@@ -80,15 +81,15 @@
 					<!-- BOM 선택 -->
 					<p class="fs-5 fw-bolder mb-4">자재 목록</p>
 					<div class="row">
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
+						<label for="mtr-lclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="mat-lclas" name="mat-lclas">
+							<select class="form-control" id="mtr-lclas" name="mtr-lclas">
 								<option value="null">전체</option>
 							</select>
 						</div>
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
+						<label for="mtr-sclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="mat-sclas" name="mat-sclas">
+							<select class="form-control" id="mtr-sclas" name="mtr-sclas">
 								<option value="null">전체</option>
 							</select>
 						</div>
@@ -124,117 +125,5 @@
 		</div>
 	</body>
 	
-	<script>
-		// tui grid 출력
-		const prdData = {
-			api: {
-				// RestController에서 json 데이터 읽어올 수 있음.
-				readData: { url: 'http://localhost/supply/bomList', method: 'GET' }
-			},
-			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-		};
-	  	
-		const prdGrid = new Grid({
-		    el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
-		    data: prdData, // data 안에 pagination, contents 객체 필요
-		    columns: [
-		        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-		        { header: '제품명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-		        { header: '상태', name: 'STATUS', width: 100, sortable: true, align: 'center',
-		          renderer: {
-	        	    styles: {
-	        	      fontWeight: 'bold',
-	        	      color: props => props.value == '완료' ? '#aaa' : 'orange'
-	        	    }
-		          }
-		        }
-		    ],
-		    pageOptions: {
-		        useClient: true, // 페이징을 위해 필요
-		        perPage: 10
-      	},
-      	scrollX: false, // 가로 스크롤
-      	scrollY: false, // 세로 스크롤
-      	summary: {
-      		height: 40,
-             position: 'bottom', // or 'top'
-             columnContent: {
-             		PRODUCT_CODE: { // 컬럼명
-                     template: (valueMap) => {
-                         return `총 ${valueMap.cnt}건`
-                     }
-                 }
-             }
-         }
-		});
-		
-		let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
-		
-		// 선택된 행 강조 & 정보 가져오기
-		prdGrid.on('focusChange', ev => {
-			let selected = prdGrid.getRow(ev.rowKey);
-			console.log(selected);
-			
-			// 배경색 클래스 적용
-			let prdCode = prdGrid.getValue(ev.rowKey, 'productCode');
-			prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-			prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-			lastClicked = ev.rowKey; // 선택된 행 기억
-			
-			// 선택한 정보 가져오기
-			document.getElementById('selectedPrdCode').value = selected.PRODUCT_CODE;
-			document.getElementById('selectedPrdName').value = selected.PRODUCT_NAME;
-		});
-		
-		// 제품 목록 검색 적용
-		document.getElementById('prdSearchBtn').addEventListener('click', e => {
-			let dto = {
-					productCode: document.getElementById('productCode').value,
-					productName: document.getElementById('productName').value,
-					lclas: document.getElementById('lclas').value,
-					sclas: document.getElementById('sclas').value
-			};
-			
-			prdGrid.setRequestParams(dto); // 조회 조건 전달
-			prdGrid.reloadData(); // 그리드 재출력 (readData)
-		});
-		
-		// BOM 자재 불러오기
-		const getBomList = function(){
-			const mtrData = {
-				api: {
-					// RestController에서 json 데이터 읽어올 수 있음.
-					readData: { url: 'http://localhost/supply/bomList', method: 'GET' }
-				},
-				contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-			};
-		  	
-			const mtrGrid = new Grid({
-			    el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
-			    data: prdData, // data 안에 pagination, contents 객체 필요
-			    columns: [
-			        { header: '자재코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-			        { header: '자재명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-			        { header: '선택', name: 'STATUS', width: 100, sortable: true}
-			    ],
-			    rowHeaders: ['checkbox'], // 체크박스 추가
-			    pageOptions: {
-			        useClient: true, // 페이징을 위해 필요
-			        perPage: 10
-	      	},
-	      	scrollX: false, // 가로 스크롤
-	      	summary: {
-	      		height: 40,
-	             position: 'bottom', // or 'top'
-	             columnContent: {
-	             		PRODUCT_CODE: { // 컬럼명
-	                     template: (valueMap) => {
-	                         return `총 ${valueMap.cnt}건`
-	                     }
-	                 }
-	             }
-	         }
-			});
-		};
-	</script>
+	<script src="/js/supply/BomManagement.js"></script>
 </html>
