@@ -9,7 +9,7 @@ public class Paging {
 	int pageSize=10 ;  //페이지번호 수 (5) 1~ 5까지
 	int lastPage;      //마지막 페이지번호
 	int totalRecord;  //전체 레코드건수
-	Integer page = 1;	  //현재 페이지
+	Integer page;	  //현재 페이지
 	int startPage;  //페이지그룹내에서 시작페이지번호
 	int endPage;  //페이지그룹내에서 마지막페이지번호
 	int first;
