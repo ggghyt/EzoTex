@@ -6,9 +6,12 @@ import lombok.Data;
 
 @Data
 public class UserDto /*implements UserDetails*/ {
+	private String code;
 	private String id;
 	private String password;
 	private String name;
+	private String email;
+	private String img;
 	
 	private List<RoleDto> roles;
 	/*
