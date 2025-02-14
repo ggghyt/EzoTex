@@ -14,14 +14,16 @@
 				display: inline-block;
 				flex-direction:row;
 			}
+
 			.order-list {
 				width: 800px;
-				height: 500px;
+				height: 750px;
 			}
 			.order-info{
 				margin-top: 0;
 				margin-left: 30px;
 				width: 500px;
+				height: 100%;
 			}
 			.search-unit {
 				display: flex;
@@ -54,7 +56,6 @@
 				width: 140px;
 			}
 			.search-bar select {
-				margin-left: 10px;
 				width: 140px;
 				border: 1px solid #dee2e6;
 			    font-weight: 400;
@@ -63,6 +64,9 @@
 			    height: 2rem;
 			}
 			input[type=date] {
+				width: 140px;
+			}
+			.search-bar input[type=number] {
 				width: 140px;
 			}
 			.dash {
@@ -84,12 +88,59 @@
 				justify-content: right;
 				margin-bottom: 10px;
 			}
-			
+			.btn-secondary {
+				background-color: #b1b1b1;
+			}
+			.btn-section button:nth-of-type(2) {
+				margin-left: 10px;
+			}
+			#order-details .table td{
+				padding: 5px;
+			}
+			.table textarea {
+				height: 60px;
+			}
+			#productListgrid {
+			    width: 100%;
+			    height: 280px; /* 충분한 높이를 설정 */
+			}
+			.detailAmount{
+				margin-top: 10px;
+				-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			}
+			.detailAmount input[type=number] {
+				width: 120px;
+				margin-right: 20px;
+				margin-left: 5px;
+			}
+			.input-details {
+				display: flex;
+				line-height: 1.9;
+			}
+			.completeBtn-section {
+				display: flex;
+				justify-content: center;
+			}
+			.completeBtn-section button {
+				margin: 10px;
+			}
 		</style>
-		<!-- toast grid -->
-        <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-        <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-      
+		<!-- timePicker -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+	    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+	  
+	    <!-- datePicker -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+	    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+	  
+	  	<!-- paging -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+	    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+	  
+	    <!-- toast grid -->
+	    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+		
 	</head>
 	<body>
 		<h3 class="fs-3 fw-bold">| 납품 관리</h3>
@@ -99,7 +150,7 @@
 					
 					<b>납품 목록 검색</b>
 										
-					<!-- 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
+					<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
 					<div>
 						<span class="search-unit">
 							<span>주문 코드</span>
@@ -125,16 +176,10 @@
 							<span>남품담당자</span>
 							<input type="text" class="form-control">
 						</span>
-						<span class="search-unit">
-							<span>상태</span>
-							<select>
-								<option value="1">값</option>
-							</select>
-							
-						</span>
+
 					</div>
 					
-					<!-- 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
+					<!-- 검색조건2: 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
 					<div>
 						
 						<span class="search-unit">
@@ -148,14 +193,9 @@
 							<input type="date" class="form-control">
 						</span>
 						<span class="search-unit">
-							<span>수량합계</span>
-							<input type="date" class="form-control"> <b class="dash">-</b> 
-							<input type="date" class="form-control">
-						</span>
-						<span class="search-unit">
 							<span>급액합계</span>
-							<input type="date" class="form-control"> <b class="dash">-</b> 
-							<input type="date" class="form-control">
+							<input type="number" class="form-control"> <b class="dash">-</b> 
+							<input type="number" class="form-control">
 						</span>
 						<span class="search-unit">
 							<span>업체코드</span>
@@ -165,9 +205,16 @@
 							<span>업체명</span>
 							<input type="date" class="form-control"> 
 						</span>
+						<span class="search-unit">
+							<span>상태</span>
+							<select>
+								<option value="1">값</option>
+							</select>
+							
+						</span>
 						<div class="btn-section">						
-							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+							<button class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+							<button class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 						</div>
 					</div>
 				</div>
@@ -178,29 +225,98 @@
 			</div>	
 			<div class="col card card-body order-info">			
 				<div id="order-details">
-					
+					<b>납품 등록</b>
+					<table class="table mt-3">
+						<tbody>
+							<tr>
+								<td>구매업체코드</td>
+								<td><input type="text" class="form-control" disabled></td>
+								<td>구매업체명</td>
+								<td><input type="text" class="form-control" disabled></td>
+							</tr>
+							<tr>
+								<td>납품주소</td>
+								<td colspan="3"><input type="text" class="form-control" disabled></td>
+
+							</tr>
+							<tr>
+								<td>주문일</td>
+								<td><input type="text" class="form-control" disabled></td>
+								<td>납기일</td>
+								<td><input type="text" class="form-control" disabled></td>
+							</tr>
+							<tr>
+								<td>주문담당자</td>
+								<td><input type="text" class="form-control" disabled></td>
+								<td>납품담당자</td>
+								<td><input type="text" class="form-control" disabled></td>
+							</tr>
+							<tr>
+								<td>제품수량합계</td>
+								<td><input type="text" class="form-control" disabled></td>
+								<td>주문금액합계</td>
+								<td><input type="text" class="form-control" disabled></td>
+							</tr>
+							<tr>
+								<td>비고</td>
+								<td colspan="3"><textarea class="form-control"></textarea></td>
+							</tr>
+							<tr>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 				<div id="product-info">
-				
+					<b>납품 제품 상세</b>
+					<div id="productListgrid"></div>
 				</div>
 				<div id="product-details">
-				
+					<b>납품 수량 입력</b>
+					<div id="productDetailgrid"></div>
+					<div class="p-3 mb-2 bg-secondary text-dark card detailAmount">
+						<span class="input-details">
+							
+							<span>재고</span>
+							<input type="number" class="form-control" disabled>
+							<span>주문수량</span>
+							<input type="number" class="form-control" disabled>
+							<span>출고수량</span>
+							<input type="number" class="form-control">
+							<button class="btn btn-secondary">수량<br>등록</button>
+						</span>
+					</div>
+				</div>
+				<div class="completeBtn-section">
+					<button class="btn btn-success">등록</button>
+					<button class="btn btn-secondary">초기화</button>
 				</div>
 			</div>
 		</div>
 		
 		
 		<script th:inline="javascript">
-			let list = [[${list}]];
 			
-	        var Grid = tui.Grid;
+			
+		    const dataSource = {
+		  	      api: {
+		  	          readData: { url: 'http://localhost:80/delivery/orderList' , method: 'GET' },
+		  	        },
+		  	      contentType: 'application/json',
+		  	    };  
+		    
+	        const Grid = tui.Grid;
 	
 	        const grid = new Grid({
 	            el: document.getElementById('grid'),
+	            rowHeaders: ['rowNum'],
 	            pageOptions: {
-	                useClient: true,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+	                useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
 	                perPage: 10
 	            },
+	            columnOptions: {
+	  	          resizable: true
+	  	      	},
 	            columns: [
 	                { header : "주문코드", name: "productOrderCode", editor: 'text'},
 	                { header : "납품코드", name: "deliveryCode", editor: 'text'},
@@ -208,18 +324,55 @@
 	                { header : "구매업체명", name: "company", editor: 'text'},
 	                { header : "요약", name: "summary", editor: 'text'},
 	                { header : "상태", name: "orderStatus", editor: 'text'},
-	                { header : "남품담당자", name: "charger", editor: 'text'},
+	                { header : "남품담당자", name: "chargerName", editor: 'text'},
 	                { header : "주문일", name: "orderDate", editor: 'text'},
-	                { header : "납기일", name: "deliveryRequestDeadline", editor: 'text'}
+	                { header : "납기일", name: "dedt", editor: 'text'}
 	            ],
-	            data: list
+	            data: dataSource
 	        });
-
-
-
-
-
-
+	        
+	        //여기서부터는 다른 파일로 빼도 될듯
+	        //제품 목록
+	        const productListgrid = new Grid({
+	            el: document.getElementById('productListgrid'),
+	            pageOptions: false, //No, 제품코드, 대분류, 소분류,제품명, 출고량합계
+	            rowHeaders: ['rowNum'],
+	            columns: [
+	                { header: "제품코드", name: "productCode"},
+	                { header: "대분류", name: "lclas"},
+	                { header: "소분류", name: "sclas"},
+	                { header: "제품명", name: "productName"},
+	                { header: "출고량합계", name: "qy"}
+	            ],
+	            data: [
+	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
+	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
+	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
+	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
+	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" }
+	            ]
+	        });
+			
+	        //제품 상세 수량
+		    const productDetailgrid = new Grid({
+			      el: document.getElementById('productDetailgrid'),
+		            scrollY: true,
+			        scrollX: false,
+			        columns: [
+			            { header: "색상", name: "color"},
+			            { header: "S", name: "S"},
+			            { header: "M", name: "M"},
+			            { header: "L", name: "L"},
+			            { header: "XL", name: "XL"}
+			        ],
+			        data: [
+			            { color: "", S: "", M: "", L: "", XL: "" },
+			            { color: "", S: "", M: "", L: "", XL: "" },
+			            { color: "", S: "", M: "", L: "", XL: "" },
+			            { color: "", S: "", M: "", L: "", XL: "" },
+			            { color: "", S: "", M: "", L: "", XL: "" }
+			        ],
+			    });
 
     	</script>
 	</body>

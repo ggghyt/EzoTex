@@ -1,6 +1,7 @@
 package com.ezotex.supply.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,13 @@ public class BomServiceImpl implements BomService {
 	}
 
 	@Override
-	public List<ProductDTO> listProductBom() {
-		return mapper.listProductBom();
+	public List<Map<String, Object>> listBomProduct(ProductDTO product) {
+		return mapper.listBomProduct(product);
+	}
+
+	@Override
+	public int countBomProduct(ProductDTO product) {
+		return mapper.countBomProduct(product);
 	}
 	
 }

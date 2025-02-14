@@ -36,8 +36,8 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public List<OrderDTO> getProductOption() {
-		return mapper.getProductOption();
+	public List<OrderDTO> getProductOption(String productCode) {
+		return mapper.getProductOption(productCode);
 	}
 
 }

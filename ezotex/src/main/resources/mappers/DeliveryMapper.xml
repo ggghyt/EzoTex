@@ -3,27 +3,70 @@
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
 
-	<select id="findAll" resultType="ProductDeliveryDTO">
-		SELECT  m.product_order_code,
-		        s.delivery_code,
-		        m.company_code,
-		        m.company,
-		        (SELECT s.product_name
-		         FROM ( SELECT product_code 
-		                FROM order_product ) m JOIN product_info s
-		                                         ON ( m.product_code = s.product_code)
-		        WHERE ROWNUM = 1) || ' 외 ' || 
-		        (SELECT count(1)
-		         FROM   order_product
-		         WHERE  product_order_code = m.product_order_code) AS summary,
-		        m.order_status,
-		        s.charger_name,
-		        m.order_date,
-		        m.delivery_request_deadline
-		FROM    order_list m LEFT JOIN delivery s
-		                            ON (m.product_order_code = s.product_order_code)
-		WHERE   m.product_order_code LIKE '%' || NVL(null, m.product_order_code) || '%'
-
+	<select id="findAll" resultType="ProductDeliveryDTO" parameterType="int">
+		WITH order_data AS (
+		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
+		           ROWNUM rn,
+		           m.product_order_code,
+		           m.company_code,
+		           m.company,
+		           m.order_status,
+		           m.charger,
+		           m.order_date,
+		           m.delivery_request_deadline,
+		           m.amount
+		    FROM order_list m
+		    WHERE m.amount BETWEEN NVL(null, 0) AND NVL(null, 999999999999) --가격 합계 조건
+		    AND   m.order_status = 'RS01'
+		    AND   ROWNUM <![CDATA[ <= ]]> #{cri.end}
+		)
+		, order_summary AS (
+		    SELECT t.product_order_code,
+		           MIN(f.product_name) || ' 외 ' || 
+		           ((SELECT COUNT(*) 
+		             FROM order_product 
+		             WHERE product_order_code = t.product_order_code) - 1) || '건' AS summary
+		    FROM order_product t JOIN product_info f 
+		                           ON t.product_code = f.product_code
+		    WHERE (t.product_code LIKE '%' || NVL(null, t.product_code) || '%' OR t.product_code IS NULL)
+		      AND (f.product_name LIKE '%' || NVL(null, f.product_name) || '%')
+		    GROUP BY t.product_order_code
+		)
+		, delivery_data AS (
+		    SELECT s.product_order_code,
+		           NVL(s.delivery_code, '미배정') AS delivery_code,
+		           NVL(s.charger_name, '미배정') AS charger_name
+		    FROM delivery s
+		    WHERE (s.delivery_code LIKE '%' || NVL(null, s.delivery_code) || '%' OR s.delivery_code IS NULL)
+		      AND (s.charger_name LIKE '%' || NVL(null, s.charger_name) || '%' OR s.charger_name IS NULL)
+		)
+		SELECT od.rn,
+		       od.product_order_code,
+		       NVL(dd.delivery_code, '미배정') AS delivery_code,
+		       od.company_code,
+		       od.company,
+		       os.summary,
+		       get_comm(od.order_status) AS order_status,
+		       NVL(dd.charger_name, '미배정') AS charger_name,
+		       od.order_date,
+		       od.delivery_request_deadline AS dedt
+		FROM order_data od LEFT JOIN delivery_data dd 
+		                          ON od.product_order_code = dd.product_order_code
+		                        JOIN order_summary os 
+		                          ON od.product_order_code = os.product_order_code
+		WHERE od.product_order_code LIKE '%' || NVL(null, od.product_order_code) || '%'
+		  AND od.company_code LIKE '%' || NVL(null, od.company_code) || '%'
+		  AND od.company LIKE '%' || NVL(null, od.company) || '%'
+		  AND od.order_status = NVL(null, od.order_status)
+		  AND od.order_date BETWEEN NVL(null, od.order_date) AND NVL(null, od.order_date)
+		  AND od.delivery_request_deadline BETWEEN NVL(null, od.delivery_request_deadline) AND NVL(null, od.delivery_request_deadline)
+		  AND od.rn <![CDATA[ >= ]]>#{cri.start}
+		ORDER BY od.product_order_code DESC
 	</select>
-
+	
+	<select id="getCount" resultType="int">
+		SELECT COUNT(product_order_code)
+		FROM order_list
+		WHERE order_status = 'RS01'
+	</select>
 </mapper>

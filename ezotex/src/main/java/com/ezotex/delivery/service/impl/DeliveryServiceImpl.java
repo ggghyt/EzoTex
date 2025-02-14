@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.delivery.dto.ProductDeliveryDTO;
+import com.ezotex.delivery.dto.SearchDTO;
 import com.ezotex.delivery.mappers.DeliveryMapper;
 import com.ezotex.delivery.service.DeliveryService;
 
@@ -16,11 +17,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
 	
-	private final DeliveryMapper deliveryMapper;
-	
+	private final DeliveryMapper mapper;
+
 	@Override
-	public List<ProductDeliveryDTO> getList() {
-		return deliveryMapper.findAll();
+	public List<ProductDeliveryDTO> getList(SearchDTO searchDTO) {
+		return mapper.findAll(searchDTO);
 	}
+
+	@Override
+	public int getCount() {
+		return mapper.getCount();
+	}
+
+
+
 	
 }
