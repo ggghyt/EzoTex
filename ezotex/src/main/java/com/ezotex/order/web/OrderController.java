@@ -37,13 +37,7 @@ public class OrderController {
 		List<OrderDTO> companyList = service.getCompanyList();
 		model.addAttribute("getCompanyList",companyList);
 	}
-	@GetMapping("/ProductCode")
-	public String ProductCode(Model model , @RequestParam(name="productCode") String productCode) {
-		List<OrderDTO> productOption = service.getProductOption(productCode);
-		model.addAttribute("getProductOption",productOption);
-		return "/order/OrderManagement";
-		
-	}
+
 //	@GetMapping("/OrderManagement")
 //	public String OrderManagement(Model model) {
 //		List<OrderVO> orderList = service.getOrderList();
