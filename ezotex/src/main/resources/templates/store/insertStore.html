@@ -184,7 +184,7 @@
 			        { header: "추천 위치", name: "dedt", align: "center"},
 			        { header: "창고위치", name: "창고위치", align: "center"},
 			  ],
-			  data: ""
+			  data: []
 		    });
 	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
 	    storeGrid.on('click', ev => {
@@ -212,11 +212,15 @@
 	   	* 입고 대기 제품 옵션 리스트 출력 및 그리드
 	   	*========================================================================
 	   	*/
-	   	
+	  
 	    const storeGrid3 = new Grid({
 		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
-		      api : {
-		    	      createData: { url: '/store/InsertTest', method: 'POST' , headers },  
+		      data: {
+		          api: {
+		        	  readData: { url: '/store/productCodeList', method: 'GET' , headers},
+		              modifyData: { url: '/store/InsertTest', method: 'POST', headers }
+		          },
+		          contentType: 'application/json'
 		      },
 	            scrollY: true,
 		        scrollX: false,
@@ -255,15 +259,26 @@
 		            { header: "입고할수량", name: "sizeXl", align: "center", editor: "text"},
 		            { header: "요청수량", name: "xl", align: "center" }
 		        ],
-	            data : ""
 		    });
 	    
 	    //저장
-	    InsertTest.addEventListener("click", function () {
+	     InsertTest.addEventListener("click", function () {
+	    	
 	    	storeGrid3.blur();
-	    	storeGrid3.request('createData');
+	    	storeGrid3.request('modifyData');
+	    	
 	    })
 	    
+	    
+	    
+	    
+	    
+	    storeGrid3.on('beforeRequest', (event) => {
+            event.requestHeaders = {
+                ...event.requestHeaders,
+                'productCode': "제발 넘억가주세요"
+            };
+        });
 	    
 	    // 선택한 제품코드 값 저장 변수
 	    let productCode = "";
@@ -284,7 +299,36 @@
 		    	fetch(`http://localhost:80/store/productCodeList?productCode=${data.productCode}`)
 		    		.then(rep => rep.json())
 		    		.then(data => {
-		    				storeGrid3.resetData(data);
+		    			
+			    			/*
+			    		   	*========================================================================
+			    		   	* 동적 컬럼 변환 코드
+			    		   	*========================================================================
+			    		   	*/
+		    			
+		    				let size = []
+		    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
+		    				
+		    				data.optionList.forEach(data => {
+		    					console.log(data.productSize);
+		    					size.push({
+					                header: data.productSize,
+					                name: data.productSize+'test',
+					                childNames: ['size'+data.productSize, data.productSize.toLowerCase()]
+					             })
+					             color.push({ header: "입고할수량", name: "size"+ data.productSize, align: "center", editor: "text"},
+					 		                { header: "요청수량", name: data.productSize.toLowerCase() , align: "center" },)
+		    				})
+		    				//console.log(JSON.stringify(size));
+			    			storeGrid3.setHeader({complexColumns:size});
+			    			storeGrid3.setColumns(color);
+		    				storeGrid3.resetData(data.qyList);
+		    				
+		    				/*
+			    		   	*========================================================================
+			    		   	* 동적 컬럼 변환 코드   END !!
+			    		   	*========================================================================
+			    		   	*/
 		    	})	
 	    	}
 	    	})

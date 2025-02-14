@@ -50,6 +50,12 @@
                  p.product_name
 	</select>
 	
+	<select id="findBySize">
+		SELECT get_comm(product_size) as product_size
+		FROM product_option
+		WHERE product_code = #{productCode}
+	</select>
+	
 	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
 	<select id="findByProductCode">
 		with temp as
@@ -60,9 +66,16 @@
 		        WHERE product_code = #{productCode})
 		select * from temp
 		pivot( sum(request_qy)
-		       for product_size in ('S' as S,'M' as M,'L' as L,'XL' as XL)
+		       for product_size in (
+		       <foreach collection="list" item="size" separator=",">
+                '${size.productSize}' AS ${size.productSize}
+               </foreach>)
 		)pvt
 	</select>
+	
+	<insert id="InsertProduct" parameterType="SizeDTO">
+	  
+	</insert>
 	
 	
 </mapper>
