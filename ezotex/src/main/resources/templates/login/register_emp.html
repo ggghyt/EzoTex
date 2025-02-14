@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 
 <head>
 <!-- Required meta tags -->
@@ -34,24 +34,27 @@
 								<img src="/images/logo-ezotex.png" alt="logo">
 							</div>
 							<h3 class="fs-3 fw-bold">| 사원 회원가입</h3>
-							<form class="pt-3" style="text-align: center;">
+							<form class="pt-3" style="text-align: center;" action="/emp_submit" method="post" enctype="multipart/form-data">
 								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 								<div>
 									<div class="form-group" style="width: 35%; display: inline-block; margin: 10px;">
-										<img id="preview" style="width: 90%" /> <input type="file"
-											onchange="readURL(this);" style="margin: 10px"
-											id="company_img">
+										<img id="preview" style="width: 90%" />
+										<input type="file" onchange="readURL(this);" style="margin: 10px" id="company_img">
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>부서</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="dept_code">
+											<select class="form-control form-control-lg" id="dept_code">
+												<option selected disabled>선택</option>
+											</select>
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>직급</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="position_code">
+											<select class="form-control form-control-lg" id="position_code">
+												<option selected disabled>선택</option>
+											</select>
 										</div>
 									</div>
 									<div class="form-group" style="width: 55%; display: inline-block; margin: 10px;">
@@ -59,13 +62,15 @@
 											<a style="color: red;"> * </a><a>아이디</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="emp_id">
+											<input type="text" class="form-control form-control-lg" oninput="id_unique()" id="emp_id">
+											<a style="color: red; display: none" id="id_fail"> 이미 존재하는 아이디입니다. </a>
+											<a style="color: green; display: none" id="id_success"> 이 아이디는 사용가능합니다. </a>
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>비밀번호</a>
 										</div>
 										<div class="form-group">
-											<input type="password" class="form-control form-control-lg" id="emp_password">
+											<input type="password" class="form-control form-control-lg" oninput="password_match()" id="emp_password">
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>비밀번호 확인</a>
@@ -79,7 +84,7 @@
 											<a style="color: red;"> * </a><a>이름</a>
 										</div>
 										<div class="form-group">
-											<input type="password" class="form-control form-control-lg" id="emp_name">
+											<input type="text" class="form-control form-control-lg" id="emp_name">
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>전화번호</a>
@@ -251,6 +256,50 @@
 				password_success.style.display = "block"
 			}
 		}
+		
+		function id_unique() {
+			let id = document.querySelector("#emp_id").value;
+			let result = 0
+			fetch('http://localhost:80/login/searchId?id=' + id)
+			.then((response) => response.json())
+			.then((data) => {
+				result = data
+				if (id.length == 0) {
+					id_fail.style.display = "none"
+					id_success.style.display = "none"
+				} else if (result == 0) {
+					id_fail.style.display = "none"
+					id_success.style.display = "block"
+				} else {
+					id_fail.style.display = "block"
+					id_success.style.display = "none"
+				}
+			})
+		}
+		fetch('http://localhost:80/login/deptList')
+		.then((response) => response.json())
+		.then((data) => {
+			let select_dept = document.querySelector("#dept_code");
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].deptCode);
+				o.innerText = data[i].deptName
+				select_dept.appendChild(o);
+			}
+		})
+		
+		fetch('http://localhost:80/login/positionList')
+		.then((response) => response.json())
+		.then((data) => {
+			let select_dept = document.querySelector("#position_code");
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].positionCode);
+				o.innerText = data[i].positionName
+				select_dept.appendChild(o);
+			}
+		})
+		
 	</script>
 </body>
 

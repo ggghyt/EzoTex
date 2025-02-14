@@ -1,5 +1,7 @@
 package com.ezotex.standard.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +19,7 @@ public class CompanyDTO {
 	private String addressSeq;
 	private String companyNumber;
 	private String companyImg;
+	private MultipartFile ecompanyImgFile;
 	private String section;
 	private int distance;
 	private int requireTime;

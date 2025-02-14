@@ -1,7 +1,12 @@
 package com.ezotex.standard.service;
 
-import com.ezotex.standard.dto.EmpLoginInfoDTO;
+import java.util.List;
+
+import com.ezotex.standard.dto.DeptDTO;
+import com.ezotex.standard.dto.PositionDTO;
 
 public interface StandardService {
-	EmpLoginInfoDTO EmpLoginInfo(String emp_id);
+	int searchId(String id);
+	List<DeptDTO> deptList();
+	List<PositionDTO> positionList();
 }
