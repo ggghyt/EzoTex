@@ -8,6 +8,6 @@ import com.ezotex.delivery.dto.DeliveryOrderListSearchDTO;
 public interface DeliveryService {
 	public List<ProductDeliveryDTO> getList(DeliveryOrderListSearchDTO searchDTO);
 	
-	public int getCount();
+	public int getCount(DeliveryOrderListSearchDTO searchDTO);
 	
 }

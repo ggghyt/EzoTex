@@ -1,6 +1,8 @@
 package com.ezotex.delivery.dto;
 
-import java.sql.Date;
+
+
+import java.util.Date;
 
 import lombok.Data;
 
@@ -19,17 +21,17 @@ public class DeliveryOrderListSearchDTO {
 	//납품담당자
 	String deliveryCharger;
 	//주문일시작
-	Date orderDateStart;
+	String orderDateStart;
 	//주문일끝
-	Date orderDateEnd;
+	String orderDateEnd;
 	//납기일시작
-	Date dedtStart;
+	String dedtStart;
 	//납기일끝
-	Date dedtEnd;
+	String dedtEnd;
 	//금액합계
-	int totalAmountStart;
+	Integer totalAmountStart;
 	//금액합계
-	int totalAmountEnd;
+	Integer totalAmountEnd;
 	//업체코드
 	String companyCode;
 	//업체명

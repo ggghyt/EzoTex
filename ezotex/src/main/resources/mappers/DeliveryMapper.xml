@@ -3,7 +3,7 @@
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
 
-	<select id="findAll" resultType="ProductDeliveryDTO" parameterType="int">
+	<select id="findAll" resultType="ProductDeliveryDTO" parameterType="DeliveryOrderListSearchDTO">
 		WITH order_data AS (
 		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
 		           ROWNUM rn,
@@ -17,19 +17,16 @@
 		           m.delivery_request_deadline,
 		           m.amount
 		    FROM order_list m
-		    WHERE m.amount BETWEEN NVL(null, m.amount) AND NVL(null, m.amount) --가격 합계 조건
-		    AND   ROWNUM <![CDATA[ <= ]]> #{cri.end}
 		)
 		, delivery_data AS (
 		    SELECT s.product_order_code,
 		           s.delivery_code AS delivery_code,
 		           s.charger_name AS charger_name
 		    FROM delivery s 
-		    WHERE (s.delivery_code LIKE '%' || NVL(null, s.delivery_code) || '%' OR s.delivery_code IS NULL)
-		      AND (s.charger_name LIKE '%' || NVL(null, s.charger_name) || '%' OR s.charger_name IS NULL)
-		      AND NOT EXISTS (SELECT delivery_code FROM packing)    --포장되기 전 데이터만 가져오기
 		)
-		    SELECT od.rn,
+		SELECT *
+		FROM(
+		    SELECT ROWNUM rn,
 		           od.product_order_code,
 		           NVL(dd.delivery_code, '미배정') AS delivery_code,
 		           od.company_code,
@@ -41,17 +38,29 @@
 		           od.delivery_request_deadline AS dedt
 		    FROM order_data od LEFT JOIN delivery_data dd 
 		                              ON od.product_order_code = dd.product_order_code
-		    WHERE od.product_order_code LIKE '%' || NVL(null, od.product_order_code) || '%'
-		      AND od.company_code LIKE '%' || NVL(null, od.company_code) || '%'
-		      AND od.company LIKE '%' || NVL(null, od.company) || '%'
-		      AND od.order_status = NVL(null, od.order_status)
-		      AND od.order_date BETWEEN NVL(null, od.order_date) AND NVL(null, od.order_date)
-		      AND od.delivery_request_deadline BETWEEN NVL(null, od.delivery_request_deadline) AND NVL(null, od.delivery_request_deadline)
-		      AND od.rn <![CDATA[ >= ]]>#{cri.start}
-		    ORDER BY od.product_order_code DESC
+		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)
+		    AND ROWNUM <![CDATA[ <= ]]>#{cri.end}
+		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>
+		      <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">
+		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})
+		      </if>
+		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)</if>
+		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )</if>
+		      <if test='cri.companyCode != null and cri.companyCode != ""'>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'</if>
+		      <if test='cri.companyName != null and cri.companyName != ""'>AND od.company LIKE '%' || #{cri.companyName} || '%'</if>
+		      <if test='cri.status != null and cri.status != ""'>AND od.order_status = #{cri.status}</if>
+		      <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})
+		      </if>
+		      <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})
+		      </if>
+		    	ORDER BY od.product_order_code DESC)rw
+        WHERE rw.rn <![CDATA[ >= ]]>#{cri.start}
+		    	
 	</select>
 	
-	<select id="getCount" resultType="int">
+	<select id="getCount" resultType="int" parameterType="DeliveryOrderListSearchDTO">
 		WITH order_data AS (
 		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
 		           ROWNUM rn,
@@ -65,26 +74,32 @@
 		           m.delivery_request_deadline,
 		           m.amount
 		    FROM order_list m
-		    WHERE m.amount BETWEEN NVL(null, m.amount) AND NVL(null, m.amount) --가격 합계 조건
 		)
 		, delivery_data AS (
 		    SELECT s.product_order_code,
 		           s.delivery_code AS delivery_code,
 		           s.charger_name AS charger_name
 		    FROM delivery s 
-		    WHERE (s.delivery_code LIKE '%' || NVL(null, s.delivery_code) || '%' OR s.delivery_code IS NULL)
-		      AND (s.charger_name LIKE '%' || NVL(null, s.charger_name) || '%' OR s.charger_name IS NULL)
-		      AND NOT EXISTS (SELECT delivery_code FROM packing)    --포장되기 전 데이터만 가져오기
 		)
 	    SELECT count(*)
-	    FROM order_data od LEFT JOIN delivery_data dd 
-	                              ON od.product_order_code = dd.product_order_code
-	    WHERE od.product_order_code LIKE '%' || NVL(null, od.product_order_code) || '%'
-	      AND od.company_code LIKE '%' || NVL(null, od.company_code) || '%'
-	      AND od.company LIKE '%' || NVL(null, od.company) || '%'
-	      AND od.order_status = NVL(null, od.order_status)
-	      AND od.order_date BETWEEN NVL(null, od.order_date) AND NVL(null, od.order_date)
-	      AND od.delivery_request_deadline BETWEEN NVL(null, od.delivery_request_deadline) AND NVL(null, od.delivery_request_deadline)
-	    ORDER BY od.product_order_code DESC
+		    FROM order_data od LEFT JOIN delivery_data dd 
+		                              ON od.product_order_code = dd.product_order_code
+		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)
+		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>
+		      <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">
+		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})
+		      </if>
+		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)</if>
+		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )</if>
+		      <if test='cri.companyCode != null and cri.companyCode != ""'>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'</if>
+		      <if test='cri.companyName != null and cri.companyName != ""'>AND od.company LIKE '%' || #{cri.companyName} || '%'</if>
+		      <if test='cri.status != null and cri.status != ""'>AND od.order_status = #{cri.status}</if>
+		      <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})
+		      </if>
+		      <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})
+		      </if>
+		    	ORDER BY od.product_order_code DESC
 	</select>
 </mapper>

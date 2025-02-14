@@ -32,16 +32,17 @@ public class DeliveryRestController {
 	@GetMapping("orderList")
 	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 			                        @RequestParam(name = "page", defaultValue = "1")int page,
-			                        @RequestParam(name = "searchOrderCode", required = false)String searchOrderCode
-			                        
+			                        DeliveryOrderListSearchDTO searchDTO
 			                        ) throws JsonMappingException, JsonProcessingException {
 
 
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+page);
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+searchDTO);
 		Paging paging = new Paging();
-		DeliveryOrderListSearchDTO searchDTO = new DeliveryOrderListSearchDTO();
+		//DeliveryOrderListSearchDTO searchDTO = new DeliveryOrderListSearchDTO();
 		
 		/*
-		 * @RequestParam(name = "searchDeliveryCode", required = false)String searchDeliveryCode,
+		  @RequestParam(name = "searchDeliveryCode", required = false)String searchDeliveryCode,
 	        @RequestParam(name = "searchOrderCharger", required = false)String searchOrderCharger,
 	        @RequestParam(name = "searchDeliveryCharger", required = false)String searchDeliveryCharger,
 	        @RequestParam(name = "searchOrderDateStart", required = false)Date searchOrderDateStart,
@@ -53,22 +54,23 @@ public class DeliveryRestController {
 	        @RequestParam(name = "searchCompanyCode", required = false)String searchCompanyCode,
 	        @RequestParam(name = "searchCompanyName", required = false)String searchCompanyName,
 	        @RequestParam(name = "searchStatus", required = false)String searchStatus
-		 
-		searchDTO.setOrderCode(searchOrderCode);
-		searchDTO.setDeliveryCode(searchDeliveryCode);
-		searchDTO.setOrderCharger(searchOrderCharger);
-		searchDTO.setDeliveryCharger(searchDeliveryCharger);
-		searchDTO.setOrderDateStart(searchOrderDateStart);
-		searchDTO.setOrderDateEnd(searchOrderDateEnd);
-		searchDTO.setDedtStart(searchOrderDedtStart);
-		searchDTO.setDedtEnd(searchOrderDedtEnd);
-		searchDTO.setTotalAmountStart(searchAmountStart);
-		searchDTO.setTotalAmountEnd(searchAmountEnd);
-		searchDTO.setCompanyCode(searchCompanyCode);
-		searchDTO.setCompanyName(searchCompanyName);
-		searchDTO.setStatus(searchStatus);
-		 * */
-		//검색조건
+		 */
+//		searchDTO.setOrderCode(searchOrderCode);
+//		searchDTO.setDeliveryCode(searchDeliveryCode);
+//		searchDTO.setOrderCharger(searchOrderCharger);
+//		searchDTO.setDeliveryCharger(searchDeliveryCharger);
+//		searchDTO.setOrderDateStart(searchOrderDateStart);
+//		searchDTO.setOrderDateEnd(searchOrderDateEnd);
+//		searchDTO.setDedtStart(searchOrderDedtStart);
+//		searchDTO.setDedtEnd(searchOrderDedtEnd);
+//		searchDTO.setTotalAmountStart(searchAmountStart);
+//		searchDTO.setTotalAmountEnd(searchAmountEnd);
+//		searchDTO.setCompanyCode(searchCompanyCode);
+//		searchDTO.setCompanyName(searchCompanyName);
+//		searchDTO.setStatus(searchStatus);
+		//위처럼 하드코딩 하지말고, DTO넣어서하면 한번에 들어감...
+		
+
 
 		
 		// 만들어야됨
@@ -79,35 +81,20 @@ public class DeliveryRestController {
 		searchDTO.setStart(paging.getFirst());	//시작
 		searchDTO.setEnd(paging.getLast());		//끝번호
 		
-		paging.setTotalRecord(service.getCount());
+		paging.setTotalRecord(service.getCount(searchDTO));
 
 		// 페이징처리
 		//paging.setTotalRecord(service.getCount());
 		
-		
 		// 페이징처리 만들어야됨
 		//paging.getPage();
 		//service.getCount();
-		log.info(service.getList(searchDTO).toString());
+		//log.info(service.getList(searchDTO).toString());
 		
 		////////////////getCount랑 getList에 searchDTO넣기 
-		return GridUtil.grid(paging.getPage(), service.getCount(), service.getList(searchDTO));
+		//return null;
+		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.getList(searchDTO));
 		
 	}
-	// 만들어야됨
-//	paging.setPageUnit(perPage);
-//
-//	// 페이징 조건
-//	searchDTO.setStart(paging.getFirst());
-//	searchDTO.setEnd(paging.getLast());
-//
-//	// 페이징처리
-//	paging.setTotalRecord(service.getCount(searchDTO));
-	
-	
-	// 페이징처리 만들어야됨
-//	paging.getPage());
-//	service.getCount(searchDTO));
-//	return GridUtil.grid(1, 100, service.DeliveryList());
-	
+
 }

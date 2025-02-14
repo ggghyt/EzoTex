@@ -25,8 +25,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 	}
 
 	@Override
-	public int getCount() {
-		return mapper.getCount();
+	public int getCount(DeliveryOrderListSearchDTO searchDTO) {
+		return mapper.getCount(searchDTO);
 	}
 
 

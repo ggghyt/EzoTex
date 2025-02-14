@@ -13,5 +13,5 @@ public interface DeliveryMapper {
 	public List<ProductDeliveryDTO> findAll(@Param("cri") DeliveryOrderListSearchDTO cri);
 	
 	//주문 등록건 전체 개수(페이징)
-	public int getCount();
+	public int getCount(@Param("cri") DeliveryOrderListSearchDTO searchDTO);
 }
