@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.standard.mappers.StandardMapper">
+<select id="searchId" resultType="int">
+select count(*) as count
+from
+(select emp_id as id
+from emp
+union
+select company_id
+from company)
+where id = #{id}
+</select>
+
+<select id="deptList" parameterType="DeptDTO">
+select dept_code, 
+       dept_name,
+       dept_no
+from dept
+order by dept_no asc
+</select>
+
+<select id="positionList" parameterType="PositionDTO">
+select position_code, 
+       position_name, 
+       position_no
+from position
+order by position_no asc
+</select>
+
+<insert id="insertEmp" parameterType="EmpDTO">
+insert into emp
+values(concat('emp', LPAD(EMP_SEQ.nextval, 4, 0)), 
+       #{empId}, 
+       #{empPassword}, 
+       #{empName}, 
+       #{empPhone}, 
+       #{empEmail}, 
+       #{addressSeq}, 
+       #{deptCode}, 
+       #{positionCode}, 
+       #{empImg}, 
+       sysdate, 
+       null
+)
+</insert>
+
+<insert id="insert_address">
+insert into address_list
+valies(ADDRESS_LIST_SEQ.nextval, 
+       #{addressNumber}, 
+       #{addressMain}, 
+       #{addressInfo},
+       #{addressReference}
+)
+</insert>
+
+<select id="search_address_seq" resultType="int">
+select address_seq
+where address_list
+where address_number = #{addressNumber}
+and address_main = #{addressMain}
+and address_info = #{addressInfo}
+and address_reference = #{addressReference}
+</select>
+
+</mapper>

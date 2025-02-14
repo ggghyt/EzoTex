@@ -2,6 +2,8 @@ package com.ezotex.standard.dto;
 
 import java.util.Date;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +20,7 @@ public class EmpDTO {
 	private String deptCode;
 	private String positionCode;
 	private String empImg;
+	private MultipartFile empImgFile;
 	private Date hireDate;
 	private Date fireDate;
 }
