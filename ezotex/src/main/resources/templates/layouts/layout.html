@@ -5,6 +5,8 @@
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
+  <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+  <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Star Admin2</title>
   <!-- plugins:css -->
@@ -48,6 +50,10 @@
 				}
 			}
 		}); 
+		var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content")
+        const headers={}
+        headers[token] = header;
   </script>
   
   <!-- comm.css (공통 css) -->

@@ -11,14 +11,20 @@
 <select id="getUser" resultMap="userMap">
 select *
 from
-(select emp_id as id,
-       emp_password as password, 
-       emp_name as name
+(select emp_code as code,
+        emp_id as id,
+        emp_password as password, 
+        emp_name as name, 
+        emp_email as email, 
+        emp_img as img
 from emp
 union
-select company_id, 
+select company_code,
+       company_id, 
        company_password,
-       company_name
+       company_name, 
+       company_email, 
+       company_img
 from company)
 where id = #{id}
 </select>

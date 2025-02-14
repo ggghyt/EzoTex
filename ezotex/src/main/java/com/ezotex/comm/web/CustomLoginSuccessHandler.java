@@ -21,8 +21,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 			Authentication auth) throws IOException, ServletException {
 		UserDto userDto = ((CustomUser)auth.getPrincipal()).getUserDto();
 		
+		request.getSession().setAttribute("code", (String)userDto.getCode());
 		request.getSession().setAttribute("id", (String)userDto.getId());
-		request.getSession().setAttribute("name", userDto.getName());
+		request.getSession().setAttribute("name", (String)userDto.getName());
+		request.getSession().setAttribute("email", (String)userDto.getEmail());
+		request.getSession().setAttribute("img", (String)userDto.getImg());
 		
 		List<String> roleNames = new ArrayList<>();
 		
