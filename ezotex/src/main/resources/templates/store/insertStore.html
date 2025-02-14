@@ -106,7 +106,7 @@
 						<div id="grid4"></div>
 						
 					<div class="d-flex justify-content-end mt-2">
-						<button class="btn btn-primary" style="margin:10px;">등록</button>
+						<button id="InsertTest" class="btn btn-primary" style="margin:10px;">등록</button>
 						<button class="btn btn-secondary" style="margin:10px;">초기화</button>
 					</div>
 					
@@ -171,7 +171,7 @@
 	   	*========================================================================
 	   	*/
 
-	   	
+	   	 
 	    const storeGrid2 = new Grid({
 		      el: document.getElementById('grid2'), // 컨테이너 엘리먼트
 		      rowHeaders: ['rowNum'],
@@ -215,6 +215,9 @@
 	   	
 	    const storeGrid3 = new Grid({
 		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
+		      api : {
+		    	      createData: { url: '/store/InsertTest', method: 'POST' },  
+		      },
 	            scrollY: true,
 		        scrollX: false,
 		        header: {
@@ -254,6 +257,13 @@
 		        ],
 	            data : ""
 		    });
+	    
+	    //저장
+	    InsertTest.addEventListener("click", function () {
+	    	storeGrid3.blur();
+	    	storeGrid3.request('createData');
+	    })
+	    
 	    
 	    // 선택한 제품코드 값 저장 변수
 	    let productCode = "";

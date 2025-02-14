@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
+import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.service.InventoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,5 +60,12 @@ public class InventoryRestController {
 	public List<StoreDeliveryDetailsDTO> findByProductCode(@RequestParam(name= "productCode")String productCode){
 		return service.findByProductCode(productCode);
 	}
+	
+	@PostMapping("InsertTest")
+	public String test(@ModelAttribute InventoryDTO Idto) {
+		
+		return "";
+	}
+
 	
 }
