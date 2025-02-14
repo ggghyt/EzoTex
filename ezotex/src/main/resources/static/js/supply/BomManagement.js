@@ -10,7 +10,7 @@ lclasBox.addEventListener('change', () => {
 	fetch(`/product/category/${lclas}`)
 	.then(response => response.json())
 	.then(data => {
-		data.console.log(data); // 해당 대분류에 속한 소분류 배열 출력
+		console.log(data); // 해당 대분류에 속한 소분류 배열 출력
 		sclasBox.innerHTML = '';
 		sclasBox.append(nullOption);
 		
