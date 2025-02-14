@@ -1,10 +1,12 @@
 package com.ezotex.store.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.SizeDTO;
 
 public interface InventoryService {
 
@@ -18,6 +20,9 @@ public interface InventoryService {
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode);
 	
 	// 제품코드 기반 옵션 리스트
-	public List<StoreDeliveryDetailsDTO> findByProductCode(String productCode);
+	public Map<String, Object> findByProductCode(String productCode);
+	
+	// 제품 입고 등록
+	public boolean InsertProduct(List<SizeDTO> list); 
 	
 }

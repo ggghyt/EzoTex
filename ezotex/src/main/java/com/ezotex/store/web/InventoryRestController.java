@@ -6,12 +6,14 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ezotex.comm.GridData;
 import com.ezotex.comm.GridUtil;
-import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.service.InventoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,14 +59,15 @@ public class InventoryRestController {
 
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
-	public List<StoreDeliveryDetailsDTO> findByProductCode(@RequestParam(name= "productCode")String productCode){
+	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode){
 		return service.findByProductCode(productCode);
 	}
 	
 	@PostMapping("InsertTest")
-	public String test(@ModelAttribute InventoryDTO Idto) {
-		
-		return "";
+	public String test(@RequestBody GridData<SizeDTO> sdata) {
+		service.InsertProduct(sdata.getCreatedRows());
+		System.out.println(sdata);
+		return "redirect:store/insertStore";
 	}
 
 	
