@@ -4,6 +4,7 @@
 
 
 	<select id="findAll" resultType="ProductDeliveryDTO" parameterType="DeliveryOrderListSearchDTO">
+		--주문정보 조회
 		WITH order_data AS (
 		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
 		           ROWNUM rn,
@@ -18,12 +19,14 @@
 		           m.amount
 		    FROM order_list m
 		)
+		-- 납품등록정보 조회
 		, delivery_data AS (
 		    SELECT s.product_order_code,
 		           s.delivery_code AS delivery_code,
 		           s.charger_name AS charger_name
 		    FROM delivery s 
 		)
+		-- 위 두개 쿼리문 결과 조인
 		SELECT *
 		FROM(
 		    SELECT ROWNUM rn,
@@ -38,26 +41,35 @@
 		           od.delivery_request_deadline AS dedt
 		    FROM order_data od LEFT JOIN delivery_data dd 
 		                              ON od.product_order_code = dd.product_order_code
-		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)
-		    AND ROWNUM <![CDATA[ <= ]]>#{cri.end}
-		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>
+		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)	--포장 등록 전 목록
+		    AND ROWNUM <![CDATA[ <= ]]>#{cri.end}	--페이징
+		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>	-- 주문번호
 		      <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">
-		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})
+		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})	-- 가격 합계
 		      </if>
-		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)</if>
-		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )</if>
-		      <if test='cri.companyCode != null and cri.companyCode != ""'>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'</if>
-		      <if test='cri.companyName != null and cri.companyName != ""'>AND od.company LIKE '%' || #{cri.companyName} || '%'</if>
-		      <if test='cri.status != null and cri.status != ""'>AND od.order_status = #{cri.status}</if>
+		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>
+		      	AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)	--납품 코드
+		      </if>
+		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>
+		      	AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )	-- 납품 담당자
+		      </if>
+		      <if test='cri.companyCode != null and cri.companyCode != ""'
+		      	>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'	-- 회사 코드
+		      </if>
+		      <if test='cri.companyName != null and cri.companyName != ""'>
+		      	AND od.company LIKE '%' || #{cri.companyName} || '%'	-- 회사명
+		      </if>
+		      <if test='cri.status != null and cri.status != ""'>
+		      	AND od.order_status = #{cri.status}	-- 상태
+		      </if>
 		      <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})
+		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})	-- 주문일
 		      </if>
 		      <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})
+		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})	-- 납기일
 		      </if>
-		    	ORDER BY od.product_order_code DESC)rw
+		    ORDER BY od.product_order_code DESC)rw	--페이징 정보 담은 내용
         WHERE rw.rn <![CDATA[ >= ]]>#{cri.start}
-		    	
 	</select>
 	
 	<select id="getCount" resultType="int" parameterType="DeliveryOrderListSearchDTO">
@@ -101,5 +113,44 @@
 		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})
 		      </if>
 		    	ORDER BY od.product_order_code DESC
+	</select>
+	
+	<select id="getOrderInfo" parameterType="String">
+		WITH order_info AS (
+		    SELECT ol.product_order_code AS product_order_code,
+		           ol.company_code AS company_code,
+		           ol.charger AS charger, 
+		           ol.amount AS amount,
+		           op.product_code AS product_code,
+		           pi.product_name AS product_name
+		    FROM   order_list ol JOIN order_product op
+		                           ON (ol.product_order_code = op.product_order_code)
+		                         JOIN product_info pi
+		                           ON (op.product_code = pi.product_code)
+		    WHERE  ol.product_order_code = #{product_order_code}
+			),
+			qy_sum AS(
+			    SELECT sum(qy) AS req_qy,
+			           product_order_code
+			    FROM   order_product
+			    GROUP BY product_order_code
+			),
+			company_info AS (
+			    SELECT cp.company_code AS company_code,
+			           al.address_main || al.address_info AS address
+			    FROM   company cp JOIN address_list al
+			                        ON (cp.address_seq = al.address_seq)
+			)
+			SELECT m.charger AS charger,
+			       t.req_qy AS req_qy,
+			       m.amount AS amount,
+			       s.address AS address,
+			       m.product_code AS product_code,
+			       m.product_name AS product_name
+			FROM   order_info m JOIN company_info s
+			                       ON (m.company_code = s.company_code)
+			                    JOIN qy_sum t
+			                      ON (m.product_order_code = t.product_order_code)
+	
 	</select>
 </mapper>
