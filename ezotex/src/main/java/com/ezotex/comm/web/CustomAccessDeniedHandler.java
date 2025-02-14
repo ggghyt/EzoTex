@@ -31,6 +31,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("not error");
+        response.sendRedirect("/login/main");
     }
 }
