@@ -7,8 +7,10 @@ import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.dto.BomDTO;
 
 public interface BomService {
-	List<BomDTO> listBom();
-	BomDTO infoBom(String bomCode);
+	// bom 등록할 제품 전체 조회
 	List<Map<String, Object>> listBomProduct(ProductDTO product);
 	int countBomProduct(ProductDTO product);
+	
+	// bom 등록할 자재 전체 조회
+	List<Map<String, Object>> listBomMaterial(ProductDTO product);
 }

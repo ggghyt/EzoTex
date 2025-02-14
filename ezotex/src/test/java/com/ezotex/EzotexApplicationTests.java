@@ -1,7 +1,6 @@
 package com.ezotex;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,7 +17,6 @@ class EzotexApplicationTests {
 	
 	@Test
 	void contextLoads() {
-		log.info(mapper.listBom().toString());
 	}
 
 

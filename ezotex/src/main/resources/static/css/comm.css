@@ -12,6 +12,10 @@
 	right: 2px;
 }
 
+.bg-blue {
+	background-color: #dceffa;
+}
+
 .pointer {
 	cursor: pointer;
 }
@@ -20,11 +24,21 @@
 	word-break: keep-all;
 }
 
-.bg-blue {
-	background-color: #dceffa;
+.text-overflow {
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+input {
+	padding: 10px !important;
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 select {
 	background-color: #fff !important;
 	color: black !important;
+	appearance: auto !important;
 }
