@@ -10,4 +10,6 @@ public class OrderInfoDTO {
 	private String address;
 	private String productCode;
 	private String productName;
+	private String remark;
+	private String productOrderCode;
 }

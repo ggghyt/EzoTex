@@ -122,12 +122,14 @@
 		           ol.charger AS charger, 
 		           ol.amount AS amount,
 		           op.product_code AS product_code,
-		           pi.product_name AS product_name
+		           pi.product_name AS product_name,
+                   de.remark AS remark
 		    FROM   order_list ol JOIN order_product op
 		                           ON (ol.product_order_code = op.product_order_code)
 		                         JOIN product_info pi
 		                           ON (op.product_code = pi.product_code)
-		    WHERE  ol.product_order_code = #{product_order_code}
+                            LEFT JOIN delivery de
+                                   ON (ol.product_order_code = de.product_order_code)
 			),
 			qy_sum AS(
 			    SELECT sum(qy) AS req_qy,
@@ -141,16 +143,18 @@
 			    FROM   company cp JOIN address_list al
 			                        ON (cp.address_seq = al.address_seq)
 			)
-			SELECT m.charger AS charger,
+			SELECT m.product_order_code AS product_order_code,
+			       m.charger AS charger,
 			       t.req_qy AS req_qy,
 			       m.amount AS amount,
 			       s.address AS address,
 			       m.product_code AS product_code,
-			       m.product_name AS product_name
+			       m.product_name AS product_name,
+                   m.remark AS remark
 			FROM   order_info m JOIN company_info s
 			                       ON (m.company_code = s.company_code)
 			                    JOIN qy_sum t
 			                      ON (m.product_order_code = t.product_order_code)
-	
+			WHERE  m.product_order_code = #{product_order_code}
 	</select>
 </mapper>

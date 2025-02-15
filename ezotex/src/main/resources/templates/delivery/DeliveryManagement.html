@@ -117,6 +117,7 @@
 			.input-details {
 				display: flex;
 				line-height: 1.9;
+				justify-content: center;
 			}
 			.completeBtn-section {
 				display: flex;
@@ -314,30 +315,7 @@
 	        
 	        
 	        
-	        let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
-			
-	        grid.on('focusChange', ev => {
-	            // 배경색 클래스 적용
-	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-	            lastClicked = ev.rowKey; // 선택된 행 기억
 
-	            // 선택한 정보 가져오기
-	            let selected = grid.getRow(ev.rowKey);
-	            
-	            console.log(selected);
-	            document.querySelector('.input-company-code').value = selected.company;
-	            document.querySelector('.input-company-name').value = selected.companyCode;
-	            document.querySelector('.input-order-date').value = selected.orderDate;
-	            document.querySelector('.input-dedt').value = selected.dedt;
-	            /*구매업체코드, 구매업체명,
-	            납품주소, 주문일, 납기일
-	            주문담당자, 납품담당자,
-	            제품수량합계, 주문금액합계,
-	            비고
-	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
-	            
-	        }); 
 	        function searchOrderList() {
 	        	grid.readData(1, {
 	        		orderCode: document.querySelector('.search-order-code').value,
@@ -365,35 +343,72 @@
         		document.querySelector('.search-bar select')
 	        }
 	        
-	        //주문 헤더정보
-	        
+
+			let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
+			
 	        
 	        //제품 목록
-	        const productListgrid = new Grid({
-	            el: document.getElementById('productListgrid'),
-	            bodyHeight: 250,
-	            scrollY: true,
-		        scrollX: false,
-	            rowHeaders: ['rowNum'],
-	            columns: [
-	                { header: "제품코드", name: "productCode"},
-	                { header: "대분류", name: "lclas"},
-	                { header: "소분류", name: "sclas"},
-	                { header: "제품명", name: "productName"},
-	                { header: "출고량합계", name: "qy"}
-	            ],
-	            data: [
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                { productCode: "", lclas: "", sclas: "", productName: "", qy: "" },
-	                
-	            ]
-	        });
+
+			const productListgrid = new Grid({
+				el: document.getElementById('productListgrid'),
+				bodyHeight: 250,
+				scrollY: true,
+				scrollX: false,
+				rowHeaders: ['rowNum'],
+				columns: [
+					{ header: "주문번호", name: "productOrderCode", hidden: true},
+					{ header: "제품코드", name: "productCode"},
+					{ header: "제품명", name: "productName"},
+					{ header: "출고량합계", name: "reqQy"}
+				]
+			});
+
+			
+			
+	        grid.on('focusChange', ev => {
+	            // 배경색 클래스 적용
+	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	            lastClicked = ev.rowKey; // 선택된 행 기억
+
+	            // 선택한 정보 가져오기
+	            let selected = grid.getRow(ev.rowKey);
+	            
+	            console.log(selected);
+	            document.querySelector('.input-company-code').value = selected.company;
+	            document.querySelector('.input-company-name').value = selected.companyCode;
+	            document.querySelector('.input-order-date').value = selected.orderDate;
+	            document.querySelector('.input-dedt').value = selected.dedt;
+	            /*구매업체코드, 구매업체명,
+	            납품주소, 주문일, 납기일
+	            주문담당자, 납품담당자,
+	            제품수량합계, 주문금액합계,
+	            비고
+	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
+	            
+				//주문 상세정보 가져오기
+		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
+	    		.then(rep => rep.json())
+	    		.then(data => {
+	    				console.log(data);
+	    				
+	    				let sum = 0;
+	    				data.forEach(e => {sum += e.reqQy});	//주문합계 구하기
+	    				
+	    				
+	    				document.querySelector('.input-address').value = data[0].address;	//납품 주소
+	    				document.querySelector('.input-total-price').value = data[0].amount;	//금액 합계
+	    				document.querySelector('.input-order-charger').value = data[0].charger;	//주문담당자
+	    				document.querySelector('.input-total-qy').value = sum;	//주문 합계
+	    				document.querySelector('.input-memo').value = data[0].remark;	//비고
+	    				
+	    				productListgrid.resetData(data);
+	    				
+	    			})
+	    		
+	        }); 
+	        
+
 			
 	        //제품 상세 수량
 		    const productDetailgrid = new Grid({
