@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.delivery.dto.ProductDeliveryDTO;
 import com.ezotex.delivery.dto.DeliveryOrderListSearchDTO;
+import com.ezotex.delivery.dto.OrderInfoDTO;
 
 public interface DeliveryMapper {
 	
@@ -14,4 +15,7 @@ public interface DeliveryMapper {
 	
 	//주문 등록건 전체 개수(페이징)
 	public int getCount(@Param("cri") DeliveryOrderListSearchDTO searchDTO);
+	
+	//주문 등록건 단건조회
+	public List<OrderInfoDTO> getOrderInfo(String prdOrderCode);
 }
