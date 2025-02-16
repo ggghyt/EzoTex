@@ -23,7 +23,7 @@
 		GROUP by product_code
 	</select> -->
 	
-	<!-- 위 두 쿼리 합친거(데이터 없어서 테스트 못해봄) -->
+	<!-- 납품 코드 기반 납품목록 -->
 	<select id="DeliveryList" resultType="StoreDeliveryDTO">
 		SELECT d.delivery_code,
 		       d.order_date,
@@ -41,7 +41,7 @@
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
 		SELECT p.product_code,
 		       p.product_name,
-		       sum(d.request_qy) as productQy
+		       sum(d.delivery_qy) as productQy
 		FROM delivery_details d join product_info p
 		on d.product_code = p.product_code
 		WHERE product_se = 'PT02'
@@ -50,6 +50,7 @@
                  p.product_name
 	</select>
 	
+	<!-- 제품코드별 사이즈 -->
 	<select id="findBySize">
 		SELECT get_comm(product_size) as product_size_info
 		FROM product_option
@@ -62,13 +63,13 @@
 	<select id="findByProductCode">
 		with temp as
 		     (SELECT   product_color,
-		               product_size,
+		               UPPER(get_comm(product_size)) as product_size,
 		               product_code,
-		               request_qy
+		               delivery_qy
 		        FROM DELIVERY_DETAILS
 		        WHERE product_code = #{productCode})
 		select * from temp
-		pivot( sum(request_qy)
+		pivot( sum(delivery_qy)
 		       for product_size in (
 		       <foreach collection="list" item="size" separator=",">
                 '${size.productSizeInfo}' AS ${size.productSizeInfo}
@@ -76,6 +77,8 @@
 		)pvt
 	</select>
 	
+	
+	<!-- 제품옵션별 등록 -->
 	<insert id="InsertProduct" parameterType="SizeDTO">
 	  INSERT INTO inventory(lot,
                             product_code,
@@ -98,6 +101,14 @@
 		       sysdate,
 		       'PT02')
 	</insert>
+	
+	<update id="UpdateDeliveryDtails" parameterType="StoreDeliveryDetailsDTO">
+		UPDATE delivery_details
+        SET delivery_qy = delivery_qy - #{productSizeInfo}
+        WHERE product_code = #{productCode}
+        AND product_size = #{productSize}
+        AND product_color = #{productColor}
+	</update>
 	
 	
 </mapper>

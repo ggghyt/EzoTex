@@ -124,7 +124,8 @@
 	    
 	    //const Grid = tui.Grid;
 	    
-	    
+	    // 납품코드 저장 변수
+	    let deliveryCode = "";
 	   
 	   	/*
 	   	*========================================================================
@@ -190,7 +191,8 @@
 	    storeGrid.on('click', ev => {
 	    	
 	    	let data = storeGrid.getRow(ev.rowKey);
-	    	
+	    	deliveryCode = data.deliveryCode;
+	    	console.log(deliveryCode);
 	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
 	    		.then(rep => rep.json())
 	    		.then(data => {
@@ -267,21 +269,40 @@
 	    	storeGrid3.blur();
 	    	storeGrid3.request('modifyData');
 	    	
+	    	// 옵션 그리드 변경된 데이터
+	        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}`)
+	            .then(rep => rep.json())
+	            .then(data => {
+	                let size = [];
+	                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
+
+	                data.optionList.forEach(data => {
+	                    size.push(
+	                        {
+	                            header: data.productSizeInfo,
+	                            name: data.productSizeInfo + 'test',
+	                            childNames: ['size' + data.productSizeInfo, data.productSizeInfo.toLowerCase()]
+	                        },
+	                    );
+	                    color.push(
+	                        { header: "입고할수량", name: "size" + data.productSizeInfo, align: "center", editor: "text" },
+	                        { header: "요청수량", name: data.productSizeInfo.toLowerCase(), align: "center" },
+	                        { header: "제품코드", name: "productCode", hidden: true },
+	                        { header: "납품코드", name: deliveryCode, hidden: true }
+	                    );
+	                });
+
+	                storeGrid3.setHeader({ complexColumns: size });
+	                storeGrid3.setColumns(color);
+	                storeGrid3.resetData(data.qyList); 
+	            });
+	    	
 	    })
 	    
 	    
-	    
-	    
-	    
-	    storeGrid3.on('beforeRequest', (event) => {
-            event.requestHeaders = {
-                ...event.requestHeaders,
-                'productCode': "제발 넘억가주세요"
-            };
-        });
-	    
 	    // 선택한 제품코드 값 저장 변수
 	    let productCode = "";
+	    
 	    
 	    // 제품 상세보기 그리드 클릭 이벤트
 	    storeGrid2.on('click', ev => {
@@ -320,7 +341,8 @@
 		    					)
 					             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
 					 		                { header: "요청수량", name: data.productSizeInfo.toLowerCase() , align: "center" },
-					 		                { header: "제품코드", name: "productCode" , hidden: true })
+					 		                { header: "제품코드", name: "productCode" , hidden: true },
+					 		                { header: "납품코드", name: deliveryCode , hidden: true })
 		    				})
 		    				//console.log(JSON.stringify(size));
 			    			storeGrid3.setHeader({complexColumns:size});

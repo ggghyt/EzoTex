@@ -28,4 +28,7 @@ public interface InventoryMapper {
 	
 	// 제품 입고 등록
 	public int InsertProduct(SizeDTO SDto); 
+	
+	// 제품 입고별 입고해야될 수량 수정
+	public int UpdateDeliveryDtails(StoreDeliveryDetailsDTO detailDto);
 }
