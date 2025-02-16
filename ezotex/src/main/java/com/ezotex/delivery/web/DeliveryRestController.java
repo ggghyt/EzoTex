@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.delivery.dto.Paging;
-import com.ezotex.delivery.dto.DeliveryOrderListSearchDTO;
+import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.service.DeliveryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,9 +34,10 @@ public class DeliveryRestController {
 	@GetMapping("orderList")
 	public Map<String, Object> orderList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 			                        @RequestParam(name = "page", defaultValue = "1")int page,
-			                        DeliveryOrderListSearchDTO searchDTO
+			                        DeliveryRegistSearchDTO searchDTO
 			                        ) throws JsonMappingException, JsonProcessingException {
-
+		
+		log.info(searchDTO.toString());
 		Paging paging = new Paging();
 		
 		paging.setPageUnit(perPage);	//페이지당 최대 건수
@@ -52,9 +53,21 @@ public class DeliveryRestController {
 		
 	}
 	
+	@GetMapping("deliveryList")
+	public String deliveryList() {
+		return "성공";
+	}
+	
 	@GetMapping("orderInfo")
 	public List<OrderInfoDTO> orderInfo(@RequestParam(name = "orderCode")String orderCode) {
 		return service.getOrderInfo(orderCode);
 	}
-
+	
+	// 제품코드 기반 옵션 리스트
+	@GetMapping("productCodeList")
+	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode,
+			@RequestParam(name= "orderCode")String orderCode
+			){
+		return service.findByProductCode(productCode, orderCode);
+	}
 }

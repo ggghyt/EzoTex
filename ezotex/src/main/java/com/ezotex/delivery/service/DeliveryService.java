@@ -1,16 +1,20 @@
 package com.ezotex.delivery.service;
 
 import java.util.List;
+import java.util.Map;
 
-import com.ezotex.delivery.dto.ProductDeliveryDTO;
-import com.ezotex.delivery.dto.DeliveryOrderListSearchDTO;
+import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 
 public interface DeliveryService {
-	public List<ProductDeliveryDTO> getList(DeliveryOrderListSearchDTO searchDTO);
+	public List<OrderProductDeliveryDTO> getList(DeliveryRegistSearchDTO searchDTO);
 	
-	public int getCount(DeliveryOrderListSearchDTO searchDTO);
+	public int getCount(DeliveryRegistSearchDTO searchDTO);
 	
 	public List<OrderInfoDTO> getOrderInfo(String prdOrderCode);
+	
+	// 제품코드 기반 옵션 리스트
+	public Map<String, Object> findByProductCode(String productCode, String orderCode);
 	
 }

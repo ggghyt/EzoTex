@@ -3,158 +3,185 @@
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
 
-	<select id="findAll" resultType="ProductDeliveryDTO" parameterType="DeliveryOrderListSearchDTO">
-		--주문정보 조회
-		WITH order_data AS (
-		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
-		           ROWNUM rn,
-		           m.product_order_code,
-		           m.company_code,
-		           m.company,
-		           product_summary('order_product', product_order_code) AS summary,
-		           m.order_status,
-		           m.charger,
-		           m.order_date,
-		           m.delivery_request_deadline,
-		           m.amount
-		    FROM order_list m
-		)
-		-- 납품등록정보 조회
-		, delivery_data AS (
-		    SELECT s.product_order_code,
-		           s.delivery_code AS delivery_code,
-		           s.charger_name AS charger_name
-		    FROM delivery s 
-		)
-		-- 위 두개 쿼리문 결과 조인
+	<select id="findAll" resultType="OrderProductDeliveryDTO" parameterType="DeliveryRegistSearchDTO">
 		SELECT *
-		FROM(
-		    SELECT ROWNUM rn,
-		           od.product_order_code,
-		           NVL(dd.delivery_code, '미배정') AS delivery_code,
-		           od.company_code,
-		           od.company,
-		           od.summary,
-		           get_comm(od.order_status) AS order_status,
-		           NVL(dd.charger_name, '미배정') AS charger_name,
-		           od.order_date,
-		           od.delivery_request_deadline AS dedt
-		    FROM order_data od LEFT JOIN delivery_data dd 
-		                              ON od.product_order_code = dd.product_order_code
-		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)	--포장 등록 전 목록
-		    AND ROWNUM <![CDATA[ <= ]]>#{cri.end}	--페이징
-		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>	-- 주문번호
-		      <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">
-		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})	-- 가격 합계
-		      </if>
-		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>
-		      	AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)	--납품 코드
-		      </if>
-		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>
-		      	AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )	-- 납품 담당자
-		      </if>
-		      <if test='cri.companyCode != null and cri.companyCode != ""'
-		      	>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'	-- 회사 코드
-		      </if>
-		      <if test='cri.companyName != null and cri.companyName != ""'>
-		      	AND od.company LIKE '%' || #{cri.companyName} || '%'	-- 회사명
-		      </if>
-		      <if test='cri.status != null and cri.status != ""'>
-		      	AND od.order_status = #{cri.status}	-- 상태
-		      </if>
-		      <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})	-- 주문일
-		      </if>
-		      <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})	-- 납기일
-		      </if>
-		    ORDER BY od.product_order_code DESC)rw	--페이징 정보 담은 내용
-        WHERE rw.rn <![CDATA[ >= ]]>#{cri.start}
+		FROM (
+		    select info.*
+		    from (
+	                SELECT /*+ INDEX_DESC(ol PK_ORDER_LIST)*/
+	                       ROWNUM AS rn,
+	                       ol.product_order_code AS product_order_code,
+	                       ol.company_code AS company_code,
+	                       ol.company AS company,
+	                       product_summary('order_product', product_order_code) AS summary,
+	                       ol.charger AS orderCharger,
+	                       ol.order_date AS order_date,
+	                       ol.delivery_request_deadline AS dedt,
+	                       get_comm(ol.order_status) AS orderStatus
+	                FROM   order_list ol             
+	               	<where>	               	
+			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
+			                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
+			            </if>
+			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
+			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})              --금액합계
+			            </if>
+			            <if test="cri.productName != null and cri.productName != null">		    
+			                AND pi.product_name LIKE '%' || #{cri.productName} || '%'                --제품명
+			            </if>
+			            <if test="cri.productCode != null and cri.productCode != null">		    
+			                AND op.product_code LIKE '%' || #{cri.productCode} || '%'                --제품코드
+			            </if>
+			            <if test='cri.companyName != null and cri.companyName != ""'>
+			                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
+			            </if>
+			            <if test='cri.companyCode != null and cri.companyCode != ""'>
+			                AND ol.company_code LIKE '%' || #{cri.companyCode} || '%'                --업체코드
+			            </if>
+			            <if test='cri.orderCharger != null and cri.orderCharger != ""'>		    
+			                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
+			            </if>
+			            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+			                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+			            </if>
+			            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+			                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+			            </if>
+			            <choose>
+			                  <when test="cri.orderStatus != null and cri.orderStatus != ''"> 
+			                            AND order_status = #{cri.orderStatus}
+			                  </when>
+			                  <otherwise> 
+			                           AND order_status IN ('OR01', 'OR06')
+			                  </otherwise>
+			            </choose>
+	               	</where>                
+		    )info
+		    WHERE info.rn  <![CDATA[ <= ]]>#{cri.end}) page
+		WHERE page.rn  <![CDATA[ >= ]]>#{cri.start}
 	</select>
 	
-	<select id="getCount" resultType="int" parameterType="DeliveryOrderListSearchDTO">
-		WITH order_data AS (
-		    SELECT /*+ INDEX_DESC(m PK_ORDER_LIST) */
-		           ROWNUM rn,
-		           m.product_order_code,
-		           m.company_code,
-		           m.company,
-		           product_summary('order_product', product_order_code) AS summary,
-		           m.order_status,
-		           m.charger,
-		           m.order_date,
-		           m.delivery_request_deadline,
-		           m.amount
-		    FROM order_list m
-		)
-		, delivery_data AS (
-		    SELECT s.product_order_code,
-		           s.delivery_code AS delivery_code,
-		           s.charger_name AS charger_name
-		    FROM delivery s 
-		)
-	    SELECT count(*)
-		    FROM order_data od LEFT JOIN delivery_data dd 
-		                              ON od.product_order_code = dd.product_order_code
-		    WHERE NOT EXISTS (SELECT delivery_code FROM packing)
-		      <if test='cri.orderCode != null and cri.orderCode != ""'>AND od.product_order_code LIKE '%' || #{cri.orderCode} || '%'</if>
-		      <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">
-		      	AND od.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})
-		      </if>
-		      <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>AND (dd.delivery_code LIKE '%' || #{cri.deliveryCode} || '%' OR dd.delivery_code IS NULL)</if>
-		      <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>AND (dd.charger_name LIKE '%' || #{cri.deliveryCharger} || '%' )</if>
-		      <if test='cri.companyCode != null and cri.companyCode != ""'>AND od.company_code LIKE '%' || #{cri.companyCode} || '%'</if>
-		      <if test='cri.companyName != null and cri.companyName != ""'>AND od.company LIKE '%' || #{cri.companyName} || '%'</if>
-		      <if test='cri.status != null and cri.status != ""'>AND od.order_status = #{cri.status}</if>
-		      <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-		      	AND od.order_date BETWEEN TO_DATE(#{cri.orderDateStart}) AND TO_DATE(#{cri.orderDateEnd})
-		      </if>
-		      <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-		      	AND od.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}) AND TO_DATE(#{cri.dedtEnd})
-		      </if>
-		    	ORDER BY od.product_order_code DESC
+	<select id="getCount" resultType="int" parameterType="DeliveryRegistSearchDTO">
+			SELECT COUNT(*)
+              FROM   order_list ol             
+             	<where>	               	
+		            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
+		                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
+		            </if>
+		            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
+		                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})              --금액합계
+		            </if>
+		            <if test="cri.productName != null and cri.productName != null">		    
+		                AND pi.product_name LIKE '%' || #{cri.productName} || '%'                --제품명
+		            </if>
+		            <if test="cri.productCode != null and cri.productCode != null">		    
+		                AND op.product_code LIKE '%' || #{cri.productCode} || '%'                --제품코드
+		            </if>
+		            <if test='cri.companyName != null and cri.companyName != ""'>
+		                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
+		            </if>
+		            <if test='cri.companyCode != null and cri.companyCode != ""'>
+		                AND ol.company_code LIKE '%' || #{cri.companyCode} || '%'                --업체코드
+		            </if>
+		            <if test='cri.orderCharger != null and cri.orderCharger != ""'>		    
+		                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
+		            </if>
+		            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+		                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+		            </if>
+		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+		                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+		            </if>
+		            <choose>
+		                  <when test="cri.orderStatus != null and cri.orderStatus != ''"> 
+		                            AND order_status = #{cri.orderStatus}
+		                  </when>
+		                  <otherwise> 
+		                           AND order_status IN ('OR01', 'OR06')
+		                  </otherwise>
+		            </choose>
+             	</where>                
 	</select>
-	
+		
 	<select id="getOrderInfo" parameterType="String">
 		WITH order_info AS (
+		    --주문정보
 		    SELECT ol.product_order_code AS product_order_code,
 		           ol.company_code AS company_code,
 		           ol.charger AS charger, 
-		           ol.amount AS amount,
+		           ol.amount AS amount
+		    FROM order_list ol
+		),
+		products AS (
+		    --제품정보
+		    SELECT op.product_order_code AS product_order_code,
 		           op.product_code AS product_code,
 		           pi.product_name AS product_name,
-                   de.remark AS remark
-		    FROM   order_list ol JOIN order_product op
-		                           ON (ol.product_order_code = op.product_order_code)
-		                         JOIN product_info pi
-		                           ON (op.product_code = pi.product_code)
-                            LEFT JOIN delivery de
-                                   ON (ol.product_order_code = de.product_order_code)
-			),
-			qy_sum AS(
-			    SELECT sum(qy) AS req_qy,
-			           product_order_code
-			    FROM   order_product
-			    GROUP BY product_order_code
-			),
-			company_info AS (
-			    SELECT cp.company_code AS company_code,
-			           al.address_main || al.address_info AS address
-			    FROM   company cp JOIN address_list al
-			                        ON (cp.address_seq = al.address_seq)
-			)
-			SELECT m.product_order_code AS product_order_code,
-			       m.charger AS charger,
-			       t.req_qy AS req_qy,
-			       m.amount AS amount,
-			       s.address AS address,
-			       m.product_code AS product_code,
-			       m.product_name AS product_name,
-                   m.remark AS remark
-			FROM   order_info m JOIN company_info s
-			                       ON (m.company_code = s.company_code)
-			                    JOIN qy_sum t
-			                      ON (m.product_order_code = t.product_order_code)
-			WHERE  m.product_order_code = #{product_order_code}
+		           SUM(op.qy) AS total_qy
+		    FROM order_product op JOIN product_info pi 
+		                            ON op.product_code = pi.product_code
+		    WHERE op.product_order_code = #{product_order_code}
+		    GROUP BY op.product_order_code, op.product_code, pi.product_name
+		),
+		company_info AS (
+		    --회사정보
+		    SELECT cp.company_code AS company_code,
+		           al.address_main || ' ' || al.address_info AS address -- 주소 결합 시 공백 추가
+		    FROM company cp 
+		    JOIN address_list al ON cp.address_seq = al.address_seq
+		)
+		-- 주문번호, 주문담당자, 주문수량, 금액합계, 주소, 제품코드, 제품명
+		SELECT m.product_order_code AS product_order_code,
+		       m.charger AS charger,
+		       t.total_qy AS req_qy,
+		       m.amount AS amount,
+		       s.address AS address,
+		       t.product_code AS product_code,
+		       t.product_name AS product_name
+		FROM order_info m 
+		JOIN company_info s ON m.company_code = s.company_code
+		JOIN products t ON m.product_order_code = t.product_order_code
+		WHERE m.product_order_code = #{product_order_code}
 	</select>
+	
+	<select id="findBySize">
+		SELECT product_code,
+		       get_comm(product_size) AS product_size,
+		       product_size AS size_sort
+		FROM   product_option
+		WHERE  product_code = #{productCode}
+		GROUP BY product_size, product_code
+		ORDER BY SUBSTR(size_sort, 3)
+	</select>
+	
+	<!-- 제품 코드 기반 옵션,잔여량 리스트 -->
+	<select id="sizeFindByProductCode">
+		WITH product_size AS(
+                    SELECT  op.product_order_code AS order_code,
+                            op.product_code AS product_code ,
+                            op.product_color AS product_color,
+                            op.product_size AS product_size,
+                            (op.qy - NVL(dd.delivery_qy,0)) AS request_qy
+					FROM    order_product op LEFT JOIN delivery de
+					                                ON (op.product_order_code = de.product_order_code)
+					                         LEFT JOIN delivery_details dd
+					                                ON (de.delivery_code = dd.delivery_code
+					                                    AND op.product_code = dd.delivery_code 
+					                                    AND op.product_color = dd.product_color
+					                                    AND op.product_size = dd.product_size)
+                    WHERE op.product_code = #{productCode}
+                    AND   op.product_order_code = #{orderCode})
+			SELECT  *
+		 	FROM product_size
+			pivot( sum(request_qy)
+		            FOR product_size IN (
+
+				       <foreach collection="list" item="size" separator=",">
+		                '${size.productSize}' AS ${size.productSize}
+		               </foreach>
+
+		            )
+		)pvt
+	</select>
+	
 </mapper>
