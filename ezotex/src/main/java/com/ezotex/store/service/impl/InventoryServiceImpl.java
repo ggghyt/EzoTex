@@ -43,6 +43,7 @@ public class InventoryServiceImpl implements InventoryService {
 	// 납품리스트 기반 입고 제품 상세 조회
 	@Override
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
+		System.out.println("서비스 : " + DeliveryCode);
 		return mapper.findByDeliveryCode(DeliveryCode);
 	}
 
@@ -53,7 +54,6 @@ public class InventoryServiceImpl implements InventoryService {
 		Map<String, Object> map = new HashMap<>();
 		
 		List<StoreDeliveryDetailsDTO> list = mapper.findBySize(productCode);
-		
 		map.put("optionList", list);
 		map.put("qyList", mapper.findByProductCode(productCode, list));
 		
@@ -67,21 +67,22 @@ public class InventoryServiceImpl implements InventoryService {
         
 		list.forEach(data -> {
 
-	        String[] sizes = {data.getSizeS(), data.getSizeM(), data.getSizeL(), data.getSizeXL()};
-	        String[] sizeCode = {"SI01","SI02","SI03","SI04","SI05","SI06",};
+	        String[] sizes = {data.getSizeFREE(),data.getSizeXS(),data.getSizeS(), data.getSizeM(), data.getSizeL(), data.getSizeXL()};
+	        String[] sizeCode = {"SI01","SI02","SI03","SI04","SI05","SI06","SI07",};
 	        
 	        // productColor와 productCode는 동일하므로, 각각 한번만 출력
 	        String color = data.getProductColor();
 	        String productCode = data.getProductCode();
+	        String deliveryCode = data.getDeliveryCode();
 	        
 	        if (color != null) {
 	            for (int i = 0; i < sizes.length; i++) {
 	                if (sizes[i] != null) {
-	                	
 	                	SizeDTO sizeDto = new SizeDTO(sizeCode[i], sizes[i], color, productCode, name);
-	                	System.out.println("dto : " + sizeDto);
-	                	mapper.InsertProduct(sizeDto);
-	                    System.out.println("사이즈 : "+ sizeCode[i] + "입고수량: " + sizes[i] + ", 색상: " + color + ", 제품 코드: " + productCode + "이름 : " + name);
+	                	//mapper.InsertProduct(sizeDto);
+	                	StoreDeliveryDetailsDTO deliveryDetailDto = new StoreDeliveryDetailsDTO(sizeCode[i], sizes[i], color, productCode, deliveryCode);
+	                	System.out.println("서비스 : " + deliveryDetailDto);
+	                	mapper.UpdateDeliveryDtails(deliveryDetailDto);
 	                }
 	            }
 	        }
