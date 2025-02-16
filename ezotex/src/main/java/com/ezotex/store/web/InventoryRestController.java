@@ -60,13 +60,14 @@ public class InventoryRestController {
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
 	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode){
+		log.info(productCode);
 		return service.findByProductCode(productCode);
 	}
 	
 	@PostMapping("InsertTest")
 	public String test(@RequestBody GridData<SizeDTO> sdata) {
-		service.InsertProduct(sdata.getCreatedRows());
-		System.out.println(sdata);
+		service.InsertProduct(sdata.getUpdatedRows());
+		System.out.println("컨트롤러 : " + sdata);
 		return "redirect:store/insertStore";
 	}
 

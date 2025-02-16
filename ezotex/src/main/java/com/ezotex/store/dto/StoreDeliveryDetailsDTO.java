@@ -16,6 +16,8 @@ public class StoreDeliveryDetailsDTO {
 	private int deliveryQy;
 	private int unitPrice;
 	private String productSe;
+	// 변환된 사이즈값
+	private String productSizeInfo;
 	
 	// 제품명
 	private String productName;

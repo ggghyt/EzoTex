@@ -256,7 +256,7 @@
 		            { header: "요청수량", name: "m", align: "center" },
 		            { header: "입고할수량", name: "sizeL", align: "center", editor: "text"},
 		            { header: "요청수량", name: "l", align: "center" },
-		            { header: "입고할수량", name: "sizeXl", align: "center", editor: "text"},
+		            { header: "입고할수량", name: "sizeXL", align: "center", editor: "text"},
 		            { header: "요청수량", name: "xl", align: "center" }
 		        ],
 		    });
@@ -310,14 +310,17 @@
 		    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
 		    				
 		    				data.optionList.forEach(data => {
-		    					console.log(data.productSize);
-		    					size.push({
-					                header: data.productSize,
-					                name: data.productSize+'test',
-					                childNames: ['size'+data.productSize, data.productSize.toLowerCase()]
-					             })
-					             color.push({ header: "입고할수량", name: "size"+ data.productSize, align: "center", editor: "text"},
-					 		                { header: "요청수량", name: data.productSize.toLowerCase() , align: "center" },)
+		    					console.log(data.productSizeInfo);
+		    					size.push(
+		    					 {
+					                header: data.productSizeInfo,
+					                name: data.productSizeInfo+'test',
+					                childNames: ['size'+data.productSizeInfo, data.productSizeInfo.toLowerCase()]
+					             },
+		    					)
+					             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
+					 		                { header: "요청수량", name: data.productSizeInfo.toLowerCase() , align: "center" },
+					 		                { header: "제품코드", name: "productCode" , hidden: true })
 		    				})
 		    				//console.log(JSON.stringify(size));
 			    			storeGrid3.setHeader({complexColumns:size});
@@ -356,7 +359,7 @@
 	    	            case "sizeL":
 	    	                maxValue = Number(rowData["l"]); // L 요청 수량
 	    	                break;
-	    	            case "sizeXl":
+	    	            case "sizeXL":
 	    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
 	    	                break;
 	    	            default:
