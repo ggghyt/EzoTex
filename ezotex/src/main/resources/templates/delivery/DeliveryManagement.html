@@ -503,11 +503,51 @@
 				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
 	    		//allOrderInfo
 	    		for(let i=0; i<allOrderInfo.productDetails.length; i++) {
-		            console.log('작동');
-		            console.log('for문:', allOrderInfo.productDetails[i].qyList[i].productCode);
-		            console.log('코드:', productCode);
-					//사이즈 정보 담기
+		            //console.log('작동');
+		            //console.log('for문:', allOrderInfo.productDetails[i].qyList[i].productCode);
+		            //console.log('코드:', productCode);
+		            for(let j=0; j<allOrderInfo.productDetails[i].optionList.length; j++) {
+		            	//console.log('조건문 작동 안함');
+		            	//console.log('선택한 값:', productCode);
+		            	//console.log('검색중인 값:', allOrderInfo.productDetails[i].optionList[j].productCode);
+		            	//제품 코드가 같으면 납품 수량입력 그리드에 내용 추가
+
+		            	if(allOrderInfo.productDetails[i].optionList[j].productCode == productCode) {
+		            		console.log('조건문 작동');
+		            		
+		            		//console.log(allOrderInfo.productDetails[i].optionList[j].productSize);
+		            		//사이즈
+	            			let eachSize = allOrderInfo.productDetails[i].optionList[j].productSize;
+		            		size.push({
+				                header: eachSize,
+				                name: eachSize+'test',
+				                childNames: ['size'+eachSize, eachSize.toLowerCase()]
+				             })
+			    			//allOrderInfo.productDetails[i].productSize
+			    			color.push({ header: "출고수량", name: "size"+ eachSize, align: "center", editor: "text"},
+				 		                { header: "잔여수량", name: eachSize.toLowerCase() , align: "center" },)
+							productDetailgrid.resetData(allOrderInfo.productDetails[i].qyList[0]);
+		            		console.log(size);
+		            		console.log(color);
+							
+		            	}
+		            }
+
+	    		}
+	    		/*
+				color.push({ header: "주문코드", name: "orderCode", align: "center"},
+						{ header: "제품코드", name: "productCode", align: "center"});
+				
+				productDetailgrid.setHeader({complexColumns:size});
+				productDetailgrid.setColumns(color);
+				*/
+				
+				/*
+				
+			//사이즈 정보 담기
 					if(allOrderInfo.productDetails[i].qyList[i].productCode == productCode) {
+						console.log('작동!');
+						console.log(allOrderInfo.productDetails[i]);
 		    			size.push({
 			                header: allOrderInfo.productDetails[i].productSize,
 			                name: allOrderInfo.productDetails[i].productSize+'test',
@@ -518,15 +558,8 @@
 			 		                { header: "잔여수량", name: allOrderInfo.productDetails[i].productSize.toLowerCase() , align: "center" },)
 						productDetailgrid.resetData(allOrderInfo.productDetails[i].qyList[i]);
 					}
-	    		}
-	    		
-				color.push({ header: "주문코드", name: "orderCode", align: "center", hidden:true },
-						{ header: "제품코드", name: "productCode", align: "center", hidden:true });
 				
-				productDetailgrid.setHeader({complexColumns:size});
-				productDetailgrid.setColumns(color);
-				
-				/*
+				--------
 				data.optionList.forEach(data => {
 					//console.log(data.productSize);	//각 사이즈 출력
 					size.push({
