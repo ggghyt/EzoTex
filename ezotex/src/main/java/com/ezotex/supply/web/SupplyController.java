@@ -20,7 +20,8 @@ public class SupplyController {
 	
 	@GetMapping("bom")
 	public String bomPage(Model model) {
-		model.addAttribute("lclasList", prdService.listLclas());
+		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
+		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "/supply/BomManagement";
 	}
 		

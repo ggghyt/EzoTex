@@ -11,6 +11,13 @@ public interface BomService {
 	List<Map<String, Object>> listBomProduct(ProductDTO product);
 	int countBomProduct(ProductDTO product);
 	
+	// 선택한 제품의 옵션 조회
+	List<ProductDTO> listColor(String productCode);
+	List<ProductDTO> listSizeByColor(String productCode, String productColor);
+	
 	// bom 등록할 자재 전체 조회
-	List<Map<String, Object>> listBomMaterial(ProductDTO product);
+	List<BomDTO> listBomMaterial(ProductDTO product);
+	
+	// bom 등록
+	boolean insertBom(List<BomDTO> boms);
 }

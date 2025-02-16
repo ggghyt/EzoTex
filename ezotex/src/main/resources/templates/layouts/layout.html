@@ -38,7 +38,6 @@
   <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
   <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
   <script> // Toast UI Grid 테마 공통 적용
-		
   		var Grid = tui.Grid;
 		Grid.applyTheme('clean', {
 			cell : {
@@ -49,8 +48,8 @@
 				summary: {
 					background: '#f9f9f9'
 				},
-				currentRow: {
-					background: '#999'
+				editable: {
+					background: '#dceffa'
 				}
 			}
 		}); 
@@ -60,8 +59,9 @@
 		headers[tokenHeader] = token;
   </script>
   
-  <!-- comm.css (공통 커스텀 css) -->
+  <!-- comm.css, comm.js (공통 커스텀 css, js) -->
   <link rel="stylesheet" href="/css/comm.css">
+  <script src="/js/comm.js"></script>
   <!-- modal, toast 알림창, spinner... -->
   <script src="/js/modal.js"></script>
   <script src="/js/toastUi.js"></script>

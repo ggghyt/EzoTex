@@ -19,7 +19,7 @@
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<select class="form-control" id="lclas" name="lclas">
 								<option value="null">전체</option>
-								<option th:each="lclas : ${lclasList}" th:value="${lclas}">[[ ${lclas} ]]</option>
+								<option th:each="lclas : ${prdLclasList}" th:value="${lclas}">[[ ${lclas} ]]</option>
 							</select>
 						</div>
 						<label for="sclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
@@ -80,33 +80,36 @@
 					<hr>
 					<!-- BOM 선택 -->
 					<p class="fs-5 fw-bolder mb-4">자재 목록</p>
-					<div class="row">
-						<label for="mtr-lclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
-						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="mtr-lclas" name="mtr-lclas">
-								<option value="null">전체</option>
-							</select>
-						</div>
-						<label for="mtr-sclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
-						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="mtr-sclas" name="mtr-sclas">
-								<option value="null">전체</option>
-							</select>
-						</div>
-						
-						<label for="mtrilCode" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재코드</label>
-						<div class="col-8 col-lg-4 d-flex mb-2">
-							<input type="text" class="form-control" id="mtrilCode" name="mtrilCode">
-						</div>
-						<label for="mtrilName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재명</label>
-						<div class="col-8 col-lg-4 d-flex mb-2">
-							<input type="text" class="form-control" id="mtrilName" name="mtrilName">
-						</div>
-						
-						<div class="d-flex justify-content-center mt-2 mb-4">
-							<button type="button" id="prdSearchBtn" class="btn btn-secondary mag-glass-btn btn-sm me-2"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
-							<button type="reset" class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
-						</div>
+					<div class="col">
+						<form class="row">
+							<label for="mtr-lclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">대분류</label>
+							<div class="col-8 col-lg-4 d-flex mb-2">
+								<select class="form-control" id="mtr-lclas" name="mtr-lclas">
+									<option value="null">전체</option>
+									<option th:each="lclas : ${mtrLclasList}" th:value="${lclas}">[[ ${lclas} ]]</option>
+								</select>
+							</div>
+							<label for="mtr-sclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">소분류</label>
+							<div class="col-8 col-lg-4 d-flex mb-2">
+								<select class="form-control" id="mtr-sclas" name="mtr-sclas">
+									<option value="null">전체</option>
+								</select>
+							</div>
+							
+							<label for="mtrilCode" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재코드</label>
+							<div class="col-8 col-lg-4 d-flex mb-2">
+								<input type="text" class="form-control" id="mtrilCode" name="mtrilCode">
+							</div>
+							<label for="mtrilName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재명</label>
+							<div class="col-8 col-lg-4 d-flex mb-2">
+								<input type="text" class="form-control" id="mtrilName" name="mtrilName">
+							</div>
+							
+							<div class="d-flex justify-content-center mt-2 mb-4">
+								<button type="button" id="mtrSearchBtn" class="btn btn-secondary mag-glass-btn btn-sm me-2"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
+								<button type="reset" class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
+							</div>
+						</form>
 						
 						<div id="mtrGrid"></div>
 					</div>
@@ -117,6 +120,22 @@
 							<!-- 해당 제품의 BOM에 등록할 자재 -->
 							<p class="fs-5 fw-bolder mb-4">선택한 자재</p>
 							<div id="selectedMtrGrid"></div>
+							
+							<div class="row mt-3">
+								<label for="chargerName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">담당자</label>
+								<div class="col-8 col-lg-4 d-flex mb-2">
+									<input type="text" class="form-control" id="chargerName" readonly>
+								</div>
+								<label for="rgsde" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">최종등록일</label>
+								<div class="col-8 col-lg-4 d-flex mb-2">
+									<input type="text" class="form-control" id="rgsde" readonly>
+								</div>
+							</div>
+							<div class="text-end">
+								<button class="btn btn-primary">등록</button>
+								<button class="btn btn-secondary m-2">초기화</button>
+								<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+							</div>
 						</div>
 					</div>
 					
