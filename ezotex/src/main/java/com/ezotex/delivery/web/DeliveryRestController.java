@@ -1,6 +1,8 @@
 package com.ezotex.delivery.web;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +60,27 @@ public class DeliveryRestController {
 		return "성공";
 	}
 	
+	//주문정보
 	@GetMapping("orderInfo")
-	public List<OrderInfoDTO> orderInfo(@RequestParam(name = "orderCode")String orderCode) {
-		return service.getOrderInfo(orderCode);
+	public Map<String, Object> orderInfo(@RequestParam(name = "orderCode")String orderCode) {
+		Map<String, Object> map = new HashMap<>();
+		
+		List<OrderInfoDTO> orderInfo = service.getOrderInfo(orderCode);
+		
+		//주문번호
+		String productOrderCode = orderInfo.get(0).getProductOrderCode();
+		
+		//제품 사이즈, 수량 담을 리스트
+		List<Map<String, Object>> productDetails = new ArrayList<Map<String,Object>>();
+		
+		//orderInfo.get(0).getProductCode();
+		for(int i=0; i<orderInfo.size(); i++) {
+			Map<String, Object> eachProduct = service.findByProductCode(orderInfo.get(i).getProductCode(), productOrderCode);
+			productDetails.add(eachProduct);
+		}
+		map.put("orderInfo", orderInfo);
+		map.put("productDetails", productDetails);
+		return map;
 	}
 	
 	// 제품코드 기반 옵션 리스트
