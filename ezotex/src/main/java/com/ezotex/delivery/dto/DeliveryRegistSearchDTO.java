@@ -1,13 +1,10 @@
 package com.ezotex.delivery.dto;
 
 
-
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
-public class DeliveryOrderListSearchDTO {
+public class DeliveryRegistSearchDTO {
 	
 	int start;
 	int end;
@@ -36,6 +33,11 @@ public class DeliveryOrderListSearchDTO {
 	String companyCode;
 	//업체명
 	String companyName;
-	//상태
-	String status;
+	//주문 상태
+	String orderStatus;
+	//제품명
+	String productName;
+	//제품코드
+	String productCode;
+	
 }

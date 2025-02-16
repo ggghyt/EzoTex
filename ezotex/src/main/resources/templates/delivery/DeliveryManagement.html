@@ -138,32 +138,39 @@
 			<div class="col">			
 				<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 					
-					<b>납품 목록 검색</b>
+					<b>검색</b>
 										
 					<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
 					<div>
 						<span class="search-unit">
-							<span>주문 코드</span>
-							<input type="text" class="form-control search-order-code">
+							<span>구분</span>
+							<select class="search-distinction">
+								<option value="주문">주문</option>
+								<option value="출고">출고</option>
+							</select>
 						</span>
 						<span class="search-unit">
-							<span>납품 코드</span>
-							<input type="text" class="form-control search-delivery-code">
+							<span>주문 코드</span>
+							<input type="text" class="form-control search-code">
 						</span>
 						<span class="search-unit">
 							<span>주문담당자</span>
-							<input type="text" class="form-control search-order-charger">
+							<input type="text" class="form-control search-charger">
 						</span>
 						<span class="search-unit">
-							<span>남품담당자</span>
-							<input type="text" class="form-control search-delivery-charger">
+							<span>업체코드</span>
+							<input type="text" class="form-control search-company-code"> 
 						</span>
 						<span class="search-unit">
+							<span>업체명</span>
+							<input type="text" class="form-control search-company-name"> 
+						</span>
+						<span class="search-unit search-status-group">
 							<span>상태</span>
 							<select class="search-status">
 								<option value="">전체</option>
-								<option value="RS01">등록전</option>
-								<option value="RS02">등록완료</option>
+								<option value="OR01">대기</option>
+								<option value="OR06">분할출고</option>
 							</select>
 						</span>
 
@@ -174,28 +181,19 @@
 						
 						<span class="search-unit">
 							<span>주문일</span>
-							<input type="date" class="form-control search-order-date-start"> <b class="dash">-</b> 
-							<input type="date" class="form-control search-order-date-end">
+							<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+							<input type="date" class="form-control search-date-end">
 						</span>
 						<span class="search-unit">
 							<span>납기일</span>
-							<input type="date" class="form-control search-order-dedt-start"> <b class="dash">-</b> 
-							<input type="date" class="form-control search-order-dedt-end">
+							<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+							<input type="date" class="form-control search-dedt-end">
 						</span>
 						<span class="search-unit">
 							<span>급액합계</span>
 							<input type="number" class="form-control search-amount-start"> <b class="dash">-</b> 
 							<input type="number" class="form-control search-amount-end">
 						</span>
-						<span class="search-unit">
-							<span>업체코드</span>
-							<input type="text" class="form-control search-company-code"> 
-						</span>
-						<span class="search-unit">
-							<span>업체명</span>
-							<input type="text" class="form-control search-company-name"> 
-						</span>
-
 						<div class="btn-section">						
 							<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 							<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
@@ -203,7 +201,7 @@
 					</div>
 				</div>
 				<div class="card card-body mt-3 order-list">
-					<b>주문 목록</b>
+					<b>목록</b>
 					<div id="grid"></div>
 				</div>
 			</div>	
@@ -261,13 +259,13 @@
 					<div class="p-3 mb-2 bg-secondary text-dark card detailAmount">
 						<span class="input-details">
 							
-							<span>재고</span>
-							<input type="number" class="form-control" disabled>
 							<span>주문수량</span>
+							<input type="number" class="form-control" disabled>
+							<span>잔여수량</span>
 							<input type="number" class="form-control" disabled>
 							<span>출고수량</span>
 							<input type="number" class="form-control">
-							<button class="btn btn-secondary">수량<br>등록</button>
+							<button class="btn btn-secondary temp-save">수량<br>등록</button>
 						</span>
 					</div>
 				</div>
@@ -276,14 +274,19 @@
 					<button class="btn btn-secondary">초기화</button>
 				</div>
 			</div>
+			<div id="toastContainer" class="toast-container"></div>
 		</div>
 		
 		
 		<script>
-			//
+		
+			//검색 구별
+			let distinction = '/delivery/orderList';
+		
+			//주문목록 그리드
 		    const dataSource = {
 		  	      api: {
-		  	          readData: { url: '/delivery/orderList' , method: 'GET' },
+		  	          readData: { url: distinction , method: 'GET' },
 		  	        },
 		  	      contentType: 'application/json',
 		  	    };  
@@ -301,12 +304,11 @@
 	  	      	},
 	            columns: [
 	                { header : "주문코드", name: "productOrderCode"},
-	                { header : "납품코드", name: "deliveryCode"},
 	                { header : "업체코드", name: "companyCode"},
-	                { header : "구매업체명", name: "company"},
+	                { header : "업체명", name: "company"},
 	                { header : "요약", name: "summary"},
 	                { header : "상태", name: "orderStatus"},
-	                { header : "남품담당자", name: "chargerName"},
+	                { header : "주문담당자", name: "orderCharger"},
 	                { header : "주문일", name: "orderDate"},
 	                { header : "납기일", name: "dedt"}
 	            ],
@@ -314,23 +316,49 @@
 	        });
 	        
 	        
-	        
-
+	        //document.querySelector(".search-distinction").value == "주문" ? "주문코드" : "출고코드"
+	        //document.querySelector('[data-column-name="productOrderCode"]').innerHTML = '새로운 주문코드';
+	        //document.querySelector('[data-column-name="orderCharger"]').innerHTML = '새로운 주문코드';
+			document.querySelector(".search-distinction").addEventListener("change", (e) => {
+			    //console.log(e.target.value);  // 선택된 값을 확인
+			    
+			  
+			    
+		        if (e.target.value === '주문') {
+			        document.querySelector('[data-column-name="productOrderCode"]').innerHTML = '주문코드';
+			        document.querySelector('[data-column-name="orderCharger"]').innerHTML = '주문담당자';
+			        document.querySelector(".search-status-group").style.display = 'flex';
+			        
+			    } else if (e.target.value === '출고') {
+			        document.querySelector('[data-column-name="productOrderCode"]').innerHTML = '출고코드';
+			        document.querySelector('[data-column-name="orderCharger"]').innerHTML = '출고담당자';
+			        document.querySelector(".search-status-group").style.display = 'none';
+			    }
+		        
+			});
+			
 	        function searchOrderList() {
+	        	
+	        	if(document.querySelector(".search-distinction").value == '주문') {	        		
+		        	distinction = '/delivery/orderList';
+	        	} else {
+	        		distinction = '/delivery/deliveryList';
+	        	}
+	        	console.log(distinction);
 	        	grid.readData(1, {
-	        		orderCode: document.querySelector('.search-order-code').value,
-	        		deliveryCode: document.querySelector('.search-delivery-code').value,
-	        		orderCharger:  document.querySelector('.search-order-charger').value,
-	        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
-	        		orderDateStart: document.querySelector('.search-order-date-start').value,
-	        		orderDateEnd: document.querySelector('.search-order-date-end').value,
-	        		dedtStart: document.querySelector('.search-order-dedt-start').value,
-	        		dedtEnd: document.querySelector('.search-order-dedt-end').value,
+	        		orderCode: document.querySelector('.search-code').value,
+	        		//deliveryCode: document.querySelector('.search-delivery-code').value,
+	        		orderCharger:  document.querySelector('.search-charger').value,
+	        		//deliveryCharger: document.querySelector('.search-delivery-charger').value,
+	        		orderDateStart: document.querySelector('.search-date-start').value,
+	        		orderDateEnd: document.querySelector('.search-date-end').value,
+	        		dedtStart: document.querySelector('.search-dedt-start').value,
+	        		dedtEnd: document.querySelector('.search-dedt-end').value,
 	        		totalAmountStart: document.querySelector('.search-amount-start').value,
 	        		totalAmountEnd: document.querySelector('.search-amount-end').value,
 	        		companyCode: document.querySelector('.search-company-code').value,
 	        		companyName: document.querySelector('.search-company-name').value,
-	        		status: document.querySelector('.search-status').value
+	        		orderStatus: document.querySelector('.search-status').value
 	        		
 	        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
 	        }
@@ -348,7 +376,6 @@
 			
 	        
 	        //제품 목록
-
 			const productListgrid = new Grid({
 				el: document.getElementById('productListgrid'),
 				bodyHeight: 250,
@@ -375,8 +402,8 @@
 	            let selected = grid.getRow(ev.rowKey);
 	            
 	            console.log(selected);
-	            document.querySelector('.input-company-code').value = selected.company;
-	            document.querySelector('.input-company-name').value = selected.companyCode;
+	            document.querySelector('.input-company-code').value = selected.companyCode;
+	            document.querySelector('.input-company-name').value = selected.company;
 	            document.querySelector('.input-order-date').value = selected.orderDate;
 	            document.querySelector('.input-dedt').value = selected.dedt;
 	            /*구매업체코드, 구매업체명,
@@ -408,29 +435,159 @@
 	    		
 	        }); 
 	        
+	        
 
-			
+	        
 	        //제품 상세 수량
 		    const productDetailgrid = new Grid({
-			      el: document.getElementById('productDetailgrid'),
+			      el: document.getElementById('productDetailgrid'), // 컨테이너 엘리먼트
+			      data: {
+			          api: {
+			        	  readData: { url: '/delivery/productCodeList', method: 'GET' , headers},
+			              modifyData: { url: '/delivery/InsertTest', method: 'POST', headers }
+			          },
+			          contentType: 'application/json'
+			      },
 		            scrollY: true,
 			        scrollX: false,
+			        bodyHeight: 200,
+			        header: {
+			        	height: 70,
+			            complexColumns: [
+			              {
+			                header: 'S',
+			                name: 'stest',
+			                childNames: ['sizeS', 's']
+			              },
+			              {
+				             header: 'M',
+				             name: 'mtest',
+				             childNames: ['sizeM', 'm']
+				          },
+				          {
+					         header: 'L',
+					         name: 'ltest',
+					         childNames: ['sizeL', 'l']
+					      },
+					      {
+						      header: 'XL',
+						      name: 'xltest',
+						      childNames: ['sizeXl', 'xl']
+						  }
+			             ]},
 			        columns: [
-			            { header: "색상", name: "color"},
-			            { header: "S", name: "S"},
-			            { header: "M", name: "M"},
-			            { header: "L", name: "L"},
-			            { header: "XL", name: "XL"}
-			        ],
-			        data: [
-			            { color: "", S: "", M: "", L: "", XL: "" },
-			            { color: "", S: "", M: "", L: "", XL: "" },
-			            { color: "", S: "", M: "", L: "", XL: "" },
-			            { color: "", S: "", M: "", L: "", XL: "" },
-			            { color: "", S: "", M: "", L: "", XL: "" }
+			            { header: "색상/사이즈", name: "productColor", align: "center" },
+			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "s", align: "center" },
+			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "m", align: "center" },
+			            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "l", align: "center" },
+			            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "xl", align: "center" }
 			        ],
 			    });
+	        
+	        //DB로 보낼 데이터
+	        let sendDatas = null;
+	        
+	        document.querySelector('.temp-save').addEventListener('click', () => {
+	        	//console.log('동작');
+	        	//console.log('전체 데이터', productListgrid.getData());
+	        	
+	        })
+	        
+		    
+	        //제품 선택
+	        let productSelected = null;
+	        
+		 	// 제품 상세보기 그리드 클릭 이벤트
+		    productListgrid.on('focusChange', ev => {
+		    	let data = productListgrid.getRow(ev.rowKey);
+		    	
+		    	productListgrid.removeRowClassName(productSelected, 'bg-blue'); // 이전 선택 행 배경색 삭제
+		    	productListgrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	            productSelected = ev.rowKey; // 선택된 행 기억
+	            
+		    	// 선택한 제품코드 저장
+	    		productCode = data.productCode
+	    		
+		    	fetch(`/delivery/productCodeList?productCode=${data.productCode}&orderCode=${data.productOrderCode}`)
+		    		.then(rep => rep.json())
+		    		.then(data => {
+		    				console.log(data);
+		    			
+		    				let size = []
+		    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
+		    				
+		    				data.optionList.forEach(data => {
+		    					//console.log(data.productSize);	//각 사이즈 출력
+		    					size.push({
+					                header: data.productSize,
+					                name: data.productSize+'test',
+					                childNames: ['size'+data.productSize, data.productSize.toLowerCase()]
+					             })
+					             color.push({ header: "출고수량", name: "size"+ data.productSize, align: "center", editor: "text"},
+					 		                { header: "잔여수량", name: data.productSize.toLowerCase() , align: "center" },)
+		    				})
+		    				//console.log(JSON.stringify(size));
+		    				color.push({ header: "주문코드", name: "orderCode", align: "center", hidden:true },
+		    							{ header: "제품코드", name: "productCode", align: "center", hidden:true });
+		    				productDetailgrid.setHeader({complexColumns:size});
+		    				productDetailgrid.setColumns(color);
+		    				productDetailgrid.resetData(data.qyList);
+		    				
+		    		})
+		    	
+		    	})
+		    	
+		    	
+		    // 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
+		    	productDetailgrid.on('afterChange', ev => {
+		    	    console.log('선택 제품코드:', productCode);
 
+		    	    if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
+
+		    	    ev.changes.forEach(change => {
+		    	    	console.log(change.rowKey);
+		    	        let rowData = productDetailgrid.getRow(change.rowKey); // 변경된 행 데이터 가져오기
+		    	        let columnName = change.columnName; // 변경된 컬럼명
+		    	        let newValue = Number(change.value); // 변경된 값
+		    	        let maxValue = 0; // 허용 최대 값 초기화
+						
+		    	        console.log('변경된 데이터: ', productDetailgrid.getRow(change.rowKey));
+		    	        console.log('변경된 데이터 걸럼명: ', change.columnName);
+		    	        console.log('변경된 값: ', Number(change.value));
+		    	        
+		    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
+		    	        switch (columnName) {
+		    	            case "sizeS":
+		    	                maxValue = Number(rowData["s"]); // S 요청 수량
+		    	                break;
+		    	            case "sizeM":
+		    	                maxValue = Number(rowData["m"]); // M 요청 수량
+		    	                break;
+		    	            case "sizeL":
+		    	                maxValue = Number(rowData["l"]); // L 요청 수량
+		    	                break;
+		    	            case "sizeXl":
+		    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
+		    	                break;
+		    	            default:
+		    	                return; // 변경된 컬럼이 입고 수량 관련이 아니면 무시
+		    	        }
+
+		    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
+		    	        if (newValue > maxValue) {
+						    failToast(`입력값은 ${maxValue}보다 클 수 없습니다.`);
+						    
+						    // 기존 값으로 되돌리기
+						    rowData[columnName] = maxValue;
+						    productDetailgrid.setRow(change.rowKey, rowData);
+						}
+		    	    });
+		    	});	
+	        
     	</script>
 	</body>
 </html>
