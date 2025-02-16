@@ -13,6 +13,7 @@ public class ProductOptionDTO extends ProductCategoryDTO {
 	protected String productCode;
 	protected String productColor;
 	protected String productSize;
+	protected String sizeName; // 공통코드명
 	protected Integer unitPrice;
 	protected String discontinued;
 	

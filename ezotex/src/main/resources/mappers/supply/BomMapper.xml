@@ -29,31 +29,70 @@
 	<select id="countBomProduct" parameterType="ProductDTO">
 		SELECT COUNT(*)
 		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
-		                      LEFT JOIN product_option o ON p.product_code = o.product_code
-		WHERE  product_type = #{productType} 
+		WHERE  product_type = 'PT02' 
 		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
 		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
 	</select>
 	
-	<!-- 전체 자재 목록 + 해당 제폼-옵션 BOM 등록여부 조회 -->
-	<select id="listBomMaterial" resultType="map" parameterType="ProductDTO">
-		SELECT product_code mtril_code,
-		       product_name mtril_name,
-		       get_comm(unit_name) unit_name,
-		       CASE WHEN product_code IN
-		            (SELECT mtril_code
-		             FROM   bom_details
-		             WHERE  bom_code = (SELECT MAX(bom_code)
-		                                FROM   bom
+	<!-- 제품의 옵션 조회 -->
+	<select id="listColor" resultType="ProductDTO">
+		SELECT DISTINCT(o.product_color),
+		       CASE WHEN 'YN02' NOT IN (SELECT discontinued  -- 전체 단종된 경우 표시
+		                                FROM   product_option 
 		                                WHERE  product_code = #{productCode}
-		                                  AND  product_size = #{productSize}
-		                                  AND  product_color = #{productColor}))
-		             THEN 1 ELSE 0 END as bom_status -- 가장 최신 bom에 있는 자재면 1, 아니면 0
-		FROM   product_info
-		WHERE  product_type = 'PT01'
+		                                  AND  product_color = o.product_color)
+		            THEN 'Y' ELSE 'N' END discontinued
+		FROM   product_option o
+		WHERE  o.product_code = #{productCode}
+		ORDER  BY discontinued, product_color
 	</select>
-		
+	
+	<select id="listSizeByColor" resultType="ProductDTO">
+		SELECT DISTINCT(product_size),
+		       get_comm(product_size) size_name,
+		       get_comm(discontinued) discontinued
+		FROM   product_option
+		WHERE  product_code = #{productCode}
+		  AND  product_color = #{productColor}
+		ORDER  BY discontinued, product_size
+	</select>
+	
+	<!-- 전체 자재 목록 + 해당되는 BOM 조회 -->
+	<select id="listBomMaterial" resultType="BomDTO" parameterType="ProductDTO">
+		SELECT p.product_code mtril_code,
+		       p.product_name mtril_name,
+		       get_comm(p.unit_name) unit_name,
+		       d.require_qy,
+		       c.lclas,
+       		   c.sclas,
+       		   b.rgsde,
+       		   b.charger_name
+		FROM   bom_details d JOIN bom b ON d.bom_code = b.bom_code
+		                      AND b.bom_code = (SELECT MAX(bom_code) 
+		                                        FROM bom -- 가장 최신 bom 데이터만 추출
+		                                        WHERE product_code = #{productCode}
+		                                          <if test='productColor != null'>AND product_color = #{productColor}</if>
+		                                          <if test='productSize != null'>AND product_size = #{productSize}</if> )
+		                     RIGHT JOIN product_info p ON d.mtril_code = p.product_code
+                     		 LEFT JOIN  product_category c ON p.product_code = c.product_code
+		WHERE  p.product_type = 'PT01'
+		ORDER  BY require_qy DESC NULLS LAST, mtril_code DESC
+	</select>
+	
+	<!-- BOM 등록(헤더) -->
+	<insert id="insertBom" parameterType="BomDTO">
+		INSERT INTO bom (BOM_CODE, PRODUCT_CODE, PRODUCT_COLOR, PRODUCT_SIZE, CHARGER_CODE, CHARGER_NAME) 
+		VALUES ((SELECT 'BOM' || LPAD(NVL(SUBSTR(MAX(bom_code), -4), 0) + 1, 4, 0) FROM bom), -- 다음 번호 조회
+				#{productCode}, #{productColor}, #{productSize}, #{chargerCode}, #{chargerName})
+	</insert>
+	
+	<!-- BOM 등록(디테일) -->
+	<insert id="insertBomDetail" parameterType="BomDTO">
+		INSERT INTO bom_details (bom_detail_code, bom_code, mtril_code, require_qy) 
+		VALUES ((SELECT 'BOD' || LPAD(NVL(SUBSTR(MAX(bom_detail_code), -4), 0) + 1, 4, 0) FROM bom_details), -- 다음 번호 조회
+		        (SELECT MAX(bom_code) FROM bom), #{mtrilCode}, #{requireQy})
+	</insert>
 
 </mapper>

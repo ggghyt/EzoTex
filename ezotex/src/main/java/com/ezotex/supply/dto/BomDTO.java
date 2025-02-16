@@ -13,10 +13,16 @@ public class BomDTO {
 	private String productColor;
 	private String productSize;
 	private String chargerCode;
-	private String chargetName;
-	private Date registerDate;
+	private String chargerName;
+	private Date rgsde;
 	
 	private String bomDetailCode;
 	private String mtrilCode;
 	private Integer requireQy;
+	
+	// bom 내부 검색용
+	private String mtrilName;
+	private String unitName;
+	private String lclas;
+	private String sclas;
 }
