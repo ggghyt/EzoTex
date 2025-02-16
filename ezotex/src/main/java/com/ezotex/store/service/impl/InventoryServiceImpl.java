@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.InventoryDTO;
@@ -13,6 +14,7 @@ import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.mappers.InventoryMapper;
 import com.ezotex.store.service.InventoryService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 public class InventoryServiceImpl implements InventoryService {
 	
 	private final InventoryMapper mapper;
+	
+	 @Autowired
+	 private HttpSession session;  // HttpSession을 클래스 멤버로 주입받음
 	
 	// 테스트
 	@Override
@@ -57,8 +62,30 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	public boolean InsertProduct(List<SizeDTO> list) {
-		System.out.println(list);
-		list.forEach(data -> mapper.InsertProduct(data));
+		
+		String name = (String) session.getAttribute("name");
+        
+		list.forEach(data -> {
+
+	        String[] sizes = {data.getSizeS(), data.getSizeM(), data.getSizeL(), data.getSizeXL()};
+	        String[] sizeCode = {"SI01","SI02","SI03","SI04","SI05","SI06",};
+	        
+	        // productColor와 productCode는 동일하므로, 각각 한번만 출력
+	        String color = data.getProductColor();
+	        String productCode = data.getProductCode();
+	        
+	        if (color != null) {
+	            for (int i = 0; i < sizes.length; i++) {
+	                if (sizes[i] != null) {
+	                	
+	                	SizeDTO sizeDto = new SizeDTO(sizeCode[i], sizes[i], color, productCode, name);
+	                	System.out.println("dto : " + sizeDto);
+	                	mapper.InsertProduct(sizeDto);
+	                    System.out.println("사이즈 : "+ sizeCode[i] + "입고수량: " + sizes[i] + ", 색상: " + color + ", 제품 코드: " + productCode + "이름 : " + name);
+	                }
+	            }
+	        }
+	    });
 		return true;
 	}
 

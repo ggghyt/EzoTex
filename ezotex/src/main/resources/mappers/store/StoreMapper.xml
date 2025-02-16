@@ -51,9 +51,11 @@
 	</select>
 	
 	<select id="findBySize">
-		SELECT get_comm(product_size) as product_size
+		SELECT get_comm(product_size) as product_size_info
 		FROM product_option
 		WHERE product_code = #{productCode}
+		GROUP BY product_size
+        ORDER BY product_size
 	</select>
 	
 	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
@@ -61,6 +63,7 @@
 		with temp as
 		     (SELECT   product_color,
 		               product_size,
+		               product_code,
 		               request_qy
 		        FROM DELIVERY_DETAILS
 		        WHERE product_code = #{productCode})
@@ -68,13 +71,32 @@
 		pivot( sum(request_qy)
 		       for product_size in (
 		       <foreach collection="list" item="size" separator=",">
-                '${size.productSize}' AS ${size.productSize}
+                '${size.productSizeInfo}' AS ${size.productSizeInfo}
                </foreach>)
 		)pvt
 	</select>
 	
 	<insert id="InsertProduct" parameterType="SizeDTO">
-	  
+	  INSERT INTO inventory(lot,
+                            product_code,
+                            store_qy,
+                            inventory_qy,
+                            product_color,
+                            product_size,
+                            store_charger,
+                            storage_location,
+                            store_date,
+                            product_se) 
+		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
+		       #{productCode},
+		       #{sizeS},
+		       #{sizeS},
+		       #{productColor},
+		       #{sizeCode},
+		       #{name},
+		       'test',
+		       sysdate,
+		       'PT02')
 	</insert>
 	
 	
