@@ -52,7 +52,10 @@
 				<div class="card card-body mt-3">
 					
 					<!-- 제품 상세 정보 및 BOM 정보 -->
-					<p class="fs-5 fw-bolder mb-4">선택한 제품</p>
+					<div class="d-flex align-items-top">
+							<p class="fs-5 fw-bolder mb-4 me-3">선택한 제품</p>
+							<label for="remember">입력항목 기억하기<input type="checkbox" id="remember" class="ms-1"></label>
+					</div>
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
@@ -132,7 +135,7 @@
 								</div>
 							</div>
 							<div class="text-end">
-								<button class="btn btn-primary">등록</button>
+								<button id="insertBtn" class="btn btn-primary">등록</button>
 								<button class="btn btn-secondary m-2">초기화</button>
 								<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 							</div>

@@ -21,6 +21,6 @@ public interface BomMapper {
 	List<BomDTO> listBomMaterial(ProductDTO product);
 	
 	// bom 등록
-	int insertBom(BomDTO bom);
-	int insertBomDetail(BomDTO bom);
+	int insertBom(Object bom);
+	int insertBomDetail(Object bom);
 }

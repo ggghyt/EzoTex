@@ -10,6 +10,7 @@ import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.dto.BomDTO;
 import com.ezotex.supply.mappers.BomMapper;
 import com.ezotex.supply.service.BomService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,15 +47,21 @@ public class BomServiceImpl implements BomService {
 		return mapper.listBomMaterial(product);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public boolean insertBom(List<BomDTO> boms) {
+	public boolean insertBom(Map<String, Object> boms) {
 		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
-		int bomResult = mapper.insertBom(boms.getFirst());
-		boms.removeFirst();
+		int bomResult = mapper.insertBom(boms.get("headerObj"));
 		
-		int dtlResult = boms.size(); // 헤더를 제외한 사이즈를 추출해 비교
-		for(BomDTO bom : boms) {
+		// Object의 String타입을 Integer로 변환할 수 없음.
+		// Object => DTO로 변환 필요
+		ObjectMapper objMapper = new ObjectMapper();
+		List<Object> detailList = (List<Object>) boms.get("detailArr");
+		
+		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
+		for(Object detail : detailList) {
+			BomDTO bom = objMapper.convertValue(detail, BomDTO.class);
 			mapper.insertBomDetail(bom);
 			dtlResult--;
 		}

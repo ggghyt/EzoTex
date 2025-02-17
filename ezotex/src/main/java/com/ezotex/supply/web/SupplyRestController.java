@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.standard.dto.ProductDTO;
-import com.ezotex.supply.dto.BomDTO;
 import com.ezotex.supply.service.impl.BomServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,8 @@ public class SupplyRestController {
 	
 	// bom 등록
 	@PostMapping("bom")
-	public Boolean insertBom(@RequestBody List<BomDTO> bomlist) {
+	public Boolean insertBom(@RequestBody Map<String, Object> bomlist) {
+		log.info("bom::: " + bomlist.toString());
 		return service.insertBom(bomlist); // true/false 반환
 	}
 	
