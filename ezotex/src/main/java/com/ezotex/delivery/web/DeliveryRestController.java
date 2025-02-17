@@ -73,7 +73,7 @@ public class DeliveryRestController {
 		//제품 사이즈, 수량 담을 리스트
 		List<Map<String, Object>> productDetails = new ArrayList<Map<String,Object>>();
 		
-		//orderInfo.get(0).getProductCode();
+		//제품 주문정보 map으로 가져오고 list에 넣기
 		for(int i=0; i<orderInfo.size(); i++) {
 			Map<String, Object> eachProduct = service.findByProductCode(orderInfo.get(i).getProductCode(), productOrderCode);
 			productDetails.add(eachProduct);
