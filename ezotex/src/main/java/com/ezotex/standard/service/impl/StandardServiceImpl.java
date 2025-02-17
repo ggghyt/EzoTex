@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ezotex.standard.dto.AddressListDTO;
 import com.ezotex.standard.dto.DeptDTO;
+import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.mappers.StandardMapper;
 import com.ezotex.standard.service.StandardService;
@@ -30,6 +33,20 @@ public class StandardServiceImpl implements StandardService {
 	public List<PositionDTO> positionList() {
 		return mapper.positionList();
 	}
-	
+
+	@Override
+	@Transactional
+	public int insertEmp(EmpDTO empDTO, AddressListDTO addDTO) {
+		int add_result = mapper.insertAddress(addDTO);
+		String address_seq = mapper.findAddressSeq();
+		empDTO.setAddressSeq(address_seq);
+		int emp_result = mapper.insertEmp(empDTO);
+		return (emp_result == 1 && add_result == 1) ? 1 : 0;
+	}
+
+	@Override
+	public int idApproval(String id) {
+		return mapper.idApproval(id);
+	}
 	
 }

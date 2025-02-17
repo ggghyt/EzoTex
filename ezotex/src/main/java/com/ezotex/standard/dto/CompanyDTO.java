@@ -16,12 +16,18 @@ public class CompanyDTO {
 	private String companyPhone;
 	private String companyEmail;
 	private String companyName;
-	private String addressSeq;
 	private String companyNumber;
 	private String companyImg;
-	private MultipartFile ecompanyImgFile;
+	private MultipartFile companyImgFile;
 	private String section;
 	private int distance;
 	private int requireTime;
 	private String addressCode;
+	private String approval;
+	
+	private String addressSeq;
+	private String addressNumber;
+	private String addressMain;
+	private String addressInfo;
+	private String addressReference;
 }

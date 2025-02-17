@@ -16,11 +16,17 @@ public class EmpDTO {
 	private String empName;
 	private String empPhone;
 	private String empEmail;
-	private String addressSeq;
 	private String deptCode;
 	private String positionCode;
 	private String empImg;
 	private MultipartFile empImgFile;
 	private Date hireDate;
 	private Date fireDate;
+	private String approval;
+	
+	private String addressSeq;
+	private String addressNumber;
+	private String addressMain;
+	private String addressInfo;
+	private String addressReference;
 }

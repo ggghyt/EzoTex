@@ -224,10 +224,10 @@
           </li>
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="img-xs rounded-circle" src="/images/faces/face8.jpg" alt="Profile image" id="Thumbnail_user_main_img"> </a>
+              <img class="img-xs rounded-circle" th:src="|/img/${session.img}|"  alt="Profile image" id="Thumbnail_user_main_img"> </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
-                <img class="img-md rounded-circle" src="/images/faces/face8.jpg" alt="Profile image" id="Thumbnail_user_img">
+                <img class="img-md rounded-circle" th:src="'/img/'+${session.img}|" alt="Profile image" id="Thumbnail_user_img">
                 <p class="mb-1 mt-3 font-weight-semibold" id="Thumbnail_user_name">Allen Moreno</p>
                 <p class="fw-light text-muted mb-0" id="Thumbnail_user_email">allenmoreno@gmail.com</p>
               </div>
@@ -466,6 +466,11 @@
   <script src="/js/template/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
   <script>
+  let session_user_code;
+  let session_user_id;
+  let session_user_name;
+  let session_user_email;
+  let session_user_img;
   function logout() {
 	  let f = document.createElement('form');
 	  f.setAttribute('method', 'post');
@@ -477,11 +482,6 @@
 	  document.body.appendChild(f);
 	  f.submit();
   }
-  let session_user_code;
-  let session_user_id;
-  let session_user_name;
-  let session_user_email;
-  let session_user_img;
   fetch('http://localhost:80/login/userInfo')
   .then((response) => response.json())
   .then((data) => {
@@ -492,8 +492,6 @@
 	  session_user_img = data.img;
 	  document.querySelector("#Thumbnail_user_name").innerText = session_user_name
 	  document.querySelector("#Thumbnail_user_email").innerText = session_user_email
-	  document.querySelector("#Thumbnail_user_img").src = session_user_img
-	  document.querySelector("#Thumbnail_user_main_img").src = session_user_img
   })
   </script>
 </body>
