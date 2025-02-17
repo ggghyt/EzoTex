@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ezotex.standard.service.impl.ProductServiceImpl;
+import com.ezotex.store.service.impl.InventoryServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,14 @@ public class SupplyController {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
 		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "/supply/BomManagement";
+	}
+	
+	private final InventoryServiceImpl service;
+	// 자재/제품 입고 등록 페이지
+	@GetMapping("insertStore")
+	public String storeInsert(Model model) {
+		model.addAttribute("list",service.list());
+		return "supply/insertStore2";
 	}
 		
 }
