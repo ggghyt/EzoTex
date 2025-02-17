@@ -28,4 +28,7 @@ public class InventoryDTO {
 	private String productSe;
 	private String deliveryCode;
 	
+	// 제품명
+	private String productName;
+	
 }

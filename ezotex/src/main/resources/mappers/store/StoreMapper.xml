@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ezotex.store.mappers.InventoryMapper">
+<mapper namespace="com.ezotex.store.mappers.StoreMapper">
 
 	<!-- 테스트 -->
 	<select id="list" resultType="InventoryDTO">
@@ -102,6 +102,8 @@
 		       'PT02')
 	</insert>
 	
+	
+	<!-- 입고량에 따른 수정 -->
 	<update id="UpdateDeliveryDtails" parameterType="StoreDeliveryDetailsDTO">
 		UPDATE delivery_details
         SET delivery_qy = delivery_qy - #{productSizeInfo}

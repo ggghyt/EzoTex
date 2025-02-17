@@ -1,15 +1,149 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      layout:fragment="content">
-	<head>
-		<meta charset="UTF-8">
-		<title>이조텍스SCM</title>
-	</head>
-	<body>
-		<h3 class="fs-3 fw-bold">| 재고 조회</h3>
-		<div class="card card-body mt-3">
-			
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+
+	<div class="card card-body mt-3">
+		<div class="col-12 card card-body m-2">
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">납품코드</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">검색조건2</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
 		</div>
-	</body>
+
+
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<div id="productGrid"></div>
+			</div>
+
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">입고 등록</p>
+				<div id="productGrid2"></div>
+
+
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<!-- Toast UI Grid 스크립트 -->
+	<script>
+	    
+	
+		let productCode = "";
+
+	   	/*x
+	   	*========================================================================
+	   	* 입고 완료 제품 목록 그리드
+	   	*========================================================================
+	   	*/
+	   	const productData = {
+	   		    api: {
+	   		        readData: { url: 'http://localhost:80/store/productQyList', method: 'GET' }
+	   		    },
+	   		    contentType: 'application/json'
+	   		};
+
+	   	const productListGrid = new Grid({
+	   		   el: document.getElementById('productGrid'),
+	   		   rowHeaders: ['rowNum'],
+	   		   columnOptions: { resizable: true },
+	   		   columns: [
+	   		        { header: "제품 코드", name: "productCode", align: "center" },
+	   		        { header: "제품명", name: "productName", align: "center" },
+	   		        { header: "총 제품 수량", name: "inventoryQy", align: "center" }
+	   		   ],
+	   		   data: productData
+	   		});
+	   	
+	   	
+	   	
+	   	
+	   	const productGrid2 = new Grid({
+		      el: document.getElementById('productGrid2'), // 컨테이너 엘리먼트
+		      columns: [ 
+			        { header: "색상/사이즈", name: "productColor", align: "center"},    
+			  ],
+			  data: []
+		    });
+	   	
+	   	productListGrid.on('click', ev => {
+	   		let data = productListGrid.getRow(ev.rowKey);
+	   		productCode = data.productCode;
+	   		fetch(`http://localhost:80/store/productListInfo?productCode=${productCode}`)
+	   			.then(rep => rep.json())
+	   			.then(data => {
+	   				
+	   				let size = [];
+	   				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
+	   				
+	   				data.optionList.forEach(data => {
+	   					size.put(
+	   						{ 
+	   							header: data.productSizeInfo,
+	   						    name: data.productSizeInfo
+	   						}		
+	   					);
+	   				})
+	   				productGrid2.setHeader({ columns: size });
+	   				productGrid2.setColumns(color);
+	   				productGrid2.resetData(data);
+	   			})
+	   		
+	   	})
+
+	    
+	    /*
+	   	*========================================================================
+	   	* 입고 완료 제품 목록 그리드 END!!
+	   	*========================================================================
+	   	*/
+	    
+	   	</script>
+
+</body>
 </html>
