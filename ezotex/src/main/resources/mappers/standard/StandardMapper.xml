@@ -41,13 +41,14 @@ values(concat('emp', LPAD(EMP_SEQ.nextval, 4, 0)),
        #{positionCode}, 
        #{empImg}, 
        sysdate, 
-       null
+       null, 
+       '0'
 )
 </insert>
 
-<insert id="insert_address">
+<insert id="insertAddress" parameterType="EmpDTO">
 insert into address_list
-valies(ADDRESS_LIST_SEQ.nextval, 
+values(ADDRESS_LIST_SEQ.nextval, 
        #{addressNumber}, 
        #{addressMain}, 
        #{addressInfo},
@@ -55,13 +56,28 @@ valies(ADDRESS_LIST_SEQ.nextval,
 )
 </insert>
 
-<select id="search_address_seq" resultType="int">
-select address_seq
-where address_list
-where address_number = #{addressNumber}
-and address_main = #{addressMain}
-and address_info = #{addressInfo}
-and address_reference = #{addressReference}
+<select id="findAddressSeq" resultType="String">
+select *
+from(
+     select address_seq
+     from address_list
+     order by 1 desc
+)
+where rownum = 1
+</select>
+
+<select id="idApproval" resultType="int">
+select approval
+from (
+select emp_id as id,
+       approval
+from emp
+union
+select company_id,
+       approval
+from company
+)
+where id = #{id}
 </select>
 
 </mapper>

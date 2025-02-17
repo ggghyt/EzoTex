@@ -19,7 +19,7 @@ public class WebSecurityConfig {
 		http
 			.authorizeHttpRequests((requests) -> requests
 				
-				.requestMatchers("/loginProc", "/css/**", "/fonts/**", "/images/**", "/js/**", "/pages/**", "/partials/**", "/scss/**", "/vendors/**", "/login/**").permitAll()
+				.requestMatchers("/loginProc", "/css/**", "/fonts/**", "/images/**", "/js/**", "/pages/**", "/partials/**", "/scss/**", "/vendors/**", "/login/**", "/img/**").permitAll()
 				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY")
 				.requestMatchers("/*").hasRole("SUPPLY")
 				.anyRequest().authenticated()

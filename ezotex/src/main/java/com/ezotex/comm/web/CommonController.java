@@ -1,17 +1,27 @@
 package com.ezotex.comm.web;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ezotex.comm.dto.UserInfoDto;
+import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
+import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
 
@@ -84,5 +94,66 @@ public class CommonController {
 	@GetMapping("/positionList")
 	public List<PositionDTO> positionList() {
 		return service.positionList();
+	}
+	
+	// emp 회원 가입
+	@PostMapping("/emp_submit")
+	public String emp_submit(EmpDTO empDTO, RedirectAttributes attr) throws Exception {
+		MultipartFile file = empDTO.getEmpImgFile();
+		UUID uuid = UUID.randomUUID();
+		
+		String uuidFileName = uuid + "_" + file.getOriginalFilename();
+		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		empDTO.setEmpImg(uuidFileName);
+		
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+		String result = encoder.encode(empDTO.getEmpPassword());
+		empDTO.setEmpPassword(result);
+		
+		AddressListDTO addDTO = new AddressListDTO();
+		addDTO.setAddressNumber(empDTO.getAddressNumber());
+		addDTO.setAddressMain(empDTO.getAddressMain());
+		addDTO.setAddressInfo(empDTO.getAddressInfo());
+		addDTO.setAddressReference(empDTO.getAddressReference());
+		
+		service.insertEmp(empDTO, addDTO);
+		attr.addFlashAttribute("result", true);
+		
+		return "redirect:/login/main";
+	}
+	
+	// company 회원 가입
+	@PostMapping("/company_submit")
+	public String company_submit(CompanyDTO companyDTO, RedirectAttributes attr) throws Exception {
+		MultipartFile file = companyDTO.getCompanyImgFile();
+		UUID uuid = UUID.randomUUID();
+		
+		String uuidFileName = uuid + "_" + file.getOriginalFilename();
+		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		companyDTO.setCompanyImg(uuidFileName);
+		
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+		String result = encoder.encode(companyDTO.getCompanyPassword());
+		companyDTO.setCompanyPassword(result);
+		
+		AddressListDTO addDTO = new AddressListDTO();
+		addDTO.setAddressNumber(companyDTO.getAddressNumber());
+		addDTO.setAddressMain(companyDTO.getAddressMain());
+		addDTO.setAddressInfo(companyDTO.getAddressInfo());
+		addDTO.setAddressReference(companyDTO.getAddressReference());
+		
+		// 서비스 작성
+		
+		attr.addFlashAttribute("result", true);
+		
+		return "redirect:/login/main";
+	}
+	
+	
+	// 인증 여부 확인
+	@ResponseBody
+	@GetMapping("/idApproval")
+	public int idApproval(@RequestParam(name="id") String id) {
+		return service.idApproval(id);
 	}
 }
