@@ -41,12 +41,5 @@ public class OrderController {
 		String code = (String) session.getAttribute("code");
 		model.addAttribute("code",code);
 	}
-
-//	@GetMapping("/OrderManagement")
-//	public String OrderManagement(Model model) {
-//		List<OrderVO> orderList = service.getOrderList();
-//		model.addAttribute("orderList",orderList);
-//		return "order/OrderManagement";
-//	}
-
+	
 }
