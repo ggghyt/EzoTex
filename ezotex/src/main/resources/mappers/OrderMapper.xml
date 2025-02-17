@@ -25,5 +25,56 @@
 		GROUP BY product_color
 	</select>
 	<insert id="insertOrder">
+		INSERT INTO ORDER_LIST
+		(
+			product_order_code,
+			company,
+			company_representative,
+			company_tel,
+			charger,
+			delivery_request_deadline,
+			order_status,
+			company_code,
+			order_date,
+			emp_code,
+			remarks,
+			amount
+		)
+		VALUES
+		(
+			ORDER_SEQ.NEXTVAL,
+			#{company},
+			#{companyRepresentative},
+			#{companyTel},
+			#{charger},
+			#{deliveryRequestDeadline},
+			#{orderStatus},
+			#{companyCode},
+			sysdate,
+			#{empCode},
+			#{remarks},
+			#{amount}
+		)
+		INSERT INTO ORDER_PRODUCT
+		(
+			order_detail_code,
+			product_order_code,
+			product_code,
+			product_color,
+			product_size,
+			qy,
+			unit_price
+		)
+		VALUES
+		(
+			ORDER_DETAIL_SEQ.NEXTVAL,
+			#{PRODUCT_ORDER_CODE},
+			#{PRODUCT_CODE},
+			#{PRODUCT_COLOR},
+			#{PRODUCT_SIZE},
+			#{QY},
+			#{UNIT_PRICE}
+		)
+		
 	</insert>
 </mapper>
