@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ezotex.store.service.InventoryService;
+import com.ezotex.store.service.StoreService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/store/*")
 public class InventoryController {
 
-	private final InventoryService service;
+	private final StoreService service;
 	
 	@GetMapping("test")
 	public String test(Model model) {

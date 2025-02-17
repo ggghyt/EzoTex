@@ -1,122 +1,173 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      layout:fragment="content">
-	<head>
-		<meta charset="UTF-8">
-		<title>이조텍스SCM</title>
-		<!-- timePicker -->
-	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
-	    <script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
-	  
-	    <!-- datePicker -->
-	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
-	    <script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
-	  
-	  	<!-- paging -->
-	    <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
-	    <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
-	  
-	    <!-- toast grid -->
-	    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-	    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-		<style type="text/css">
-			#modalGrid {
-			    width: 100%;
-			    height: 400px; /* 또는 원하는 높이 설정 */
-			}
-		</style>
-	</head>
-	<body>
-	
-		<!-- Modal1 -->
-	   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	      <div class="modal-dialog modal-xl" >
-	         <div class="modal-content">
-	          <div class="modal-header">
-	             </div>
-	           <div class="card">
-	                <div class="card-body">
-	                  <div class="mb-3 row">
-	                <label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
-	                <div class="col-sm-10">
-	                  <input type="text" class="form-control" id="inputPassword" style="width:200px;">
-	                </div>
-	              </div>
-	                  <div class="mb-3 row">
-	                <label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
-	                <div class="col-sm-10">
-	                  <input type="text" class="form-control" id="inputPassword" style="width:200px;">
-	                </div>
-	              </div>
-	           
-	                  <div id="modalGrid"></div>
-	                 </div>
-	              </div>
-	            <div style="text-align: center; margin: 20px;">
-	               <button type="button" class="btn btn-outline-primary btn-fw">수정</button>
-	               <button type="button" class="btn btn-inverse-dark btn-fw"data-bs-dismiss="modal">취소</button>
-	           </div>
-	         </div>
-	         </div>
-	      </div>
-	
-	
-	
-		<div class="d-flex align-items-center">
-		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
-		<button class="btn btn-secondary" style="margin:10px;">자재 입고</button>
-		<button class="btn btn-secondary" style="margin:10px;">제품 입고</button>
-		</div>
-		<div class="card card-body mt-3">
-			<div class="col-12 card card-body m-2">
-				<div class="row g-3 align-items-center">
-			  		<div class="col-auto">
-			    		<label class="col-form-label">납품코드</label>
-			  		</div>
-			  		<div class="col-auto">
-			    		<input type="text" id="" class="form-control">
-			  		</div>
-				</div>
-				<div class="row g-3 align-items-center">
-			  		<div class="col-auto">
-			    		<label class="col-form-label">검색조건2</label>
-			  		</div>
-			  		<div class="col-auto">
-			    		<input type="text" id="" class="form-control">
-			  		</div>
-				</div>
-			</div>
-			
-			
-			<div class="row">
-				<div class="col-5 card card-body m-2">
-					<div id="grid"></div>
-  					<div id="pagination" class="tui-pagination"></div>
-				</div>
-				
-				<div class="col-5 card card-body m-2">
-					<p class="fs-5 fw-bolder mt-2">입고 등록</p>
-						<div id="grid2"></div>
-						
-					<p class="fs-5 fw-bolder mt-2">입고 수량 입력</p>
-						<div id="grid3"></div>
-						
-					<p class="fs-5 fw-bolder mt-2">불량 발생 내역</p>
-						<div id="grid4"></div>
-						
-					<div class="d-flex justify-content-end mt-2">
-						<button id="InsertTest" class="btn btn-primary" style="margin:10px;">등록</button>
-						<button class="btn btn-secondary" style="margin:10px;">초기화</button>
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style type="text/css">
+#modalGrid {
+	width: 100%;
+	height: 400px; /* 또는 원하는 높이 설정 */
+}
+</style>
+</head>
+<body>
+
+	<!-- Modal1 -->
+	<div class="modal fade" id="exampleModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header"></div>
+				<div class="card">
+					<div class="card-body">
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
+
+						<div id="modalGrid"></div>
 					</div>
-					
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
-			
 		</div>
-		
-	    <!-- Toast UI Grid 스크립트 -->
-	    <script>
+	</div>
+
+
+
+	<div class="d-flex align-items-center">
+		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
+		<button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
+		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button>
+	</div>
+	<div class="card card-body mt-3">
+		<div class="col-12 card card-body m-2">
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">납품코드</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">검색조건2</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<div id="grid"></div>
+				<div id="pagination" class="tui-pagination"></div>
+			</div>
+
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">입고 등록</p>
+				<div id="grid2"></div>
+
+				<p class="fs-5 fw-bolder mt-2">입고 수량 입력</p>
+				<div id="grid3"></div>
+				<button class="btn btn-danger" id="StoreDelete">불량 처리</button>
+
+				<p class="fs-5 fw-bolder mt-2">불량 발생 내역</p>
+				<div id="grid4"></div>
+
+				<div class="d-flex justify-content-end mt-2">
+					<button type="button" class="btn btn-primary registBtn"
+						data-bs-toggle="modal" data-bs-target="#registModal"
+						style="height: 45px; margin-top: 10px;">등록</button>
+					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<!-- 등록 버튼 클릭 -->
+
+	<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="InsertTest"
+						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Toast UI Grid 스크립트 -->
+	<script>
 	    
 	    let test = document.getElementById('pagination')
 	    
@@ -126,6 +177,15 @@
 	    
 	    // 납품코드 저장 변수
 	    let deliveryCode = "";
+	    // 불량 수량 저장 변수
+	    let sum = 0;
+	    // 제품명 저장 변수
+	    let productName = "";
+	    // 제품 색상 저장 변수
+	    let productColor = "";
+	    // 제품 코드 저장 변수
+	    let productCode = "";
+	    
 	   
 	   	/*
 	   	*========================================================================
@@ -187,11 +247,15 @@
 			  ],
 			  data: []
 		    });
+	    
 	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
 	    storeGrid.on('click', ev => {
 	    	
 	    	let data = storeGrid.getRow(ev.rowKey);
+	    	// 납품코드 재정의
 	    	deliveryCode = data.deliveryCode;
+	    	
+	    	console.log(productName);
 	    	console.log(deliveryCode);
 	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
 	    		.then(rep => rep.json())
@@ -247,7 +311,7 @@
 				      {
 					      header: 'XL',
 					      name: 'xltest',
-					      childNames: ['sizeXl', 'xl']
+					      childNames: ['sizeXL', 'xl']
 					  }
 		             ]},
 		        columns: [
@@ -301,12 +365,15 @@
 	    
 	    
 	    // 선택한 제품코드 값 저장 변수
-	    let productCode = "";
+	    
 	    
 	    
 	    // 제품 상세보기 그리드 클릭 이벤트
 	    storeGrid2.on('click', ev => {
 	    	let data = storeGrid2.getRow(ev.rowKey);
+	    	
+	    	productName = data.productName;
+	    	console.log(productName)
 	    	
 	    	// 창고 위치 컬럼 클릭 시 모달 출력
 	    	if(ev.columnName === '창고위치'){
@@ -369,6 +436,7 @@
 	    	        let columnName = change.columnName; // 변경된 컬럼명
 	    	        let newValue = Number(change.value); // 변경된 값
 	    	        let maxValue = 0; // 허용 최대 값 초기화
+	    	        
 
 	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
 	    	        switch (columnName) {
@@ -384,10 +452,18 @@
 	    	            case "sizeXL":
 	    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
 	    	                break;
+	    	            case "sizeXS":
+	    	            	maxValue = Number(rowData["xs"]);
+	    	            	break;
+	    	            case "sizeFREE":
+	    	            	maxValue = Number(rowData["free"]);
+	    	            	break;
 	    	            default:
 	    	                return; // 변경된 컬럼이 입고 수량 관련이 아니면 무시
 	    	        }
-
+	    	        
+					sum = maxValue - newValue
+					
 	    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
 	    	        if (newValue > maxValue) {
 					    alert(`입력값은 ${maxValue}보다 클 수 없습니다.`);
@@ -399,7 +475,7 @@
 	    	    });
 	    	});
 
-
+		
 	    
 	    /*
 	   	*========================================================================
@@ -412,31 +488,37 @@
 	   	
 	   	
 	   	
+	   	const storeGrid4 = new Grid({
+			      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
+		            scrollY: true,
+			        scrollX: false,
+			      rowHeaders: ['rowNum'],
+			      columns: [ 
+			        { header: "제품 코드", name: "productCode", editor: "text"},
+			        { header: "제품명", name: "productName", editor: "text"},
+			        { header: "색상", name: "orderDate", editor: "text"},
+			        { header: "사이즈", name: "dedt", editor: "text"},
+			        { header: "불량 수량", name: "dedt", editor: "text"},
+			        { header: "불량 사유", name: "dedt", editor: "text"},
+			      ],
+			      data: [],
+			    });
 	   	
 	   	
 	   	
-	   	
-	   	
-	   	
-	   	
-	   	
-	   	
-	   	
-	    const storeGrid4 = new Grid({
-		      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
-	            scrollY: true,
-		        scrollX: false,
-		      rowHeaders: ['rowNum'],
-		      columns: [ 
-		        { header: "제품 코드", name: "deliveryCode", editor: "text"},
-		        { header: "제품명", name: "companySe", editor: "text"},
-		        { header: "색상", name: "orderDate", editor: "text"},
-		        { header: "사이즈", name: "dedt", editor: "text"},
-		        { header: "불량 수량", name: "dedt", editor: "text"},
-		        { header: "불량 사유", name: "dedt", editor: "text"},
-		      ],
-		      data: dataSource,
-		    });
+	   	StoreDelete.addEventListener("click", function () {
+	   		console.log("클릭테스트")
+	   		let test = [
+	   			{
+	   				productCode: productCode,
+	   				productName: productName
+	   			}
+	   		]
+	   		
+	   		storeGrid4.resetData(test);
+	   		
+	   	})
+	    
 	    
 	    
 	    
@@ -487,10 +569,9 @@
 
 	    
 	    </script>
-	    
-	   <button type="button" class="btn btn-primary"
-                  data-bs-toggle="modal" data-bs-target="#exampleModal">
-                  ModalTest2</button>
-	    
-	</body>
+
+	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
+		data-bs-target="#exampleModal">ModalTest2</button>
+
+</body>
 </html>

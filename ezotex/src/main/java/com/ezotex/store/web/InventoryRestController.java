@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridData;
 import com.ezotex.comm.GridUtil;
+import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.service.InventoryService;
+import com.ezotex.store.service.StoreService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -28,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class InventoryRestController {
 
-	private final InventoryService service;
+	private final StoreService service;
+	private final InventoryService iService;
 	
 	@GetMapping("deliveryList")
 	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
@@ -60,16 +62,29 @@ public class InventoryRestController {
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
 	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode){
-		log.info(productCode);
 		return service.findByProductCode(productCode);
 	}
 	
+	// 제품 옵션별 등록
 	@PostMapping("InsertTest")
 	public String test(@RequestBody GridData<SizeDTO> sdata) {
 		service.InsertProduct(sdata.getUpdatedRows());
-		System.out.println("컨트롤러 : " + sdata);
 		return "redirect:store/insertStore";
 	}
+	
+	// 제품별 리스트
+	@GetMapping("productQyList")
+	public Map<String, Object> productList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
+			) throws JsonMappingException, JsonProcessingException {
+		return GridUtil.grid(1, 100, iService.productList());
+	}
+	
+	// 제품별 옵션 리스트
+	@GetMapping("productListInfo")
+	public Map<String, Object> productInfoList(@RequestParam(name= "productCode") String productCode){
+		return iService.productInfoList(productCode);
+	}
+
 
 	
 }
