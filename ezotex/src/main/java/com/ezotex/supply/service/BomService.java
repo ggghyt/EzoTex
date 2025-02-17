@@ -19,5 +19,5 @@ public interface BomService {
 	List<BomDTO> listBomMaterial(ProductDTO product);
 	
 	// bom 등록
-	boolean insertBom(List<BomDTO> boms);
+	boolean insertBom(Map<String, Object> boms);
 }

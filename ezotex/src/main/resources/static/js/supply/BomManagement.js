@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 대분류 onChange 이벤트 등록 함수
 const changeClas = function(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
-		console.log('changeeee');
 		loadOptions(sclasEle, `/product/category/${lclasEle.value}`);		
 	});
 }
@@ -27,7 +26,6 @@ const loadOptions = function(ele, uri){
 	fetch(uri)
 	.then(response => response.json())
 	.then(data => {
-		console.log(data);
 		ele.innerHTML = '<option value="null">전체</option>';
 		sizeBox.innerHTML = '<option value="null">전체</option>';
 		
@@ -129,6 +127,7 @@ const selectedMtrGrid = new Grid({
   	bodyHeight: 150	
 });
 
+let originData = null; // 검색용 원본 데이터 저장
 const loadMtrGrid = function(obj){
 	let query = new URLSearchParams(obj); // 쿼리스트링으로 변환
 	// 서버에서 데이터 불러오기
@@ -138,13 +137,16 @@ const loadMtrGrid = function(obj){
 		let data = result.data.contents;
 		selectedMtrGrid.resetData([]); // 선택된 자재 초기화
 		mtrGrid.resetData(data); // 데이터 입력
+		originData = data; // 저장된 데이터 초기화
+		
 		data.forEach((obj, idx) => {
 			if(obj.requireQy != null) mtrGrid.check(idx) // bom 등록된 자재는 자동 선택
 		});
 		
 		let rgsde = dateFormmater(data[0].rgsde);
+		let charger = data[0].chargerName == null ? session_user_name : data[0].chargerName;
 		document.getElementById('rgsde').value = rgsde;
-		document.getElementById('chargerName').value = data[0].chargerName;
+		document.getElementById('chargerName').value = charger;
 	});
 }
 
@@ -170,12 +172,15 @@ prdGrid.on('focusChange', ev => {
 
 // 선택한 제품-색상의 사이즈 불러오기
 const changeOpt = () => {
-	let selectedOpt = {
-		productCode: selectedPrdCode,
-		productColor: colorBox.value,
-		productSize: sizeBox.value
-	};
-	loadMtrGrid(selectedOpt);
+	let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
+	if(saveCk == false){
+		let selectedOpt = {
+			productCode: selectedPrdCode,
+			productColor: colorBox.value,
+			productSize: sizeBox.value
+		};
+		loadMtrGrid(selectedOpt);		
+	}
 }
 
 colorBox.addEventListener('change', e => {
@@ -199,10 +204,38 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 	prdGrid.reloadData(); // 그리드 재출력 (readData)
 });
 
+// 자재 목록 검색 적용
+let rowEventOn = true;
+document.getElementById('mtrSearchBtn').addEventListener('click', () => {
+	// 검색조건 가져오기
+	let searchObj = {
+		mtrilCode: document.getElementById('mtrilCode').value,
+		mtrilName: document.getElementById('mtrilName').value,
+		lclas: document.getElementById('mtr-lclas').value,
+		sclas: document.getElementById('mtr-sclas').value
+	};
+	// 전체 데이터 중 필터링 반영
+	let filtered = originData.filter(obj => {
+		return obj.mtrilCode.indexOf(searchObj.mtrilCode) != -1  &&
+					 obj.mtrilName.indexOf(searchObj.mtrilName) != -1 &&
+					 (searchObj.lclas == 'null' ? true : obj.lclas == searchObj.lclas) &&
+					 (searchObj.sclas == 'null' ? true : obj.sclas == searchObj.sclas);
+	});
+	mtrGrid.resetData(filtered);
+	
+	rowEventOn = false; // check 이벤트 appendRow() 임시 방지
+	for(let i = 0; i <= mtrGrid.getRowCount(); i++){ // 체크박스 상태 동기화
+		if(mtrGrid.getRowClassName(i)[0] == 'bg-blue') mtrGrid.check(i);
+	}
+	rowEventOn = true;
+});
+
 // 자재 선택 시 그리드 이동
 mtrGrid.on('check', ev => {
-	selectedMtrGrid.appendRow(mtrGrid.getRow(ev.rowKey), {focus: true}); // 행 추가
-	mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	if(rowEventOn){
+		selectedMtrGrid.appendRow(mtrGrid.getRow(ev.rowKey), {focus: true}); // 행 추가
+		mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
+	}
 });
 
 mtrGrid.on('uncheck', ev => {
@@ -212,3 +245,37 @@ mtrGrid.on('uncheck', ev => {
 	let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
 	selectedMtrGrid.removeRow(find[0].rowKey);
 });
+
+/******************** BOM 자재 등록 ********************/
+document.getElementById('insertBtn').addEventListener('click', () => {
+	let datas = selectedMtrGrid.getData();
+	console.log(datas);
+	let headerObj = {
+		productCode: selectedPrdCode,
+		productColor: colorBox.value,
+		productSize: sizeBox.value,
+		chargerCode: session_user_code,
+		chargerName: session_user_name
+	};
+	
+	let detailArr = datas.map(obj => {
+		return {
+			mtrilCode: obj.mtrilCode,
+			requireQy: obj.requireQy
+		};
+	});
+	console.log({headerObj, detailArr});
+	
+	fetch('/supply/bom', {
+		method: 'POST',
+		headers: {...headers, 'Content-Type': 'application/json'},
+		body: JSON.stringify({headerObj, detailArr})
+	})
+	.then(response => response.json())
+	.then(result => {
+		console.log(result);
+		if(result == true){
+			alert('등록완료');
+		}
+	});
+});	

@@ -66,15 +66,15 @@
 		       get_comm(p.unit_name) unit_name,
 		       d.require_qy,
 		       c.lclas,
-       		   c.sclas,
-       		   b.rgsde,
-       		   b.charger_name
+     		   c.sclas,
+     		   b.rgsde,
+     		   b.charger_name
 		FROM   bom_details d JOIN bom b ON d.bom_code = b.bom_code
 		                      AND b.bom_code = (SELECT MAX(bom_code) 
 		                                        FROM bom -- 가장 최신 bom 데이터만 추출
 		                                        WHERE product_code = #{productCode}
-		                                          <if test='productColor != null'>AND product_color = #{productColor}</if>
-		                                          <if test='productSize != null'>AND product_size = #{productSize}</if> )
+		                                          <if test='productColor != null and productColor != "null"'>AND product_color = #{productColor}</if>
+		                                          <if test='productSize != null and productSize != "null"'>AND product_size = #{productSize}</if> )
 		                     RIGHT JOIN product_info p ON d.mtril_code = p.product_code
                      		 LEFT JOIN  product_category c ON p.product_code = c.product_code
 		WHERE  p.product_type = 'PT01'

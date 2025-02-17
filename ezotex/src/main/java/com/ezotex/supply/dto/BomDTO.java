@@ -2,13 +2,17 @@ package com.ezotex.supply.dto;
 
 import java.util.Date;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class BomDTO {
-	private String bomCode;
+	//private String bomCode;
 	private String productCode;
 	private String productColor;
 	private String productSize;
@@ -16,7 +20,7 @@ public class BomDTO {
 	private String chargerName;
 	private Date rgsde;
 	
-	private String bomDetailCode;
+	//private String bomDetailCode;
 	private String mtrilCode;
 	private Integer requireQy;
 	

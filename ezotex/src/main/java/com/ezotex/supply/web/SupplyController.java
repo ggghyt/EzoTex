@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ezotex.standard.service.impl.ProductServiceImpl;
-import com.ezotex.store.service.impl.InventoryServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +25,9 @@ public class SupplyController {
 		return "/supply/BomManagement";
 	}
 	
-	private final InventoryServiceImpl service;
-	// 자재/제품 입고 등록 페이지
-	@GetMapping("insertStore")
+	// 테스트...
+	@GetMapping("test")
 	public String storeInsert(Model model) {
-		model.addAttribute("list",service.list());
 		return "supply/insertStore2";
 	}
 		
