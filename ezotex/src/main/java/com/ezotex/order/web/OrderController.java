@@ -6,13 +6,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ezotex.order.dto.OrderDTO;
 import com.ezotex.order.service.impl.OrderServiceImpl;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderController {
 	
 	final OrderServiceImpl service;
+	final HttpSession session;
 	
 	@GetMapping("/OrderDetailList")
 	public void OrderDetailList(Model model) {
@@ -36,6 +36,10 @@ public class OrderController {
 		model.addAttribute("getProductList",productList);
 		List<OrderDTO> companyList = service.getCompanyList();
 		model.addAttribute("getCompanyList",companyList);
+		String name = (String) session.getAttribute("name");
+		model.addAttribute("name",name);
+		String code = (String) session.getAttribute("code");
+		model.addAttribute("code",code);
 	}
 
 //	@GetMapping("/OrderManagement")
