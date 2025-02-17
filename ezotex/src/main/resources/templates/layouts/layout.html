@@ -420,14 +420,15 @@
       
       <!-- LAYOUT SIDEBAR -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
-      	<div th:insert="layouts/sidebar :: sidebar"/>
+      	<div th:insert="layouts/sidebar :: sidebar"></div>
       </nav>
       
       <div class="main-panel">
         
         <!-- LAYOUT CONTENT -->
         <div class="p-3">
-	       	<div layout:fragment="content"/>
+	       	<div layout:fragment="content"></div>
+	       	<div id="toastContainer" class="toast-container"></div>
         </div>
         
         <!-- partial:partials/_footer.html -->
@@ -471,6 +472,7 @@
   let session_user_name;
   let session_user_email;
   let session_user_img;
+  
   function logout() {
 	  let f = document.createElement('form');
 	  f.setAttribute('method', 'post');
@@ -483,11 +485,6 @@
 	  f.submit();
   }
   
-  let session_user_code;
-  let session_user_id;
-  let session_user_name;
-  let session_user_email;
-  let session_user_img;
   fetch('http://localhost:80/login/userInfo')
   .then((response) => response.json())
   .then((data) => {

@@ -134,6 +134,29 @@
     <div class="card card-body mt-3">
     	<b>모달 예시</b>
     	<div>
+    		<!-- 심플 모달 -->
+    		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#simpleModal">모달</button>
+    		<div id="modalBox"></div>
+    		<script>
+	    		createModal({
+	    			id: 'modalBox',
+	    			type: 'modify',
+	    			title: '샘플 모달',
+	    			content: '샘플입니다....'
+	    		});
+	    		/* createModal 안에 넣는 options = {
+						id: '모달 출력할 div',
+						type: 'regist' or 'modify' of 'delete', // (이미지/버튼 교체 효과)
+						//// 필수입력값 끝, 아래는 선택사항
+						title: '제목 null 시 기본 멘트 적용',
+						content: '짧은 메세지 null 시 기본 멘트 적용',
+						confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
+						denyMsg: '취소 클릭 시 출력할 토스트 메세지'
+					}
+				*/
+    		</script>
+    		
+    		<!---- 모달 상세 예시 ---->
 		   	<!-- 등록 버튼 클릭 -->
 			  <button type="button" class="btn btn-primary registBtn" data-bs-toggle="modal" data-bs-target="#registModal">
 			    등록
