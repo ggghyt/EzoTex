@@ -37,6 +37,7 @@
 			    vertical-align: top; /* 정렬 보정 */
 			}
 			.search-bar div:nth-of-type(1) {
+				
 				padding-left:10px;
 				width: 300px;
 			}
@@ -129,6 +130,9 @@
 			#productListgrid {
 				height: 300px;
 			}
+			.order-info b {
+				margin-top: 20px;
+			}
 		</style>
 		
 	</head>
@@ -142,13 +146,6 @@
 										
 					<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
 					<div>
-						<span class="search-unit">
-							<span>구분</span>
-							<select class="search-distinction">
-								<option value="주문">주문</option>
-								<option value="출고">출고</option>
-							</select>
-						</span>
 						<span class="search-unit">
 							<span>주문 코드</span>
 							<input type="text" class="form-control search-code">
@@ -193,6 +190,14 @@
 							<span>급액합계</span>
 							<input type="number" class="form-control search-amount-start"> <b class="dash">-</b> 
 							<input type="number" class="form-control search-amount-end">
+						</span>  
+						<span class="search-unit">
+							<span>제품코드</span>
+							<input type="text" class="form-control search-product-code"> 
+						</span>
+						<span class="search-unit">
+							<span>제품명</span>
+							<input type="text" class="form-control search-product-name"> 
 						</span>
 						<div class="btn-section">						
 							<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
@@ -256,6 +261,7 @@
 				<div id="product-details">
 					<b>납품 수량 입력</b>
 					<div id="productDetailgrid"></div>
+					<!-- 
 					<div class="p-3 mb-2 bg-secondary text-dark card detailAmount">
 						<span class="input-details">
 							
@@ -268,9 +274,10 @@
 							<button class="btn btn-secondary temp-save">수량<br>등록</button>
 						</span>
 					</div>
+					 -->
 				</div>
 				<div class="completeBtn-section">
-					<button class="btn btn-success">등록</button>
+					<button class="btn btn-success sendData">등록</button>
 					<button class="btn btn-secondary">초기화</button>
 				</div>
 			</div>
@@ -280,8 +287,8 @@
 		
 		<script>
 		    //등록할 데이터 담을 변수
-		    let registData = [{orderCode : '', productCode : '', productColor : '', 
-				columnName : '', deliveryQy: ''}];
+		    //let registData = [{orderCode : '', productCode : '', productColor : '', size : '', deliveryQy: ''}];
+		    let registData = [];
 		    
 			//DB에서 가져온 원 데이터 저장 변수
 			let allOrderInfo = null;
@@ -322,7 +329,8 @@
 	        //document.querySelector(".search-distinction").value == "주문" ? "주문코드" : "출고코드"
 	        //document.querySelector('[data-column-name="productOrderCode"]').innerHTML = '새로운 주문코드';
 	        //document.querySelector('[data-column-name="orderCharger"]').innerHTML = '새로운 주문코드';
-			document.querySelector(".search-distinction").addEventListener("change", (e) => {
+			/*
+	        document.querySelector(".search-distinction").addEventListener("change", (e) => {
 			    //console.log(e.target.value);  // 선택된 값을 확인
 			    
 			  
@@ -339,6 +347,7 @@
 			    }
 		        
 			});
+			*/
 			
 	        function searchOrderList() {
 	        	
@@ -351,6 +360,8 @@
 	        		orderDateEnd: document.querySelector('.search-date-end').value,
 	        		dedtStart: document.querySelector('.search-dedt-start').value,
 	        		dedtEnd: document.querySelector('.search-dedt-end').value,
+	        		productCode: document.querySelector('.search-product-code').value,
+	        		productName: document.querySelector('.search-product-name').value,
 	        		totalAmountStart: document.querySelector('.search-amount-start').value,
 	        		totalAmountEnd: document.querySelector('.search-amount-end').value,
 	        		companyCode: document.querySelector('.search-company-code').value,
@@ -365,7 +376,8 @@
         		document.querySelectorAll('.search-bar input').forEach((e) => {
         			e.value = null;
         		})
-        		document.querySelector('.search-bar select')
+        		document.querySelector('.search-bar select').value = '';
+        		searchOrderList();
 	        }
 	        
 
@@ -391,9 +403,8 @@
 			
 	        grid.on('focusChange', ev => {
 	        	//다른 주문건 선택할 때마다 출고 수량입력했던 데이터 초기화
-	        	registData = [{orderCode : '', productCode : '', productColor : '', 
-					columnName : '', deliveryQy: ''}];
-	        	
+	        	//registData = [{orderCode : '', productCode : '', productColor : '', columnName : '', deliveryQy: ''}];
+	        	registData = [];
 	            // 배경색 클래스 적용
 	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -414,6 +425,7 @@
 	            비고
 	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
 	            
+	            simulateLoading();
 				//주문 상세정보 가져오기
 		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
 	    		.then(rep => rep.json())
@@ -482,15 +494,16 @@
 			        ],
 			    });  
 	        
+	        /*
 	        //수량 등록버튼 클릭 이벤트
 	        document.querySelector('.temp-save').addEventListener('click', () => {
 	        	//console.log('동작');
 	        	//console.log('전체 데이터', productListgrid.getData());
 	        	
 	        })
-	        
+	        */
 		    
-	        //제품 선택
+	      //제품 선택
 	        let productSelected = null;
 	        
 		 	// 제품 상세보기 그리드 클릭 이벤트
@@ -509,13 +522,12 @@
 	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
 	    		let size = [];
 	            //색상, 사이즈 컬럼
-				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
-	    		//allOrderInfo
+				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center" }];
+	            
 	    		for(let i=0; i<allOrderInfo.productDetails.length; i++) {
 		            //console.log('작동');
 		            //console.log('for문:', allOrderInfo.productDetails[i].qyList[i].productCode);
 		            //console.log('코드:', productCode);
-		            
 		            let cnt = 0;
 		            for(let j=0; j<allOrderInfo.productDetails[i].optionList.length; j++) {
 		            	//console.log('조건문 작동 안함');
@@ -523,43 +535,46 @@
 		            	//console.log('검색중인 값:', allOrderInfo.productDetails[i].optionList[j].productCode);
 		            	//제품 코드가 같으면 납품 수량입력 그리드에 내용 추가
 
+
 		            	if(allOrderInfo.productDetails[i].optionList[j].productCode == productCode) {
 		            		
-		            		console.log('조건문 작동');
+		            		//console.log('조건문 작동');
 		            		//console.log(allOrderInfo.productDetails[i].optionList[j].productSize);
 		            		//사이즈
-	            			let eachSize = allOrderInfo.productDetails[i].optionList[j].productSize;
-	            			console.log(eachSize);
+	            			let eachSize = allOrderInfo.productDetails[i].optionList[j].showSize;
+	            			let sizeCode = allOrderInfo.productDetails[i].optionList[j].showSize;
+	            			//console.log(eachSize);
 		            		size.push({
 				                header: eachSize,
-				                name: eachSize+'test',
-				                childNames: ['size'+eachSize, eachSize.toLowerCase()]
+				                name: eachSize+'head',
+				                childNames: ['s'+sizeCode, sizeCode]
 				             })
 				           	console.log(size);
 			    			//allOrderInfo.productDetails[i].productSize
-			    			color.push({ header: "출고수량", name: "size"+ eachSize, align: "center", editor: "text"},
-				 		                { header: "잔여수량", name: eachSize.toLowerCase() , align: "center" },)
-				 		    //console.log('color:', color);
-			    			if(cnt == 0) {			
-			    				cnt++;
-								products.push(allOrderInfo.productDetails[i].qyList[0]);
-			    			}
+			    			color.push({ header: "출고수량", name: 's'+sizeCode, align: "center", editor: "text"},
+				 		                { header: "잔여수량", name: sizeCode , align: "center" },)
 							
+		            	}
+		            }
+		            for(let j=0; j<allOrderInfo.productDetails[i].qyList.length; j++) {    
+		            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
+		            	if(productCode == allOrderInfo.productDetails[i].qyList[j].PRODUCT_CODE) {		            		
+							products.push(allOrderInfo.productDetails[i].qyList[j]);
+							//console.log('products들어가는값', products);
 		            	}
 		            }
 
 	    		}
 	    		
-				color.push({ header: "주문코드", name: "orderCode", align: "center", hidden: true},
-						{ header: "제품코드", name: "productCode", align: "center", hidden: true});
+				color.push({ header: "주문코드", name: "ORDER_CODE", align: "center", hidden:true},
+						{ header: "제품코드", name: "PRODUCT_CODE", align: "center", hidden:true});
         		//console.log(size);
         		//console.log(color);
 				productDetailgrid.setHeader({complexColumns:size});
 				productDetailgrid.setColumns(color);
-				console.log('products: ', products);
+				//console.log('products: ', products);
 				productDetailgrid.resetData(products);
 
-		    	
 		    	})
 		    	
 		    
@@ -569,74 +584,112 @@
 	    	productDetailgrid.on('afterChange', ev => {
 	    	    console.log('선택 제품코드:', productCode);
 				
-	    	    if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
-
+	    	    //if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
 	    	    ev.changes.forEach(change => {
 	    	    	console.log(change.rowKey);
 	    	        let rowData = productDetailgrid.getRow(change.rowKey); // 변경된 행 데이터 가져오기
-	    	        let columnName = change.columnName; // 변경된 컬럼명
+	    	        let columnName = (change.columnName).replace('s', ''); // 컬럼명('s'붙어서 나옴)
 	    	        let newValue = Number(change.value); // 변경된 값
 	    	        let maxValue = 0; // 허용 최대 값 초기화
-					
+	    	        let color = rowData.PRODUCT_COLOR;	// 제품 색상
 	    	        
-	    	        
-	    	        console.log('변경된 데이터: ', productDetailgrid.getRow(change.rowKey));
-	    	        console.log('변경된 데이터 걸럼명: ', change.columnName);
-	    	        console.log('변경된 값: ', Number(change.value));
+	    	        console.log('입력한 행 정보: ', rowData);
+	    	        console.log(columnName);
+	    	        //값 변경이 없을경우 종료
+	    	        if(newValue == 0) return; 
 	    	        
 	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
-	    	        switch (columnName) {
-	    	            case "sizeS":
-	    	                maxValue = Number(rowData["s"]); // S 요청 수량
-	    	                break;
-	    	            case "sizeM":
-	    	                maxValue = Number(rowData["m"]); // M 요청 수량
-	    	                break;
-	    	            case "sizeL":
-	    	                maxValue = Number(rowData["l"]); // L 요청 수량
-	    	                break;
-	    	            case "sizeXl":
-	    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
-	    	                break;
-	    	            default:
-	    	                return; // 변경된 컬럼이 입고 수량 관련이 아니면 무시
-	    	        }
-
+					maxValue = Number(rowData[change.columnName.replace('s','')]);
+	
 	    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
 	    	        if (newValue > maxValue) {
-					    failToast(`입력값은 ${maxValue}보다 클 수 없습니다.`);
-					    
-					    // 기존 값으로 되돌리기
+	    	        	//입력안된다는 알림
+					    failToast(`입력값은  ${maxValue}보다 클 수 없습니다.`);
+					    // 최대 값으로 되돌리기
 					    rowData[columnName] = maxValue;
 					    productDetailgrid.setRow(change.rowKey, rowData);
 					}
 	    	        
-	    	        //같은건 한번만 입력되게 하기 위해 사용하는 변수
-	    	        let cnt = 0;
-	    	        for(let i=0; i<registData.length; i++) {
-	    	        	console.log('동작!!!')
-	    	        	let registObj = {orderCode :rowData.orderCode, productCode : rowData.productCode, productColor : rowData.productColor, 
-	    	        					columnName : change.columnName, deliveryQy: Number(change.value)}
-	    	        	if(cnt == 0) {	    	        		
-		    	        	//입력 두번째 그런데 원래 값이 있을때
-		    	        	if((registData[i].orderCode == rowData.orderCode) && 
-		    	        	   (registData[i].productCode == rowData.productCode) &&
-		    	        	   (registData[i].productColor == rowData.productColor)) {	   
-		    	        		//원래 있던값 삭제 후 배열에 푸쉬
-		    	        		registData.splice(i, 1);
-				    	        registData.push(registObj)
-		    	        	} else {
-		    	    			//첫번째 입력
-		    	        		registData.push(registObj);		    	        		
-		    	        	}
+	    	        //가져온 전체 데이터 출력
+	    	        console.log(allOrderInfo);
+	    	        //allOrderInfo.productDetails[i].qyList[j]
+	    	        //제품코드와, 사이즈 컬럼네임과 같은 사이즈명 
+	    	       
+	    	        /*
+	    	        행 입력했을때 가져오는 데이터
+					ORDER_CODE: "POD2502130013"	--주문번호
+					PRODUCT_CODE: "PRD0001"	--제품코드
+					PRODUCT_COLOR: "BLACK"	--제품 색
+					REQ_QY: 100		--잔여수량
+					SHOW_SIZE: "L"	--보이는 사이즈
+					TARGET_SIZE: "SI05" --DB에 입력해야되는 사이즈
+	    	        */
+	    	        
+	    	        
+	    	        for(let i=0; i<allOrderInfo.productDetails.qyList; i++) {
+	    	        	console.log('for문 동작');
+	    	        	if((allOrderInfo.productDetails.qyList[i].PRODUCT_CODE == rowData.PRODUCT_CODE) &&
+	    	        	   (allOrderInfo.productDetails.qyList[i].PRODUCT_COLOR == rowData.PRODUCT_COLOR) &&
+	    	        	   (allOrderInfo.productDetails.qyList[i].SHOW_SIZE == columnName)) {
+	    	        		let showSize = 's'+columnName;
+	    	        		console.log("값 변경 성공");
+	    	        		allOrderInfo.productDetails.qyList[i].showSize = newValue;
+	    	        	   allOrderInfo.productDetails.qyList[i].DELIVERY_QY = newValue;
 	    	        	}
-						cnt++;
-	    	        	console.log("서버로 보낼 객체", registData);
 	    	        }
+	    	        
+	    	        
+	    	        //입력할 객체
+    	        	let registObj = {orderCode :rowData.ORDER_CODE, productCode : rowData.PRODUCT_CODE, productColor : rowData.PRODUCT_COLOR, 
+    	        					size : columnName, deliveryQy: Number(change.value), reqQy: maxValue};
+    	        	
+	    	        
+	    	        //console.log('보낼 객체:', registObj);
+    	        	
+    	        	
+    	        	/*
+    	        	//제품코드, 제품사이즈가 같으면 기존것은 잘라내고 붙여넣기
+    	        	if(registData.length == 0) {
+    	        		//console.log('중복 없음 작동');
+    	        		registData.push(registObj);
+    	        	} else {
+    	        		console.log('else문 작동')
+        	        	for(let i=0; i<registData.length; i++) {
+        	        		console.log(registData[i].size, ' ' , registObj.size);
+        	        		if((registData[i].productCode == registObj.productCode) &&
+        	        			(registData[i].size == registObj.size)) {
+        	        			console.log(' 중복 작동');
+        	        			
+        	        			if((registData[i].productColor == registObj.productColor)) {   
+        	        				console.log('같은 색상일 경우 스플라이스 작동');
+	        	        			registData.splice(i, 1);
+	        	        			registData.push(registObj);
+        	        			} else {
+        	        				console.log('다른 색상일 경우 그냥 배열에 추가');
+        	        				registData.push(registObj);
+        	        			}
+        	        		} else {
+        	        			//색상 옵션이 바뀐경우
+        	        			registData.push(registObj);
+        	        			
+        	        		} 
+
+        	        		
+        	        	}
+    	        		
+    	        	}
+    	        	console.log("서버로 보낼 객체 배열", registData);
+    	        	*/
 	    	        
 	    	    });
 	    	});	
-	        
+		 	
+		 	//데이터 등록을 위해 수량 확인 후 서버로 보내기
+	        document.querySelector(".sendData").addEventListener('click', () => {
+	        	console.log('작동');
+	        	console.log("서버로 보낼 객체 배열", registData);
+	        	console.log('getData: ', productDetailgrid.getData());
+	        })
     	</script>
 	</body>
 </html>

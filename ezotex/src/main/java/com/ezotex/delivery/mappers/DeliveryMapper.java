@@ -1,6 +1,7 @@
 package com.ezotex.delivery.mappers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -24,7 +25,7 @@ public interface DeliveryMapper {
     public List<DeliveryProductInfo> findBySize(String productCode);
 	
 	// 제품코드 기반 옵션 리스트
-	public List<DeliveryProductInfo> sizeFindByProductCode(@Param("productCode")String productCode, 
+    public List<Map<String, Object>> sizeFindByProductCode(@Param("productCode")String productCode, 
 															@Param("list")List<DeliveryProductInfo> list,
 															@Param("orderCode")String orderCode);
 }

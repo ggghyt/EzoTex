@@ -24,13 +24,18 @@
 			                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
 			            </if>
 			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
-			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})              --금액합계
+			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd}              --금액합계
 			            </if>
 			            <if test="cri.productName != null and cri.productName != null">		    
-			                AND pi.product_name LIKE '%' || #{cri.productName} || '%'                --제품명
+			                AND  ol.product_order_code IN (SELECT op.product_order_code 
+                                 						   FROM order_product op JOIN product_info pi 
+                                                         						   ON (op.product_code = pi.product_code)
+                                 						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
 			            </if>
 			            <if test="cri.productCode != null and cri.productCode != null">		    
-			                AND op.product_code LIKE '%' || #{cri.productCode} || '%'                --제품코드
+			                AND ol.product_order_code IN (SELECT  product_order_code 
+                                 						  FROM order_product
+                                 						  WHERE LOWER(product_code) LIKE '%' || #{cri.productCode} || '%')               --제품코드
 			            </if>
 			            <if test='cri.companyName != null and cri.companyName != ""'>
 			                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
@@ -65,42 +70,47 @@
 			SELECT COUNT(*)
               FROM   order_list ol             
              	<where>	               	
-		            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
-		                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
-		            </if>
-		            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
-		                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd})              --금액합계
-		            </if>
-		            <if test="cri.productName != null and cri.productName != null">		    
-		                AND pi.product_name LIKE '%' || #{cri.productName} || '%'                --제품명
-		            </if>
-		            <if test="cri.productCode != null and cri.productCode != null">		    
-		                AND op.product_code LIKE '%' || #{cri.productCode} || '%'                --제품코드
-		            </if>
-		            <if test='cri.companyName != null and cri.companyName != ""'>
-		                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
-		            </if>
-		            <if test='cri.companyCode != null and cri.companyCode != ""'>
-		                AND ol.company_code LIKE '%' || #{cri.companyCode} || '%'                --업체코드
-		            </if>
-		            <if test='cri.orderCharger != null and cri.orderCharger != ""'>		    
-		                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
-		            </if>
-		            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-		                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
-		            </if>
-		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-		                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
-		            </if>
-		            <choose>
-		                  <when test="cri.orderStatus != null and cri.orderStatus != ''"> 
-		                            AND order_status = #{cri.orderStatus}
-		                  </when>
-		                  <otherwise> 
-		                           AND order_status IN ('OR01', 'OR06')
-		                  </otherwise>
-		            </choose>
-             	</where>                
+			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
+			                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
+			            </if>
+			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
+			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd}              --금액합계
+			            </if>
+			            <if test="cri.productName != null and cri.productName != null">		    
+			                AND  ol.product_order_code IN (SELECT op.product_order_code 
+                                 						   FROM order_product op JOIN product_info pi 
+                                                         						   ON (op.product_code = pi.product_code)
+                                 						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
+			            </if>
+			            <if test="cri.productCode != null and cri.productCode != null">		    
+			                AND ol.product_order_code IN (SELECT  product_order_code 
+                                 						  FROM order_product
+                                 						  WHERE LOWER(product_code) LIKE '%' || #{cri.productCode} || '%')               --제품코드
+			            </if>
+			            <if test='cri.companyName != null and cri.companyName != ""'>
+			                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
+			            </if>
+			            <if test='cri.companyCode != null and cri.companyCode != ""'>
+			                AND ol.company_code LIKE '%' || #{cri.companyCode} || '%'                --업체코드
+			            </if>
+			            <if test='cri.orderCharger != null and cri.orderCharger != ""'>		    
+			                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
+			            </if>
+			            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+			                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+			            </if>
+			            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+			                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+			            </if>
+			            <choose>
+			                  <when test="cri.orderStatus != null and cri.orderStatus != ''"> 
+			                            AND order_status = #{cri.orderStatus}
+			                  </when>
+			                  <otherwise> 
+			                           AND order_status IN ('OR01', 'OR06')
+			                  </otherwise>
+			            </choose>
+	               	</where>                       
 	</select>
 		
 	<select id="getOrderInfo" parameterType="String">
@@ -146,8 +156,9 @@
 	
 	<select id="findBySize">
 		SELECT product_code,
-		       get_comm(product_size) AS product_size,
-		       product_size AS size_sort
+		       product_size AS product_size,
+		       product_size AS size_sort,
+		       get_comm(product_size) AS show_size
 		FROM   product_option
 		WHERE  product_code = #{productCode}
 		GROUP BY product_size, product_code
@@ -160,8 +171,12 @@
                     SELECT  op.product_order_code AS order_code,
                             op.product_code AS product_code ,
                             op.product_color AS product_color,
-                            op.product_size AS product_size,
-                            (op.qy - NVL(dd.delivery_qy,0)) AS request_qy
+                            get_comm(op.product_size) AS forpvt,	--피벗용도로 사용
+                            get_comm(op.product_size) AS show_size,	--화면에 보이게 하기 위해 중복됨
+                            op.product_size AS target_size,			--화면에서 데이터 서버로 보낼때 입력 편하게 하기 위해 중복됨
+                            (op.qy - NVL(dd.delivery_qy,0)) AS req_qy,
+                            (op.qy - NVL(dd.delivery_qy,0)) AS request_qy,
+                            0 AS delivery_qy
 					FROM    order_product op LEFT JOIN delivery de
 					                                ON (op.product_order_code = de.product_order_code)
 					                         LEFT JOIN delivery_details dd
@@ -174,12 +189,11 @@
 			SELECT  *
 		 	FROM product_size
 			pivot( sum(request_qy)
-		            FOR product_size IN (
+		            FOR forpvt IN (
 
-				       <foreach collection="list" item="size" separator=",">
-		                '${size.productSize}' AS ${size.productSize}
+					   <foreach collection="list" item="size" separator=",">
+		                '${size.showSize}' AS ${size.showSize}
 		               </foreach>
-
 		            )
 		)pvt
 	</select>

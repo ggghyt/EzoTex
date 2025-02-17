@@ -10,9 +10,10 @@ public class DeliveryProductInfo {
 	private String deliveryCode;
 	private String productCode;
 	private String	productSize;
+	private String	targetSize;
+	private String	showSize;
 	private String productColor;
 	private String productLot;
-	private int requestQy;
 	private int deliveryQy;
 	private int unitPrice;
 	private String productSe;
@@ -21,11 +22,8 @@ public class DeliveryProductInfo {
 	private String productName;
 	private int productQy;
 	
-	//사이즈 별 수량
-	private int XS;
-	private int S;
-	private int M;
-	private int L;
-	private int XL;
-	private int Free;
+	//잔여량
+	private int reqQy;
+	//사이즈
+	private String sizeSort;
 }

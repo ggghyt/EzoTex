@@ -43,8 +43,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		Map<String, Object> map = new HashMap<>();
 		
 		List<DeliveryProductInfo> list = mapper.findBySize(productCode);
-		log.info("=====================================================================");
-		log.info(list.toString());
+		
 		map.put("optionList", list);
 		map.put("qyList", mapper.sizeFindByProductCode(productCode, list, orderCode));
 		
