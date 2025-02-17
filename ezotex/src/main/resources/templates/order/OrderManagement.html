@@ -131,6 +131,18 @@ function resetForm() {
         document.getElementById('selectProductName').value = clickedData.productName;
         
         const productCode = clickedData.productCode;
+        
+        // 이미 저장된 수량 데이터가 있는지 확인
+        const savedData = savedProductData.find(data => data.productCode === productCode);
+
+        if (savedData) {
+            // 저장된 데이터가 있으면 옵션 그리드에 데이터 다시 설정
+            optionGrid.resetData(savedData.quantities);
+        } else {
+            // 저장된 데이터가 없으면 빈 데이터로 초기화
+            optionGrid.resetData([]);
+        }
+        
         fetch(`http://localhost:80/order/ProductOption?productCode=${productCode}`)  // 서버에서 색상, 사이즈 데이터를 가져옴
             .then(response => response.json())
             .then(data => {
@@ -162,7 +174,10 @@ function resetForm() {
 						placeholder="제품명 입력"></td>
 				</tr>
 			</table>
-			<div id="productOption" style="width: 100%;"></div>
+			<div id="productOption" style="width: 100%;">
+				<button type="button" onclick="saveProductData()">저장</button>
+			</div>
+
 		</div>
 		<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
@@ -187,41 +202,96 @@ function resetForm() {
 						header : '색상/사이즈',
 						name : 'productColor',
 						align : 'center',	
+			            width: 150 // 고정 크기 설정
+
+					},
+					{ 
+						header : 'XS',
+						name : 'size_XS',
+						align : 'center',	
+						editor: 'text',
+			            width: 150
+
 					},
 					{ 
 						header : 'S',
 						name : 'size_S',
 						align : 'center',	
 						editor: 'text',
+			            width: 150
+
 					},
 					{ 
 						header : 'M',
 						name : 'size_M',
 						align : 'center',	
 						editor: 'text',
+			            width: 150
+
 					},
 					{ 
 						header : 'L',
 						name : 'size_L',
 						align : 'center',	
 						editor: 'text',
+			            width: 150
+
 					},
 					{ 
 						header : 'XL',
 						name : 'size_XL',
 						align : 'center',	
 						editor: 'text',
+			            width: 150
+
 					},
 					{ 
 						header : 'FREE SIZE',
 						name : 'size_FREE',
 						align : 'center',	
 						editor: 'text',
+			            width: 150
+
 					},
 					],
+					width: 1050,
+				    bodyHeight: 100, 
+				    autoWidth: true  // 자동 너비 조절
 				});
+		// 제품별로 입력된 수량을 저장할 배열
+		let savedProductData = [];
+
+		// 수량을 저장하는 함수
+		function saveProductData() {
+		    const selectedProductCode = document.getElementById('selectProductCode').value;  // 선택된 제품 코드
+		    const rows = optionGrid.getData();  // 제품 옵션 그리드 데이터
+
+		    // 수량 데이터를 배열에 저장
+		    const productData = {
+		        productCode: selectedProductCode,
+		        quantities: rows.map(row => ({
+		            color: row.productColor,  // 색상
+		            size_XS: row.size_XS,  // XS 사이즈 수량
+		            size_S: row.size_S,  // S 사이즈 수량
+		            size_M: row.size_M,  // M 사이즈 수량
+		            size_L: row.size_L,  // L 사이즈 수량
+		            size_XL: row.size_XL,  // XL 사이즈 수량
+		            size_FREE: row.size_FREE  // FREE 사이즈 수량
+		        }))
+		    };
+
+		    // 배열에 해당 제품 데이터 추가 (기존에 있으면 업데이트)
+		    const index = savedProductData.findIndex(data => data.productCode === selectedProductCode);
+		    if (index > -1) {
+		        savedProductData[index] = productData;  // 기존 데이터 업데이트
+		    } else {
+		        savedProductData.push(productData);  // 새로 추가
+		    }
+
+		    console.log('저장된 제품 데이터:', savedProductData);
+		}
+
 	</script>
-		<!-- div row 끝나는 지점 여기에 그리드 추가 -->
 	</div>
 </body>
 <!-- 제품추가 모달 -->
