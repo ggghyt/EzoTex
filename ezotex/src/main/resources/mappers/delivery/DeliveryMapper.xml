@@ -171,10 +171,9 @@
                     SELECT  op.product_order_code AS order_code,
                             op.product_code AS product_code ,
                             op.product_color AS product_color,
-                            get_comm(op.product_size) AS forpvt,	--피벗용도로 사용
+                             're' || get_comm(op.product_size) AS forpvt,	--피벗용도로 사용
                             --get_comm(op.product_size) AS show_size,	--화면에 보이게 하기 위해 중복됨
                             --op.product_size AS target_size,			--화면에서 데이터 서버로 보낼때 입력 편하게 하기 위해 중복됨
-                            (op.qy - NVL(dd.delivery_qy,0)) AS req_qy,
                             (op.qy - NVL(dd.delivery_qy,0)) AS request_qy,
                             0 AS delivery_qy
 					FROM    order_product op LEFT JOIN delivery de
@@ -192,7 +191,7 @@
 		            FOR forpvt IN (
 
 					   <foreach collection="list" item="size" separator=",">
-		                '${size.showSize}' AS ${size.showSize}
+		                 '${'re' + size.showSize}' AS ${'re' + size.showSize}
 		               </foreach>
 		            )
 		)pvt
