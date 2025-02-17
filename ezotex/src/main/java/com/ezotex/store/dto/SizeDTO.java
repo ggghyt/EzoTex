@@ -12,12 +12,16 @@ public class SizeDTO {
 	private String sizeM;
 	private String sizeL;
 	private String sizeXL;
+	private String sizeFREE;
+	private String sizeXS;
 	// 사이즈별 수량 end
 	private String name;
 	private String productColor;
 	private String productCode;
 	// 사이즈 코드
 	private String sizeCode;
+	// 납품 코드
+	private String deliveryCode;
 	
 	public SizeDTO() {}
 	

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.store.mappers.InventoryMapper">
+	
+	<!-- 제품별 총 수량 -->
+	<select id="productList" resultType="InventoryDTO">
+		SELECT i.product_code,
+               p.product_name,
+               sum(inventory_qy) as inventory_qy
+        FROM inventory  i join product_info p
+        ON i.product_code = p.product_code
+        WHERE product_se = 'PT02'
+        GROUP BY i.product_code,
+                 p.product_name
+	</select>
+	
+	
+	<!-- 제품별 색상,사이즈별 수량 -->
+	<select id="productInfoList">
+		with product as
+          (SELECT product_color,
+                  UPPER(get_comm(product_size)) as product_size,
+                  inventory_qy
+           FROM inventory
+           WHERE product_code = #{productCode})
+    	select * from product
+		pivot( sum(inventory_qy)
+       		for product_size in (
+       		<foreach collection="list" item="size" separator=",">
+       			'${size.productSizeInfo}' AS ${size.productSizeInfo}
+       		</foreach>)
+		)pvt
+	</select>
+	
+</mapper>

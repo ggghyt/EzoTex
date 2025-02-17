@@ -24,5 +24,11 @@ public class SupplyController {
 		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "/supply/BomManagement";
 	}
+	
+	// 테스트...
+	@GetMapping("test")
+	public String storeInsert(Model model) {
+		return "supply/insertStore2";
+	}
 		
 }

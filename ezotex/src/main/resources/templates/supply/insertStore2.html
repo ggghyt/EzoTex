@@ -270,7 +270,7 @@
 					</div>
 				</div>
 				<div class="completeBtn-section">
-					<button class="btn btn-success">등록</button>
+					<button class="btn btn-success" id="testBtn">등록</button>
 					<button class="btn btn-secondary">초기화</button>
 				</div>
 			</div>
@@ -420,6 +420,7 @@
 	    		.then(data => {
 	    				//등록해야되는 정보 처음 가져온 내용
 	    				allOrderInfo = data;
+	    				console.log('allOrderInfo');
 	    				console.log(data);
 	    				let sum = 0;
 	    				data.orderInfo.forEach(e => {sum += e.reqQy});	//주문합계 구하기
@@ -471,13 +472,13 @@
 			             ]},
 			        columns: [
 			            { header: "색상/사이즈", name: "productColor", align: "center" },
-			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
+			            { header: "출고수량", name: "SI03", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "s", align: "center" },
-			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
+			            { header: "출고수량", name: "SI04", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "m", align: "center" },
-			            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
+			            { header: "출고수량", name: "SI05", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "l", align: "center" },
-			            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
+			            { header: "출고수량", name: "SI06", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "xl", align: "center" }
 			        ],
 			    });  
@@ -524,27 +525,28 @@
 		            	//제품 코드가 같으면 납품 수량입력 그리드에 내용 추가
 
 		            	if(allOrderInfo.productDetails[i].optionList[j].productCode == productCode) {
-		            		
 		            		console.log('조건문 작동');
 		            		//console.log(allOrderInfo.productDetails[i].optionList[j].productSize);
 		            		//사이즈
 	            			let eachSize = allOrderInfo.productDetails[i].optionList[j].productSize;
-	            			console.log(eachSize);
+		            		let sizeCode = allOrderInfo.productDetails[i].optionList[j].sizeSort;
+	            			console.log(allOrderInfo);
+		            		console.log(eachSize);
 		            		size.push({
 				                header: eachSize,
 				                name: eachSize+'test',
-				                childNames: ['size'+eachSize, eachSize.toLowerCase()]
+				                childNames: ['s'+sizeCode, sizeCode]
 				             })
 				           	console.log(size);
 			    			//allOrderInfo.productDetails[i].productSize
-			    			color.push({ header: "출고수량", name: "size"+ eachSize, align: "center", editor: "text"},
-				 		                { header: "잔여수량", name: eachSize.toLowerCase() , align: "center" },)
+			    			color.push({ header: "출고수량", name: 's'+sizeCode, align: "center", editor: "text"},
+				 		                { header: "잔여수량", name: sizeCode , align: "center" },)
 				 		    //console.log('color:', color);
 			    			if(cnt == 0) {			
 			    				cnt++;
-								products.push(allOrderInfo.productDetails[i].qyList[0]);
+									products.push(allOrderInfo.productDetails[i].qyList[0]);
 			    			}
-							
+								
 		            	}
 		            }
 
@@ -581,26 +583,11 @@
 	    	        
 	    	        
 	    	        console.log('변경된 데이터: ', productDetailgrid.getRow(change.rowKey));
-	    	        console.log('변경된 데이터 걸럼명: ', change.columnName);
+	    	        console.log('변경된 데이터 컬럼명: ', change.columnName);
 	    	        console.log('변경된 값: ', Number(change.value));
 	    	        
 	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
-	    	        switch (columnName) {
-	    	            case "sizeS":
-	    	                maxValue = Number(rowData["s"]); // S 요청 수량
-	    	                break;
-	    	            case "sizeM":
-	    	                maxValue = Number(rowData["m"]); // M 요청 수량
-	    	                break;
-	    	            case "sizeL":
-	    	                maxValue = Number(rowData["l"]); // L 요청 수량
-	    	                break;
-	    	            case "sizeXl":
-	    	                maxValue = Number(rowData["xl"]); // XL 요청 수량
-	    	                break;
-	    	            default:
-	    	                return; // 변경된 컬럼이 입고 수량 관련이 아니면 무시
-	    	        }
+	    	        maxValue = Number(rowData[change.columnName.replace('s','')]);
 
 	    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
 	    	        if (newValue > maxValue) {
@@ -636,6 +623,10 @@
 	    	        
 	    	    });
 	    	});	
+		 	
+		 	document.getElementById('testBtn').addEventListener('click', () => {
+		 		console.log(productDetailgrid.getData());
+		 	});
 	        
     	</script>
 	</body>

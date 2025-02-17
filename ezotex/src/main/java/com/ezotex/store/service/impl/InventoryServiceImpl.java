@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.InventoryDTO;
-import com.ezotex.store.dto.SizeDTO;
-import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.mappers.InventoryMapper;
+import com.ezotex.store.mappers.StoreMapper;
 import com.ezotex.store.service.InventoryService;
 
 import jakarta.servlet.http.HttpSession;
@@ -24,71 +23,30 @@ import lombok.extern.slf4j.Slf4j;
 public class InventoryServiceImpl implements InventoryService {
 	
 	private final InventoryMapper mapper;
+	private final StoreMapper smapper;
 	
 	 @Autowired
 	 private HttpSession session;  // HttpSession을 클래스 멤버로 주입받음
-	
-	// 테스트
+
+	// 제품별 총 수량
 	@Override
-	public List<InventoryDTO> list() {
-		return mapper.list();
+	public List<InventoryDTO> productList() {
+		return mapper.productList();
 	}
 
-	// 입고 예정 리스트
+	// 제품별 옵션 리스트
 	@Override
-	public List<StoreDeliveryDTO> DeliveryList() {
-		return mapper.DeliveryList();
-	}
-
-	// 납품리스트 기반 입고 제품 상세 조회
-	@Override
-	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
-		return mapper.findByDeliveryCode(DeliveryCode);
-	}
-
-	// 제품코드 기반 옵션 리스트
-	@Override
-	public Map<String, Object> findByProductCode(String productCode) {
+	public Map<String, Object> productInfoList(String productCode) {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		List<StoreDeliveryDetailsDTO> list = mapper.findBySize(productCode);
-		
+		List<StoreDeliveryDetailsDTO> list = smapper.findBySize(productCode);
 		map.put("optionList", list);
-		map.put("qyList", mapper.findByProductCode(productCode, list));
+		map.put("pivotList", mapper.productInfoList(productCode, list));
 		
 		return map;
 	}
 
-	@Override
-	public boolean InsertProduct(List<SizeDTO> list) {
-		
-		String name = (String) session.getAttribute("name");
-        
-		list.forEach(data -> {
-
-	        String[] sizes = {data.getSizeS(), data.getSizeM(), data.getSizeL(), data.getSizeXL()};
-	        String[] sizeCode = {"SI01","SI02","SI03","SI04","SI05","SI06",};
-	        
-	        // productColor와 productCode는 동일하므로, 각각 한번만 출력
-	        String color = data.getProductColor();
-	        String productCode = data.getProductCode();
-	        
-	        if (color != null) {
-	            for (int i = 0; i < sizes.length; i++) {
-	                if (sizes[i] != null) {
-	                	
-	                	SizeDTO sizeDto = new SizeDTO(sizeCode[i], sizes[i], color, productCode, name);
-	                	System.out.println("dto : " + sizeDto);
-	                	mapper.InsertProduct(sizeDto);
-	                    System.out.println("사이즈 : "+ sizeCode[i] + "입고수량: " + sizes[i] + ", 색상: " + color + ", 제품 코드: " + productCode + "이름 : " + name);
-	                }
-	            }
-	        }
-	    });
-		return true;
-	}
-
 	
-	
+
 }
