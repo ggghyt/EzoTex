@@ -325,17 +325,22 @@ function resetForm() {
 			        console.log(i, "번째 수량 데이터", newData[i].quantities);  
 					
 			        
-			        newData[i].quantities.forEach(sizeKey => {
+/* 			        newData[i].quantities.forEach(sizeKey => {
 			            newData2.push(newData[i][sizeKey]); // 해당하는 size 값을 push
-			        });
+			        }); */
 			       
-/* 			        const sizeArr = Object.keys(newData[i]);
+ 			        const sizeArr = Object.keys(newData[i]);
 			        console.log("sizeArr", sizeArr);
-			        console.log("길이 확인", newData.length); */
+			        console.log("길이 확인", newData.length); 
 
-/* 			        for (let k = 0; k < newData[i].quantities.length; k++) {
-			            newData2.push(newData[i].quantities[k]);  // push 올바르게 사용
-			        } */
+ 			        for (let k = 0; k < newData[i].quantities.length; k++) {
+ 			        	
+ 			        	const newSize = String(newData[i].quantities[k]);
+ 			        	const useSize = newSize.replace('size_', '');
+ 			        	
+			        console.log("newData확인",useSize);
+			            newData2.push(useSize);
+			        } 
 			    }
 
 			    console.log("최종 newData2:", newData2);
