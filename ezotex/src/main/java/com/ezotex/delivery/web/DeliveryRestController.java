@@ -8,6 +8,8 @@ import java.util.Map;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,7 @@ import com.ezotex.comm.GridUtil;
 import com.ezotex.delivery.dto.Paging;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
+import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.service.DeliveryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -89,5 +92,14 @@ public class DeliveryRestController {
 			@RequestParam(name= "orderCode")String orderCode
 			){
 		return service.findByProductCode(productCode, orderCode);
+	}
+	
+	//출고 등록
+	@PostMapping("deliveryRegist")
+	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
+		log.info(insertData.toString());
+		Map<String, String> map = new HashMap<>();
+		map.put("state", "success");
+		return map;
 	}
 }
