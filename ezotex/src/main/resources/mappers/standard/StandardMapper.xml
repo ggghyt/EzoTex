@@ -56,6 +56,38 @@ values(ADDRESS_LIST_SEQ.nextval,
 )
 </insert>
 
+<insert id="insertCompany" parameterType="CompanyDTO">
+insert into company
+values(concat('com', LPAD(COMPANY_SEQ.nextval, 4, 0)), 
+       #{companyId}, 
+       #{companyPassword}, 
+       #{companyExponent}, 
+       #{companyCharger}, 
+       #{companyPhone}, 
+       #{companyEmail}, 
+       #{companyName}, 
+       #{addressSeq}, 
+       #{companyNumber}, 
+       #{companyImg}, 
+       #{section},
+       #{distance}, 
+       #{requireTime}, 
+       #{addressCode}, 
+       '0'
+)
+</insert>
+
+<select id="findDivyAddress" parameterType="DivyAddressDTO" resultType="String">
+select *
+from(
+select address_code
+from divy_address
+where do like '%' || #{main} || '%'
+and si like '%' || #{sub} || '%'
+)
+where rownum = 1
+</select>
+
 <select id="findAddressSeq" resultType="String">
 select *
 from(
