@@ -32,4 +32,19 @@
 		)pvt
 	</select>
 	
+	<select id="inventoryList" resultType="InventoryDTO">
+		SELECT i.lot,
+		       p.product_name,
+		       get_comm(i.product_size) as product_size,
+		       i.product_color,
+		       i.inventory_qy,
+		       i.store_charger
+		FROM inventory i join product_info p
+		ON i.product_code = p.product_code
+		WHERE i.product_size = #{sizeCode}
+		AND i.product_color = #{color}
+		AND i.product_code = #{productCode}
+		AND i.inventory_qy > 0
+	</select>
+	
 </mapper>

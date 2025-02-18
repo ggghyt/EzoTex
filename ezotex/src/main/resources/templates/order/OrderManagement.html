@@ -178,7 +178,8 @@ function resetForm() {
 				<button type="button" onclick="saveProductData()">저장</button>
 			</div>
 			<div id="register-button-container">
-				<button type="button" onclick="insertOrder()">등록</button>  <!-- modifyData 연결 -->
+				<button type="button" onclick="insertOrder()">등록</button>
+				<!-- modifyData 연결 -->
 			</div>
 
 		</div>
@@ -298,7 +299,48 @@ function resetForm() {
 
 		    console.log('저장된 제품 데이터:', savedProductData);
 		}
+		  // 등록이벤트함수
+		  function insertOrder() {
+			    const orderData = {
+			        charger: document.getElementById("charger").value,
+			        empCode: document.getElementById("empCode").value,
+			        companyCode: document.getElementById("companyCode").value,
+			        company: document.getElementById("company").value,
+			        companyCharger: document.getElementById("companyCharger").value,
+			        companyTel: document.getElementById("companyTel").value,
+			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value,
+			        orderStatus: document.getElementById("orderStatus").value,
+			        remarks: document.getElementById("remarks").value,
+			        productList: grid.getData(),  // 제품 목록 가져오기
+			        productDetails: savedProductData  // 제품별 색상, 사이즈 수량 데이터
+			    };
 
+			    console.log("등록할 주문 데이터:", orderData); // 콘솔에서 데이터 확인
+			    
+			    console.log(orderData.productList);
+			    console.log(orderData.productDetails);
+
+			    fetch("/order/insertOrder", {
+			        method: "POST",
+			        headers: {
+			            "Content-Type": "application/json"
+			        },
+			        body: JSON.stringify(orderData)
+			    })
+			    .then(response => response.json())
+			    .then(data => {
+			        if (data.success) {
+			            alert("주문이 성공적으로 등록되었습니다!");
+			            location.reload();  // 페이지 새로고침
+			        } else {
+			            alert("주문 등록 실패: " + data.message);
+			        }
+			    })
+			    .catch(error => {
+			        console.error("주문 등록 오류:", error);
+			        alert("주문 등록 중 오류가 발생했습니다.");
+			    });
+			}
 	</script>
 	</div>
 </body>

@@ -59,12 +59,14 @@
 			</div>
 
 			<div class="col-5 card card-body m-2">
-				<p class="fs-5 fw-bolder mt-2">입고 등록</p>
+				<p class="fs-5 fw-bolder mt-2">선택된 제품</p>
 				<div style="margin-bottom: 10px;">
 					<input type="text" class="form-control" id="prdCode" style="width: 200px; display: inline-block;">
 					<input type="text" class="form-control" id="prdName" style="width: 200px; display: inline-block;">
 				</div>
 				<div id="productGrid2"></div>
+				<p class="fs-5 fw-bolder mt-2">LOT별 재고 현황</p>
+				<div id="productLot"></div>
 
 
 
@@ -81,7 +83,7 @@
 		let productCode = "";
 		let productName = "";
 
-	   	/*x
+	   	/*
 	   	*========================================================================
 	   	* 입고 완료 제품 목록 그리드
 	   	*========================================================================
@@ -105,8 +107,18 @@
 	   		   data: productData
 	   		});
 	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 완료 제품 목록 그리드 END!!
+	   	*========================================================================
+	   	*/
 	   	
 	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 완료 제품상세 목록 그리드
+	   	*========================================================================
+	   	*/
 	   	
 	   	const productGrid2 = new Grid({
 		      el: document.getElementById('productGrid2'), // 컨테이너 엘리먼트
@@ -136,7 +148,7 @@
 	   	            data.optionList.forEach(data => {
 	   	                columns.push({
 	   	                    header: data.productSizeInfo.toUpperCase(), 
-	   	                    name: data.productSizeInfo.toLowerCase(),  
+	   	                    name: 'size'+data.productSizeInfo.toLowerCase(),  
 	   	                    align: "center"
 	   	                });
 	   	            });
@@ -150,7 +162,7 @@
 	   	                // 실제 수량 넣는 곳
 	   	                data.optionList.forEach(sizeItem => {
 	   	                    let sizeKey = sizeItem.productSizeInfo.toLowerCase();
-	   	                    row[sizeKey] = pivotData[sizeKey] || "0";  // 값이 없으면 0
+	   	                    row['size'+sizeKey] = pivotData[sizeKey] || "0";  // 값이 없으면 0
 	   	                });
 	   	                rowData.push(row);
 	   	            });
@@ -161,16 +173,114 @@
 	   	productGrid2.on('click', ev => {
 	   		let data = productGrid2.getRow(ev.rowKey);
 	   		
-	   		if(data !== null && data !== 0){
-	   			console.log('클릭')
+	   		console.log(data);
+	   		
+	   		//let test = Object.keys(data);
+	   		//console.log('필드값 : ',test);
+	   		
+	   		//let sizeTest = test.filter(ele => ele.startsWith('size'))
+	   		//console.log('size들어간 필드값 : ', sizeTest);
+	   		
+	   		//console.log(data.productColor);
+	   		
+	   		let clickedColumn = ev.columnName; // 클릭된 컬럼명
+	   	    let clickedValue = data[clickedColumn]; // 클릭된 셀의 값
+			let color = data.productColor;
+	   	    console.log('클릭된 컬럼명 :', clickedColumn);
+	   	    console.log('클릭된 값 :', clickedValue);
+    	    
+	   	    let size = clickedColumn.replace('size','').toUpperCase();
+	   	    console.log('클릭된 사이즈 : ', size);
+	   	    
+	   		let sizeCode = getSizeCommonCode(size);
+	   		console.log('클릭된 사이즈 코드 : ', sizeCode);
+	   		
+	   		console.log('제품코드 : ', productCode);
+	   		console.log('색상 : ', color);
+	   		
+	   		productInfo(productCode,color,sizeCode);
+	   		
+	   	    
+	   		/* for (let i = 0; i < sizeTest.length; i++) {
+	   		   if (data[sizeTest[i]] != null && data[sizeTest[i]] != 0) {
+	   		       let currentSize = sizeTest[i].replace('size', '').toUpperCase(); // 현재 사이즈
+	   		       
+	   		       let objInfo = {
+	   		           productCode: productCode,
+	   		           size: currentSize,
+	   		           sizeCode: getSizeCommonCode(currentSize),
+	   		           qy: data[sizeTest[i]],
+	   		           color: data.productColor
+	   		       }
+	   		       console.log('objInfo : ', objInfo);
+	   		       obj.push(objInfo);
+	   		   }
 	   		}
+	   		console.log('obj : ',obj); */
 	   	})
+	   	
 	    /*
 	   	*========================================================================
-	   	* 입고 완료 제품 목록 그리드 END!!
+	   	* 입고 완료 제품상세 목록 그리드 END!!
 	   	*========================================================================
 	   	*/
-	    
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 그리드
+	   	*========================================================================
+	   	*/
+	   	
+	   	const productLot = new Grid({
+	   		el: document.getElementById('productLot'),
+	   		rowHeaders: ['rowNum'],
+	   		columns: [
+	   			{ header: "LOT", name: "lot" },
+	   			{ header: "제품명", name: "productName" },
+	   			{ header: "사이즈", name: "productSize" },
+	   			{ header: "색상", name: "productColor" },
+	   			{ header: "재고량", name: "inventoryQy" },
+	   			{ header: "입고 담당자", name: "storeCharger" }
+	   		],
+	   		data: []
+	   	})
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 그리드 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 데이터
+	   	*========================================================================
+	   	*/
+	   	function productInfo(productCode,color,sizeCode){
+   	    	console.log('함수호출 확인')
+   	    	fetch(`http://localhost:80/store/inventoryList?productCode=${productCode}&color=${color}&sizeCode=${sizeCode}`,{
+   	    		method: 'GET',
+   	    		headers: headers,
+   	    	}).then(req => req.json())
+   	    	  .then(result => 
+   	    			productLot.resetData(result)
+   	    			  )
+   	    	  	
+   	    	  .catch(error => console.log('오류 : ', error))
+   		}
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 데이터 END!!
+	   	*========================================================================
+	   	*/
+	     
 	   	</script>
 
 </body>

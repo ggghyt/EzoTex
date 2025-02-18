@@ -11,10 +11,10 @@ import com.ezotex.order.service.OrderService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-	
+
 	@Autowired
 	OrderMapper mapper;
-	
+
 	@Override
 	public List<OrderDTO> getOrderList() {
 		return mapper.getOrderList();
