@@ -1,10 +1,10 @@
-package com.ezotex.delivery.dto;
+package com.ezotex.comm.dto;
 
 import lombok.Data;
 
 
 @Data
-public class Paging {
+public class PagingDTO {
 	int pageUnit=10 ;  //한페이지 출력할 레코드 건수
 	int pageSize=10 ;  //페이지번호 수 (5) 1~ 5까지
 	int lastPage;      //마지막 페이지번호

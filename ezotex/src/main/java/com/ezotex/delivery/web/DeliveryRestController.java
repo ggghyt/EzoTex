@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
-import com.ezotex.delivery.dto.Paging;
+import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
@@ -43,7 +43,7 @@ public class DeliveryRestController {
 			                        ) throws JsonMappingException, JsonProcessingException {
 		
 		log.info(searchDTO.toString());
-		Paging paging = new Paging();
+		PagingDTO paging = new PagingDTO();
 		
 		paging.setPageUnit(perPage);	//페이지당 최대 건수
 		paging.setPage(page);			//현재 페이지
