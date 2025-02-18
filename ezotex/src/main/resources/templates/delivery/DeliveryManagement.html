@@ -130,8 +130,11 @@
 			#productListgrid {
 				height: 300px;
 			}
-			.order-info b {
-				margin-top: 20px;
+			#order-details {
+				margin-bottom: 30px;
+			}
+			#productListgrid{
+				margin-bottom: 24px;
 			}
 		</style>
 		
@@ -266,7 +269,7 @@
 					<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
 			    		등록
 			  		</button>
-					<button class="btn btn-secondary">초기화</button>
+					<button class="btn btn-outline-secondary resetBtn">초기화</button>
 					
 				</div>
 			</div>
@@ -294,8 +297,8 @@
 		          </div>
 		          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
 		            <!-- -->
-		            <button type="button" class="btn btn-outline-primary deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
-		            <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+		            <button type="button" class="btn btn-outline-success deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
+		            <button type="button" class="btn btn-outline-secondary denyBtn" data-bs-dismiss="modal">취소</button>
 		          </div>
 		        </div>
 		      </div>
@@ -322,8 +325,8 @@
 		          </div>
 		          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
 		            <!-- -->
-		            <button type="button" class="btn btn-outline-primary splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
-		            <button type="button" class="btn btn-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
+		            <button type="button" class="btn btn-outline-success splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
+		            <button type="button" class="btn btn-outline-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
 		          </div>
 		        </div>
 		      </div>
@@ -342,11 +345,11 @@
 			              font-size: 21px;
 			              font-weight: bold;">출고 후 잔여량</p>
 	           			<!-- 잔여량 출력 모달 -->
-	                 	<div id="restQyGrid" style="width: 400px; height:500px;"></div>
+	                 	<div id="restQyGrid" ></div>
 		           </div>
 
 		            <div style="text-align: center; margin: 20px;">
-		               <button type="button" class="btn btn-outline-secondary">닫기</button>
+		               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
 		            </div>
 		         </div>
 		         </div>
@@ -529,7 +532,7 @@
 						  }
 			             ]},
 			        columns: [
-			            { header: "색상/사이즈", name: "productColor", align: "center" },
+			            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
 			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "s", align: "center" },
 			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
@@ -547,6 +550,7 @@
 				bodyHeight: 250,
 				scrollY: true,
 				scrollX: false,
+				width: 1000,
 				rowHeaders: ['rowNum'],
 				columns: [
 					{ header: "제품코드", name: "productCode"},
@@ -587,7 +591,7 @@
 	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
 	    		let size = [];
 	            //색상, 사이즈 컬럼
-				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center" }];
+				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center", minWidth: 80 }];
 	            
 	    		for(let i=0; i<allOrderInfo.productDetails.length; i++) {
 		            //console.log('작동');
@@ -611,12 +615,13 @@
 		            		size.push({
 				                header: sizeCode,
 				                name: sizeCode+'head',
-				                childNames: ['DE'+sizeCode, 'RE'+sizeCode]
+				                childNames: ['DE'+sizeCode, 'RE'+sizeCode],
+				                minWidth: 150
 				             })
 				           	console.log(size);
 			    			//allOrderInfo.productDetails[i].productSize
-			    			color.push({ header: "출고수량", name: 'DE'+sizeCode, align: "center", editor: "text"},
-				 		                { header: "잔여수량", name: 'RE'+sizeCode , align: "center" },)
+			    			color.push({ header: "출고수량", name: 'DE'+sizeCode, align: "center", editor: "text", minWidth: 100},
+				 		                { header: "잔여수량", name: 'RE'+sizeCode , align: "center", minWidth: 100 },)
 							
 		            	}
 		            }
@@ -692,25 +697,29 @@
     	        			//필드를 배열로 만듦
     	        			let fieldList = Object.keys(info[j]);
     	        			
-    	        			//요청한 사이즈를 담을 변수
-    	        			let reqSize = '';
+    	        			//요청한 사이즈를 담을 변수, 사이즈가 두개 이상이면 두개 이상 들어가는 배열이 됨.
+    	        			let reqSize = [];
     	        			
     	        			//배열로 만든 필드 리스트를 순환하며 RE가 들어간 필드를 저장함.
     	        			for(let n=0; n<fieldList.length; n++) {
     	        				if(fieldList[n].startsWith("RE")) {
     	        					console.log('객체 필드 배열 반복문 작동');
-    	        					reqSize = fieldList[n].replace("RE", "");
+    	        					//배열이 될 수 있음.
+    	        					reqSize.push(fieldList[n].replace("RE", ""));
     	        				}
     	        			}
     	        			//제품코드가 같고, 사이즈가 같고, 색이 같아야 함.
     	        			if((info[j].PRODUCT_CODE == rowData.PRODUCT_CODE) &&
-    	        			   (reqSize == columnName) &&
     	        			   (info[j].PRODUCT_COLOR == color)) {
-    	        				
-    	        				//객체에 사용자가 입력한 값을 추가함.
-    	        				info[j][inputCol] = newValue;
-    	        				info[j].productName = rowData.productName;
-    	        				//--조건 완성 작동확인--
+
+     	        			   for(let k=0; k<reqSize.length; k++) {
+     	        				   if(reqSize[k] == columnName) {     	        					   
+		    	        				//객체에 사용자가 입력한 값을 추가함.
+		    	        				info[j][inputCol] = newValue;
+		    	        				info[j].productName = rowData.productName;
+		    	        				//--조건 완성 작동확인--
+     	        				   }
+     	        			   }
     	        				
     	        				
     	        			}
@@ -728,7 +737,7 @@
 	        /*등록버튼 클릭*/
 	        document.querySelector(".sendData").addEventListener('click', () => {
 	        	
-	        	alert('등록버튼 클릭 이벤트');
+	        	//alert('등록버튼 클릭 이벤트');
 	        	//console.log(allOrderInfo);
 	        	for(let i=0; i<allOrderInfo.productDetails.length; i++) {
         			
@@ -762,11 +771,16 @@
 	        		}
 	        	}
 	        	
+		        
+	            
+	            
+	        	
 	        	//보내는 데이터 수량 부족한게 있는지 확인하기
 	        	for(let i=0; i<registData.length; i++) {
+	        		
 					//주문 선택후 아무것도 입력하지 않은 경우
 					if(registData.length == 0) {
-						console.log('작동');
+						failToast('주문을 선택해주세요');
 						return;
 					}
 	        		
@@ -774,6 +788,7 @@
 	        		if(registData[i].deliveryQy === undefined) {
 	        			failToast('출고 수량을 입력해주세요');
 	        			registData = []; 
+	        			console.log()
 	        			return;
 	        		}
 	        		
@@ -782,48 +797,40 @@
 	        			splitDeliveryCnt++;
 	        		}
 	        		
-	        		let registModal = new bootstrap.Modal(document.getElementById("registModal"));
-	        		registModal.show();
+	        		
 	        	}
+        		let registModal = new bootstrap.Modal(document.getElementById("registModal"));
+        		registModal.show();
 	        })
 	        
-	        async function registerDelivery() {
-	            try {
-	                const response = await fetch('/delivery/deliveryRegist', {
-	                    method: 'post',
-	                    headers: {
-	                        "Content-Type": "application/json",
-	                        ...headers
-	                    },
-	                    body: JSON.stringify(registData)
-	                });
-	                
-	                const res = await response.json();
-	                console.log(res);
-	                console.log('pop전에 데이터', registData);
-	                
-	                // 작업 성공 후 잔여량 출력 내용 계산하기
-	                for (let i = 0; i < registData.length; i++) {
-	                    // 요청수량 - 입력수량으로 잔여량을 구한 후 서버로 보낸 데이터 배열의 객체에 restQy 필드를 만들고 값 추가
-	                    let qy = registData[i].reqQy - registData[i].deliveryQy;
-	                    registData[i].restQy = qy;
-	                }
-	                //배열 마지막 삭제(주문 정보 삭제)
-	                registData.length = registData.length - 1;
-	                await restQyGrid.resetData(registData);
-	                
-	                // 작업이 성공했으면 잔여량 모달 출력
-	                const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
-	                await restQyModal.show();
-	                
-	                //restQyGrid.render();
-	                //restQyGrid.refreshLayout();
-	                //await restQyGrid.reloadData();
-	                //await restQyGrid.resize();
-	            } catch (error) {
-	                console.error('Error during delivery registration:', error);
-	            }
-	        }
+			function registerDelivery() {
+                
+                    const response = fetch('/delivery/deliveryRegist', {
+                        method: 'post',
+                        headers: {
+                            "Content-Type": "application/json",
+                            ...headers
+                        },
+                        body: JSON.stringify(registData)
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+                        // 작업 성공 후 잔여량 출력 내용 계산하기
+                        for (let i = 0; i < registData.length; i++) {
+                            // 요청수량 - 입력수량으로 잔여량을 구한 후 서버로 보낸 데이터 배열의 객체에 restQy 필드를 만들고 값 추가
+                            let qy = registData[i].reqQy - registData[i].deliveryQy;
+                            registData[i].restQy = qy;
+                        }
+                        //배열 마지막 삭제(주문 정보 삭제)
+                        registData.length = registData.length - 1;
+                        restQyGrid.resetData(registData);
+
+                        // 작업이 성공했으면 잔여량 모달 출력
+                        const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
+                        restQyModal.show();
+                        
+                    }).catch(err => console.log(err));
+            }
 	        
 	        function makeRegistData() {
 
@@ -868,13 +875,13 @@
 	        
 	        /* 분할 출고 등록*/
 	        document.querySelector('.splitDeliveryBtn').addEventListener('click', () => {
-	        	alert('분할출고');
+	        	//alert('분할출고');
 	        	makeRegistData();//출고 마스터 정보, 주문 상태값 변환 정보 배열에 추가 후 데이터 입력
 	        })
 	        
 	        //등록 모달에서 취소버튼 클릭했을 경우
 	        document.querySelector('.denyBtn').addEventListener('click', () => {
-	        	alert('취소버튼');
+	        	//alert('취소버튼');
 	        	//분할 출고 수량 0으로 만들기
 	        	splitDeliveryCnt = 0;
 	        	//서버로 보낼 데이터 빈 배열로 만들기
@@ -884,15 +891,20 @@
 	        
 	        //분할출고 모달 취소버튼 클릭했을경우
 	        document.querySelector('.splitDenyBtn').addEventListener('click', () => {
-	        	alert('분할 취소버튼');
+	        	//alert('분할 취소버튼');
 	        	//분할 출고 수량 0으로 만들기
 	        	splitDeliveryCnt = 0;
 	        	//서버로 보낼 데이터 빈 배열로 만들기
 	        	registData = [];
 	        })
 	        
-
-	        
+			document.querySelector('.restQyModalClose').addEventListener('click', () => {
+				location.href = location.href;
+			})
+			
+			document.querySelector('.resetBtn').addEventListener('click', () => {
+				allOrderInfo = null;
+			})
     	</script>
 	</body>
 </html>
