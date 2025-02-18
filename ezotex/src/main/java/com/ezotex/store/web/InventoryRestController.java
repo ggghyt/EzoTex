@@ -72,9 +72,8 @@ public class InventoryRestController {
 	
 	// 제품 옵션별 등록
 	@PostMapping("InsertTest")
-	public String test(@RequestBody GridData<SizeDTO> sdata) {
-		service.InsertProduct(sdata.getUpdatedRows());
-		return "redirect:store/insertStore";
+	public boolean test(@RequestBody List<SizeDTO> sdata) {
+		return service.InsertProduct(sdata);
 	}
 	
 	// 제품별 리스트

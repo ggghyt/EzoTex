@@ -169,7 +169,9 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
-	    
+		// 변경데이터 저장 배열
+		let obj = []
+		
 	    let test = document.getElementById('pagination')
 	    
 	    console.log(test);
@@ -288,7 +290,7 @@
 		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
 		      data: {
 		          api: {
-		        	  readData: { url: '/store/productCodeList', method: 'GET' , headers},
+		        	  readData: { url: '/store/productCodeList', method: 'GET' },
 		              modifyData: { url: '/store/InsertTest', method: 'POST', headers }
 		          },
 		          contentType: 'application/json'
@@ -335,36 +337,50 @@
 	    //저장
 	     InsertTest.addEventListener("click", function () {
 	    	
-	    	storeGrid3.blur();
-	    	storeGrid3.request('modifyData');
+	    	//storeGrid3.blur();
+	    	//storeGrid3.request('modifyData');
 	    	
-	    	// 옵션 그리드 변경된 데이터
-	        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}`)
-	            .then(rep => rep.json())
-	            .then(data => {
-	                let size = [];
-	                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
+	    	// 변경 데이터 등록 처리
+	    	fetch(`http://localhost:80/store/InsertTest`,{
+	    		method: 'POST',
+	    		headers: {...headers, 'Content-Type': 'application/json'},
+	    		body: JSON.stringify(obj)
+	    	}).then(rep => rep.json()) 
+	    	  .then(result =>
+	    	      {
+	    	    		// 옵션 그리드 변경 데이터 수정 처리
+	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}`)
+	    		            .then(rep => rep.json())
+	    		            .then(data => {
+	    		                let size = [];
+	    		                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
 
-	                data.optionList.forEach(data => {
-	                    size.push(
-	                        {
-	                            header: data.productSizeInfo,
-	                            name: data.productSizeInfo + 'test',
-	                            childNames: ['size' + data.productSizeInfo, data.productSizeInfo.toLowerCase()]
-	                        },
-	                    );
-	                    color.push(
-	                        { header: "입고할수량", name: "size" + data.productSizeInfo, align: "center", editor: "text" },
-	                        { header: "요청수량", name: data.productSizeInfo.toLowerCase(), align: "center" },
-	                        { header: "제품코드", name: "productCode", hidden: true },
-	                        { header: "납품코드", name: deliveryCode, hidden: true }
-	                    );
-	                });
+	    		                data.optionList.forEach(data => {
+	    		                    size.push(
+	    		                        {
+	    		                            header: data.productSizeInfo,
+	    		                            name: data.productSizeInfo + 'test',
+	    		                            childNames: ['size' + data.productSizeInfo, data.productSizeInfo.toLowerCase()]
+	    		                        },
+	    		                    );
+	    		                    color.push(
+	    		                        { header: "입고할수량", name: "size" + data.productSizeInfo, align: "center", editor: "text" },
+	    		                        { header: "요청수량", name: data.productSizeInfo.toLowerCase(), align: "center" },
+	    		                        { header: "제품코드", name: "productCode", hidden: true },
+	    		                        { header: "납품코드", name: deliveryCode, hidden: true }
+	    		                    );
+	    		                });
 
-	                storeGrid3.setHeader({ complexColumns: size });
-	                storeGrid3.setColumns(color);
-	                storeGrid3.resetData(data.qyList); 
-	            });
+	    		                storeGrid3.setHeader({ complexColumns: size });
+	    		                storeGrid3.setColumns(color);
+	    		                storeGrid3.resetData(data.qyList); 
+	    		            });
+	    	    }
+	    	  )
+	    	
+	    	  
+	    	   
+	    	
 	    	
 	    })
 	    
@@ -477,7 +493,24 @@
 					    rowData[columnName] = maxValue;
 					    storeGrid3.setRow(change.rowKey, rowData);
 					}
-	    	    });
+					
+					let filed = Object.keys(rowData);
+					let arr = filed.filter(ele => ele.startsWith('size'));
+					
+					
+					for(let i = 0; i < arr.length; i++){
+						if(rowData[arr[i]] != null && rowData[arr[i]] != 0){
+							let sizeCode = arr[i].replace('size','').toUpperCase();
+							let objInfo = {
+									productCode: productCode,
+									sizeCode: getSizeCommonCode(sizeCode),
+									productQy: newValue,
+									color: rowData.productColor
+							}
+							obj.push(objInfo);
+						}
+					}
+	    	    }); 
 	    	});
 
 		
