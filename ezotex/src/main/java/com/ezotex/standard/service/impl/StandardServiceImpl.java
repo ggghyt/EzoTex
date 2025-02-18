@@ -52,6 +52,7 @@ public class StandardServiceImpl implements StandardService {
 	}
 
 	@Override
+	@Transactional
 	public int insertCompany(CompanyDTO companyDTO, AddressListDTO addDTO) {
 		String add_arr[] = companyDTO.getAddressMain().split(" ");
 		DivyAddressDTO divyAddressDTO = new DivyAddressDTO();
