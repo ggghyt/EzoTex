@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
@@ -28,22 +29,22 @@ public class StoreServiceImpl implements StoreService {
 	 @Autowired
 	 private HttpSession session;  // HttpSession을 클래스 멤버로 주입받음
 	
-	// 테스트
+	// 페이지 총 수
 	@Override
-	public List<InventoryDTO> list() {
-		return mapper.list();
+	public int getCount() {
+		return mapper.getCount();
 	}
 
 	// 입고 예정 리스트
 	@Override
-	public List<StoreDeliveryDTO> DeliveryList() {
-		return mapper.DeliveryList();
+	public List<StoreDeliveryDTO> DeliveryList(PagingDTO paging) {
+		mapper.deliveryQy();
+		return mapper.DeliveryList(paging);
 	}
 
 	// 납품리스트 기반 입고 제품 상세 조회
 	@Override
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
-		System.out.println("서비스 : " + DeliveryCode);
 		return mapper.findByDeliveryCode(DeliveryCode);
 	}
 
@@ -89,6 +90,8 @@ public class StoreServiceImpl implements StoreService {
 	    });
 		return true;
 	}
+
+	
 
 	
 	

@@ -22,7 +22,7 @@
 		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		ORDER  BY product_code DESC
+		ORDER  BY status, product_code DESC
 	</select>
 	
 	<!-- 제품 목록 전체 개수 -->

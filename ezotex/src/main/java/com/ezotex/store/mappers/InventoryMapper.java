@@ -15,4 +15,7 @@ public interface InventoryMapper {
 	// 제품별 옵션 리스트
 	public List<StoreDeliveryDetailsDTO> productInfoList(@Param("productCode")String productCode, @Param("list")List<StoreDeliveryDetailsDTO> list);
 	
+	// 제품 옵션별 LOT 리스트
+	public List<InventoryDTO> inventoryList(@Param("productCode")String productCode, @Param("color")String color, @Param("sizeCode")String sizeCode);
+	
 }

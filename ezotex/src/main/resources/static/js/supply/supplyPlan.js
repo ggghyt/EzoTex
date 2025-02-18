@@ -13,9 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	changeClas(mtrLclasBox, mtrSclasBox);
 	
 	createModal({ 
-		type: 'regist',
-		confirm: insertBom,
-		loading: false
+		type: 'confirm',
+		confirm: insertBom
 	});
 	$('#insertBtn').on('click', () => {
 		let updatedData = selectedMtrGrid.getData();
@@ -108,7 +107,7 @@ const prdGrid = new Grid({
 
 // 자재 그리드
 const mtrGrid = new Grid({
-    el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
+    el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
         { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
@@ -118,7 +117,7 @@ const mtrGrid = new Grid({
     rowHeaders: ['checkbox'],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
-  	bodyHeight: 150
+  	bodyHeight: 425
 });
 
 // 선택한 자재 그리드
@@ -274,51 +273,22 @@ mtrGrid.on('uncheckAll', () => {
 	selectedMtrGrid.resetData([]);
 });
 
-// 입력값 유효성 검사
-selectedMtrGrid.on('afterChange', ev => {
-	let changed = ev.changes[0];
-	let val = changed.value;
-	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-		failToast('입력값은 문자가 들어갈 수 없습니다.');
-		
-		let rowKey = ev.changes[0].rowKey;
-		let row = selectedMtrGrid.getRow(rowKey);
-		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
-		row.requireQy = changed.prevValue == null ? 0 : changed.prevValue;
-		selectedMtrGrid.setRow(rowKey, row);
-		return;
-	}
-});
-// 키다운 이벤트 처리하기 (다음 칸으로 이동), 행 저장 기능 구현
-
 /******************** BOM 자재 등록 ********************/
-function insertBom(loading){
+function insertBom(){
 	// 자재코드나 소요량 하나라도 변경되었는지 검증
-	let selectedData = selectedMtrGrid.getData();
-	let isZero = false; // 소요량이 0인 값이 있는지 검증
-	console.log(selectedData);
-	
-	let updatedArr = selectedData.filter(data => {
-		if(data.requireQy == 0 || data.requireQy == null) { // 수량이 0인 값이 있으면 즉시 종료
-			isZero = true;
-			return false;
-		} else {
-			for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
-				if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
-					return false;
-				}
-			}	
-		}
-		return true;
+	let updatedData = selectedMtrGrid.getData();
+	let newData = updatedData.filter(data => {
+		let boolean = true;
+		originBomData.forEach(origin => {
+			if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
+				boolean = false;
+			}
+		});
+		return boolean;
 	});
 	
-	// 입력값 중 0이 있으면 종료
-	if(isZero){
-		failToast('소요량을 모두 입력하지 않았습니다.');
-		return;
-	}
-	// 새로운 값이 하나도 없으면 종료
-	if(updatedArr.length == 0) {
+	// 변경된 값이 없으면 알림창 띄우고 종료
+	if(newData.length == 0) {
 		failToast('변경된 값이 없습니다.');
 		return;
 	}
@@ -327,18 +297,17 @@ function insertBom(loading){
 		productCode: selectedPrdCode,
 		productColor: colorBox.value,
 		productSize: sizeBox.value,
-		chargerCode: session_user_code,
-		chargerName: session_user_name
+		chargerCode: null, //session_user_code,
+		chargerName: null //session_user_name
 	};
 	
-	let detailArr = updatedData.map(obj => {
+	let detailArr = datas.map(obj => {
 		return {
 			mtrilCode: obj.mtrilCode,
 			requireQy: obj.requireQy
 		};
 	});
 	
-	loading();
 	fetch('/supply/bom', {
 		method: 'POST',
 		headers: {...headers, 'Content-Type': 'application/json'},
