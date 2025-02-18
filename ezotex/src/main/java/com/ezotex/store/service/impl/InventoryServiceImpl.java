@@ -47,6 +47,11 @@ public class InventoryServiceImpl implements InventoryService {
 		return map;
 	}
 
+	@Override
+	public List<InventoryDTO> inventoryList(String productCode, String color, String sizeCode) {
+		return mapper.inventoryList(productCode, color, sizeCode);
+	}
+
 	
 
 }
