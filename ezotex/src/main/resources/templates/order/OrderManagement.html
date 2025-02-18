@@ -286,7 +286,7 @@ function resetForm() {
 		            size_FREE: row.size_FREE  // FREE 사이즈 수량
 		        }))
 		    };
-		    
+
 
 		    // 배열에 해당 제품 데이터 추가 (기존에 있으면 업데이트)
 		    const index = savedProductData.findIndex(data => data.productCode === selectedProductCode);
@@ -300,7 +300,7 @@ function resetForm() {
 		    console.log('저장된 제품 데이터:', savedProductData);
 		}
 		  // 등록이벤트함수
-		  function insertOrder() {
+		  function insertOrder(productCode) {
 			    const orderData = {
 			        charger: document.getElementById("charger").value,
 			        empCode: document.getElementById("empCode").value,
@@ -312,15 +312,57 @@ function resetForm() {
 			        orderStatus: document.getElementById("orderStatus").value,
 			        remarks: document.getElementById("remarks").value,
 			        productList: grid.getData(),  // 제품 목록 가져오기
-			        productDetails: savedProductData  // 제품별 색상, 사이즈 수량 데이터
 			    };
-
+				
+			    			    
 			    console.log("등록할 주문 데이터:", orderData); // 콘솔에서 데이터 확인
-			    
-			    console.log(orderData.productList);
-			    console.log(orderData.productDetails);
+			    const newData = [];
+			    const newData2 = [];
 
-			    fetch("/order/insertOrder", {
+			    for (let i = 0; i < savedProductData.length; i++) {
+			        newData.push(savedProductData[i]);
+
+			        console.log(i, "번째 수량 데이터", newData[i].quantities);  
+					
+			        
+			        newData[i].quantities.forEach(sizeKey => {
+			            newData2.push(newData[i][sizeKey]); // 해당하는 size 값을 push
+			        });
+			       
+/* 			        const sizeArr = Object.keys(newData[i]);
+			        console.log("sizeArr", sizeArr);
+			        console.log("길이 확인", newData.length); */
+
+/* 			        for (let k = 0; k < newData[i].quantities.length; k++) {
+			            newData2.push(newData[i].quantities[k]);  // push 올바르게 사용
+			        } */
+			    }
+
+			    console.log("최종 newData2:", newData2);
+
+			    
+			    
+/* 			    let arr = sizeArr.filter(ele => ele.startsWith("size"));
+			    console.log("arr",arr);
+			    
+			    let sendData = '';
+			    let reqSize = [];
+			    
+			    for(let i=0; i<arr.length; i++) {
+			    	  if(quantities[arr[i]]!=null){
+			    	    reqSize.push(arr[i].replace('size_',''));
+			    	    console.log(quantities[arr[i]])
+			    	    sendData = {
+			    	    	color: quantities.productColor,
+			    	    	size: arr[i].replace('size_',''),
+			    	    	qy: quantities[arr[i]]
+			    	    };
+			    	  }
+			    	}
+			    console.log("최종 제품 데이터",sendData); */
+
+
+/* 			    fetch("/order/insertOrder", {
 			        method: "POST",
 			        headers: {
 			            "Content-Type": "application/json"
@@ -339,7 +381,7 @@ function resetForm() {
 			    .catch(error => {
 			        console.error("주문 등록 오류:", error);
 			        alert("주문 등록 중 오류가 발생했습니다.");
-			    });
+			    }); */
 			}
 	</script>
 	</div>
