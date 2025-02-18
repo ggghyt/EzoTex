@@ -100,8 +100,9 @@
 
 		<div class="row">
 			<div class="col-5 card card-body m-2">
-				<div id="grid"></div>
-				<div id="pagination" class="tui-pagination"></div>
+				<div id="grid">
+					<div id="pagination" class="tui-pagination"></div>
+				</div>
 			</div>
 
 			<div class="col-5 card card-body m-2">
@@ -205,6 +206,10 @@
 	      columnOptions: {
 	          resizable: true
 	      },
+	      pageOptions:{
+	          useClient: false,
+	          perPage: 5
+	        },
 	      columns: [ 
 	        { header: "납품 코드", name: "deliveryCode", align: "center"},
 	        { header: "제품 종류 수", name: "deliveryQy", align: "center"},
