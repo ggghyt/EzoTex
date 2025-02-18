@@ -21,7 +21,7 @@ public class CompanyDTO {
 	private MultipartFile companyImgFile;
 	private String section;
 	private int distance;
-	private int requireTime;
+	private Double requireTime;
 	private String addressCode;
 	private String approval;
 	

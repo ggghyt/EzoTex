@@ -82,6 +82,14 @@ public class CommonController {
 		return userInfo;
 	}
 	
+	// 로그인 실패 세션 확인하기
+	@GetMapping("/login_fail")
+	public String Login_fail(RedirectAttributes attr) {
+		attr.addFlashAttribute("login_fail", true);
+		
+		return "redirect:/login/main";
+	}
+	
 	// dept 리스트
 	@ResponseBody
 	@GetMapping("/deptList")
@@ -136,24 +144,32 @@ public class CommonController {
 		String result = encoder.encode(companyDTO.getCompanyPassword());
 		companyDTO.setCompanyPassword(result);
 		
+		companyDTO.setSection("CP01");
+		
 		AddressListDTO addDTO = new AddressListDTO();
 		addDTO.setAddressNumber(companyDTO.getAddressNumber());
 		addDTO.setAddressMain(companyDTO.getAddressMain());
 		addDTO.setAddressInfo(companyDTO.getAddressInfo());
 		addDTO.setAddressReference(companyDTO.getAddressReference());
 		
-		// 서비스 작성
+		
+		service.insertCompany(companyDTO, addDTO);
 		
 		attr.addFlashAttribute("result", true);
 		
 		return "redirect:/login/main";
 	}
 	
-	
 	// 인증 여부 확인
 	@ResponseBody
 	@GetMapping("/idApproval")
-	public int idApproval(@RequestParam(name="id") String id) {
-		return service.idApproval(id);
+	public String idApproval(@RequestParam(name="id") String id) {
+		return "{\"approval\" : \"" + service.idApproval(id) + "\"}";
+	}
+	
+	// 비밀번호 재설정
+	@GetMapping("/password_reset")
+	public String password_reset() {
+		return "/login/password_reset";
 	}
 }
