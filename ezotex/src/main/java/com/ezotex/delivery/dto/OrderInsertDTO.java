@@ -20,6 +20,7 @@ public class OrderInsertDTO {
 	 */
 	
 	//제품 주문정보
+	private String deliveryCode; //출고코드
 	private String orderStatus;	//주문 상태
 	private String companySe;		//회사 구분(공급업체에서 사용하는지, 제조업체에서 사용하는지)
 	private String productOrderCode;//제품 주문 코드(제조업체 -> 구매업체)
@@ -45,6 +46,8 @@ public class OrderInsertDTO {
 	private Integer reqQy;	    	//요청수량
 	private Integer deliveryQy; 	//출고수량
 	private String productSe; 		//제품 구분
+	private String productLot;		//제품 로트
+	private String lotQy;			//로트 수량
 
 
 }
