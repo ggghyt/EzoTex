@@ -22,7 +22,13 @@ public class SupplyController {
 	public String bomPage(Model model) {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
 		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
-		return "/supply/BomManagement";
+		return "supply/bomManagement";
+	}
+	
+	@GetMapping("plan")
+	public String supplyPlan(Model model) {
+		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
+		return "supply/supplyPlan";
 	}
 	
 	// 테스트...
