@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class DeliveryRegistSearchDTO {
-	
+	//납품 관리 페이지 주문건 검색 DTO
 	int start;
 	int end;
 	
