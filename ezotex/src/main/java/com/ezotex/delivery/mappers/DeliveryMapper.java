@@ -9,6 +9,7 @@ import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
+import com.ezotex.delivery.dto.OrderInsertDTO;
 
 public interface DeliveryMapper {
 	
@@ -28,4 +29,13 @@ public interface DeliveryMapper {
     public List<Map<String, Object>> sizeFindByProductCode(@Param("productCode")String productCode, 
 															@Param("list")List<DeliveryProductInfo> list,
 															@Param("orderCode")String orderCode);
+    //(제조업체에서 사용) 주문건 상태 변환
+    public void updateOrderStatus(@Param("productOrderCode")String productOrderCode, 
+    							  @Param("statusCode")String statusCode);
+    
+    //(제조업체에서 사용)출고 등록
+    public void insertDeliveryMaster(@Param("info")OrderInsertDTO info);
+    
+    //(제조업체에서 사용)출고 제품 등록
+    public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
 }

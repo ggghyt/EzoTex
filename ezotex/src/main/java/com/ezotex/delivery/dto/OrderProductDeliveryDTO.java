@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class OrderProductDeliveryDTO {
+	//납품 검색 결과 화면 출력용 DTO
 	//주문코드, 납품코드, 업체코드, 구매 업체명, 요약, 상태, 납품담당자, 주문일, 납기일
 	private String productOrderCode;
 	private String deliveryCode;

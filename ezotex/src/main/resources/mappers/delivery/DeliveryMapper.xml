@@ -112,7 +112,8 @@
 			            </choose>
 	               	</where>                       
 	</select>
-		
+	
+	<!-- 주문정보 모두 가져오기 -->
 	<select id="getOrderInfo" parameterType="String">
 		WITH order_info AS (
 		    --주문정보
@@ -154,6 +155,7 @@
 		WHERE m.product_order_code = #{product_order_code}
 	</select>
 	
+	<!-- 제품별 사이즈 리스트 -->
 	<select id="findBySize">
 		SELECT product_code,
 		       product_size AS product_size,
@@ -197,4 +199,17 @@
 		)pvt
 	</select>
 	
+	<update id="updateOrderStatus">
+		UPDATE order_list
+		SET    order_status = #{statusCode}
+		WHERE  product_order_code = #{productOrderCode}
+	</update>
+	
+	<insert id="insertDeliveryMaster">
+		
+	</insert>
+	
+	<insert id="insertDeliveryDetails">
+	
+	</insert>
 </mapper>

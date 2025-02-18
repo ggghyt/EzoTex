@@ -4,15 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
+import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.mappers.DeliveryMapper;
 import com.ezotex.delivery.service.DeliveryService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 public class DeliveryServiceImpl implements DeliveryService {
 	
 	private final DeliveryMapper mapper;
+	
+	 @Autowired
+	 private HttpSession session;
+	 //String name = (String) session.getAttribute("name");
 
 	@Override
 	public List<OrderProductDeliveryDTO> getList(DeliveryRegistSearchDTO searchDTO) {
@@ -48,6 +56,16 @@ public class DeliveryServiceImpl implements DeliveryService {
 		map.put("qyList", mapper.sizeFindByProductCode(productCode, list, orderCode));
 		
 		return map;
+	}
+	
+	@Override
+	@Transactional
+	public String insertDelivery(List<OrderInsertDTO> orderInfoList) {
+		mapper.updateOrderStatus(null, null);
+		mapper.insertDeliveryMaster(null);
+		mapper.insertDeliveryDetails(null);
+		
+		return null;
 	}
 
 
