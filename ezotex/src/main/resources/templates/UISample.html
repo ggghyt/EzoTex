@@ -135,25 +135,26 @@
     	<b>모달 예시</b>
     	<div>
     		<!-- 심플 모달 -->
-    		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#simpleModal">모달</button>
-    		<div id="modalBox"></div>
+    		<button type="button" class="btn btn-secondary" id="modalBtn">단순모달</button>
     		<script>
-	    		createModal({
-	    			id: 'modalBox',
-	    			type: 'modify',
-	    			title: '샘플 모달',
-	    			content: '샘플입니다....'
+	    		document.addEventListener('DOMContentLoaded', () => {
+		    		createModal({
+		    			type: 'modify',
+		    			header: '샘플 모달',
+		    			content: '샘플입니다....'
+		    		});
+		    		/* 가능한 옵션 = {
+								type: 'regist' or 'modify' or 'delete' or 'confirm', // (필수! 이미지/버튼 교체값)
+								header: '제목 null 시 기본 멘트 적용',
+								title: '소제목 null 시 기본 멘트 적용',
+								content: '짧은 메세지 null 시 기본 멘트 적용',
+								confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
+								denyMsg: '취소 클릭 시 출력할 토스트 메세지',
+								loading: true or false // (기본값 true. false 시 확인 버튼 setTimeout 동작 안 함.)
+							}
+						*/
+	    			$('#modalBtn').on('click', () => $('#simpleModal').modal('show')); // layout.html에 선언되어 있음.
 	    		});
-	    		/* createModal 안에 넣는 options = {
-						id: '모달 출력할 div',
-						type: 'regist' or 'modify' of 'delete', // (이미지/버튼 교체 효과)
-						//// 필수입력값 끝, 아래는 선택사항
-						title: '제목 null 시 기본 멘트 적용',
-						content: '짧은 메세지 null 시 기본 멘트 적용',
-						confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
-						denyMsg: '취소 클릭 시 출력할 토스트 메세지'
-					}
-				*/
     		</script>
     		
     		<!---- 모달 상세 예시 ---->

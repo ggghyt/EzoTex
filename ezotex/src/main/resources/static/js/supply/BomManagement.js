@@ -11,6 +11,16 @@ let sizeBox = document.getElementById('size');
 document.addEventListener('DOMContentLoaded', () => {
 	changeClas(lclasBox, sclasBox);
 	changeClas(mtrLclasBox, mtrSclasBox);
+	
+	createModal({ 
+		type: 'confirm',
+		confirm: insertBom
+	});
+	$('#insertBtn').on('click', () => {
+		let updatedData = selectedMtrGrid.getData();
+		if(updatedData.length == 0) return;
+		$('#simpleModal').modal('show');
+	});
 });
 
 // 대분류 onChange 이벤트 등록 함수
@@ -265,9 +275,8 @@ mtrGrid.on('uncheckAll', () => {
 
 /******************** BOM 자재 등록 ********************/
 function insertBom(){
+	// 자재코드나 소요량 하나라도 변경되었는지 검증
 	let updatedData = selectedMtrGrid.getData();
-	
-	// 자재코드나 소요량 하나라도 변경되었을 때만 실행
 	let newData = updatedData.filter(data => {
 		let boolean = true;
 		originBomData.forEach(origin => {
@@ -312,9 +321,3 @@ function insertBom(){
 		} else failToast('알 수 없는 오류로 실패했습니다.');
 	});
 };
-
-createModal({ 
-	id: 'modalBox', 
-	type: 'regist',
-	confirm: insertBom
-});
