@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridData;
 import com.ezotex.comm.GridUtil;
+import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -33,24 +34,28 @@ public class InventoryRestController {
 	private final InventoryService iService;
 	
 	@GetMapping("deliveryList")
-	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
+	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+									@RequestParam(name = "page", defaultValue = "1") int page
+									
 			) throws JsonMappingException, JsonProcessingException {
 
-		// 만들어야됨
-//		paging.setPageUnit(perPage);
-//
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
+
 //		// 페이징 조건
 //		searchDTO.setStart(paging.getFirst());
 //		searchDTO.setEnd(paging.getLast());
 //
 //		// 페이징처리
-//		paging.setTotalRecord(service.getCount(searchDTO));
+		paging.setTotalRecord(service.getCount());
 		
 		
 		// 페이징처리 만들어야됨
 //		paging.getPage());
 //		service.getCount(searchDTO));
-		return GridUtil.grid(1, 100, service.DeliveryList());
+		return GridUtil.grid(paging.getPage(), service.getCount(), service.DeliveryList(paging));
 	}
 	
 	// 납품리스트 기반 입고 제품 상세 조회
@@ -90,9 +95,6 @@ public class InventoryRestController {
 	public List<InventoryDTO> inventoryList(@RequestParam(name= "productCode") String productCode,
 								@RequestParam(name= "color") String color,
 								@RequestParam(name= "sizeCode") String sizeCode) {
-		System.out.println(productCode);
-		System.out.println(color);
-		System.out.println(sizeCode);
 		return iService.inventoryList(productCode, color, sizeCode);
 	}
 

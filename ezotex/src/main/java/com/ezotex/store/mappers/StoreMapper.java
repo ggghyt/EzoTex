@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
@@ -12,11 +13,14 @@ import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 
 public interface StoreMapper {
 	
-	// 테스트
-	public List<InventoryDTO> list();
+	// 페이지 총 수
+	public int getCount();
 	
 	// 입고 예정 리스트
-	public List<StoreDeliveryDTO> DeliveryList();
+	public List<StoreDeliveryDTO> DeliveryList(PagingDTO paging);
+	
+	// 납품리스트별 총 제품 수량
+	public StoreDeliveryDTO deliveryQy();
 	
 	// 납품리스트 기반 입고 제품 상세 조회
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode);
