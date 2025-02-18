@@ -75,6 +75,5 @@
 			#{QY},
 			#{UNIT_PRICE}
 		)
-		
 	</insert>
 </mapper>

@@ -84,6 +84,17 @@ public class InventoryRestController {
 	public Map<String, Object> productInfoList(@RequestParam(name= "productCode") String productCode){
 		return iService.productInfoList(productCode);
 	}
+	
+	// 재고조회 제품별 수량 LOT리스트
+	@GetMapping("inventoryList")
+	public List<InventoryDTO> inventoryList(@RequestParam(name= "productCode") String productCode,
+								@RequestParam(name= "color") String color,
+								@RequestParam(name= "sizeCode") String sizeCode) {
+		System.out.println(productCode);
+		System.out.println(color);
+		System.out.println(sizeCode);
+		return iService.inventoryList(productCode, color, sizeCode);
+	}
 
 
 	
