@@ -10,73 +10,67 @@
 		<h3 class="fs-3 fw-bold">| 공급계획서 등록</h3>
 		<div class="row">
 			<div class="col">
+				<!-- 제품 목록 및 검색 -->
 				<div th:replace="supply/bomManagement :: productList"></div>
 			</div>
 			
 			<div class="col">
 				<div class="card card-body mt-3">
-					<!-- 제품 상세 정보 및 BOM 정보 -->
+					<!-- 제품 상세 정보 및 옵션별 수량 입력 -->
 					<p class="fs-5 fw-bolder mb-4 me-3">선택한 제품</p>
 					<div class="row">
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품코드</label>
+						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<input type="text" class="form-control" id="selectedPrdCode" readonly>
 						</div>
-						<label class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">제품명</label>
+						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<input type="text" class="form-control" id="selectedPrdName" readonly>
 						</div>
 					</div>
-					<!-- 사이즈 컬러 표시 -->
+					<div id="optionGrid"></div>
 						
 					<hr>
-					<!-- BOM 선택 -->
+					<!-- 공급계획 입력 -->
 					<p class="fs-5 fw-bolder mb-4">공급계획</p>
-					<form class="row">
-						<label for="mtr-lclas" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">공급년도</label>
+					<form class="row mb-1">
+						<label for="year" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-overflow">*공급년도</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="mtr-lclas" name="mtr-lclas">
-								<option value="null">전체</option>
-								<option th:each="lclas : ${mtrLclasList}" th:value="${lclas}">[[ ${lclas} ]]</option>
+							<select class="form-control" id="year" name="year">
+								<option value="null">상시</option>
+								<option th:each="year : ${yearList}" th:value="${year}">[[ ${year} ]]</option>
 							</select>
 						</div>
-													
-						<label for="mtrilCode" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">자재코드</label>
+						<label for="season" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<input type="radio" id="mtrilCode" value="null">
+							<select class="form-control" id="season" name="season">
+								<option value="null">미정</option>
+								<option th:each="season : ${seasonList}" th:value="${season}">[[ ${season} ]]</option>
+							</select>
 						</div>
 					</form>
-					<div id="mtrGrid"></div>
+					<p style="color: #999">* 최대 10년 범위에서 작성 가능</p>
+					<!-- 제품별 공급계획량 합계 -->
+					<div id="supplyGrid" class="mt-1"></div>
 						
-					<hr style="height: 0.1px">
-					<div class="row">
-						<div class="col">
-							<!-- 해당 제품의 BOM에 등록할 자재 -->
-							<p class="fs-5 fw-bolder mb-4">선택한 자재</p>
-							<div id="selectedMtrGrid"></div>
-							
-							<div class="row mt-3">
-								<label for="chargerName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">담당자</label>
-								<div class="col-8 col-lg-4 d-flex mb-2">
-									<input type="text" class="form-control" id="chargerName" readonly>
-								</div>
-								<label for="rgsde" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak">최종등록일</label>
-								<div class="col-8 col-lg-4 d-flex mb-2">
-									<input type="text" class="form-control" id="rgsde" readonly>
-								</div>
-							</div>
-							<div class="text-end">
-								<button id="insertBtn" class="btn btn-primary">등록</button>
-								<button class="btn btn-secondary m-2">초기화</button>
-								<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
-							</div>
+					<div class="row mt-3">
+						<label for="rgsde" class="col-4 col-lg-2 d-flex mb-2 justify-content-center wbreak text-center">공급계획량 합계</label>
+						<div class="col-8 col-lg-3 d-flex align-items-center mb-2">
+							<input type="text" class="form-control" id="mtr" readonly>
 						</div>
+						<label for="chargerName" class="col-4 col-lg-2 d-flex mb-2 justify-content-center align-items-center wbreak">담당자</label>
+						<div class="col-8 col-lg-3 d-flex align-items-center mb-2">
+							<input type="text" class="form-control" id="chargerName" readonly>
+						</div>
+						<div class="col-lg-2 text-end">
+							<button id="insertBtn" class="btn btn-primary"><span class="wbreak">등록</span></button>
+						</div>						
 					</div>
-					
+										
 				</div>
 			</div>
 		</div>
 	</body>
 	
-	<script src="/js/supply/BomManagement.js"></script>
+	<script src="/js/supply/supplyPlan.js"></script>
 </html>
