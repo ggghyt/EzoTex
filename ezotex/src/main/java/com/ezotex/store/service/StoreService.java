@@ -3,18 +3,18 @@ package com.ezotex.store.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ezotex.comm.dto.PagingDTO;
+import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
-import com.ezotex.store.dto.InventoryDTO;
-import com.ezotex.store.dto.SizeDTO;
 
 public interface StoreService {
 
-	// 테스트
-	public List<InventoryDTO> list();
+	// 페이지 총 수
+	public int getCount();
 	
 	// 입고 예정 리스트
-	public List<StoreDeliveryDTO> DeliveryList();
+	public List<StoreDeliveryDTO> DeliveryList(PagingDTO paging);
 	
 	// 납품리스트 기반 입고 제품 상세 조회
 	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode);
