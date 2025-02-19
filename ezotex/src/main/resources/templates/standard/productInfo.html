@@ -1,0 +1,287 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+
+	<div class="card card-body mt-3">
+		<div class="col-12 card card-body m-2">
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">납품코드</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">검색조건2</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" id="" class="form-control">
+				</div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<div id="productGrid"></div>
+			</div>
+
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">선택된 제품</p>
+				<div style="margin-bottom: 10px;">
+					<input type="text" class="form-control" id="prdCode" style="width: 200px; display: inline-block;">
+					<input type="text" class="form-control" id="prdName" style="width: 200px; display: inline-block;">
+				</div>
+				<div id="productGrid2"></div>
+				<p class="fs-5 fw-bolder mt-2">LOT별 재고 현황</p>
+				<div id="productLot"></div>
+
+
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<!-- Toast UI Grid 스크립트 -->
+	<script>
+	    
+	
+		let productCode = "";
+		let productName = "";
+
+	   	/*
+	   	*========================================================================
+	   	* 입고 완료 제품 목록 그리드
+	   	*========================================================================
+	   	*/
+	   	const productData = {
+	   		    api: {
+	   		        readData: { url: 'http://localhost:80/store/productQyList', method: 'GET' }
+	   		    },
+	   		    contentType: 'application/json'
+	   		};
+
+	   	const productListGrid = new Grid({
+	   		   el: document.getElementById('productGrid'),
+	   		   rowHeaders: ['rowNum'],
+	   		   columnOptions: { resizable: true },
+	   		   columns: [
+	   		        { header: "제품 코드", name: "productCode", align: "center" },
+	   		        { header: "제품명", name: "productName", align: "center" },
+	   		        { header: "총 제품 수량", name: "inventoryQy", align: "center" }
+	   		   ],
+	   		   data: productData
+	   		});
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 완료 제품 목록 그리드 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 입고 완료 제품상세 목록 그리드
+	   	*========================================================================
+	   	*/
+	   	
+	   	const productGrid2 = new Grid({
+		      el: document.getElementById('productGrid2'), // 컨테이너 엘리먼트
+		      columns: [ 
+			        { header: "색상/사이즈", name: "productColor", align: "center"},
+			        { header: "S", name: "s", align: "center"},
+			        { header: "M", name: "m", align: "center"},
+			        { header: "L", name: "l", align: "center"},
+			        { header: "XL", name: "xl", align: "center"},
+			  ],
+			  data: []
+		    });
+	   	
+	   	productListGrid.on('click', ev => {
+	   	    let data = productListGrid.getRow(ev.rowKey);
+	   	    productCode = data.productCode;
+	   	 	productName = data.productName;
+	   	 	
+	   	 	document.querySelector('#prdCode').value = productCode;
+	   	 	document.querySelector('#prdName').value = productName;
+
+	   	    fetch(`http://localhost:80/store/productListInfo?productCode=${productCode}`)
+	   	        .then(rep => rep.json())
+	   	        .then(data => {
+	   	            // 헤더 컬럼 설정
+	   	            let columns = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
+	   	            data.optionList.forEach(data => {
+	   	                columns.push({
+	   	                    header: data.productSizeInfo.toUpperCase(), 
+	   	                    name: 'size'+data.productSizeInfo.toLowerCase(),  
+	   	                    align: "center"
+	   	                });
+	   	            });
+	   	            // 헤더 컬럼 지정
+	   	            productGrid2.setColumns(columns);
+
+	   	            // 데이터 넣기
+	   	            let rowData = [];
+	   	            data.pivotList.forEach(pivotData => {
+	   	                let row = { productColor: pivotData.productColor }; // 색상 데이터 넣기
+	   	                // 실제 수량 넣는 곳
+	   	                data.optionList.forEach(sizeItem => {
+	   	                    let sizeKey = sizeItem.productSizeInfo.toLowerCase();
+	   	                    row['size'+sizeKey] = pivotData[sizeKey] || "0";  // 값이 없으면 0
+	   	                });
+	   	                rowData.push(row);
+	   	            });
+	   	            productGrid2.resetData(rowData);
+	   	        })
+	   	});
+
+	   	productGrid2.on('click', ev => {
+	   		let data = productGrid2.getRow(ev.rowKey);
+	   		
+	   		console.log(data);
+	   		
+	   		//let test = Object.keys(data);
+	   		//console.log('필드값 : ',test);
+	   		
+	   		//let sizeTest = test.filter(ele => ele.startsWith('size'))
+	   		//console.log('size들어간 필드값 : ', sizeTest);
+	   		
+	   		//console.log(data.productColor);
+	   		
+	   		let clickedColumn = ev.columnName; // 클릭된 컬럼명
+	   	    let clickedValue = data[clickedColumn]; // 클릭된 셀의 값
+			let color = data.productColor;
+	   	    console.log('클릭된 컬럼명 :', clickedColumn);
+	   	    console.log('클릭된 값 :', clickedValue);
+    	    
+	   	    let size = clickedColumn.replace('size','').toUpperCase();
+	   	    console.log('클릭된 사이즈 : ', size);
+	   	    
+	   		let sizeCode = getSizeCommonCode(size);
+	   		console.log('클릭된 사이즈 코드 : ', sizeCode);
+	   		
+	   		console.log('제품코드 : ', productCode);
+	   		console.log('색상 : ', color);
+	   		
+	   		productInfo(productCode,color,sizeCode);
+	   		
+	   	    
+	   		/* for (let i = 0; i < sizeTest.length; i++) {
+	   		   if (data[sizeTest[i]] != null && data[sizeTest[i]] != 0) {
+	   		       let currentSize = sizeTest[i].replace('size', '').toUpperCase(); // 현재 사이즈
+	   		       
+	   		       let objInfo = {
+	   		           productCode: productCode,
+	   		           size: currentSize,
+	   		           sizeCode: getSizeCommonCode(currentSize),
+	   		           qy: data[sizeTest[i]],
+	   		           color: data.productColor
+	   		       }
+	   		       console.log('objInfo : ', objInfo);
+	   		       obj.push(objInfo);
+	   		   }
+	   		}
+	   		console.log('obj : ',obj); */
+	   	})
+	   	
+	    /*
+	   	*========================================================================
+	   	* 입고 완료 제품상세 목록 그리드 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 그리드
+	   	*========================================================================
+	   	*/
+	   	
+	   	const productLot = new Grid({
+	   		el: document.getElementById('productLot'),
+	   		rowHeaders: ['rowNum'],
+	   		columns: [
+	   			{ header: "LOT", name: "lot" },
+	   			{ header: "제품명", name: "productName" },
+	   			{ header: "사이즈", name: "productSize" },
+	   			{ header: "색상", name: "productColor" },
+	   			{ header: "재고량", name: "inventoryQy" },
+	   			{ header: "입고 담당자", name: "storeCharger" }
+	   		],
+	   		data: []
+	   	})
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 그리드 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 데이터
+	   	*========================================================================
+	   	*/
+	   	function productInfo(productCode,color,sizeCode){
+   	    	console.log('함수호출 확인')
+   	    	fetch(`http://localhost:80/store/inventoryList?productCode=${productCode}&color=${color}&sizeCode=${sizeCode}`,{
+   	    		method: 'GET',
+   	    		headers: headers,
+   	    	}).then(req => req.json())
+   	    	  .then(result => 
+   	    			productLot.resetData(result)
+   	    			  )
+   	    	  	
+   	    	  .catch(error => console.log('오류 : ', error))
+   		}
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 옵션별 LOT 재고 리스트 데이터 END!!
+	   	*========================================================================
+	   	*/
+	     
+	   	</script>
+
+</body>
+</html>

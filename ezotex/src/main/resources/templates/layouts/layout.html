@@ -461,7 +461,7 @@
   <!-- container-scroller -->
   
   <!-- 기본 modal -->
-  <div class="modal fade" id="simpleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"></div>
+  <div class="modal fade" id="simpleModal" tabindex="-1" aria-labelledby="exampleModalLabel"></div>
 
   <!-- plugins:js -->
   <script src="/vendors/js/vendor.bundle.base.js"></script>
@@ -513,6 +513,21 @@
 	  document.querySelector("#Thumbnail_user_name").innerText = session_user_name
 	  document.querySelector("#Thumbnail_user_email").innerText = session_user_email
   })
+  
+  function simulateLoading() {
+    console.log('작동됨');
+    var loadingSpinner = document.querySelector(".loading-wrap");
+    var loadingMessage = document.getElementById("loadingMessage");
+
+    // 로딩 시작
+    loadingSpinner.style.display = "flex";
+    loadingMessage.style.color = "white";
+
+    // 1초 뒤에 로딩 완료
+    setTimeout(function () {
+    loadingSpinner.style.display = "none";
+    }, 3000);
+  }
   </script>
 </body>
 
