@@ -74,11 +74,14 @@ const prdGrid = new Grid({
      }
 });
 
+let optionArr = [];
+
 // 옵션 그리드
 const optionGrid = new Grid({
 		el: document.getElementById('optionGrid'), // 컨테이너 엘리먼트
+		data: optionArr,
 	  columns: [
-        { header: "색상/사이즈", name: "productColor", align: "center", width: 80 }
+        //{ header: "색상/사이즈", name: "productColor", align: "center", width: 80 }
     ],
   	scrollX: true, // 가로 스크롤
   	scrollY: true, // 세로 스크롤

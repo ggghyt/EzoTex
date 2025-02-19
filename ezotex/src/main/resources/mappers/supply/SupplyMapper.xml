@@ -17,15 +17,15 @@
 		ORDER  BY product_code DESC
 	</select>
 	
-	<!-- 해당 제품의 사이즈 목록 -->
-	<select id="findSize" resultType="ProductDTO">
-		SELECT product_code,
-		       product_size,
-		       get_comm(product_size) AS size_name
+	<!-- 해당 제품의 전체 옵션 목록 -->
+	<select id="findOptions" resultType="ProductDTO">
+		SELECT product_size,
+		       get_comm(product_size) AS size_name,
+		       product_color
 		FROM   product_option
 		WHERE  product_code = #{productCode}
-		GROUP BY product_code, product_size
-		ORDER BY product_size
+		  AND  discontinued = 'YN02'
+		ORDER BY product_color, product_size
 	</select>
 	
 	<!-- 제품 코드 기반 집계 목록 -->
@@ -42,5 +42,19 @@
 		    )
 		)pvt
 	</select>
+	
+	<!-- 공급계획 등록(헤더) -->
+	<insert id="insertSupplyPlan" parameterType="SupplyDTO">
+		INSERT INTO supply_plan (SUPPLY_PLAN_CODE, SUPPLY_YEAR, SEASON, CHARGER_CODE, CHARGER_NAME, REMARK) 
+		VALUES ((SELECT 'SUD' || LPAD(NVL(SUBSTR(MAX(supply_plan_code), -4), 0) + 1, 4, 0) FROM supply_plan),
+		         #{supplyYear}, #{season}, #{chargerCode}, #{chargerName}, #{remark})
+	</insert>
+	
+	<!-- 공급계획 등록(디테일) -->
+	<insert id="insertSupplyPlanDetail" parameterType="SupplyDTO">
+		INSERT INTO supply_plan_details (SUPPLY_PLAN_DETAIL_CODE, SUPPLY_PLAN_CODE, PRODUCT_CODE, PRODUCT_COLOR, PRODUCT_SIZE, SUPPLY_QY, SUPPLY_DATE) 
+		VALUES ((SELECT 'SUD' || LPAD(NVL(SUBSTR(MAX(supply_plan_detail_code), -4), 0) + 1, 4, 0) FROM supply_plan_details), -- 다음 번호 조회
+		        (SELECT MAX(supply_plan_code) FROM supply_plan), #{productCode}, #{productColor}, #{productSize}, #{supplyQy}, #{supplyDate})
+	</insert>
 	
 </mapper>
