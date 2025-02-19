@@ -67,26 +67,8 @@ public class StoreServiceImpl implements StoreService {
 		String name = (String) session.getAttribute("name");
         
 		list.forEach(data -> {
-
-	        String[] sizes = {data.getSizeFREE(),data.getSizeXS(),data.getSizeS(), data.getSizeM(), data.getSizeL(), data.getSizeXL()};
-	        String[] sizeCode = {"SI01","SI02","SI03","SI04","SI05","SI06","SI07",};
-	        
-	        // productColor와 productCode는 동일하므로, 각각 한번만 출력
-	        String color = data.getProductColor();
-	        String productCode = data.getProductCode();
-	        String deliveryCode = data.getDeliveryCode();
-	        
-	        if (color != null) {
-	            for (int i = 0; i < sizes.length; i++) {
-	                if (sizes[i] != null) {
-	                	SizeDTO sizeDto = new SizeDTO(sizeCode[i], sizes[i], color, productCode, name);
-	                	mapper.InsertProduct(sizeDto);
-	                	StoreDeliveryDetailsDTO deliveryDetailDto = new StoreDeliveryDetailsDTO(sizeCode[i], sizes[i], color, productCode, deliveryCode);
-	                	System.out.println("서비스 : " + deliveryDetailDto);
-	                	mapper.UpdateDeliveryDtails(deliveryDetailDto);
-	                }
-	            }
-	        }
+	        mapper.InsertProduct(data, name);
+	        mapper.UpdateDeliveryDtails(data);
 	    });
 		return true;
 	}

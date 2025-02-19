@@ -2,11 +2,9 @@ package com.ezotex.store.mappers;
 
 import java.util.List;
 
-
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.comm.dto.PagingDTO;
-import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -32,8 +30,8 @@ public interface StoreMapper {
 	public List<StoreDeliveryDetailsDTO> findByProductCode(@Param("productCode")String productCode, @Param("list")List<StoreDeliveryDetailsDTO> list);
 	
 	// 제품 입고 등록
-	public int InsertProduct(SizeDTO SDto); 
+	public int InsertProduct(@Param("list")SizeDTO SDto, @Param("name")String name); 
 	
 	// 제품 입고별 입고해야될 수량 수정
-	public int UpdateDeliveryDtails(StoreDeliveryDetailsDTO detailDto);
+	public int UpdateDeliveryDtails(SizeDTO sizedto);
 }

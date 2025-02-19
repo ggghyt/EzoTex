@@ -263,7 +263,6 @@
 	   	*========================================================================
 	   	*/
 	   	function productInfo(productCode,color,sizeCode){
-   	    	console.log('함수호출 확인')
    	    	fetch(`http://localhost:80/store/inventoryList?productCode=${productCode}&color=${color}&sizeCode=${sizeCode}`,{
    	    		method: 'GET',
    	    		headers: headers,

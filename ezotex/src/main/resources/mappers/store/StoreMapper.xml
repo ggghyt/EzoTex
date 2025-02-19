@@ -87,11 +87,11 @@
                             store_date,
                             product_se) 
 		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
-		       #{productCode},
-		       #{sizeS},
-		       #{sizeS},
-		       #{productColor},
-		       #{sizeCode},
+		       #{list.productCode},
+		       #{list.productQy},
+		       #{list.productQy},
+		       #{list.color},
+		       #{list.sizeCode},
 		       #{name},
 		       'test',
 		       sysdate,
@@ -100,12 +100,12 @@
 	
 	
 	<!-- 입고량에 따른 수정 -->
-	<update id="UpdateDeliveryDtails" parameterType="StoreDeliveryDetailsDTO">
+	<update id="UpdateDeliveryDtails" parameterType="SizeDTO">
 		UPDATE delivery_details
-        SET delivery_qy = delivery_qy - #{productSizeInfo}
+        SET delivery_qy = delivery_qy - #{productQy}
         WHERE product_code = #{productCode}
-        AND product_size = #{productSize}
-        AND product_color = #{productColor}
+        AND product_size = #{sizeCode}
+        AND product_color = #{color}
 	</update>
 	
 	
