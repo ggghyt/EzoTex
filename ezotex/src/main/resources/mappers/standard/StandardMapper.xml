@@ -30,7 +30,7 @@ order by position_no asc
 
 <insert id="insertEmp" parameterType="EmpDTO">
 insert into emp
-values(concat('emp', LPAD(EMP_SEQ.nextval, 4, 0)), 
+values(concat('EMP', LPAD(EMP_SEQ.nextval, 4, 0)), 
        #{empId}, 
        #{empPassword}, 
        #{empName}, 
@@ -58,7 +58,7 @@ values(ADDRESS_LIST_SEQ.nextval,
 
 <insert id="insertCompany" parameterType="CompanyDTO">
 insert into company
-values(concat('com', LPAD(COMPANY_SEQ.nextval, 4, 0)), 
+values(concat('COM', LPAD(COMPANY_SEQ.nextval, 4, 0)), 
        #{companyId}, 
        #{companyPassword}, 
        #{companyExponent}, 
@@ -110,6 +110,50 @@ select company_id,
 from company
 )
 where id = #{id}
+</select>
+
+<select id="findNameEmail" resultType="ResetPasswordDTO">
+select *
+from(
+select emp_id as id,
+       emp_name as name, 
+       emp_email as email
+from emp
+union
+select company_id, 
+       company_name, 
+       company_email
+from company
+)
+where id = #{id}
+</select>
+
+<update id="passwordEmpUpdate">
+update emp
+set emp_password = #{password}
+where emp_id = #{id}
+</update>
+
+<update id="passwordCompanyUpdate">
+update company
+set company_password = #{password}
+where company_id = #{id}
+</update>
+
+<select id="productList" resultType="ProductListInfoDTO">
+select product_info.product_code, 
+       product_name, 
+       code_name as product_type, 
+       lclas, 
+       sclas, 
+       unit_price, 
+       vl
+from product_info
+left join product_category
+on product_info.product_code = product_category.product_code
+join common_code_details
+on product_info.product_type = common_code_details.comm_detail_code
+order by 1
 </select>
 
 </mapper>

@@ -5,15 +5,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,6 +28,7 @@ import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
+import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
@@ -171,5 +177,46 @@ public class CommonController {
 	@GetMapping("/password_reset")
 	public String password_reset() {
 		return "/login/password_reset";
+	}
+	
+	// 번경 메일 전송
+	@Autowired
+	private EmailService emailService;
+	
+	@PostMapping("/password_reset")
+	public String password_reset_send(ResetPasswordDTO resetPasswordDTO, RedirectAttributes attr) {
+		ResetPasswordDTO search_user_info = service.findNameEmail(resetPasswordDTO.getId());
+
+		if (resetPasswordDTO.equals(search_user_info)) {
+			// 이메일 전송
+			int random_num = 0;
+			String new_password = "";
+			while (random_num < 10000000) {
+				random_num = (int)(Math.random() * 100000000);
+			}
+			new_password = Integer.toString(random_num);
+			String content = "비밀번호가 " + new_password + " 로 변경되었습니다.";
+			System.out.println(content);
+			emailService.sendEmail(search_user_info.getEmail(), "EzoTex 비밀번호 초기화 안내", content);
+			
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+			String result = encoder.encode(new_password);
+			
+			int update_result = service.passwordUpdate(search_user_info.getId(), result);
+			if (update_result == 1) {
+				attr.addFlashAttribute("reset", true);
+			
+				return "redirect:/login/main";
+			} else {
+				attr.addFlashAttribute("reset", true);
+				
+				return "redirect:/login/password_reset";
+			}
+		} else {
+			attr.addFlashAttribute("reset", true);
+			
+			return "redirect:/login/password_reset";
+		}
+		
 	}
 }
