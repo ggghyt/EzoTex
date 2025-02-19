@@ -32,6 +32,8 @@
 		)pvt
 	</select>
 	
+	
+	<!-- 제품사이즈,색상별 상세리스트 -->
 	<select id="inventoryList" resultType="InventoryDTO">
 		SELECT i.lot,
 		       p.product_name,
@@ -46,5 +48,29 @@
 		AND i.product_code = #{productCode}
 		AND i.inventory_qy > 0
 	</select>
+	
+	
+	<!-- 위치별 제품 상세 리스트(재고조정) -->
+	<select id="location" resultType="InventoryDTO">
+		SELECT MAX(i.product_code) AS product_code,
+		       p.product_name,
+		       i.product_color,
+		       get_comm(i.product_size) AS product_size,
+		       i.lot,
+		       i.storage_location,
+		       i.inventory_qy,
+		       i.store_date
+		FROM inventory i JOIN product_info p 
+		ON i.product_code = p.product_code
+		GROUP BY i.lot,
+		         p.product_name,
+		         i.product_color,
+		         get_comm(i.product_size),
+		         i.storage_location,
+		         i.inventory_qy,
+		         i.product_code,
+		         i.store_date
+	</select>
+	
 	
 </mapper>

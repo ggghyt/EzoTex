@@ -5,11 +5,191 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
+		<!-- timePicker -->
+		<link rel="stylesheet"
+			href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+		<script
+			src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+		
+		<!-- datePicker -->
+		<link rel="stylesheet"
+			href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+		<script
+			src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+		
+		<!-- paging -->
+		<link rel="stylesheet"
+			href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+		<script
+			src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+		
+		<!-- toast grid -->
+		<link rel="stylesheet"
+			href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 	</head>
 	<body>
+	
+		<!-- 경고 모달 -->
+		<button type="button" class="btn btn-warning registBtn" data-bs-toggle="modal" data-bs-target="#modifyMOdal" hidden="true">
+			    수정
+			  </button>
+		
+		
+		
+		<div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		        <div class="modal-dialog">
+		          <div class="modal-content">
+		            <div class="modal-header" style="height: 20px;">
+		              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
+		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		            </div>
+		            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+		              <div>
+		                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+		              </div>
+		              <div>
+		                <p style="margin-top: 12px;
+		                font-size: 21px;
+		                font-weight: bold;">경고</p>
+		                <p>하나의 제품만 선택해 주세요</p>
+		              </div>
+		            </div>
+		            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+		              <!---->
+		              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
+		            </div>
+		          </div>
+		        </div>
+		      </div>	
+		<!-- 경고 모달 END -->
+	
 		<h3 class="fs-3 fw-bold">| 재고 조정</h3>
 		<div class="card card-body mt-3">
-			
+			<div class="col-12 card card-body m-2">
+				<div class="row g-3 align-items-center">
+					<div class="col-auto">
+						<label class="col-form-label">납품코드</label>
+					</div>
+					<div class="col-auto">
+						<input type="text" id="" class="form-control">
+					</div>
+				</div>
+				<div class="row g-3 align-items-center">
+					<div class="col-auto">
+						<label class="col-form-label">검색조건2</label>
+					</div>
+					<div class="col-auto">
+						<input type="text" id="" class="form-control">
+					</div>
+				</div>
+			</div>
 		</div>
+		
+		
+		<div class="row">
+			<div class="col-6 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">재고 현황</p>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: flex-end; border-top: none;">
+				<button class="btn btn-warning" style="width:110px">위치이동</button>
+				<button class="btn btn-danger" id="productError" style="width:110px">불량처리</button>
+				</div>
+				<div id="Management"></div>
+			</div>
+
+			<div class="col-4 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">재고조정 불량처리</p>
+				<div class="form-group" style="margin-top: 37px;">
+				  <p class="fs-5 fw-bolder mt-2">선택 재고</p>
+				  <label style="font-weight: bold;">제품코드</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="productCode" readonly>
+                </div>
+                <div class="form-group">
+                  <label style="font-weight: bold;">제품명</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="productName" readonly>
+                </div>
+                <div class="form-group">
+                  <label style="font-weight: bold;">LOT번호</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="lot" readonly>
+                </div>
+                <div class="form-group">
+                  <label style="font-weight: bold;">제품수량</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="productQy" readonly>
+                </div>
+                <div class="form-group">
+                  <label style="font-weight: bold;">색상</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="color" readonly>
+                </div>
+                <div class="form-group">
+                  <label style="font-weight: bold;">사이즈</label>
+                  <input type="text" class="form-control form-control-lg" name="" placeholder="" id="size" readonly >
+                </div>
+                <div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none;">
+                <label style="font-weight: bold;">불량처리 할 수량</label>
+                <input type="text" class="form-control form-control-lg" name="" placeholder="" id="" style="width: 200px;">
+                <label style="font-weight: bold;">불량사유</label>
+                <input type="text" class="form-control form-control-lg" name="" placeholder="" id="" style="width: 200px;">
+                </div>
+			</div>
+		</div>
+		
+		<script>
+			const ManagementData = {
+				api: {
+						readData: { url: 'http://localhost:80/store/Management', method: 'GET'}
+					 },
+				contentType: 'application/json'
+			}
+		
+			const ManagementGrid = new Grid({
+				el: document.getElementById('Management'),
+				rowHeaders: ['rowNum', 'checkbox'],
+				pageOptions:{
+					useClient: true,
+					perPage: 10
+				},
+				columns: [
+					{ header: "제품코드", name: "productCode", align: "center" },
+					{ header: "제품명", name: "productName", align: "center" },
+					{ header: "색상", name: "productColor", align: "center" },
+					{ header: "사이즈", name: "productSize", align: "center" },
+					{ header: "LOT번호", name: "lot", align: "center" },
+					{ header: "창고위치", name: "storageLocation", align: "center" },
+					{ header: "입고일", name: "storeDate", align: "center" },
+					{ header: "재고수량", name: "inventoryQy", align: "center" },
+					/* { header: 'checkbox', name: 'checkbox', editor: 'checkbox'}, */ 
+				],
+				data: ManagementData
+			})
+			
+			
+			
+			
+			productError.addEventListener("click", function (){
+				let check = ManagementGrid.getCheckedRows();
+				console.log(check)
+				if(check.length == 1){
+					console.log('삭제처리');
+					document.querySelector('#productCode').value = check[0].productCode;
+					document.querySelector('#productName').value = check[0].productName;
+					document.querySelector('#lot').value = check[0].lot;
+					document.querySelector('#productQy').value = check[0].inventoryQy;
+					document.querySelector('#color').value = check[0].productColor;
+					document.querySelector('#size').value = check[0].productSize;
+				}else{
+			        let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+			        modifyModal.show();
+				}
+			})
+			
+			
+			
+			
+
+			
+			
+		</script>
 	</body>
 </html>

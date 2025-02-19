@@ -47,9 +47,16 @@ public class InventoryServiceImpl implements InventoryService {
 		return map;
 	}
 
+	// 제품 옵션별 LOT 리스트
 	@Override
 	public List<InventoryDTO> inventoryList(String productCode, String color, String sizeCode) {
 		return mapper.inventoryList(productCode, color, sizeCode);
+	}
+
+	// 위치별 재고 상세 리스트(재고조정)
+	@Override
+	public List<InventoryDTO> location() {
+		return mapper.location();
 	}
 
 	
