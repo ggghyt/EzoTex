@@ -28,19 +28,48 @@
 		ORDER BY product_color, product_size
 	</select>
 	
-	<!-- 제품 코드 기반 집계 목록 -->
-	<select id="test">
-		-- 집계함수 PIVOT() 예시
+	<!-- 제품코드 기반 옵션 빈 PIVOT -->
+	<select id="pivotProductOption" resultType="map">
 		WITH temp AS( -- 임시 테이블 지정
-		    SELECT * FROM order_product
+		SELECT product_color,
+		       product_size
+		FROM   product_option
+		WHERE  product_code = #{productCode}
 		)
 		SELECT  *
 		FROM temp
-		PIVOT( SUM(qy) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
+		PIVOT( COUNT(null) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
 		    FOR product_size IN ( -- '값' alias, ...
-		       'SI05' s, 'SI02' m
+		       'SI01' s, 'SI02' m, 'SI03' l, 'SI110' "110"
 		    )
 		)pvt
+		ORDER BY product_color
+	</select>
+	
+	<!-- 제품 코드 기반 집계 목록 -->
+	<select id="pivotProductSupply" parameterType="SupplyDTO" resultType="map">
+		WITH temp AS( -- 임시 테이블 지정
+		SELECT d.product_code,
+		       d.product_color, -- o로 변경 필요
+		       d.product_size,
+		       d.supply_qy
+		FROM   supply_plan s JOIN supply_plan_details d
+		                       ON s.supply_plan_code = d.supply_plan_code
+		                     LEFT JOIN product_option o
+		                       ON d.product_code = o.product_code
+		                      AND d.product_size = o.product_size
+		                      AND d.product_color = o.product_color
+		WHERE  d.product_code = 'PRD0001'
+		  <if test='supplyPlanCode != null and supplyPlanCode != ""'>AND  s.supply_plan_code = #{supplyPlanCode}</if>
+		)
+		SELECT  *
+		FROM temp
+		PIVOT( SUM(supply_qy) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
+		    FOR product_size IN ( -- '값' alias, ...
+		       'SI01' s, 'SI02' m, 'SI03' l, 'SI110' "110"
+		    )
+		)pvt
+		ORDER BY product_color
 	</select>
 	
 	<!-- 공급계획 등록(헤더) -->

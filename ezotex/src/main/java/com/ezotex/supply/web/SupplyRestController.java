@@ -48,6 +48,12 @@ public class SupplyRestController {
 		return map;
 	}
 	
+	// 해당 제품의 색상+사이즈 일괄 목록
+	@GetMapping("optionList/{productCode}")
+	public Map<String,List<Map<String,Object>>> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
+		return service.findOptions(productCode);
+	}
+	
 	// 해당 제품의 색상 목록
 	@GetMapping("options/{prdCode}")
 	public List<ProductDTO> sizeList(@PathVariable String prdCode) {
