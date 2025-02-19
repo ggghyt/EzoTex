@@ -51,12 +51,13 @@ public class OrderServiceImpl implements OrderService {
 	@Transactional
 	@Override
 	public boolean insertProductOrder(List<OrderDTO> product) {
-		product.forEach(data -> {
-			System.out.println("확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인확인");
-			System.out.println(data);
-			mapper.insertProductOrder(data);
-		});
-		return true;
+	    // 제품 리스트를 반복문으로 처리
+	    product.forEach(data -> {
+	        // 각 제품을 데이터베이스에 등록하는 로직
+	        System.out.println(data);  // 디버깅을 위해 제품 정보를 출력
+	        mapper.insertProductOrder(data);  // 데이터베이스에 제품 등록
+	    });
+	    return true;
 	}
 
 

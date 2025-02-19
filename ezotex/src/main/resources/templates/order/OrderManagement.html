@@ -132,6 +132,7 @@ let productCode = "";
         // "선택한 제품" 입력 필드에 값 설정
         document.getElementById('selectProductCode').value = clickedData.productCode;
         document.getElementById('selectProductName').value = clickedData.productName;
+        document.getElementById('selectUnitPrice').value = clickedData.unitPrice;
         
         productCode = clickedData.productCode;
         console.log("ㅍㄹㄷㅌ",productCode);
@@ -176,6 +177,10 @@ let productCode = "";
 						class="col-form-label mr-3">제품명</label> <input type="text"
 						id="selectProductName" class="form-control" style="width: 200px;"
 						placeholder="제품명" readonly></td>
+					<td class="d-flex align-items-center"><label
+						class="col-form-label mr-3">단가</label> <input type="number"
+						id="selectUnitPrice" class="form-control" style="width: 200px;"
+						placeholder="단가" readonly></td>
 				</tr>
 			</table>
 			<div id="productOption" style="width: 100%;">
@@ -281,6 +286,10 @@ let productCode = "";
 		// 수량을 저장하는 함수
 		function saveProductData() {
 		    const selectedProductCode = document.getElementById('selectProductCode').value;  // 선택된 제품 코드
+		    const selectedUnitPrice= document.getElementById('selectUnitPrice').value;  // 선택된 제품 단가
+		    console.log(selectedProductCode);
+		    console.log(selectedUnitPrice);
+		    
 		    const rows = optionGrid.getData();  // 제품 옵션 그리드 데이터
 	
 		    // 수량 데이터를 배열에 저장
@@ -294,7 +303,8 @@ let productCode = "";
 		            size_M: row.size_M,  // M 사이즈 수량
 		            size_L: row.size_L,  // L 사이즈 수량
 		            size_XL: row.size_XL,  // XL 사이즈 수량
-		            size_FREE: row.size_FREE  // FREE 사이즈 수량
+		            size_FREE: row.size_FREE,  // FREE 사이즈 수량
+		            unitPrice: selectedUnitPrice
 		        }))
 		    };
 
@@ -326,13 +336,15 @@ let productCode = "";
 			        orderStatus: document.getElementById("orderStatus").value || "OR01", // 주문 상태 - 기본값 : 대기
 			        remarks: document.getElementById("remarks").value, // 비고 
 			    }];
-			    const orderProductData = [{
-			            productList: Array.isArray(grid.getData()) ? grid.getData() : [grid.getData()], // 배열로 감싸기
-	                    option: Array.isArray(newData2) ? newData2 : [newData2] // 배열로 감싸기	    		
-			    }]
+			    const orderProductData = {
+		    			productOrderCode : document.getElementById("productOrderCode").value, // 주문코드
+	                    option: newData2
+			    }
 				
 			    			    
 			    console.log("등록할 제품 데이터:", orderProductData); // 콘솔에서 데이터 확인
+			    console.log("productList 데이터:", productList); // 콘솔에서 데이터 확인
+			    console.log("option 데이터:", orderProductData.option); // 콘솔에서 데이터 확인
 			    
 				 // 사이즈 코드 매핑
 				    const sizeMap = {
@@ -347,6 +359,8 @@ let productCode = "";
 
 			    for (let i = 0; i < savedProductData.length; i++) {
 			        newData.push(savedProductData[i]);
+			    
+			        console.log("savedProductData",savedProductData);  
 
 			        console.log(i+1, "번째 데이터", newData[i].quantities);  
 					
@@ -372,7 +386,8 @@ let productCode = "";
 			                            	productCode: item.productCode,
 			                                productColor: productColorEntry[1], // 색상 정보 추가
 			                                sizeCode: sizeCode,  // 변환된 사이즈 코드 추가
-			                                quantity: value // 수량 추가
+			                                quantity: value, // 수량 추가
+			                                unitPrice: item.unitPrice
 			                            });
 			                        }
 			                    });
@@ -401,7 +416,7 @@ let productCode = "";
 			        body: JSON.stringify(orderData),
 			    })
 			    .then(rep => rep.json())
-			    .then(data => {
+			    .then(result => {
 		        	fetch(`http://localhost:80/order/insertProductOrder`, {
 				        method: 'POST',
 				        headers: {
@@ -414,7 +429,6 @@ let productCode = "";
 				    .then(data => {
 				    	console.log(data)
 				    })
-/* 				    ,location.reload();  // 페이지 새로고침 */
 			    })
 			    .catch(error => {
 			        console.error("주문 등록 오류:", error);
