@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezotex.comm.GridUtil;
 import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.service.impl.BomServiceImpl;
+import com.ezotex.supply.service.impl.SupplyServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/supply/*")
 public class SupplyRestController {
 	
-	private final BomServiceImpl service;
+	private final BomServiceImpl bomService;
+	private final SupplyServiceImpl service;
 		
 	// 내부 데이터 출력
 	// bom 제품 목록
 	@GetMapping("bomProductList")
 	public Map<String, Object> bomProductList(ProductDTO product) { // 검색 조건 파라미터
 		log.info(product.toString());
-		int totalCnt = service.countBomProduct(product);
-		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listBomProduct(product));
+		int totalCnt = bomService.countProduct(product);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, bomService.listBomProduct(product));
+		log.info(map.toString());
+		return map;
+	}
+	
+	// 단순 제품 목록
+	@GetMapping("productList")
+	public Map<String, Object> productList(ProductDTO product) { // 검색 조건 파라미터
+		log.info(product.toString());
+		int totalCnt = bomService.countProduct(product);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listProduct(product));
 		log.info(map.toString());
 		return map;
 	}
@@ -39,14 +51,14 @@ public class SupplyRestController {
 	// 해당 제품의 색상 목록
 	@GetMapping("options/{prdCode}")
 	public List<ProductDTO> sizeList(@PathVariable String prdCode) {
-		List<ProductDTO> list = service.listColor(prdCode);
+		List<ProductDTO> list = bomService.listColor(prdCode);
 		return list;
 	}
 
 	// 색상에 따른 사이즈 옵션 목록
 	@GetMapping("options/{prdCode}/{color}")
 	public List<ProductDTO> colorList(@PathVariable String prdCode, @PathVariable String color) {
-		List<ProductDTO> list = service.listSizeByColor(prdCode, color);
+		List<ProductDTO> list = bomService.listSizeByColor(prdCode, color);
 		return list;
 	}
 	
@@ -54,7 +66,7 @@ public class SupplyRestController {
 	@GetMapping("bomMaterialList")
 	public Map<String, Object> bomMaterialList(ProductDTO product) { // 검색 조건 파라미터
 		log.info(product.toString());
-		Map<String, Object> map = GridUtil.grid(0, 0, service.listBomMaterial(product)); // 페이지네이션 X
+		Map<String, Object> map = GridUtil.grid(0, 0, bomService.listBomMaterial(product)); // 페이지네이션 X
 		log.info(map.toString());
 		return map;
 	}
@@ -63,7 +75,7 @@ public class SupplyRestController {
 	@PostMapping("bom")
 	public Boolean insertBom(@RequestBody Map<String, Object> bomlist) {
 		log.info("bom::: " + bomlist.toString());
-		return service.insertBom(bomlist); // true/false 반환
+		return bomService.insertBom(bomlist); // true/false 반환
 	}
 	
 }

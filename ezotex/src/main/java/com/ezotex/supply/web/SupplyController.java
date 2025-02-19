@@ -31,12 +31,8 @@ public class SupplyController {
 	public String supplyPlan(Model model) {		
 		Calendar current = Calendar.getInstance();
 		int currentYear = current.get(Calendar.YEAR);
-		String[] years = new String[10]; // 공급년도 현재 이후 10년의 배열 생성
-		for(int i = 0; i < 10; i++) {
-			years[i] = String.valueOf(currentYear + i + 1);
-		}
 		
-		model.addAttribute("yearList", years); // 공급년도 목록
+		model.addAttribute("thisYear", currentYear); // 공급년도 기본값 올해부터
 		model.addAttribute("seasonList", new String[] {"봄", "여름", "가을", "겨을"}); // 타임리프 계절 목록
 		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
 		return "supply/supplyPlan";

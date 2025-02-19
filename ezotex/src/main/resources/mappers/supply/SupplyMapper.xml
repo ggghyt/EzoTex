@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.supply.mappers.SupplyMapper">
+
+	<!-- 전체 제품 목록 단순조회 -->
+	<select id="listProduct" resultType="ProductDTO" parameterType="ProductDTO">
+		SELECT p.product_code,
+		       p.product_name,
+		       c.lclas,
+			     c.sclas
+		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
+		WHERE  p.product_type = 'PT02' 
+		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
+		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		ORDER  BY product_code DESC
+	</select>
+	
+	<!-- 해당 제품의 사이즈 목록 -->
+	<select id="findSize" resultType="ProductDTO">
+		SELECT product_code,
+		       product_size,
+		       get_comm(product_size) AS size_name
+		FROM   product_option
+		WHERE  product_code = #{productCode}
+		GROUP BY product_code, product_size
+		ORDER BY product_size
+	</select>
+	
+	<!-- 제품 코드 기반 집계 목록 -->
+	<select id="test">
+		-- 집계함수 PIVOT() 예시
+		WITH temp AS( -- 임시 테이블 지정
+		    SELECT * FROM order_product
+		)
+		SELECT  *
+		FROM temp
+		PIVOT( SUM(qy) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
+		    FOR product_size IN ( -- '값' alias, ...
+		       'SI05' s, 'SI02' m
+		    )
+		)pvt
+	</select>
+	
+</mapper>

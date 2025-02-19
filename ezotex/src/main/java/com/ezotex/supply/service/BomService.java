@@ -9,7 +9,7 @@ import com.ezotex.supply.dto.BomDTO;
 public interface BomService {
 	// bom 등록할 제품 전체 조회
 	List<Map<String, Object>> listBomProduct(ProductDTO product);
-	int countBomProduct(ProductDTO product);
+	int countProduct(ProductDTO product);
 	
 	// 선택한 제품의 옵션 조회
 	List<ProductDTO> listColor(String productCode);

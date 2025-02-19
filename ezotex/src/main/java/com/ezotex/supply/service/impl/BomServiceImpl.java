@@ -28,10 +28,10 @@ public class BomServiceImpl implements BomService {
 	}
 
 	@Override
-	public int countBomProduct(ProductDTO product) {
-		return mapper.countBomProduct(product);
+	public int countProduct(ProductDTO product) {
+		return mapper.countProduct(product);
 	}
-
+	
 	@Override
 	public List<ProductDTO> listColor(String productCode) {
 		return mapper.listColor(productCode);
@@ -54,14 +54,13 @@ public class BomServiceImpl implements BomService {
 		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
 		int bomResult = mapper.insertBom(boms.get("headerObj"));
 		
-		// Object의 String타입을 Integer로 변환할 수 없음.
-		// Object => DTO로 변환 필요
+		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
 		ObjectMapper objMapper = new ObjectMapper();
 		List<Object> detailList = (List<Object>) boms.get("detailArr");
 		
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
 		for(Object detail : detailList) {
-			BomDTO bom = objMapper.convertValue(detail, BomDTO.class);
+			BomDTO bom = objMapper.convertValue(detail, BomDTO.class); // DTO로 변환
 			mapper.insertBomDetail(bom);
 			dtlResult--;
 		}
