@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.delivery.mappers.DeliveryMapper">
 
-
+	<!-- (제조업체 사용)주문 조회 -->
 	<select id="findAll" resultType="OrderProductDeliveryDTO" parameterType="DeliveryRegistSearchDTO">
 		SELECT *
 		FROM (
@@ -66,6 +66,7 @@
 		WHERE page.rn  <![CDATA[ >= ]]>#{cri.start}
 	</select>
 	
+	<!-- 주문 조회 전체 수량(페이징 용) -->
 	<select id="getCount" resultType="int" parameterType="DeliveryRegistSearchDTO">
 			SELECT COUNT(*)
               FROM   order_list ol             
@@ -170,23 +171,21 @@
 	<!-- 제품 코드 기반 옵션,잔여량 리스트 -->
 	<select id="sizeFindByProductCode">
 		WITH product_size AS(
-                    SELECT  op.product_order_code AS order_code,
-                            op.product_code AS product_code ,
-                            op.product_color AS product_color,
-                             're' || get_comm(op.product_size) AS forpvt,	--피벗용도로 사용
-                            --get_comm(op.product_size) AS show_size,	--화면에 보이게 하기 위해 중복됨
-                            --op.product_size AS target_size,			--화면에서 데이터 서버로 보낼때 입력 편하게 하기 위해 중복됨
-                            (op.qy - NVL(dd.delivery_qy,0)) AS request_qy,
-                            0 AS delivery_qy
-					FROM    order_product op LEFT JOIN delivery de
-					                                ON (op.product_order_code = de.product_order_code)
-					                         LEFT JOIN delivery_details dd
-					                                ON (de.delivery_code = dd.delivery_code
-					                                    AND op.product_code = dd.delivery_code 
-					                                    AND op.product_color = dd.product_color
-					                                    AND op.product_size = dd.product_size)
-                    WHERE op.product_code = #{productCode}
-                    AND   op.product_order_code = #{orderCode})
+				    SELECT  
+				        op.product_order_code AS order_code,
+				        op.product_code AS product_code,
+				        op.product_color AS product_color,
+				        're' || get_comm(op.product_size) AS forpvt,
+				        (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) AS request_qy
+				    FROM order_product op
+				    LEFT JOIN delivery_details dd
+				        ON op.product_order_code = dd.order_code
+				        AND op.product_code = dd.product_code
+				        AND op.product_color = dd.product_color
+				        AND op.product_size = dd.product_size
+				    WHERE op.product_order_code = #{orderCode}
+				      AND op.product_code = #{productCode}
+				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy)
 			SELECT  *
 		 	FROM product_size
 			pivot( sum(request_qy)
@@ -206,7 +205,7 @@
 		             ELSE 'DEV' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(delivery_code), 10)) + 1), 4, 0)
 		             END
 		     FROM delivery 
-		     WHERE rgsde = SYSDATE), 
+		     WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
 		    ('DEV' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS delivery_code
 		FROM DUAL
 	</select>
@@ -218,12 +217,14 @@
 		WHERE product_order_code = #{productOrderCode}
 	</select>
 	
+	<!-- 주문 상태 업데이트 -->
 	<update id="updateOrderStatus">
 		UPDATE order_list
-		SET    order_status = #{statusCode}
-		WHERE  product_order_code = #{productOrderCode}
+		SET    order_status = #{info.orderStatus}
+		WHERE  product_order_code = #{info.productOrderCode}
 	</update>
 	
+	<!-- 출고 마스터 정보 등록 -->
 	<insert id="insertDeliveryMaster">
 		INSERT INTO delivery(delivery_code, company_se, product_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
 							,delivery_status , remark, charger_code, charger_name, rgsde, updde, time, amount)
@@ -231,13 +232,15 @@
 				, #{info.deliveryStatus}, #{info.remark}, #{info.chargerCode}, #{info.chargerName}, SYSDATE, SYSDATE, #{info.time}, #{info.amount})
 	</insert>
 	
+	<!-- 출고 상세 등록(제조업체 사용) -->
 	<insert id="insertDeliveryDetails">
 		INSERT INTO delivery_details(delivery_product_no, delivery_code, product_code, product_size, product_color, product_lot
-									 , request_qy, delivery_qy, product_se)
+									 , request_qy, delivery_qy, product_se, order_code)
 		VALUES (delivery_details_seq.NEXTVAL, #{pinfo.deliveryCode}, #{pinfo.productCode}, #{pinfo.productSize}, #{pinfo.productColor}, #{pinfo.productLot},
-				#{pinfo.reqQy}, #{pinfo.deliveryQy}, #{pinfo.productSe})
+				#{pinfo.reqQy}, #{pinfo.deliveryQy}, #{pinfo.productSe}, #{pinfo.productOrderCode})
 	</insert>
 	
+	<!-- 제품 옵션에 맞는 로트 수량 가져오기 -->
 	<select id="getProductLot">
 		SELECT lot AS productLot,
 			   inventory_qy AS lotQy
@@ -246,13 +249,15 @@
 		AND    product_code = #{pinfo.productCode}
 		AND    product_color = #{pinfo.productColor}
 		AND    product_size = #{pinfo.productSize}
+		AND    inventory_qy > 0
 	</select>
 	
+	<!-- 로트 출고 수량만큼 빼서 업데이트 하기. -->
 	<update id="updateLotQy">
 		UPDATE inventory
 		SET inventory_qy = inventory_qy - #{deInfo.deliveryQy}
 		WHERE product_code = #{deInfo.productCode}
 		AND   product_color = #{deInfo.productColor}
-		AND   product_size = #{deInfo.product_size}
+		AND   product_size = #{deInfo.productSize}
 	</update>
 </mapper>

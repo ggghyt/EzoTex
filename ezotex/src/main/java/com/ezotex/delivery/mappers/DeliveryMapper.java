@@ -32,8 +32,8 @@ public interface DeliveryMapper {
     
     
     //(제조업체에서 사용) 주문건 상태 변환
-    public void updateOrderStatus(@Param("productOrderCode")String productOrderCode, 
-    							  @Param("statusCode")String statusCode);
+    public void updateOrderStatus(@Param("info")OrderInsertDTO info);
+    
     //출고번호 최근+1가져오기, 
     public String getDeliveryCode();
     

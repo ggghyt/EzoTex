@@ -1,0 +1,210 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>납품등록</title>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<style>
+		#container {
+			height: 1000px;
+		}
+		.search-bar {
+			width: 780px;
+			height: 230px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			display: inline-block;
+			flex-direction:row;
+		}
+
+		.order-list {
+			width: 780px;
+			height: 778px;
+		}
+		.order-info{
+			margin-top: 0;
+			margin-left: 30px;
+			width: 500px;
+			height: 1000px;
+		}
+		.search-unit {
+			display: flex;
+			margin-bottom:5px;
+		}
+		.search-unit div {
+			display: inline-block;
+		}
+		.search-bar > div {
+		    display: inline-block;
+		    vertical-align: top; /* 정렬 보정 */
+		}
+		.search-bar div:nth-of-type(1) {
+			
+			padding-left:10px;
+			width: 300px;
+		}
+		.search-bar div:nth-of-type(2) {
+			padding-left:10px;
+			width: 410px;
+		}
+		.search-unit span {
+			font-size: smaller;
+			line-height: 2.5;
+			width: 67px;
+		}
+		.search-bar div:nth-of-type(1) input{
+			margin-left: 10px;
+		}
+		.search-bar div input[type=text] {
+			width: 140px;
+		}
+		.search-bar select {
+		    margin-left: 10px;
+			width: 140px;
+			border: 1px solid #dee2e6;
+		    font-weight: 400;
+		    font-size: 0.875rem;
+		    border-radius: 4px;
+		    height: 2rem;
+		}
+		input[type=date] {
+			width: 140px;
+		}
+		.search-bar input[type=number] {
+			width: 140px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+		.search-bar b {
+			display: block;
+			margin-bottom:5px;
+		}
+		.btn-secondary {
+			background-color: #b1b1b1;
+		}
+		.search-bar .btn-section{
+			width: 390px !important;
+			display: flex;
+			justify-content: right;
+			margin-top: 30px;
+			margin-bottom: 10px;
+		}
+		.search-bar .btn-section button{
+			margin-right: 10px;
+		}
+		/*여기까지 거의 공용*/
+	</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 납품등록</h3>
+	<div id="container row" style="display: flex;">
+		<div class="col">			
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+				<b>검색</b>
+									
+				<!-- 검색조건1: 발주코드, 자재코드, 자재명, 발주담당자 -->
+				<div>
+					<span class="search-unit">
+						<span>발주 코드</span>
+						<input type="text" class="form-control search-order-code">
+					</span>
+					<span class="search-unit">
+						<span>자재코드</span>
+						<input type="text" class="form-control search-mtril-code">
+					</span>
+					<span class="search-unit">
+						<span>자재명</span>
+						<input type="text" class="form-control search-mtril-name"> 
+					</span>
+					<span class="search-unit">
+						<span>발주담당자</span>
+						<input type="text" class="form-control search-charger"> 
+					</span>
+				</div>
+				
+				<!-- 검색조건2: 발주일, 납기일 -->
+				<div>
+					
+					<span class="search-unit">
+						<span>발주일</span>
+						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-date-end">
+					</span>
+					<span class="search-unit">
+						<span>납기일</span>
+						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-dedt-end">
+					</span>
+					<div class="btn-section">						
+						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+					</div>
+				</div>
+			</div>
+			<div class="card card-body mt-3 order-list">
+				<b>목록</b>
+				
+			</div>
+		</div>
+		<div class="col card card-body order-info">		
+			<b>납품 정보</b>
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+			</div>
+			<!-- 제품 리스트 -->
+			<div id="productListgrid"></div>
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				<div>			
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code"> 
+					</span>
+				</div>
+				<div>			
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code"> 
+					</span>
+				</div>
+				<span class="search-unit">
+					<span>제품코드</span>
+					<input type="text" class="form-control search-product-code"> 
+				</span>
+			</div>
+		</div>
+	</div>
+		
+	<script>
+		//session_user_code => 세션에서 가져온 회사코드임
+		
+		
+		//제품 목록
+		const productListgrid = new Grid({
+			el: document.getElementById('productListgrid'),
+			bodyHeight: 250,
+			scrollY: true,
+			scrollX: false,
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "주문번호", name: "productOrderCode"},
+				{ header: "제품코드", name: "productCode"},
+				{ header: "제품명", name: "productName"},
+				{ header: "주문수량", name: "reqQy"}
+			]
+		});
+	</script>
+</body>
+</html>
