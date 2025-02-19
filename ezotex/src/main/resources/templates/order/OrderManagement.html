@@ -17,6 +17,9 @@ function resetForm() {
         input.value = '';  // 값 초기화
     });
 }
+// 모든 제품의 총 수량 계산
+let totalOrderQuantity = 0;
+let productCode = "";
 </script>
 </head>
 <body>
@@ -130,7 +133,8 @@ function resetForm() {
         document.getElementById('selectProductCode').value = clickedData.productCode;
         document.getElementById('selectProductName').value = clickedData.productName;
         
-        const productCode = clickedData.productCode;
+        productCode = clickedData.productCode;
+        console.log("ㅍㄹㄷㅌ",productCode);
         
         // 이미 저장된 수량 데이터가 있는지 확인
         const savedData = savedProductData.find(data => data.productCode === productCode);
@@ -206,6 +210,12 @@ function resetForm() {
 					// 컬럼 크기 조절 가능
 					},
 					columns : [
+					{
+						header : '제품코드',
+						name : productCode,
+						hidden:true
+					}
+						,
 					{ 
 						header : '색상/사이즈',
 						name : 'productColor',
@@ -277,6 +287,7 @@ function resetForm() {
 		    const productData = {
 		        productCode: selectedProductCode,
 		        quantities: rows.map(row => ({
+		        	productCode: selectedProductCode,
 		        	productColor: row.productColor,  // 색상
 		            size_XS: row.size_XS,  // XS 사이즈 수량
 		            size_S: row.size_S,  // S 사이즈 수량
@@ -287,10 +298,9 @@ function resetForm() {
 		        }))
 		    };
 
-
 		    // 배열에 해당 제품 데이터 추가 (기존에 있으면 업데이트)
 		    const index = savedProductData.findIndex(data => data.productCode === selectedProductCode);
-		    console.log(index,"ttttt");
+		    console.log(index,"index 확인");
 		    if (index > -1) {
 		        savedProductData[index] = productData;  // 기존 데이터 업데이트
 		    } else {
@@ -299,94 +309,118 @@ function resetForm() {
 
 		    console.log('저장된 제품 데이터:', savedProductData);
 		}
-		  // 등록이벤트함수
+
+		  let newData = [];		
+		  let newData2 = [];
+		  // 등록이벤트
 		  function insertOrder(productCode) {
-			    const orderData = {
-			        charger: document.getElementById("charger").value,
-			        empCode: document.getElementById("empCode").value,
-			        companyCode: document.getElementById("companyCode").value,
-			        company: document.getElementById("company").value,
-			        companyCharger: document.getElementById("companyCharger").value,
-			        companyTel: document.getElementById("companyTel").value,
-			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value,
-			        orderStatus: document.getElementById("orderStatus").value,
-			        remarks: document.getElementById("remarks").value,
-			        productList: grid.getData(),  // 제품 목록 가져오기
-			    };
+			    const orderData = [{
+			    	productOrderCode : document.getElementById("productOrderCode").value, // 주문코드
+			        charger: document.getElementById("charger").value, // 담당자
+			        empCode: document.getElementById("empCode").value, // 담당자 사원코드
+			        companyCode: document.getElementById("companyCode").value, // 업체코드
+			        company: document.getElementById("company").value, // 업체
+			        companyRepresentative: document.getElementById("companyCharger").value, // 업체담당자
+			        companyTel: document.getElementById("companyTel").value, // 업체담당자 전화번호
+			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value, // 납기일
+			        orderStatus: document.getElementById("orderStatus").value || "OR01", // 주문 상태 - 기본값 : 대기
+			        remarks: document.getElementById("remarks").value, // 비고 
+			    }];
+			    const orderProductData = [{
+			            productList: Array.isArray(grid.getData()) ? grid.getData() : [grid.getData()], // 배열로 감싸기
+	                    option: Array.isArray(newData2) ? newData2 : [newData2] // 배열로 감싸기	    		
+			    }]
 				
 			    			    
-			    console.log("등록할 주문 데이터:", orderData); // 콘솔에서 데이터 확인
-			    const newData = [];
-			    const newData2 = [];
+			    console.log("등록할 제품 데이터:", orderProductData); // 콘솔에서 데이터 확인
+			    
+				 // 사이즈 코드 매핑
+				    const sizeMap = {
+				        FREE: "SI01",
+				        XS: "SI02",
+				        S: "SI03",
+				        M: "SI04",
+				        L: "SI05",
+				        XL: "SI06",
+				        XXL: "SI07"
+				    };
 
 			    for (let i = 0; i < savedProductData.length; i++) {
 			        newData.push(savedProductData[i]);
 
 			        console.log(i+1, "번째 데이터", newData[i].quantities);  
 					
-			        
-/* 			        newData[i].quantities.forEach(sizeKey => {
-			            newData2.push(newData[i][sizeKey]); // 해당하는 size 값을 push
-			        }); */
-			       
- 			        const sizeArr = Object.keys(newData[i]);
-			        console.log("sizeArr", sizeArr);
-			        console.log("길이 확인", newData.length); 
+			        newData[i].quantities.forEach(item => {
+			            if (item) {
+			                // null이 아닌 값만 필터링하고, "size_" 접두사 제거
+			                const filteredEntries = Object.entries(item)
+			                    .filter(([key, value]) => value !== null);
 
- 			        for (let k = 0; k < newData[i].quantities.length; k++) {
- 			        	
- 			        	const newSize = String(newData[i].quantities[k]);
- 			        	const useSize = newSize.replace('size_', '');
- 			        	
-			        console.log("newData확인",useSize);
-			            newData2.push(useSize);
-			        } 
+			                // productColor 필터링 및 유지
+			                const productColorEntry = filteredEntries.find(([key]) => key === "productColor");
+
+			                // 사이즈 정보 필터링 및 변환
+			                const sizeEntries = filteredEntries
+			                    .filter(([key]) => key.startsWith("size_"))
+			                    .map(([key, value]) => [sizeMap[key.replace("size_", "")], value]) // 사이즈 코드 변환
+
+			                // 사이즈 정보가 존재하는 경우에만 push
+			                if (sizeEntries.length > 0 && productColorEntry) {
+			                    sizeEntries.forEach(([sizeCode, value]) => {
+			                        if (sizeCode) { // 변환된 코드가 존재하는 경우만 추가
+			                            newData2.push({
+			                            	productCode: item.productCode,
+			                                productColor: productColorEntry[1], // 색상 정보 추가
+			                                sizeCode: sizeCode,  // 변환된 사이즈 코드 추가
+			                                quantity: value // 수량 추가
+			                            });
+			                        }
+			                    });
+			                }
+			            }
+			        });
+			       
+			        console.log("길이 확인", newData.length); 
+			        console.log("newData 확인", newData); 
+
 			    }
 
 			    console.log("최종 newData2:", newData2);
 
-			    
-			    
-/* 			    let arr = sizeArr.filter(ele => ele.startsWith("size"));
-			    console.log("arr",arr);
-			    
-			    let sendData = '';
-			    let reqSize = [];
-			    
-			    for(let i=0; i<arr.length; i++) {
-			    	  if(quantities[arr[i]]!=null){
-			    	    reqSize.push(arr[i].replace('size_',''));
-			    	    console.log(quantities[arr[i]])
-			    	    sendData = {
-			    	    	color: quantities.productColor,
-			    	    	size: arr[i].replace('size_',''),
-			    	    	qy: quantities[arr[i]]
-			    	    };
-			    	  }
-			    	}
-			    console.log("최종 제품 데이터",sendData); */
+			    totalOrderQuantity = newData2.reduce((sum, item) => sum + Number(item.quantity), 0);
 
-
-/* 			    fetch("/order/insertOrder", {
-			        method: "POST",
+			    console.log("모든 제품 총 수량:", totalOrderQuantity);
+			    
+			    
+ 			    fetch(`http://localhost:80/order/insertOrder`, {
+			        method: 'POST',
 			        headers: {
+			        	...headers,
 			            "Content-Type": "application/json"
 			        },
-			        body: JSON.stringify(orderData)
+			        body: JSON.stringify(orderData),
 			    })
-			    .then(response => response.json())
+			    .then(rep => rep.json())
 			    .then(data => {
-			        if (data.success) {
-			            alert("주문이 성공적으로 등록되었습니다!");
-			            location.reload();  // 페이지 새로고침
-			        } else {
-			            alert("주문 등록 실패: " + data.message);
-			        }
+		        	fetch(`http://localhost:80/order/insertProductOrder`, {
+				        method: 'POST',
+				        headers: {
+				        	...headers,
+				            "Content-Type": "application/json"
+				        },
+				        body: JSON.stringify(orderProductData),
+				    })
+				    .then(rep => rep.json())
+				    .then(data => {
+				    	console.log(data)
+				    })
+/* 				    ,location.reload();  // 페이지 새로고침 */
 			    })
 			    .catch(error => {
 			        console.error("주문 등록 오류:", error);
 			        alert("주문 등록 중 오류가 발생했습니다.");
-			    }); */
+			    });
+			    
 			}
 	</script>
 	</div>
@@ -490,8 +524,8 @@ function addProductToOrderList(product) {
         productCode: product.productCode,
         productName: product.productName,
         unitPrice: product.unitPrice,
-        orderQuantity: 1,
-        orderAmount: product.unitPrice  // 주문 금액은 단가 * 수량
+        orderQuantity: totalOrderQuantity,
+        orderAmount: product.unitPrice * totalOrderQuantity  // 주문 금액은 단가 * 수량
     });
     
     // 그리드 데이터 갱신
@@ -621,6 +655,8 @@ function filterCompanyGrid() {
   window.onload = function() {
       document.getElementById('charger').value = '[[${name}]]';
       document.getElementById('empCode').value = '[[${code}]]';
+      document.getElementById('productOrderCode').value = '[[${getOrderCode}]]';
+      
       
       // 오늘 날짜 자동 입력하기
       var today = new Date();
