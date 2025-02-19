@@ -12,6 +12,7 @@ import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
+import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.mappers.StandardMapper;
@@ -84,8 +85,18 @@ public class StandardServiceImpl implements StandardService {
 	}
 
 	@Override
-	public List<ProductListInfoDTO> productList() {
-		return mapper.productList();
+	public List<ProductListInfoDTO> productListAll() {
+		return mapper.productListAll();
+	}
+
+	@Override
+	public List<ProductCategoryDTO> categoryLclas() {
+		return mapper.categoryLclas();
+	}
+
+	@Override
+	public List<ProductCategoryDTO> categorySclas(String lclas) {
+		return mapper.categorySclas(lclas);
 	}
 	
 }

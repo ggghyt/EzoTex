@@ -8,6 +8,7 @@ import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
+import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 
@@ -47,5 +48,9 @@ public interface StandardMapper {
 	int passwordCompanyUpdate(String id, String password);
 	
 	// 제품 리스트
-	List<ProductListInfoDTO> productList();
+	List<ProductListInfoDTO> productListAll();
+	
+	// 카테고리 반환
+	List<ProductCategoryDTO> categoryLclas();
+	List<ProductCategoryDTO> categorySclas(String lclas);
 }

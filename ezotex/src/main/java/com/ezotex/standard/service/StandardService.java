@@ -8,6 +8,7 @@ import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
+import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 
@@ -20,5 +21,7 @@ public interface StandardService {
 	int insertCompany(CompanyDTO companyDTO, AddressListDTO addDTO);
 	ResetPasswordDTO findNameEmail(String id);
 	int passwordUpdate(String id, String password);
-	List<ProductListInfoDTO> productList();
+	List<ProductListInfoDTO> productListAll();
+	List<ProductCategoryDTO> categoryLclas();
+	List<ProductCategoryDTO> categorySclas(String lclas);
 }
