@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -29,6 +30,7 @@ public class WebSecurityConfig {
 				.loginProcessingUrl("/loginProc")
 				.usernameParameter("id")
 				.successHandler(authenticationSuccessHandler())
+				.failureHandler(authenticationFailureHandler())
 				.permitAll()
 			)
 			.logout((logout) -> logout.permitAll())
@@ -54,4 +56,8 @@ public class WebSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Bean
+	public AuthenticationFailureHandler authenticationFailureHandler() {
+		return new CustomLoginFailureHandler();
+	}
 }

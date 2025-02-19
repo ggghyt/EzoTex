@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 <!-- Required meta tags -->
 <meta charset="utf-8">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>이조텍스SCM</title>
 <!-- plugins:css -->
 <link rel="stylesheet" href="/vendors/feather/feather.css">
@@ -27,6 +26,7 @@
 <script src="/js/spinner.js"></script>
 <link rel="stylesheet" href="/css/toastUi.css">
 <link rel="stylesheet" href="/css/spinner.css">
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=5d8b239663f7722671879ad54af566c0&libraries=services,clusterer"></script>
 </head>
 
 <body>
@@ -42,23 +42,22 @@
 							<h3 class="fs-3 fw-bold">| 공급업체 회원가입</h3>
 							<form class="pt-3" style="text-align: center;" action="/login/company_submit" method="post" 
 							      enctype="multipart/form-data" onsubmit="return submit_check()">
-								<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 								<div>
 									<div class="form-group" style="width: 35%; display: inline-block; margin: 10px;">
-										<img id="preview" style="width: 90%" /> <input type="file"
-											onchange="readURL(this);" style="margin: 10px"
-											id="company_img">
+										<img id="preview" style="width: 90%" />
+										<input type="file" onchange="readURL(this);" style="margin: 10px" id="company_img" name="companyImgFile">
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>업체명</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="company_name" name="company_name">
+											<input type="text" class="form-control form-control-lg" id="company_name" name="companyName">
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>사업자 등록 번호</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="company_number" name="company_number" placeholder="-를 포함하여 입력하세요">
+											<input type="text" class="form-control form-control-lg" id="company_number" name="companyNumber" placeholder="-를 포함하여 입력하세요">
 										</div>
 									</div>
 									<div class="form-group" style="width: 55%; display: inline-block; margin: 10px;">
@@ -66,7 +65,7 @@
 											<a style="color: red;"> * </a><a>아이디</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" oninput="id_unique()" id="company_id" name="company_id">
+											<input type="text" class="form-control form-control-lg" oninput="id_unique()" id="company_id" name="companyId">
 											<a style="color: red; display: none" id="id_fail"> 이미 존재하는 아이디입니다. </a>
 											<a style="color: green; display: none" id="id_success"> 이 아이디는 사용가능합니다. </a>
 										</div>
@@ -74,7 +73,7 @@
 											<a style="color: red;"> * </a><a>비밀번호</a>
 										</div>
 										<div class="form-group">
-											<input type="password" class="form-control form-control-lg" oninput="password_match()" id="company_password" name="company_password">
+											<input type="password" class="form-control form-control-lg" oninput="password_match()" id="company_password" name="companyPassword">
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>비밀번호 확인</a>
@@ -90,7 +89,7 @@
 													<a style="color: red;"> * </a><a>대표자</a>
 												</div>
 												<div class="form-group">
-													<input type="text" class="form-control form-control-lg" id="company_exponent" name="company_exponent">
+													<input type="text" class="form-control form-control-lg" id="company_exponent" name="companyExponent">
 												</div>
 											</div>
 											<div style="width: 47%; float: right;">
@@ -98,7 +97,7 @@
 													<a style="color: red;"> * </a><a>담당자</a>
 												</div>
 												<div class="form-group">
-													<input type="text" class="form-control form-control-lg" id="compnay_charger" name="compnay_charger">
+													<input type="text" class="form-control form-control-lg" id="compnay_charger" name="companyCharger">
 												</div>
 											</div>
 										</div>
@@ -106,13 +105,13 @@
 											<a style="color: red;"> * </a><a>전화번호</a>
 										</div>
 										<div class="form-group">
-											<input type="text" class="form-control form-control-lg" id="company_phone" name="company_phone" placeholder="-를 포함하여 입력하세요">
+											<input type="text" class="form-control form-control-lg" id="company_phone" name="companyPhone" placeholder="-를 포함하여 입력하세요">
 										</div>
 										<div style="text-align: left;">
 											<a style="color: red;"> * </a><a>이메일</a>
 										</div>
 										<div class="form-group">
-											<input type="email" class="form-control form-control-lg" id="company_email" name="company_email" placeholder="비밀번호 찾기에 사용합니다">
+											<input type="email" class="form-control form-control-lg" id="company_email" name="companyEmail" placeholder="비밀번호 찾기에 사용합니다">
 										</div>
 									</div>
 									<div class="form-group" style="width: 35%; display: inline-block; margin: 10px;">
@@ -160,6 +159,9 @@
 										<a class="btn btn-secondary" href="/login/main" style="margin: 10px; float: none;">취소</a>
 									</div>
 								</div>
+								
+								<input type="hidden" id="distance" name="distance">
+								<input type="hidden" id="requireTime" name="requireTime">
 							</form>
 						</div>
 					</div>
@@ -252,6 +254,50 @@
 						guideTextBox.innerHTML = '';
 						guideTextBox.style.display = 'none';
 					}
+					
+					// 추가로 작성한 코드
+					
+					const url = "https://dapi.kakao.com/v2/local/search/address.json?query=" + roadAddr;
+					console.log(roadAddr);
+					
+					fetch(url, {
+				        method: 'GET',
+				        headers: {
+				            'Authorization': 'KakaoAK fca29dbe643742d008430793552d3b39'
+				            //...headers
+				        }
+				    })
+				    .then(response => response.json())
+				    .then(data => {
+				        if (data.documents.length > 0) {
+				            const latitude = data.documents[0].y; // 위도
+				            const longitude = data.documents[0].x; // 경도
+				            console.log(`위도: ${latitude}, 경도: ${longitude}`);
+				            
+				            
+				            fetch("https://apis-navi.kakaomobility.com/v1/directions?origin=128.593296913547,35.8690730613163&destination=" + longitude + "," + latitude + "", 
+				            {
+				            	method: 'GET',
+						        headers: {
+						            'Authorization': 'KakaoAK fca29dbe643742d008430793552d3b39'
+						        }
+				            })
+				            .then(response => response.json())
+				    		.then(data => {
+				    			console.log(data)
+				    			console.log(data.routes[0].summary.distance)
+				    			document.querySelector("#distance").value = data.routes[0].summary.distance
+				    			document.querySelector("#requireTime").value = (data.routes[0].summary.distance / 300)
+				    		})
+				    		
+				        } else {
+				            console.log('주소를 찾을 수 없습니다.');
+				        }
+				    })
+				    .catch(error => {
+				        console.error('API 호출 실패:', error);
+				    });
+					
 				}
 			}).open();
 		}
