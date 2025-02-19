@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
 // 대분류 onChange 이벤트 등록 함수
 const changeClas = function(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
-		loadOptions(sclasEle, `/product/category/${lclasEle.value}`);		
+		createOptions(sclasEle, `/product/category/${lclasEle.value}`);		
 	});
 }
 
 // select-option 태그 생성 함수 (카테고리, 제품옵션 공통 적용)
-const loadOptions = function(ele, uri){	
+const createOptions = function(ele, uri){	
 	// 서버에서 데이터 불러오기
 	fetch(uri)
 	.then(response => response.json())
@@ -68,10 +68,7 @@ const loadOptions = function(ele, uri){
 /******************** tui grid 출력 ********************/	
 // 제품 그리드
 const prdData = {
-	api: {
-		readData: { url: '/supply/bomProductList', method: 'GET' }
-	},
-	contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+	api: { readData: { url: '/supply/bomProductList', method: 'GET' } }
 };
 	
 const prdGrid = new Grid({
@@ -96,22 +93,21 @@ const prdGrid = new Grid({
   	scrollX: false, // 가로 스크롤
   	scrollY: false, // 세로 스크롤
   	summary: {
-  		height: 40,
-         position: 'bottom', // or 'top'
-         columnContent: {
-         		PRODUCT_CODE: { // 컬럼명
-                 template: (valueMap) => {
-                     return `총 ${valueMap.cnt}건`
-                 }
-             }
-         }
+  		 height: 40,
+	     position: 'bottom', // or 'top'
+	     columnContent: {
+	     		PRODUCT_CODE: { // 컬럼명
+	             template: (valueMap) => {
+	                 return `총 ${valueMap.cnt}건`
+	             }
+	         }
+	     }
      }
 });
 
 // 자재 그리드
 const mtrGrid = new Grid({
     el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
-    data: [],
     columns: [
         { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
@@ -126,14 +122,13 @@ const mtrGrid = new Grid({
 // 선택한 자재 그리드
 const selectedMtrGrid = new Grid({
 	el: document.getElementById('selectedMtrGrid'), // 해당 위치에 그리드 출력
-    data: [],
     columns: [
-        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
+        { header: '자재코드', name: 'mtrilCode', sortable: true },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-        { header: '소요량', name: 'requireQy', width: 100, sortable: true, editor: 'text', align: 'right',
-        	formatter: row => Number(row.value).toLocaleString() // 천단위 콤마 포맷 적용
+        { header: '소요량', name: 'requireQy', sortable: true, editor: 'text', align: 'right',
+        	formatter: row => numberFormmater(row.value) // 천단위 콤마 포맷 적용
         },
-        { header: '단위', name: 'unitName', width: 100, sortable: true }
+        { header: '단위', name: 'unitName', sortable: true }
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
@@ -181,7 +176,7 @@ prdGrid.on('focusChange', ev => {
 	selectedPrd = prdGrid.getRow(ev.rowKey);
 	document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
 	document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
-	loadOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
 	loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
 });
 
@@ -199,7 +194,7 @@ const changeOpt = (isReset) => {
 }
 
 colorBox.addEventListener('change', e => {
-	loadOptions(sizeBox, `/supply/options/${selectedPrd.PRODUCT_CODE}/${e.target.value}`);
+	createOptions(sizeBox, `/supply/options/${selectedPrd.PRODUCT_CODE}/${e.target.value}`);
 	changeOpt();
 });
 
@@ -239,54 +234,62 @@ document.getElementById('mtrSearchBtn').addEventListener('click', () => {
 	mtrGrid.resetData(filtered);
 	
 	rowEventOn = false; // check 이벤트 appendRow() 임시 방지
-	syncCheck('search');
+	filtered.forEach(data => { // 체크박스 상태 동기화
+		let findArr = selectedMtrGrid.findRows({mtrilCode: data.mtrilCode});
+			if(findArr.length != 0) mtrGrid.check(data.rowKey);
+			else mtrGrid.uncheck(data.rowKey);
+	});
 	rowEventOn = true;
 });
 
-// 체크박스 상태 동기화
-function syncCheck(type){
-	let currentData = mtrGrid.getData();
-	currentData.forEach(data => {
-		let findArr = selectedMtrGrid.findRows({mtrilCode: data.mtrilCode});
-		
-		if(type == 'search'){
-			if(findArr.length > 0) mtrGrid.check(data.rowKey);
-			else mtrGrid.uncheck(data.rowKey);
-		} else if(type == 'checkAll'){
-			if(findArr.length == 0) mtrGrid.check(data.rowKey);		
-		} else {
-			if(findArr.length > 0) mtrGrid.uncheck(data.rowKey);		
-		}
-	});
-}
-
 // 자재 선택 시 그리드 추가/삭제
-mtrGrid.on('check', ev => {
-	mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
+// ** appendRow(), removeRow() 메소드 사용 시 동기화에 문제 있음
+function addRow(row){ // grid.getRow(ev.rowKey)를 인수로 받음.
+	mtrGrid.addRowClassName(row.rowKey, 'bg-blue'); // 행 배경색 추가
 	if(rowEventOn){
-		let row = mtrGrid.getRow(ev.rowKey);
+		let currentData = selectedMtrGrid.getData();
+		// 없는 데이터라면 행을 직접 추가하여 반영
 		let findArr = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode}); // 행 추가 중복오류 방지
-		if(findArr.length > 0) return;
-		selectedMtrGrid.appendRow(row, {focus: true}); // 행 추가
+		if(findArr.length == 0){
+			currentData.push(row);
+		}
+		selectedMtrGrid.resetData(currentData);
 	}
+};
+
+function removeRow(rowKey){ // ev.rowKey를 인수로 받음.
+	mtrGrid.removeRowClassName(rowKey, 'bg-blue'); // 취소한 행 배경색 삭제
+	if(rowEventOn){
+		let currentData = selectedMtrGrid.getData();
+		// 남길 행을 계산하여 반영
+		let remainArr = currentData.filter(data => {
+			return data.mtrilCode != mtrGrid.getRow(rowKey).mtrilCode;
+		});
+		selectedMtrGrid.resetData(remainArr);
+	}
+};
+
+mtrGrid.on('check', ev => {
+	addRow(mtrGrid.getRow(ev.rowKey));
 });
 
 mtrGrid.on('uncheck', ev => {
-	mtrGrid.removeRowClassName(ev.rowKey, 'bg-blue'); // 취소한 행 배경색 삭제
-	if(rowEventOn){
-		let row = mtrGrid.getRow(ev.rowKey); // 선택된 데이터와 취소한 데이터 비교하여 제거
-		let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
-		selectedMtrGrid.removeRow(find[0].rowKey);
-	}
+	removeRow(ev.rowKey);
 });
 
 // 전체 선택/해제
 mtrGrid.on('checkAll', () => {
-	syncCheck('checkAll');
+	let gridData = mtrGrid.getData();
+	gridData.forEach((data) => {
+		addRow(data);		
+	});
 });
 
 mtrGrid.on('uncheckAll', () => {
-	syncCheck('uncheckAll');
+	let gridData = mtrGrid.getData();
+	gridData.forEach((data) => {
+		removeRow(data.rowKey);		
+	});
 });
 
 // 입력값 유효성 검사
@@ -308,7 +311,8 @@ selectedMtrGrid.on('afterChange', ev => {
 		selectedMtrGrid.setRow(rowKey, row);
 		failToast('입력값은 음수가 될 수 없습니다.');
 	}
-	// 자재 원본 데이터에서 해당하는 rowKey를 찾아 입력값 저장
+	
+	// 유효한 값인 경우, 자재 원본 데이터에서 해당하는 rowKey를 찾아 입력값 저장
 	let mtrRowKey;
 	mtrData.forEach((data) => {
 		if(data.mtrilCode == row.mtrilCode){

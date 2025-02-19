@@ -26,51 +26,40 @@
   <!-- endinject -->
   <link rel="shortcut icon" href="/images/logo-ezotex-mini.png">
   
+  <!-- 아래부터 직접 추가 -->
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <!-- Toast UI Pagination - 그리드보다 먼저 import 되어야 함. -->
   <link rel="stylesheet" href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
-  
   <script src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+  <!-- Toast UI DatePicker - 그리드보다 먼저 import 되어야 함. -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tui-date-picker/4.3.3/tui-date-picker.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tui-date-picker/4.3.3/tui-date-picker.min.js"></script>
   <!-- Toast UI Grid -->
   <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
   <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
   <script> // Toast UI Grid 테마 공통 적용
   		var Grid = tui.Grid;
-		Grid.applyTheme('clean', {
-			cell : {
-				normal: {
-					showHorizontalBorder: true,
-					//showVerticalBorder: true
-				},
-				summary: {
-					background: '#f9f9f9'
-				},
-				editable: {
-					background: '#dceffa'
+			Grid.applyTheme('clean', {
+				cell : {
+					normal: {
+						showHorizontalBorder: true,
+						//showVerticalBorder: true
+					},
+					summary: {
+						background: '#f9f9f9'
+					},
+					editable: {
+						background: '#dceffa'
+					}
 				}
-			}
-		}); 
-		const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
-		const tokenHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content")
-		const headers={}
-		headers[tokenHeader] = token;
-		
-		//사이즈 입력 -> 공통코드 리턴 함수
-		function getSizeCommonCode(size) {
-		    const sizeMap = {
-		        "FREE": "SI01", "XS": "SI02", "S": "SI03", "M": "SI04", "L": "SI05", "XL": "SI06", "XXL": "SI07",
-		        "25": "SI25", "26": "SI26", "27": "SI27", "28": "SI28", "29": "SI29", "30": "SI30",
-		        "31": "SI31", "32": "SI32", "33": "SI33", "34": "SI34", "35": "SI35", "36": "SI36",
-		        "37": "SI37", "38": "SI38", "44": "SI44", "55": "SI55", "66": "SI66", "77": "SI77",
-		        "88": "SI88", "90": "SI90", "95": "SI95", "100": "SI100", "105": "SI105", "110": "SI110"
-		    };
-
-		    return sizeMap[size] || null; // 입력한 사이즈가 없으면 null
-		}
-
+			}); 
+			const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+			const tokenHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content")
+			const headers={}
+			headers[tokenHeader] = token;
   </script>
   
   <!-- comm.css, comm.js (공통 커스텀 css, js) -->

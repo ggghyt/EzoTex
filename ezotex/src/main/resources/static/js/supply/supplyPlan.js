@@ -2,61 +2,41 @@
 let lclasBox = document.getElementById('lclas');
 let sclasBox = document.getElementById('sclas');
 
-let mtrLclasBox = document.getElementById('mtr-lclas');
-let mtrSclasBox = document.getElementById('mtr-sclas');
-
-let colorBox = document.getElementById('color');
-let sizeBox = document.getElementById('size');
-
 document.addEventListener('DOMContentLoaded', () => {
 	changeClas(lclasBox, sclasBox);
-	changeClas(mtrLclasBox, mtrSclasBox);
 	
 	createModal({ 
-		type: 'confirm',
-		confirm: insertBom
+		type: 'regist',
+		confirm: null,
+		loading: false
 	});
 	$('#insertBtn').on('click', () => {
-		let updatedData = selectedMtrGrid.getData();
-		if(updatedData.length == 0) return;
-		$('#simpleModal').modal('show');
+		let supplyPlan = supplyGrid.getData();
+		if(supplyPlan.length == 0) return; // 자재가 선택되지 않았으면 종료
+		let isValid = validCheck(supplyPlan);
+		if(!isValid) return; // 유효성 검사 실패 시 종료
+		$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
 	});
 });
 
 // 대분류 onChange 이벤트 등록 함수
 const changeClas = function(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
-		loadOptions(sclasEle, `/product/category/${lclasEle.value}`);		
+		createOptions(sclasEle, `/product/category/${lclasEle.value}`);		
 	});
 }
 
-// select-option 태그 생성 함수 (카테고리, 제품옵션 공통 적용)
-const loadOptions = function(ele, uri){	
+const createOptions = function(ele, uri){	
 	// 서버에서 데이터 불러오기
 	fetch(uri)
 	.then(response => response.json())
 	.then(data => {
 		ele.innerHTML = '<option value="null">전체</option>';
-		sizeBox.innerHTML = '<option value="null">전체</option>';
 		
 		for(let value of data){			
 			let opt = document.createElement('option');
-			
-			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우
-			let prdOptText = null;
-			if(ele === colorBox || ele === sizeBox){
-				let discon = value.discontinued == 'N' ? '' : ' (단종)';
-				if(ele === colorBox) {
-					prdOptVal = value.productColor;
-					prdOptText = value.productColor + discon;
-				} else {
-					prdOptVal = value.productSize;
-					prdOptText = value.sizeName + discon;
-				}
-			}
-			
-			opt.value = prdOptVal != null ? prdOptVal : value;
-			opt.innerText = prdOptText != null ? prdOptText : value;
+			opt.value = value;
+			opt.innerText = value;
 			ele.append(opt);
 		}
 	});
@@ -65,26 +45,15 @@ const loadOptions = function(ele, uri){
 /******************** tui grid 출력 ********************/	
 // 제품 그리드
 const prdData = {
-	api: {
-		readData: { url: '/supply/bomProductList', method: 'GET' }
-	},
-	contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+	api: { readData: { url: '/supply/productList', method: 'GET' } }
 };
 	
 const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: prdData,
     columns: [
-        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-        { header: '제품명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-        { header: '상태', name: 'STATUS', width: 100, sortable: true, align: 'center',
-          renderer: {
-      	    styles: {
-      	      fontWeight: 'bold',
-      	      color: props => props.value == '완료' ? '#aaa' : 'orange'
-      	    }
-          }
-        }
+        { header: '제품코드', name: 'productCode', width: 100, sortable: true },
+        { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true }
     ],
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
@@ -93,77 +62,47 @@ const prdGrid = new Grid({
   	scrollX: false, // 가로 스크롤
   	scrollY: false, // 세로 스크롤
   	summary: {
-  		height: 40,
-         position: 'bottom', // or 'top'
-         columnContent: {
-         		PRODUCT_CODE: { // 컬럼명
-                 template: (valueMap) => {
-                     return `총 ${valueMap.cnt}건`
-                 }
-             }
-         }
+  		 height: 40,
+			 position: 'bottom', // or 'top'
+			 columnContent: {
+			 		productCode: { // 컬럼명
+			         template: (valueMap) => {
+			             return `총 ${valueMap.cnt}건`
+			         }
+			     }
+			 }
      }
 });
 
-// 자재 그리드
-const mtrGrid = new Grid({
-    el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
-    data: [],
-    columns: [
-        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
-        { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-        { header: '단위', name: 'unitName', width: 100, sortable: true }
+// 옵션 그리드
+const optionGrid = new Grid({
+		el: document.getElementById('optionGrid'), // 컨테이너 엘리먼트
+	  columns: [
+        { header: "색상/사이즈", name: "productColor", align: "center", width: 80 }
     ],
-    rowHeaders: ['checkbox'],
-  	scrollX: false, // 가로 스크롤
+  	scrollX: true, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
-  	bodyHeight: 425
+  	bodyHeight: 200
 });
 
-// 선택한 자재 그리드
-const selectedMtrGrid = new Grid({
-	el: document.getElementById('selectedMtrGrid'), // 해당 위치에 그리드 출력
+// 공급계획 총계 그리드
+const supplyGrid = new Grid({
+	el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
-        { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-        { header: '소요량', name: 'requireQy', width: 100, sortable: true, editor: 'text', align: 'right',
-        	formatter: row => Number(row.value).toLocaleString() // 천단위 콤마 포맷 적용
-        },
-        { header: '단위', name: 'unitName', width: 100, sortable: true }
+        { header: '제품코드', name: 'mtrilCode', width: 100, sortable: true },
+        { header: '제품명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
+        { header: '공급계획일자', name: 'requireQy', width: 100, sortable: true, editor: 'datePicker' },
+        { header: '총 수량', name: 'unitName', width: 100, sortable: true, editor: 'text', align: 'right',
+				  formatter: (row) => numberFormatter(row.value) } // 천단위 콤마 포맷 적용
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
-  	bodyHeight: 150	
+  	bodyHeight: 238
 });
-
-let originData = null; // 검색용 원본 데이터 저장
-let originBomData = null; // 등록 시 비교용 원본 데이터 저장
-const loadMtrGrid = function(obj){
-	let query = new URLSearchParams(obj); // 쿼리스트링으로 변환
-	// 서버에서 데이터 불러오기
-	fetch(`/supply/bomMaterialList?${query}`)
-	.then(response => response.json())
-	.then(result => {
-		let data = result.data.contents;
-		selectedMtrGrid.resetData([]); // 선택된 자재 초기화
-		mtrGrid.resetData(data); // 데이터 입력
-		originData = data; // 저장된 데이터 초기화
-		
-		data.forEach((obj, idx) => {
-			if(obj.requireQy != null) mtrGrid.check(idx) // bom 등록된 자재는 자동 선택
-		});
-		originBomData = selectedMtrGrid.getData();
-		
-		let rgsde = dateFormmater(data[0].rgsde);
-		let charger = data[0].chargerName == null ? session_user_name : data[0].chargerName;
-		document.getElementById('rgsde').value = rgsde;
-		document.getElementById('chargerName').value = charger;
-	});
-}
 
 /******************** 제품/자재 선택 ********************/	
-let selectedPrdCode = null;
+let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
@@ -174,35 +113,11 @@ prdGrid.on('focusChange', ev => {
 	lastClicked = ev.rowKey; // 선택된 행 기억
 	
 	// 선택한 정보 가져오기
-	let selected = prdGrid.getRow(ev.rowKey);
-	selectedPrdCode = selected.PRODUCT_CODE;
-	document.getElementById('selectedPrdCode').value = selectedPrdCode;
-	document.getElementById('selectedPrdName').value = selected.PRODUCT_NAME;
-	loadOptions(colorBox, `/supply/options/${selectedPrdCode}`); // 선택한 제품의 색상 목록 불러오기
-	loadMtrGrid( {productCode: selectedPrdCode} ); // 선택한 제품의 bom 자재 출력
+	selectedPrd = prdGrid.getRow(ev.rowKey);
+	document.getElementById('selectedPrdCode').value = selectedPrd.productCode;
+	document.getElementById('selectedPrdName').value = selectedPrd.productName;
+	// 옵션 출력해야함.
 });
-
-// 선택한 제품-색상의 사이즈 불러오기
-const changeOpt = () => {
-	let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
-	if(saveCk == false){
-		let selectedOpt = {
-			productCode: selectedPrdCode,
-			productColor: colorBox.value,
-			productSize: sizeBox.value
-		};
-		loadMtrGrid(selectedOpt);		
-	}
-}
-
-colorBox.addEventListener('change', e => {
-	loadOptions(sizeBox, `/supply/options/${selectedPrdCode}/${e.target.value}`);
-	changeOpt();
-});
-
-sizeBox.addEventListener('change', () => {
-	changeOpt();
-})
 
 // 제품 목록 검색 적용
 document.getElementById('prdSearchBtn').addEventListener('click', () => {
@@ -215,109 +130,3 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 	prdGrid.setRequestParams(dto); // 조회 조건 전달
 	prdGrid.reloadData(); // 그리드 재출력 (readData)
 });
-
-// 자재 목록 검색 적용
-let rowEventOn = true;
-document.getElementById('mtrSearchBtn').addEventListener('click', () => {
-	// 검색조건 가져오기
-	let searchObj = {
-		mtrilCode: document.getElementById('mtrilCode').value,
-		mtrilName: document.getElementById('mtrilName').value,
-		lclas: document.getElementById('mtr-lclas').value,
-		sclas: document.getElementById('mtr-sclas').value
-	};
-	// 원본 데이터 중 필터링 반영
-	let filtered = originData.filter(obj => {
-		return obj.mtrilCode.indexOf(searchObj.mtrilCode) != -1  &&
-					 obj.mtrilName.indexOf(searchObj.mtrilName) != -1 &&
-					 (searchObj.lclas == 'null' ? true : obj.lclas == searchObj.lclas) &&
-					 (searchObj.sclas == 'null' ? true : obj.sclas == searchObj.sclas);
-	});
-	mtrGrid.resetData(filtered);
-	
-	rowEventOn = false; // check 이벤트 appendRow() 임시 방지
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){ // 체크박스 상태 동기화
-		if(mtrGrid.getRowClassName(i)[0] == 'bg-blue') mtrGrid.check(i);
-	}
-	rowEventOn = true;
-});
-
-// 자재 선택 시 그리드 이동
-mtrGrid.on('check', ev => {
-	if(rowEventOn){
-		selectedMtrGrid.appendRow(mtrGrid.getRow(ev.rowKey), {focus: true}); // 행 추가
-		mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
-	}
-});
-
-mtrGrid.on('uncheck', ev => {
-	mtrGrid.removeRowClassName(ev.rowKey, 'bg-blue'); // 취소한 행 배경색 삭제
-	
-	let row = mtrGrid.getRow(ev.rowKey); // 선택된 데이터와 취소한 데이터 비교하여 제거
-	let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
-	selectedMtrGrid.removeRow(find[0].rowKey);
-});
-
-// 전체 선택/해제
-mtrGrid.on('checkAll', () => {
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){
-		mtrGrid.addRowClassName(i, 'bg-blue');
-	}
-	selectedMtrGrid.resetData(mtrGrid.getData());
-});
-
-mtrGrid.on('uncheckAll', () => {
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){
-		mtrGrid.removeRowClassName(i, 'bg-blue');		
-	}
-	selectedMtrGrid.resetData([]);
-});
-
-/******************** BOM 자재 등록 ********************/
-function insertBom(){
-	// 자재코드나 소요량 하나라도 변경되었는지 검증
-	let updatedData = selectedMtrGrid.getData();
-	let newData = updatedData.filter(data => {
-		let boolean = true;
-		originBomData.forEach(origin => {
-			if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
-				boolean = false;
-			}
-		});
-		return boolean;
-	});
-	
-	// 변경된 값이 없으면 알림창 띄우고 종료
-	if(newData.length == 0) {
-		failToast('변경된 값이 없습니다.');
-		return;
-	}
-	
-	let headerObj = {
-		productCode: selectedPrdCode,
-		productColor: colorBox.value,
-		productSize: sizeBox.value,
-		chargerCode: null, //session_user_code,
-		chargerName: null //session_user_name
-	};
-	
-	let detailArr = datas.map(obj => {
-		return {
-			mtrilCode: obj.mtrilCode,
-			requireQy: obj.requireQy
-		};
-	});
-	
-	fetch('/supply/bom', {
-		method: 'POST',
-		headers: {...headers, 'Content-Type': 'application/json'},
-		body: JSON.stringify({headerObj, detailArr})
-	})
-	.then(response => response.json())
-	.then(result => {
-		console.log(result);
-		if(result == true){
-			successToast('자재명세서가 등록되었습니다.');
-		} else failToast('알 수 없는 오류로 실패했습니다.');
-	});
-};

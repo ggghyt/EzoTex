@@ -26,7 +26,7 @@
 	</select>
 	
 	<!-- 제품 목록 전체 개수 -->
-	<select id="countBomProduct" parameterType="ProductDTO">
+	<select id="countProduct" parameterType="ProductDTO">
 		SELECT COUNT(*)
 		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
 		WHERE  product_type = 'PT02' 
@@ -34,6 +34,21 @@
 		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+	</select>
+	
+	<!-- 전체 제품 목록 단순조회 -->
+	<select id="listProduct" resultType="ProductDTO" parameterType="ProductDTO">
+		SELECT p.product_code,
+		       p.product_name,
+		       c.lclas,
+			     c.sclas
+		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
+		WHERE  p.product_type = 'PT02' 
+		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
+		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		ORDER  BY product_code DESC
 	</select>
 	
 	<!-- 제품의 옵션 조회 -->
