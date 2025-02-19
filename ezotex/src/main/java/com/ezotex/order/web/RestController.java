@@ -1,8 +1,10 @@
 package com.ezotex.order.web;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ezotex.order.dto.OrderDTO;
 import com.ezotex.order.service.impl.OrderServiceImpl;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @RequestMapping("/order/*")
 public class RestController {
+	
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	private final OrderServiceImpl service;
 	
@@ -36,11 +44,28 @@ public class RestController {
 		return service.insertOrder(order);
 	}
 	// 제품 등록
-	@PostMapping("/insertProductOrder")
-	public boolean InsertProductOrder(@RequestBody List<OrderDTO> productOrderList) {
-		log.info(productOrderList.toString());
-		System.out.println("product product product" + productOrderList);
-		return service.insertProductOrder(productOrderList);
-	}
+	/*
+	 * @PostMapping("/insertProductOrder") public boolean
+	 * InsertProductOrder(@RequestBody List<OrderDTO> productOrderList) {
+	 * log.info(productOrderList.toString());
+	 * System.out.println("product product product" + productOrderList); return
+	 * service.insertProductOrder(productOrderList); }
+	 */
+	// 제품 등록
+	   @PostMapping("/insertProductOrder")
+	   public boolean InsertProductOrder(@RequestBody Map<String, Object> productOrderList) {
+	      
+		  Map<String,Object>map = new HashMap<>();
+		   
+	      String productCode = (String) productOrderList.get("productOrderCode");
+
+	      List<OrderDTO> odto = objectMapper.convertValue(productOrderList.get("option"),
+                  new TypeReference<List<OrderDTO>>() {});
+	      
+	      map.put("productCode",productCode);
+	      map.put("option",odto);
+	      
+	      return service.insertProductOrder(map);
+	   }
 	
 }

@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor
 @Data
 public class OrderDTO {
@@ -66,4 +65,13 @@ public class OrderDTO {
 	// 제품 옵션 조회
 	private String optionCode;
 	private String discontinued;
+	
+	
+	
+	
+	
+	
+	
+	private String sizeCode;
+	private int quantity;
 }
