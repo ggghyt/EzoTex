@@ -394,6 +394,7 @@
 	    		
 	    		// 선택한 제품코드 저장
 	    		productCode = data.productCode
+	    		console.log(productCode);
 	    		
 		    	fetch(`http://localhost:80/store/productCodeList?productCode=${data.productCode}`)
 		    		.then(rep => rep.json())
