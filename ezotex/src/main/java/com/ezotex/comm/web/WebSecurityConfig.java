@@ -33,7 +33,9 @@ public class WebSecurityConfig {
 				.failureHandler(authenticationFailureHandler())
 				.permitAll()
 			)
-			.logout((logout) -> logout.permitAll())
+			.rememberMe(r -> r.tokenValiditySeconds(86400).key("uniqueAndSecret")
+			)
+			.logout((logout) -> logout.permitAll().deleteCookies("remember-me", "JSESSIONID"))
 			//.csrf(csrf -> csrf.disable())
 			;
 		

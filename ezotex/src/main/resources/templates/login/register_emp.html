@@ -28,6 +28,10 @@
 </head>
 
 <body>
+  	<div class="loading-wrap">
+    	<div class="loading-spinner"></div>
+	    <p id="loadingMessage"></p>
+    </div>
 	<div class="container-scroller">
 		<div class="container-fluid page-body-wrapper full-page-wrapper">
 			<div class="content-wrapper d-flex align-items-center auth px-0">
@@ -351,6 +355,21 @@
 				return true;
 			}
 			return false;
+		}
+		
+		function simulateLoading() {
+		    console.log('작동됨');
+		    var loadingSpinner = document.querySelector(".loading-wrap");
+		    var loadingMessage = document.getElementById("loadingMessage");
+
+		    // 로딩 시작
+		    loadingSpinner.style.display = "flex";
+		    loadingMessage.style.color = "white";
+
+		    // 1초 뒤에 로딩 완료
+		    setTimeout(function () {
+		    loadingSpinner.style.display = "none";
+		    }, 5000);
 		}
 	</script>
 </body>

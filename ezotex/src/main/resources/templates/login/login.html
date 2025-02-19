@@ -27,6 +27,10 @@
 </head>
 
 <body>
+  <div class="loading-wrap">
+     <div class="loading-spinner"></div>
+     <p id="loadingMessage"></p>
+  </div>
   <div class="container-scroller">
     <div class="container-fluid page-body-wrapper full-page-wrapper">
       <div class="content-wrapper d-flex align-items-center auth px-0">
@@ -50,7 +54,7 @@
                 </div>
                 <div class="my-2 d-flex justify-content-between align-items-center">
                     <label class="form-check-label text-muted">
-                      <input type="checkbox" class="form-check-input">
+                      <input type="checkbox" class="form-check-input" name="remember-me" id="remember-me">
                       로그인 정보 저장
                     </label>
                 </div>
@@ -95,6 +99,11 @@
 		failToast("로그인 실패");
 	}
 	
+	let reset = [[${reset}]];
+	if (reset) {
+		successToast("비밀번호 초기화 성공");
+	}
+	
 	async function login_check(event) {
 		event.preventDefault();  // 기본 폼 제출을 막음
 
@@ -118,8 +127,23 @@
 	        }
 	    } catch (error) {
 	        console.error("Error:", error);
-	        failToast("서버 오류가 발생했습니다.");
 	    }
+	    simulateLoading()
+	}
+	
+	function simulateLoading() {
+	    console.log('작동됨');
+	    var loadingSpinner = document.querySelector(".loading-wrap");
+	    var loadingMessage = document.getElementById("loadingMessage");
+
+	    // 로딩 시작
+	    loadingSpinner.style.display = "flex";
+	    loadingMessage.style.color = "white";
+
+	    // 1초 뒤에 로딩 완료
+	    setTimeout(function () {
+	    loadingSpinner.style.display = "none";
+	    }, 5000);
 	}
   </script>
 </body>

@@ -12,6 +12,8 @@ import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
+import com.ezotex.standard.dto.ProductListInfoDTO;
+import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.mappers.StandardMapper;
 import com.ezotex.standard.service.StandardService;
 
@@ -67,6 +69,23 @@ public class StandardServiceImpl implements StandardService {
 		companyDTO.setAddressSeq(address_seq);
 		int company_result = mapper.insertCompany(companyDTO);
 		return (company_result == 1 && add_result == 1) ? 1 : 0;
+	}
+
+	@Override
+	public ResetPasswordDTO findNameEmail(String id) {
+		return mapper.findNameEmail(id);
+	}
+
+	@Override
+	public int passwordUpdate(String id, String password) {
+		int emp = mapper.passwordEmpUpdate(id, password);
+		int company = mapper.passwordCompanyUpdate(id, password);
+		return (emp + company);
+	}
+
+	@Override
+	public List<ProductListInfoDTO> productList() {
+		return mapper.productList();
 	}
 	
 }
