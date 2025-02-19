@@ -343,7 +343,7 @@ function insertBom(loading){
 	
 	let headerObj = {
 		productCode: selectedPrd.PRODUCT_CODE,
-		productColor: colorBox.value,
+		productColor: colorBox.value.replace(' (단종)', ''),
 		productSize: sizeBox.value,
 		chargerCode: session_user_code,
 		chargerName: session_user_name

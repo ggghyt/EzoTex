@@ -76,9 +76,9 @@ const prdGrid = new Grid({
 
 // 옵션 그리드
 const optionGrid = new Grid({
-		el: document.getElementById('optionGrid'), // 컨테이너 엘리먼트
-	  columns: [
-        { header: "색상/사이즈", name: "productColor", align: "center", width: 80 }
+	el: document.getElementById('optionGrid'), // 컨테이너 엘리먼트
+    columns: [
+        { header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80 }
     ],
   	scrollX: true, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
@@ -101,6 +101,34 @@ const supplyGrid = new Grid({
   	bodyHeight: 238
 });
 
+const loadBlankGrid = function(productCode){
+	// 서버에서 데이터 불러오기
+	fetch(`/supply/optionPivot/${productCode}`)
+	.then(response => response.json())
+	.then(result => {
+		let data = result.data.contents;
+		console.log(data);
+		optionGrid.resetData(data); // 데이터 입력
+		
+		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80 }];
+		let sizeNmArr = [];
+		
+		// data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ....}, ....]
+		// pivot으로 가져온 사이즈명을 분리하여 컬럼 지정
+		data.forEach((row) => {
+			let { PRODUCT_COLOR, rowKey, sortKey, uniqueKey, rowSpanMap, _attributes, _disabledPriority, _relationListItemMap, 
+			      ...sizeNms } = row;
+			for(let key of Object.keys(sizeNms)){
+				if(sizeNmArr.indexOf(key) == -1) sizeNmArr.push(key);
+			}
+		});
+		
+		////
+		
+		optionGrid.setColumns(columns);
+	});
+}
+
 /******************** 제품/자재 선택 ********************/	
 let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
@@ -116,7 +144,7 @@ prdGrid.on('focusChange', ev => {
 	selectedPrd = prdGrid.getRow(ev.rowKey);
 	document.getElementById('selectedPrdCode').value = selectedPrd.productCode;
 	document.getElementById('selectedPrdName').value = selectedPrd.productName;
-	// 옵션 출력해야함.
+	loadBlankGrid(selectedPrd.productCode) //옵션 출력
 });
 
 // 제품 목록 검색 적용
