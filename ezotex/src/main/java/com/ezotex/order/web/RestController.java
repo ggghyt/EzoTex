@@ -37,10 +37,10 @@ public class RestController {
 	}
 	// 제품 등록
 	@PostMapping("/insertProductOrder")
-	public boolean InsertProductOrder(@RequestBody List<OrderDTO> product) {
-		log.info(product.toString());
-		System.out.println("product product product product product product product product product product product product product product product" + product);
-		return service.insertProductOrder(product);
+	public boolean InsertProductOrder(@RequestBody List<OrderDTO> productOrderList) {
+		log.info(productOrderList.toString());
+		System.out.println("product product product" + productOrderList);
+		return service.insertProductOrder(productOrderList);
 	}
 	
 }

@@ -16,7 +16,7 @@ public interface OrderMapper {
 		// 주문 등록
 		int insertOrder(OrderDTO order);
 		// 제품 등록
-		int insertProductOrder(OrderDTO product);
+		int insertProductOrder(OrderDTO productOrderList);
 		
 		// 주문 코드
 		String getOrderCode();

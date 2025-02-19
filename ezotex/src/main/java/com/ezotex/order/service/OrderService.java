@@ -10,6 +10,6 @@ public interface OrderService {
 	List<OrderDTO> getCompanyList();
 	List<OrderDTO> getProductOption(String productCode);
 	boolean insertOrder(List<OrderDTO> order);
-	boolean insertProductOrder(List<OrderDTO> product);
+	boolean insertProductOrder(List<OrderDTO> productOrderList);
 	String getOrderCode();
 }
