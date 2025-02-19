@@ -52,7 +52,7 @@
 		                <p style="margin-top: 12px;
 		                font-size: 21px;
 		                font-weight: bold;">경고</p>
-		                <p>하나의 제품만 선택해 주세요</p>
+		                <p id="modalText"></p>
 		              </div>
 		            </div>
 		            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
@@ -63,6 +63,45 @@
 		        </div>
 		      </div>	
 		<!-- 경고 모달 END -->
+		
+		
+		<!-- 위치이동 모달 -->
+		<div class="modal fade" id="exampleModal" tabindex="-1"
+			aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header"></div>
+					<div class="card">
+						<div class="card-body">
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputPassword"
+										style="width: 200px;">
+								</div>
+							</div>
+							<div class="mb-3 row">
+								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" 
+										style="width: 200px;">
+								</div>
+							</div>
+	
+							<div id="modalGrid"></div>
+						</div>
+					</div>
+					<div style="text-align: center; margin: 20px;">
+						<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+						<button type="button" class="btn btn-inverse-dark btn-fw"
+							data-bs-dismiss="modal">취소</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 위치이동 모달 END -->
+		
+		
 	
 		<h3 class="fs-3 fw-bold">| 재고 조정</h3>
 		<div class="card card-body mt-3">
@@ -72,7 +111,7 @@
 						<label class="col-form-label">납품코드</label>
 					</div>
 					<div class="col-auto">
-						<input type="text" id="" class="form-control">
+						<input type="text"  class="form-control">
 					</div>
 				</div>
 				<div class="row g-3 align-items-center">
@@ -80,7 +119,7 @@
 						<label class="col-form-label">검색조건2</label>
 					</div>
 					<div class="col-auto">
-						<input type="text" id="" class="form-control">
+						<input type="text"  class="form-control">
 					</div>
 				</div>
 			</div>
@@ -92,8 +131,8 @@
 				<p class="fs-5 fw-bolder mt-2">재고 현황</p>
 				<div class="modal-footer regist"
 					style="display: flex; justify-content: flex-end; border-top: none;">
-				<button class="btn btn-warning" style="width:110px">위치이동</button>
-				<button class="btn btn-danger" id="productError" style="width:110px">불량처리</button>
+					<button class="btn btn-warning" id="productLocation" style="width:110px">위치이동</button>
+					<button class="btn btn-danger" id="productError" style="width:110px">불량처리</button>
 				</div>
 				<div id="Management"></div>
 			</div>
@@ -127,22 +166,36 @@
                 </div>
                 <div class="modal-footer regist"
 					style="display: flex; justify-content: center; border-top: none;">
-                <label style="font-weight: bold;">불량처리 할 수량</label>
-                <input type="text" class="form-control form-control-lg" name="" placeholder="" id="" style="width: 200px;">
-                <label style="font-weight: bold;">불량사유</label>
-                <input type="text" class="form-control form-control-lg" name="" placeholder="" id="" style="width: 200px;">
+	                <label style="font-weight: bold;">불량처리 할 수량</label>
+	                <input type="text" class="form-control form-control-lg" name="" placeholder=""  style="width: 200px;">
+	                <label style="font-weight: bold;">불량사유</label>
+	                <input type="text" class="form-control form-control-lg" name="" placeholder=""  style="width: 200px;">
                 </div>
 			</div>
+			<div class="modal-footer regist"
+					style="display: flex; justify-content: flex-end; border-top: none;">
+					<button class="btn btn-danger"  style="width:110px">불량처리</button>
+					<button class="btn btn-secondary" style="width:110px">초기화</button>
+				</div>
 		</div>
 		
 		<script>
+		
+		
 			const ManagementData = {
 				api: {
 						readData: { url: 'http://localhost:80/store/Management', method: 'GET'}
 					 },
 				contentType: 'application/json'
 			}
-		
+			
+			
+			
+			/*
+		   	*========================================================================
+		   	* 위치별 제품 재고 현황 그리드
+		   	*========================================================================
+		   	*/
 			const ManagementGrid = new Grid({
 				el: document.getElementById('Management'),
 				rowHeaders: ['rowNum', 'checkbox'],
@@ -163,10 +216,48 @@
 				],
 				data: ManagementData
 			})
+			/*
+		   	*========================================================================
+		   	* 위치별 제품 재고 현황 그리드 END
+		   	*========================================================================
+		   	*/
 			
 			
 			
 			
+			/*
+		   	*========================================================================
+		   	* 위치 이동 모달 그리드
+		   	*========================================================================
+		   	*/
+			const modalGrid = new Grid({
+				el: document.getElementById('modalGrid'),
+				rowHeaders: ['rowNum', 'checkbox'],
+				columns: [
+					{ header: "제품코드", name: "productCode", align: "center" },
+					{ header: "제품명", name: "productName", align: "center" },
+					{ header: "색상", name: "productColor", align: "center" },
+					{ header: "사이즈", name: "productSize", align: "center" },
+					{ header: "LOT번호", name: "lot", align: "center" },
+					{ header: "창고위치", name: "storageLocation", align: "center" },
+					{ header: "입고일", name: "storeDate", align: "center" },
+					{ header: "재고수량", name: "inventoryQy", align: "center" }
+				],
+				data: []
+			})
+			/*
+		   	*========================================================================
+		   	* 위치 이동 모달 그리드 END
+		   	*========================================================================
+		   	*/
+			
+			
+			
+			/*
+		   	*========================================================================
+		   	* 불량처리 이벤트(실처리 하기 위한 체크 이벤트)
+		   	*========================================================================
+		   	*/
 			productError.addEventListener("click", function (){
 				let check = ManagementGrid.getCheckedRows();
 				console.log(check)
@@ -178,15 +269,66 @@
 					document.querySelector('#productQy').value = check[0].inventoryQy;
 					document.querySelector('#color').value = check[0].productColor;
 					document.querySelector('#size').value = check[0].productSize;
-				}else{
+				}else if(check.length > 1){
+					modalText.innerHTML = '하나 제품만 선택해 주세요	';
 			        let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 			        modifyModal.show();
+				}else{
+					modalText.innerHTML = '하나 이상의 제품을 선택해 주세요	';
+					let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+					modifyModal.show();
 				}
 			})
+			/*
+		   	*========================================================================
+		   	* 불량처리 이벤트(실처리 하기 위한 체크 이벤트) END
+		   	*========================================================================
+		   	*/
+		   	
+		   	
+		   	
+		   	
+		   	/*
+		   	*========================================================================
+		   	* 위치이동 이벤트(모달)
+		   	*========================================================================
+		   	*/
+			productLocation.addEventListener("click", function (){
+				let check = ManagementGrid.getCheckedRows();
+				let data = []
+				
+				if(check.length > 0){
+					for(let i = 0; i < check.length; i++){
+						data.push(check[i]);
+					}
+					let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+					modal.show();
+					modalGrid.resetData(data);
+					/* modalGrid.check(false); */
+				}else{
+					modalText.innerHTML = '하나 이상의 제품을 선택해 주세요	';
+					let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+					modifyModal.show();
+				}
+		   })
+		  /*
+		   *========================================================================
+		   * 위치이동 이벤트(모달) END
+		   *========================================================================
+		   */
 			
 			
-			
-			
+		let modalElement = document.getElementById('exampleModal');
+
+		modalElement.addEventListener('show.bs.modal', function () {
+		    modalElement.style.display = 'block'; // 모달을 블록으로 변경
+		    modalElement.style.opacity = '0'; // 투명하게 숨김
+		});
+		
+		modalElement.addEventListener('shown.bs.modal', function () {
+		    modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+		    modalElement.style.opacity = '1'; // 투명도 복원
+		});
 
 			
 			
