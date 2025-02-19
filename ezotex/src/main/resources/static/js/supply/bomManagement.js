@@ -18,9 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		loading: false
 	});
 	$('#insertBtn').on('click', () => {
-		let updatedData = selectedMtrGrid.getData();
-		if(updatedData.length == 0) return;
-		$('#simpleModal').modal('show');
+		let selectedBom = selectedMtrGrid.getData();
+		if(selectedBom.length == 0) return; // 자재가 선택되지 않았으면 종료
+		let isValid = validBom(selectedBom);
+		if(!isValid) return; // 유효성 검사 실패 시 종료
+		$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
 	});
 });
 
@@ -138,8 +140,8 @@ const selectedMtrGrid = new Grid({
   	bodyHeight: 150	
 });
 
-let originData = null; // 검색용 원본 데이터 저장
-let originBomData = null; // 등록 시 비교용 원본 데이터 저장
+let mtrData = null; // 검색 및 입력값 저장용
+let originBomData = null; // 등록 시 비교용 원본 bom
 const loadMtrGrid = function(obj){
 	let query = new URLSearchParams(obj); // 쿼리스트링으로 변환
 	// 서버에서 데이터 불러오기
@@ -149,11 +151,12 @@ const loadMtrGrid = function(obj){
 		let data = result.data.contents;
 		selectedMtrGrid.resetData([]); // 선택된 자재 초기화
 		mtrGrid.resetData(data); // 데이터 입력
-		originData = data; // 저장된 데이터 초기화
+		mtrData = data;
 		
 		data.forEach((obj, idx) => {
 			if(obj.requireQy != null) mtrGrid.check(idx) // bom 등록된 자재는 자동 선택
 		});
+		
 		originBomData = selectedMtrGrid.getData();
 		
 		let rgsde = dateFormmater(data[0].rgsde);
@@ -164,7 +167,7 @@ const loadMtrGrid = function(obj){
 }
 
 /******************** 제품/자재 선택 ********************/	
-let selectedPrdCode = null;
+let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
@@ -175,20 +178,19 @@ prdGrid.on('focusChange', ev => {
 	lastClicked = ev.rowKey; // 선택된 행 기억
 	
 	// 선택한 정보 가져오기
-	let selected = prdGrid.getRow(ev.rowKey);
-	selectedPrdCode = selected.PRODUCT_CODE;
-	document.getElementById('selectedPrdCode').value = selectedPrdCode;
-	document.getElementById('selectedPrdName').value = selected.PRODUCT_NAME;
-	loadOptions(colorBox, `/supply/options/${selectedPrdCode}`); // 선택한 제품의 색상 목록 불러오기
-	loadMtrGrid( {productCode: selectedPrdCode} ); // 선택한 제품의 bom 자재 출력
+	selectedPrd = prdGrid.getRow(ev.rowKey);
+	document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
+	document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
+	loadOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
 });
 
 // 선택한 제품-색상의 사이즈 불러오기
-const changeOpt = () => {
+const changeOpt = (isReset) => {
 	let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
-	if(saveCk == false){
+	if(saveCk == false || isReset){
 		let selectedOpt = {
-			productCode: selectedPrdCode,
+			productCode: selectedPrd.PRODUCT_CODE,
 			productColor: colorBox.value,
 			productSize: sizeBox.value
 		};
@@ -197,7 +199,7 @@ const changeOpt = () => {
 }
 
 colorBox.addEventListener('change', e => {
-	loadOptions(sizeBox, `/supply/options/${selectedPrdCode}/${e.target.value}`);
+	loadOptions(sizeBox, `/supply/options/${selectedPrd.PRODUCT_CODE}/${e.target.value}`);
 	changeOpt();
 });
 
@@ -228,7 +230,7 @@ document.getElementById('mtrSearchBtn').addEventListener('click', () => {
 		sclas: document.getElementById('mtr-sclas').value
 	};
 	// 원본 데이터 중 필터링 반영
-	let filtered = originData.filter(obj => {
+	let filtered = mtrData.filter(obj => {
 		return obj.mtrilCode.indexOf(searchObj.mtrilCode) != -1  &&
 					 obj.mtrilName.indexOf(searchObj.mtrilName) != -1 &&
 					 (searchObj.lclas == 'null' ? true : obj.lclas == searchObj.lclas) &&
@@ -237,101 +239,113 @@ document.getElementById('mtrSearchBtn').addEventListener('click', () => {
 	mtrGrid.resetData(filtered);
 	
 	rowEventOn = false; // check 이벤트 appendRow() 임시 방지
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){ // 체크박스 상태 동기화
-		if(mtrGrid.getRowClassName(i)[0] == 'bg-blue') mtrGrid.check(i);
-	}
+	syncCheck('search');
 	rowEventOn = true;
 });
 
-// 자재 선택 시 그리드 이동
+// 체크박스 상태 동기화
+function syncCheck(type){
+	let currentData = mtrGrid.getData();
+	currentData.forEach(data => {
+		let findArr = selectedMtrGrid.findRows({mtrilCode: data.mtrilCode});
+		
+		if(type == 'search'){
+			if(findArr.length > 0) mtrGrid.check(data.rowKey);
+			else mtrGrid.uncheck(data.rowKey);
+		} else if(type == 'checkAll'){
+			if(findArr.length == 0) mtrGrid.check(data.rowKey);		
+		} else {
+			if(findArr.length > 0) mtrGrid.uncheck(data.rowKey);		
+		}
+	});
+}
+
+// 자재 선택 시 그리드 추가/삭제
 mtrGrid.on('check', ev => {
+	mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
 	if(rowEventOn){
-		selectedMtrGrid.appendRow(mtrGrid.getRow(ev.rowKey), {focus: true}); // 행 추가
-		mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
+		let row = mtrGrid.getRow(ev.rowKey);
+		let findArr = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode}); // 행 추가 중복오류 방지
+		if(findArr.length > 0) return;
+		selectedMtrGrid.appendRow(row, {focus: true}); // 행 추가
 	}
 });
 
 mtrGrid.on('uncheck', ev => {
 	mtrGrid.removeRowClassName(ev.rowKey, 'bg-blue'); // 취소한 행 배경색 삭제
-	
-	let row = mtrGrid.getRow(ev.rowKey); // 선택된 데이터와 취소한 데이터 비교하여 제거
-	let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
-	selectedMtrGrid.removeRow(find[0].rowKey);
+	if(rowEventOn){
+		let row = mtrGrid.getRow(ev.rowKey); // 선택된 데이터와 취소한 데이터 비교하여 제거
+		let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
+		selectedMtrGrid.removeRow(find[0].rowKey);
+	}
 });
 
 // 전체 선택/해제
 mtrGrid.on('checkAll', () => {
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){
-		mtrGrid.addRowClassName(i, 'bg-blue');
-	}
-	selectedMtrGrid.resetData(mtrGrid.getData());
+	syncCheck('checkAll');
 });
 
 mtrGrid.on('uncheckAll', () => {
-	for(let i = 0; i <= mtrGrid.getRowCount(); i++){
-		mtrGrid.removeRowClassName(i, 'bg-blue');		
-	}
-	selectedMtrGrid.resetData([]);
+	syncCheck('uncheckAll');
 });
 
 // 입력값 유효성 검사
 selectedMtrGrid.on('afterChange', ev => {
 	let changed = ev.changes[0];
+	let rowKey = changed.rowKey;
+	let row = selectedMtrGrid.getRow(rowKey);
 	let val = changed.value;
 	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
 		failToast('입력값은 문자가 들어갈 수 없습니다.');
 		
-		let rowKey = ev.changes[0].rowKey;
-		let row = selectedMtrGrid.getRow(rowKey);
 		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
 		row.requireQy = changed.prevValue == null ? 0 : changed.prevValue;
 		selectedMtrGrid.setRow(rowKey, row);
 		return;
+	} else if (val < 0){ // 음수면 양수로 전환 
+		val = val * -1;
+		row.requireQy = val;
+		selectedMtrGrid.setRow(rowKey, row);
+		failToast('입력값은 음수가 될 수 없습니다.');
 	}
+	// 자재 원본 데이터에서 해당하는 rowKey를 찾아 입력값 저장
+	let mtrRowKey;
+	mtrData.forEach((data) => {
+		if(data.mtrilCode == row.mtrilCode){
+			mtrRowKey = data.rowKey;
+			data.requireQy = val;
+			return;
+		}
+	});
+	mtrGrid.setRow(mtrRowKey, row);
+	selectedMtrGrid.startEditing(rowKey + 1, 'requireQy');
 });
-// 키다운 이벤트 처리하기 (다음 칸으로 이동), 행 저장 기능 구현
+
+// 초기화 버튼 동작
+document.getElementById('resetBtn').addEventListener('click', () => {
+	createModal({ 
+		type: 'confirm',
+		content: '입력한 자재 정보를 모두 초기화하시겠습니까?',
+		confirm(){
+			changeOpt(true);
+		}
+	});
+	$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
+});
 
 /******************** BOM 자재 등록 ********************/
 function insertBom(loading){
-	// 자재코드나 소요량 하나라도 변경되었는지 검증
-	let selectedData = selectedMtrGrid.getData();
-	let isZero = false; // 소요량이 0인 값이 있는지 검증
-	console.log(selectedData);
-	
-	let updatedArr = selectedData.filter(data => {
-		if(data.requireQy == 0 || data.requireQy == null) { // 수량이 0인 값이 있으면 즉시 종료
-			isZero = true;
-			return false;
-		} else {
-			for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
-				if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
-					return false;
-				}
-			}	
-		}
-		return true;
-	});
-	
-	// 입력값 중 0이 있으면 종료
-	if(isZero){
-		failToast('소요량을 모두 입력하지 않았습니다.');
-		return;
-	}
-	// 새로운 값이 하나도 없으면 종료
-	if(updatedArr.length == 0) {
-		failToast('변경된 값이 없습니다.');
-		return;
-	}
+	let selectedBom = selectedMtrGrid.getData();
 	
 	let headerObj = {
-		productCode: selectedPrdCode,
+		productCode: selectedPrd.PRODUCT_CODE,
 		productColor: colorBox.value,
 		productSize: sizeBox.value,
 		chargerCode: session_user_code,
 		chargerName: session_user_name
 	};
 	
-	let detailArr = updatedData.map(obj => {
+	let detailArr = selectedBom.map(obj => {
 		return {
 			mtrilCode: obj.mtrilCode,
 			requireQy: obj.requireQy
@@ -349,6 +363,40 @@ function insertBom(loading){
 		console.log(result);
 		if(result == true){
 			successToast('자재명세서가 등록되었습니다.');
+			originBomData = selectedBom; // 비교값을 입력한 값으로 업데이트 (중복 등록 방지)
+			selectedPrd.STATUS = '완료'; // 등록 상태 반영
+			prdGrid.setRow(selectedPrd.rowKey, selectedPrd);
 		} else failToast('알 수 없는 오류로 실패했습니다.');
 	});
 };
+
+// 입력값 유효성 검사
+function validBom(selectedBom){
+	let isZero = false; // 소요량이 0인 값이 있는지 검증
+	
+	let updatedArr = selectedBom.filter(data => {
+		if(data.requireQy == 0 || data.requireQy == null) { // 수량이 0인 값이 있으면 즉시 종료
+			isZero = true;
+			return false;
+		} else {
+			for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
+				if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
+					return false;
+				}
+			}	
+		}
+		return true; // true인 값만 배열에 남김
+	});
+	
+	// 입력값 중 0이 있으면 종료
+	if(isZero){
+		failToast('소요량을 모두 입력하지 않았습니다.');
+		return false;
+	}
+	// 새로운 값이 하나도 없으면 종료
+	if(updatedArr.length == 0) {
+		failToast('변경된 값이 없습니다.');
+		return false;
+	}
+	return true; // 유효성 검사 통과
+}
