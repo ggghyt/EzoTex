@@ -85,12 +85,12 @@
 		VALUES
 		(
 		ORDER_DETAIL_SEQ.NEXTVAL,
-		#{PRODUCT_ORDER_CODE},
-		#{PRODUCT_CODE},
-		#{PRODUCT_COLOR},
-		#{PRODUCT_SIZE},
-		#{QY},
-		#{UNIT_PRICE}
+		#{productOrderCode},
+		#{dto.productCode},
+		#{dto.productColor},
+		#{dto.sizeCode},
+		#{dto.quantity},
+		#{dto.unitPrice}
 		)
 	</insert>
 </mapper>

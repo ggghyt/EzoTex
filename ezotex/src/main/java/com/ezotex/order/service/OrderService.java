@@ -1,6 +1,7 @@
 package com.ezotex.order.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ezotex.order.dto.OrderDTO;
 
@@ -10,6 +11,6 @@ public interface OrderService {
 	List<OrderDTO> getCompanyList();
 	List<OrderDTO> getProductOption(String productCode);
 	boolean insertOrder(List<OrderDTO> order);
-	boolean insertProductOrder(List<OrderDTO> productOrderList);
+	boolean insertProductOrder(Map<String, Object> product);
 	String getOrderCode();
 }

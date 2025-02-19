@@ -177,12 +177,11 @@
 				        op.product_color AS product_color,
 				        're' || get_comm(op.product_size) AS forpvt,
 				        (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) AS request_qy
-				    FROM order_product op
-				    LEFT JOIN delivery_details dd
-				        ON op.product_order_code = dd.order_code
-				        AND op.product_code = dd.product_code
-				        AND op.product_color = dd.product_color
-				        AND op.product_size = dd.product_size
+				    FROM order_product op LEFT JOIN delivery_details dd
+				        						 ON op.product_order_code = dd.order_code
+										        AND op.product_code = dd.product_code
+										        AND op.product_color = dd.product_color
+										        AND op.product_size = dd.product_size
 				    WHERE op.product_order_code = #{orderCode}
 				      AND op.product_code = #{productCode}
 				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy)
