@@ -29,13 +29,25 @@ public interface DeliveryMapper {
     public List<Map<String, Object>> sizeFindByProductCode(@Param("productCode")String productCode, 
 															@Param("list")List<DeliveryProductInfo> list,
 															@Param("orderCode")String orderCode);
+    
+    
     //(제조업체에서 사용) 주문건 상태 변환
-    public void updateOrderStatus(@Param("productOrderCode")String productOrderCode, 
-    							  @Param("statusCode")String statusCode);
+    public void updateOrderStatus(@Param("info")OrderInsertDTO info);
+    
+    //출고번호 최근+1가져오기, 
+    public String getDeliveryCode();
+    
+    //분할출고 수 출력
+    public int getTime(@Param("productOrderCode")String productOrderCode);
     
     //(제조업체에서 사용)출고 등록
     public void insertDeliveryMaster(@Param("info")OrderInsertDTO info);
+    					
+    //로트검색 
+    public List<OrderInsertDTO> getProductLot(@Param("pinfo")OrderInsertDTO pinfo);
     
     //(제조업체에서 사용)출고 제품 등록
     public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
+    
+    public void updateLotQy(@Param("deInfo")OrderInsertDTO deinfo);
 }

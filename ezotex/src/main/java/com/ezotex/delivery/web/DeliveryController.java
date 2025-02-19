@@ -23,14 +23,18 @@ public class DeliveryController {
 	private DeliveryService service;
 	
 	
-	//납품 관리 페이지
+	//납품 관리 페이지(제조업체 사용)
 	@GetMapping("DeliveryManagement")
-	public String deliveryManagement(Model model) {
+	public String deliveryManagement() {
 		
-		//model.addAttribute("list", service.getList());
 		return "delivery/DeliveryManagement";
 	}
 	
-
+	//납품 관리 페이지(공급업체 사용)
+	@GetMapping("SupplierManagement")
+	public String SupplyManagement() {
+		
+		return "delivery/SupplierDeliveryManagement";
+	}
 	
 }

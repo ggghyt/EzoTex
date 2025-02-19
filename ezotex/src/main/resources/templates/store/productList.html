@@ -31,7 +31,7 @@
 </style>
 </head>
 <body>
-
+	<h3 class="fs-3 fw-bold">| 재고 조회</h3>
 	<div class="card card-body mt-3">
 		<div class="col-12 card card-body m-2">
 			<div class="row g-3 align-items-center">
@@ -44,7 +44,7 @@
 			</div>
 			<div class="row g-3 align-items-center">
 				<div class="col-auto">
-					<label class="col-form-label">검색조건2</label>
+					<label class="col-form-label">검색조건</label>
 				</div>
 				<div class="col-auto">
 					<input type="text" id="" class="form-control">
@@ -66,7 +66,9 @@
 				</div>
 				<div id="productGrid2"></div>
 				<p class="fs-5 fw-bolder mt-2">LOT별 재고 현황</p>
-				<div id="productLot"></div>
+				<div id="productLot">
+					<!-- <div id="pagination" class="tui-pagination"></div> -->
+				</div>
 
 
 
@@ -236,6 +238,10 @@
 	   	const productLot = new Grid({
 	   		el: document.getElementById('productLot'),
 	   		rowHeaders: ['rowNum'],
+	   		pageOptions: {
+	   			useClient: false,
+	   			perPage: 5
+	   		},
 	   		columns: [
 	   			{ header: "LOT", name: "lot" },
 	   			{ header: "제품명", name: "productName" },

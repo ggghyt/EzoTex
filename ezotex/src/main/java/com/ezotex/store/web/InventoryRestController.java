@@ -96,6 +96,13 @@ public class InventoryRestController {
 								@RequestParam(name= "sizeCode") String sizeCode) {
 		return iService.inventoryList(productCode, color, sizeCode);
 	}
+	
+	// 위치별 재고 상세 리스트(재고조정)
+	@GetMapping("Management")
+	public Map<String, Object> loction(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
+			) throws JsonMappingException, JsonProcessingException {
+		return GridUtil.grid(1, 100, iService.location());
+	}
 
 
 	
