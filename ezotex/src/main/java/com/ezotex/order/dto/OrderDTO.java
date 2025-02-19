@@ -6,11 +6,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Data
 public class OrderDTO {
 	// 주문
 	private String productOrderCode;
@@ -27,6 +29,8 @@ public class OrderDTO {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date orderDate;
 	private String empCode;
+	private String remarks;
+	private int amount;
 	
 	//주문 제품
 	private String orderDetailCode;

@@ -21,59 +21,96 @@
 	<select id="getProductOption">
 		SELECT product_color
 		FROM PRODUCT_OPTION
-		WHERE product_code = #{productCode}
+		WHERE
+		product_code = #{productCode}
 		GROUP BY product_color
 	</select>
-	<insert id="insertOrder">
+	<select id="getOrderCode">
+		SELECT COALESCE(
+		(SELECT CASE WHEN LENGTH('POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+		LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)) = 9
+		THEN null
+		ELSE 'POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+		LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)
+		END
+		FROM ORDER_LIST
+		WHERE TO_CHAR(ORDER_DATE, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE,
+		'YY/MM/DD') FROM DUAL)),
+		('POD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS product_order_code
+		FROM DUAL
+	</select>
+	<insert id="insertOrder" parameterType="OrderDTO">
 		INSERT INTO ORDER_LIST
 		(
-			product_order_code,
-			company,
-			company_representative,
-			company_tel,
-			charger,
-			delivery_request_deadline,
-			order_status,
-			company_code,
-			order_date,
-			emp_code,
-			remarks,
-			amount
+		product_order_code,
+		company,
+		company_representative,
+		company_tel,
+		charger,
+		delivery_request_deadline,
+		order_status,
+		company_code,
+		order_date,
+		emp_code,
+		remarks,
+		amount
 		)
 		VALUES
 		(
-			ORDER_SEQ.NEXTVAL,
-			#{company},
-			#{companyRepresentative},
-			#{companyTel},
-			#{charger},
-			#{deliveryRequestDeadline},
-			#{orderStatus},
-			#{companyCode},
-			sysdate,
-			#{empCode},
-			#{remarks},
-			#{amount}
-		)
-		INSERT INTO ORDER_PRODUCT
 		(
-			order_detail_code,
-			product_order_code,
-			product_code,
-			product_color,
-			product_size,
-			qy,
-			unit_price
+		SELECT COALESCE(
+		(SELECT
+		CASE
+		WHEN LENGTH('POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+		LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)) = 9
+		THEN null
+		ELSE 'POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+		LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)
+		END
+		FROM ORDER_LIST
+		WHERE TO_CHAR(ORDER_DATE, 'YY/MM/DD') = (SELECT
+		TO_CHAR(SYSDATE,
+		'YY/MM/DD') FROM DUAL)
+		),
+		'POD' || TO_CHAR(SYSDATE,
+		'YYMMDD') || '0001'
+		) AS product_order_code
+		FROM DUAL
+		),
+		#{company},
+		#{companyRepresentative},
+		#{companyTel},
+		#{charger},
+		#{deliveryRequestDeadline},
+		#{orderStatus},
+		#{companyCode},
+		sysdate,
+		#{empCode},
+		#{remarks},
+		#{amount}
+		)
+	</insert>
+	<insert id="insertProductOrder" parameterType="OrderDTO">
+		INSERT INTO
+		ORDER_PRODUCT
+		(
+		order_detail_code,
+		product_order_code,
+		product_code,
+		product_color,
+		product_size,
+		qy,
+		unit_price
 		)
 		VALUES
 		(
-			ORDER_DETAIL_SEQ.NEXTVAL,
-			#{PRODUCT_ORDER_CODE},
-			#{PRODUCT_CODE},
-			#{PRODUCT_COLOR},
-			#{PRODUCT_SIZE},
-			#{QY},
-			#{UNIT_PRICE}
+		ORDER_DETAIL_SEQ.NEXTVAL,
+		#{PRODUCT_ORDER_CODE},
+		#{PRODUCT_CODE},
+		#{PRODUCT_COLOR},
+		#{PRODUCT_SIZE},
+		#{QY},
+		#{UNIT_PRICE}
 		)
 	</insert>
 </mapper>
