@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 public class ProductListInfoDTO {
 	private String productCode;
 	private String productName;
+	private String productTypeName;
 	private String productType;
 	private String lclas;
 	private String sclas;
-	private String unitPrice;
-	private String vl;
+	private int unitPrice;
+	private int vl;
+	
+	private int maxPrice;
+	private int minPrice;
 }

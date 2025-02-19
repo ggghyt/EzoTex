@@ -140,10 +140,11 @@ set company_password = #{password}
 where company_id = #{id}
 </update>
 
-<select id="productList" resultType="ProductListInfoDTO">
+<select id="productListAll" resultType="ProductListInfoDTO">
 select product_info.product_code, 
        product_name, 
-       code_name as product_type, 
+       code_name as product_type_name, 
+       product_info.product_type, 
        lclas, 
        sclas, 
        unit_price, 
@@ -154,6 +155,40 @@ on product_info.product_code = product_category.product_code
 join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
 order by 1
+</select>
+
+<select id="productListSearch" resultType="ProductListInfoDTO">
+select product_info.product_code, 
+       product_name, 
+       code_name as product_type_name, 
+       product_info.product_type, 
+       lclas, 
+       sclas, 
+       unit_price, 
+       vl
+from product_info
+left join product_category
+on product_info.product_code = product_category.product_code
+join common_code_details
+on product_info.product_type = common_code_details.comm_detail_code
+where product_info.product_code like '%' || #{productCode} || '%'
+and product_name like '%' || #{productName} || '%'
+and product_info.product_type like '%' || #{productType} || '%'
+and lclas like '%' || #{lclas} || '%'
+and sclas like '%' || #{sclas} || '%'
+and unit_price between #{minPrice} and #{maxPrice}
+order by 1
+</select>
+
+<select id="categoryLclas">
+select distinct lclas
+from product_category
+</select>
+
+<select id="categorySclas">
+select distinct sclas
+from product_category
+where lclas = #{lclas}
 </select>
 
 </mapper>
