@@ -446,9 +446,9 @@
 				rowHeaders: ['rowNum'],
 				columns: [
 					{ header: "주문번호", name: "productOrderCode", hidden: true},
-					{ header: "제품코드", name: "productCode"},
-					{ header: "제품명", name: "productName"},
-					{ header: "주문수량", name: "reqQy"}
+					{ header: "제품코드", name: "productCode", minWidth: 120, width: 130, align: 'center'},
+					{ header: "제품명", name: "productName", minWidth: 600, width: 'auto', align: 'left'},
+					{ header: "주문수량합계", name: "reqQy", hidden: true}
 				]
 			});
 			//숫자 콤마 넣는 함수
@@ -458,6 +458,9 @@
 			
 			//주문 상세 데이터 모두 가져오기
 	        grid.on('focusChange', ev => {
+	        	//제품 상세 입력 그리드 초기화
+	        	productDetailgrid.clear();
+	        	
 	        	document.querySelector(".input-delivery-charger").value = session_user_name;
 	        	//다른 주문건 선택할 때마다 출고 수량입력했던 데이터 초기화
 	        	//registData = [{orderCode : '', productCode : '', productColor : '', columnName : '', deliveryQy: ''}];
@@ -508,6 +511,8 @@
 	    				document.querySelector('.input-order-charger').value = data.orderInfo[0].charger;	//주문담당자
 	    				document.querySelector('.input-total-qy').value = CommaFomatter(sum);	//주문 합계
 	    				
+	    				
+	    				//데이터 넣기
 	    				productListgrid.resetData(allOrderInfo.orderInfo);
 	    				
 	    			})
@@ -680,6 +685,16 @@
 	    	        let color = rowData.PRODUCT_COLOR;	 // 제품 색상
     	        	let inputCol = "DE" + columnName;	 //사용자가 수량을 입력하는 컬럼
 	    	        
+    	        	if(change.value < 0) {
+    	        		failToast('입력값은 음수가 될 수 없습니다.');
+   	        	    	return;
+    	        	}
+    	        	
+	   	        	if(isNaN(change.value)){ // 입력값이 숫자가 아닌 경우
+	   	        	        failToast('입력값은 문자가 들어갈 수 없습니다.');
+	   	        	        return;
+	   	        	}
+    	        	
     	        	//console.log('행데이터', rowData);
 	    	        //console.log('입력한 행 정보: ', rowData);
 	    	        //console.log('컬럼명: ', columnName);
@@ -772,6 +787,17 @@
 	        				let size = sizeArr[n].replace("RE", "")
 	        				let reqQy = "RE" + size;
 		        			let deliveryQy = "DE" + size;
+		        			
+		        			//음수 조건이 안걸림.
+		        			if(Number(info[j][deliveryQy]) < 0) {
+		        				failToast('입력값은 음수가 될 수 없습니다');
+		        				return;
+		        			}
+		        			if(isNaN(info[j][deliveryQy])) {
+		        				failToast('입력값은 문자가 들어갈 수 없습니다.');
+		        				return;
+		        			} 
+		        			
 		        			
 		        			//실제 서버로 보낼 객체
 	        				let obj = {productCode: info[j].PRODUCT_CODE, productColor: info[j].PRODUCT_COLOR,
@@ -947,7 +973,11 @@
 			})
 			
 			document.querySelector('.resetBtn').addEventListener('click', () => {
-				allOrderInfo = null;
+				location.href = location.href;
+				//제품 상세 입력 그리드 초기화
+	        	//allOrderInfo = originalData
+	        	//productDetailgrid.resetData(allOrderInfo);
+	        	//productDetailgrid.reloadData();
 			})
     	</script>
 	</body>
