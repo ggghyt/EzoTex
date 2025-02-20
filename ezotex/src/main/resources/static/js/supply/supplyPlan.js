@@ -101,14 +101,13 @@ const supplyGrid = new Grid({
   	bodyHeight: 238
 });
 
+// 선택한 제품의 옵션별 입력양식 출력
 const loadBlankGrid = function(productCode){
-	// 서버에서 데이터 불러오기
 	fetch(`/supply/optionPivot/${productCode}`)
 	.then(response => response.json())
 	.then(result => {
 		let data = result.data.contents;
 		console.log(data);
-		optionGrid.resetData(data); // 데이터 입력
 		
 		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80 }];
 		let sizeNmArr = [];
@@ -123,9 +122,14 @@ const loadBlankGrid = function(productCode){
 			}
 		});
 		
-		////
+		sizeNmArr.forEach(nm => {
+			let newCol = { header: nm, name: getSizeCommonCode(nm), editor: 'text', align: 'right', 
+				             formatter: row => numberFormmater(row.value) };
+			columns.push(newCol);			
+		});
 		
-		optionGrid.setColumns(columns);
+		optionGrid.resetData(data); // 데이터 입력
+		optionGrid.setColumns(columns); // 컬럼 입력
 	});
 }
 

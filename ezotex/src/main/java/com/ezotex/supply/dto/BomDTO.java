@@ -21,6 +21,7 @@ public class BomDTO {
 	//private String bomDetailCode;
 	private String mtrilCode;
 	private Integer requireQy;
+	private String mtrilColor;
 	
 	// bom 내부 검색용
 	private String mtrilName;
