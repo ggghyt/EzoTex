@@ -60,7 +60,7 @@
 		}
 		.search-bar div:nth-of-type(2) {
 			padding-left:10px;
-			width: 360px;
+			width: 410px;
 		}
 		.search-unit span {
 			font-size: smaller;
@@ -130,24 +130,18 @@
 			width: 100px;
 		}
 		.read-memo {
-			width: 643px;
+			width: 500px;
 			height: 100px;
 		}
 		.memo-span {
 			padding-left: 10px;
+			margin-right: 20px;
 		}
 		.order-info b {
 			margin-bottom: 20px;
 		}
 		.summary-info {
-			width: 807px;
 			margin-top: 30px;
-		}
-		.summary-info input {
-			width: 250px !important;
-		}
-		.summary-info div:nth-of-type(2) {
-			margin-left: 80px;
 		}
 	</style>
 </head>
@@ -193,7 +187,7 @@
 						<input type="date" class="form-control search-dedt-end">
 					</span>
 					<div class="btn-section">						
-						<button class="btn btn-success mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 					</div>
 				</div>
@@ -211,14 +205,14 @@
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar read-bar ">
 				<div>				
 					<span class="search-unit info-unit">
-						<span>발주코드</span>
-						<input type="text" class="form-control read-orderCode" readOnly> 
+						<span>발주량 합계</span>
+						<input type="text" class="form-control read-orderTotalQy"> 
 					</span>
 				</div>
 				<div>
 					<span class="search-unit info-unit">
-						<span>발주일</span>
-						<input type="text" class="form-control read-order-date" readOnly> 
+						<span>납품량 합계</span>
+						<input type="text" class="form-control read-divyTotalQy"> 
 					</span>
 				</div>
 			</div>
@@ -229,11 +223,11 @@
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar summary-info">
 				<div>			
 					<span class="search-unit info-unit">
-						<span>발주량 합계</span>
+						<span>발주코드</span>
 						<input type="text" class="form-control read-orderTotalQy" readOnly> 
 					</span>
 					<span class="search-unit info-unit">
-						<span>납품량 합계</span>
+						<span>발주일</span>
 						<input type="text" class="form-control read-divyTotalQy" readOnly> 
 					</span>
 				</div>
@@ -265,20 +259,7 @@
 	<script>
 		//session_user_code => 세션에서 가져온 회사코드임
 		
-		
-		/*
-			그리드 정의		
-		*/
-		
-		
-	    const orderListdataSource = {
-	  	      api: {
-	  	          readData: { url: '/delivery/mtrilDelivery' , method: 'GET' },
-	  	        },
-	  	      contentType: 'application/json',
-	  	    };  
-		
-	  	//주문목록 그리드
+		//제품 목록
 		const orderListGrid = new Grid({
 			el: document.getElementById('orderListGrid'),
 			bodyHeight: 619,
@@ -288,31 +269,6 @@
                 useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
                 perPage: 15
             },
-            columnOptions: {
-    	          resizable: true
-    	      	},
-			rowHeaders: ['rowNum'],
-			columns: [
-				{ header: "발주코드", name: "mtrilOrderCode"},
-				{ header: "요약", name: "summary"},
-				{ header: "발주담당자", name: "orderCharger"},
-				{ header: "발주일", name: "orderDate"},
-				{ header: "납기일", name: "dedt"},
-				{ header: "비고", name: "remark", hidden: true},
-			],
-            data: orderListdataSource,
-            showDummyRows: true	//더미로우 추가
-		});
-		
-        
-        
-		//제품 목록
-		const productListGrid = new Grid({
-			el: document.getElementById('productListGrid'),
-			bodyHeight: 500,
-			scrollY: true,
-			scrollX: false,
-			width: 807,
 			rowHeaders: ['rowNum'],
 			columns: [
 				{ header: "자재코드", name: "productOrderCode"},
@@ -323,77 +279,21 @@
 			]
 		});
 		
-		/*
-			함수 정의
-		*/
-		
-		//검색함수
-        function searchOrderList() {
-        	orderListGrid.readData(1, {
-        		orderCode: document.querySelector('.search-order-code').value,
-        		orderCharger:  document.querySelector('.search-charger').value,
-        		orderDateStart: document.querySelector('.search-date-start').value,
-        		orderDateEnd: document.querySelector('.search-date-end').value,
-        		dedtStart: document.querySelector('.search-dedt-start').value,
-        		dedtEnd: document.querySelector('.search-dedt-end').value,
-        		productCode: document.querySelector('.search-mtril-code').value,
-        		productName: document.querySelector('.search-mtril-name').value
-        		
-        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
-        }
-		
-		document.querySelectorAll(".search-bar input").forEach((ele) => {
-			ele.addEventListener('keydown', (ele) => {				
-				if (window.event.keyCode == 13) {
-					searchOrderList();
-			    }
-			})
-		})
-		
-		
-
-        //검색 조건 삭제
-        function resetCondition() {
-    		document.querySelectorAll('.search-bar input').forEach((e) => {
-    			e.value = null;
-    		})
-        }
-		
-		//클릭된 행 기억하기 위한 변수
-		let lastClicked = null;
-		
-		//주문 상세 데이터 모두 가져오기
-        orderListGrid.on('focusChange', ev => {
-        	
-        	//제품 상세 입력 그리드 초기화
-        	productListGrid.clear();
-        	
-            // 배경색 클래스 적용
-            orderListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-            orderListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-            lastClicked = ev.rowKey; // 선택된 행 기억
-			            
-            // 선택한 정보 가져오기
-            let selected = orderListGrid.getRow(ev.rowKey);
-            
-            //처음 가져왔던 정보들로 주문 정보를 출력
-            document.querySelector(".read-orderCode").value = selected.mtrilOrderCode;
-            document.querySelector(".read-order-date").value = selected.orderDate;
-            document.querySelector(".read-order-charger").value = selected.orderCharger;
-            document.querySelector(".read-dedt").value = selected.dedt;
-            document.querySelector(".read-memo").value = selected.remark;
-            
-            fetch(`/delivery/mtrilOrderInfo?orderCode=${selected.mtrilOrderCode}`)
-    		.then(rep => rep.json())
-    		.then(data => {
-    			
-    		})
-            
-            
-            
-
-    		
-        }); 
+		//제품 목록
+		const productListGrid = new Grid({
+			el: document.getElementById('productListGrid'),
+			bodyHeight: 500,
+			scrollY: true,
+			scrollX: false,
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "자재코드", name: "productOrderCode"},
+				{ header: "자재명", name: "productCode"},
+				{ header: "업체단가", name: "productName"},
+				{ header: "발주량", name: "reqQy"},
+				{ header: "납품량", name: "deliveryQy"}
+			]
+		});
 	</script>
 </body>
 </html>

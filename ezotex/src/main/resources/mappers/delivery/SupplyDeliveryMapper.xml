@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.delivery.mappers.SupplyDeliveryMapper">
+
+	<!-- 발주 요청 검색결과 -->
+	<select id="findAll">
+		SELECT *
+		FROM (
+		    SELECT *
+		    FROM (
+		        SELECT ROWNUM rn,
+		               mtril_order_code AS mtrilOrderCode,
+		               product_summary('material_order_details', mtril_order_code) AS Summary,
+		               charger_name AS orderCharger,
+		               rgsde AS orderDate,
+		               due_date AS dedt,
+		               remark AS remark
+		        FROM   material_order 
+		        WHERE   status = 'RS01'
+	        	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
+	        		AND  mtril_order_code LIKE '%' || UPPER(#{searchDto.orderCode}) || '%'
+	        	</if>
+	        	<if test='searchDto.orderCharger != null and searchDto.orderCharger != ""'>	--발주담당자
+	        		AND charger_name LIKE '%' || #{searchDto.orderCharger} || '%'
+	        	</if>
+	        	<if test='searchDto.productCode != null and searchDto.productCode != ""'>	--제품코드
+	        		AND    mtril_order_code IN (SELECT mtril_order_code
+	                                   FROM   material_order_details
+	                                   WHERE  product_code LIKE '%' || UPPER(#{searchDto.productCode}) || '%')
+	        	</if>
+	        	<if test='searchDto.productName != null and searchDto.productName != ""'>	--제품명
+	        		AND    mtril_order_code IN (SELECT m.mtril_order_code
+	                                    FROM   material_order_details m JOIN product_info s
+	                                                                      ON (m.product_code = s.product_code)
+	                                    WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
+	        	</if>
+	        	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
+	        		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+	        	</if>
+	        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
+	        		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+	        	</if>
+		        ) info
+		    WHERE info.rn <![CDATA[ <= ]]> 10) page
+		WHERE page.rn <![CDATA[ >= ]]> 1
+	</select>
+	
+	<!-- 검색결과 카운트 -->
+	<select id="getCount">
+		SELECT COUNT(*)
+        FROM   material_order 
+        WHERE   status = 'RS01'
+       	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
+       		AND  mtril_order_code LIKE '%' || #{searchDto.orderCode} || '%'
+       	</if>
+       	<if test='searchDto.orderCharger != null and searchDto.orderCharger != ""'>	--발주담당자
+       		AND charger_name LIKE '%' || #{searchDto.orderCharger} || '%'
+       	</if>
+       	<if test='searchDto.productCode != null and searchDto.productCode != ""'>	--제품코드
+       		AND    mtril_order_code IN (SELECT mtril_order_code
+                                  FROM   material_order_details
+                                  WHERE  product_code LIKE '%' || #{searchDto.productCode} || '%')
+       	</if>
+       	<if test='searchDto.productName != null and searchDto.productName != ""'>	--제품명
+       		AND    mtril_order_code IN (SELECT m.mtril_order_code
+                                   FROM   material_order_details m JOIN product_info s
+                                                                     ON (m.product_code = s.product_code)
+                                   WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
+       	</if>
+       	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
+       		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+       	</if>
+       	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
+       		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+       	</if>
+	</select>
+	
+	<select id="">
+		
+	</select>
+	
+</mapper>

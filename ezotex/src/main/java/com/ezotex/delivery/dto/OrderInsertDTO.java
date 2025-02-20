@@ -37,7 +37,7 @@ public class OrderInsertDTO {
 	private String rgsde;			//등록일
 	private String updde;			//수정일
 	private Integer time;			//회차(분할배송)
-	private Integer amount;			//수량
+	private Integer amount;			//총 합계 금액
 	
 	//제품정보
 	private String productCode;		//제품 코드
@@ -48,6 +48,7 @@ public class OrderInsertDTO {
 	private String productSe; 		//제품 구분
 	private String productLot;		//제품 로트
 	private Integer lotQy;			//로트 수량
-
+	private Integer unitPrice;		//단가
+	private Integer price;			//제품 단가 금액 합계
 
 }

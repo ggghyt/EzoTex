@@ -49,5 +49,9 @@ public interface DeliveryMapper {
     //(제조업체에서 사용)출고 제품 등록
     public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
     
+    //로트 수량 업데이트
     public void updateLotQy(@Param("deInfo")OrderInsertDTO deinfo);
+    
+    //제품 단가, 금액 가져오기
+    public List<OrderInsertDTO> getPrice(@Param("pinfo")OrderInsertDTO pinfo);
 }
