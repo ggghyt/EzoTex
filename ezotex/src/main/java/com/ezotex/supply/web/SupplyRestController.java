@@ -48,6 +48,13 @@ public class SupplyRestController {
 		return map;
 	}
 	
+	// (공급계획서) 해당 제품의 색상+사이즈 일괄 목록
+	@GetMapping("optionPivot/{productCode}")
+	public Map<String, Object> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
+		Map<String, Object> map = GridUtil.grid(0, 0, service.pivotProductOption(productCode));
+		return map;
+	}
+	
 	// 해당 제품의 색상 목록
 	@GetMapping("options/{prdCode}")
 	public List<ProductDTO> sizeList(@PathVariable String prdCode) {

@@ -10,7 +10,7 @@ public interface OrderService {
 	List<OrderDTO> getProductList();
 	List<OrderDTO> getCompanyList();
 	List<OrderDTO> getProductOption(String productCode);
-	boolean insertOrder(List<OrderDTO> order);
+	OrderDTO insertOrder(OrderDTO order);
 	boolean insertProductOrder(Map<String, Object> product);
 	String getOrderCode();
 }
