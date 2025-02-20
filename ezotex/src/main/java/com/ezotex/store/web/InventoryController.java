@@ -18,7 +18,10 @@ public class InventoryController {
 
 	private final StoreService service;
 	
-
+	@GetMapping("test")
+	public String test() {
+		return "store/test";
+	}
 
 	/**
 	 * ========================================= 

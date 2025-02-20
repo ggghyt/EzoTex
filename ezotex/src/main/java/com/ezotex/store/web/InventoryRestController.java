@@ -4,15 +4,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ezotex.comm.GridData;
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
+import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -89,6 +90,14 @@ public class InventoryRestController {
 		return iService.productInfoList(productCode);
 	}
 	
+	/*
+	 * // 제품별 옵션 리스트(수정후 불러오기)
+	 * 
+	 * @GetMapping("productListInfo") public List<InventoryDTO>
+	 * productInfoUpdateList(@RequestParam(name= "productCode") String productCode){
+	 * return iService.productInfoList(productCode); }
+	 */
+	
 	// 재고조회 제품별 수량 LOT리스트
 	@GetMapping("inventoryList")
 	public List<InventoryDTO> inventoryList(@RequestParam(name= "productCode") String productCode,
@@ -102,6 +111,12 @@ public class InventoryRestController {
 	public Map<String, Object> loction(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
 			) throws JsonMappingException, JsonProcessingException {
 		return GridUtil.grid(1, 100, iService.location());
+	}
+	
+	// LOT별 불량처리 등록
+	@PostMapping("InsertProductError")
+	public boolean InsertProductError(@RequestBody ErrorProductDTO edto) {
+		return iService.InsertErrorProduct(edto);
 	}
 
 

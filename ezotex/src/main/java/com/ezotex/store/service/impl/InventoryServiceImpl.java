@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.mappers.InventoryMapper;
@@ -58,6 +59,18 @@ public class InventoryServiceImpl implements InventoryService {
 	public List<InventoryDTO> location() {
 		return mapper.location();
 	}
+
+	// LOT별 불량처리 등록
+	@Override
+	public boolean InsertErrorProduct(ErrorProductDTO edto) {
+		
+		String name = (String)session.getAttribute("name");
+		mapper.InsertErrorProduct(edto, name);
+		mapper.InventoryUpdate(edto);
+		return true;
+	}
+
+	
 
 	
 
