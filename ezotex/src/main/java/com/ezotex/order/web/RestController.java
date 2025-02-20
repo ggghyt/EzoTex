@@ -38,7 +38,7 @@ public class RestController {
 	
 	// 주문 등록
 	@PostMapping("/insertOrder")
-	public boolean InsertOrder(@RequestBody List<OrderDTO> order) {
+	public OrderDTO InsertOrder(@RequestBody OrderDTO order) {
 		System.out.println("---------------------------------------------------");
 		System.out.println(order);
 		return service.insertOrder(order);
@@ -55,17 +55,13 @@ public class RestController {
 	   @PostMapping("/insertProductOrder")
 	   public boolean InsertProductOrder(@RequestBody Map<String, Object> productOrderList) {
 	      
-		  Map<String,Object>map = new HashMap<>();
-		   
-	      String productCode = (String) productOrderList.get("productOrderCode");
 
 	      List<OrderDTO> odto = objectMapper.convertValue(productOrderList.get("option"),
                   new TypeReference<List<OrderDTO>>() {});
 	      
-	      map.put("productCode",productCode);
-	      map.put("option",odto);
+	      productOrderList.put("option",odto);
 	      
-	      return service.insertProductOrder(map);
+	      return service.insertProductOrder(productOrderList);
 	   }
 	
 }
