@@ -131,6 +131,10 @@ let clickedData = ""; // 클릭한 행의 데이터
           align: 'right',
         }
       ],
+	    pageOptions: {
+	        useClient: true, // 페이징을 위해 필요
+	        perPage: 3
+      	},
       data: [], // 빈 데이터로 초기화
     });
     
@@ -209,16 +213,18 @@ let clickedData = ""; // 클릭한 행의 데이터
 					<td class="d-flex align-items-center"><label
 						class="col-form-label mr-3">주문 수량 총합</label> <input type="number"
 						id="orderQuantity" class="form-control"
-						style="width: 200px; margin-left: 10px" placeholder="총 수량" readonly></td>
+						style="width: 200px; margin-left: 10px" placeholder="총 수량"
+						readonly></td>
 					<td class="d-flex align-items-center"><label
 						class="col-form-label mr-3">주문 금액 합계</label> <input type="number"
 						id="orderAmount" class="form-control"
-						style="width: 200px; margin-left: 10px" placeholder="총 금액" readonly></td>
+						style="width: 200px; margin-left: 10px" placeholder="총 금액"
+						readonly></td>
 				</tr>
 			</table>
 			<div>
-			<button type="button" id="regibtn" class="btn btn-primary registBtn"
-				onclick="insertOrder()">등록</button>
+				<button type="button" id="regibtn" class="btn btn-primary registBtn"
+					onclick="insertOrder()">등록</button>
 			</div>
 
 		</div>
@@ -416,7 +422,6 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        XL: "SI06",
 			        XXL: "SI07"
 			    };
-			
 		    for (let i = 0; i < savedProductData.length; i++) {
 		    	
 		        newData.push(savedProductData[i]);
@@ -461,11 +466,25 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 		    }
 		    console.log("최종 newData2:", newData2);
-		    totalOrderQuantity = newData2.reduce((sum, item) => sum + Number(item.quantity), 0);
-
-		    console.log("모든 제품 총 수량:", totalOrderQuantity);
 		    
-		    document.getElementById('orderQuantity').value = totalOrderQuantity;
+		    // 주문총수량 총합 구하기
+		    const orderUnit = grid.getData().map(row => row.orderQuantity); // 주문 금액 컬럼 값 구하기
+		    const unitSum = orderUnit.reduce((acc, value) => acc + value, 0); // 주문 금액 합 구하기
+
+		    console.log("열 데이터 출력:", orderUnit);
+		    console.log("총합:", unitSum);
+		    document.getElementById('orderQuantity').value = unitSum;
+		    
+		    
+		    // 주문금액 총합 구하기
+		    const orderMoney = grid.getData().map(row => row.orderAmount); // 주문 금액 컬럼 값 구하기
+		    const moneySum = orderMoney.reduce((acc, value) => acc + value, 0); // 주문 금액 합 구하기
+
+		    console.log("열 데이터 출력:", orderMoney);
+		    console.log("총합:", moneySum);
+		    document.getElementById('orderAmount').value = moneySum;
+
+		    
 		}
 		
 		// 제품 데이터 삭제하는 함수
@@ -511,6 +530,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value, // 납기일
 			        orderStatus: document.getElementById("orderStatus").value || "OR01", // 주문 상태 - 기본값 : 대기
 			        remarks: document.getElementById("remarks").value, // 비고 
+			        amount:Number(document.getElementById("orderAmount").value),
 			    };
 			    const orderProductData = {
 		    			//productOrderCode : document.getElementById("productOrderCode").value, // 주문코드
@@ -578,9 +598,9 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 			    console.log("최종 newData2:", newData2);
 
-			    totalOrderQuantity = newData2.reduce((sum, item) => sum + Number(item.quantity), 0);
+/* 			    totalOrderQuantity = newData2.reduce((sum, item) => sum + Number(item.quantity), 0);
 
-			    console.log("모든 제품 총 수량:", totalOrderQuantity);
+			    console.log("모든 제품 총 수량:", totalOrderQuantity); */
 			    
  			    fetch(`http://localhost:80/order/insertOrder`, {
 			        method: 'POST',
@@ -604,7 +624,12 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    })
 				    .then(rep => rep.json())
 				    .then(data => {
-				    	console.log(data)
+				        if (data && data.success) { // 성공했을 때만 리로드
+				            console.log("주문 등록 성공:", data);
+				            window.location.reload();
+				        } else {
+				            throw new Error("주문 등록 실패");
+				        }
 				    })
 			    })
 			    .catch(error => {
@@ -681,6 +706,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 						align : 'center'
 					},
 					],
+				    pageOptions: {
+				        useClient: true, // 페이징을 위해 필요
+				        perPage: 5
+			      	},
 				});
 		const modalElement = document.getElementById('productCodeModal');
 		modalElement.addEventListener('show.bs.modal', function () {
@@ -813,6 +842,10 @@ function filterCompanyGrid() {
 						align : 'center'
 					},
 					],
+				    pageOptions: {
+				        useClient: true, // 페이징을 위해 필요
+				        perPage: 5
+			      	},
 				});
 		const companyModalElement = document.getElementById('companyCodeModal');
 		  companyModalElement.addEventListener('show.bs.modal', function () {
