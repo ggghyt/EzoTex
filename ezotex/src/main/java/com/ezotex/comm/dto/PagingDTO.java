@@ -42,7 +42,7 @@ public class PagingDTO {
 	}
 
 	public int getLastPage() {
-		lastPage = totalRecord / pageUnit +
+		lastPage = totalRecord/ pageUnit +
 				   ( totalRecord % pageUnit>0 ? 1 : 0 );
 		return lastPage;
 	}
@@ -78,8 +78,8 @@ public class PagingDTO {
 
 	public int getEndPage() {
 		endPage = (page-1)/pageSize  * pageSize  + pageSize ;
-		if ( endPage > getLastPage() )
-			endPage = getLastPage() ;
+		if ( endPage > getLastPage())
+			endPage = getLastPage();
 		return endPage;
 	}
 
