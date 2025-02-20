@@ -1,6 +1,7 @@
 package com.ezotex.standard.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,8 +86,8 @@ public class StandardServiceImpl implements StandardService {
 	}
 
 	@Override
-	public List<ProductListInfoDTO> productListAll() {
-		return mapper.productListAll();
+	public List<Map<String, Object>> productListAll(ProductListInfoDTO productListInfoDTO) {
+		return mapper.productListAll(productListInfoDTO);
 	}
 
 	@Override
@@ -97,6 +98,11 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<ProductCategoryDTO> categorySclas(String lclas) {
 		return mapper.categorySclas(lclas);
+	}
+
+	@Override
+	public int getCount(ProductListInfoDTO productListInfoDTO) {
+		return mapper.getCount(productListInfoDTO);
 	}
 	
 }

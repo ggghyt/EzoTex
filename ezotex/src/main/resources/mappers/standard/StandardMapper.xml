@@ -140,24 +140,7 @@ set company_password = #{password}
 where company_id = #{id}
 </update>
 
-<select id="productListAll" resultType="ProductListInfoDTO">
-select product_info.product_code, 
-       product_name, 
-       code_name as product_type_name, 
-       product_info.product_type, 
-       lclas, 
-       sclas, 
-       unit_price, 
-       vl
-from product_info
-left join product_category
-on product_info.product_code = product_category.product_code
-join common_code_details
-on product_info.product_type = common_code_details.comm_detail_code
-order by 1
-</select>
-
-<select id="productListSearch" resultType="ProductListInfoDTO">
+<select id="productListAll" resultType="map" parameterType="ProductListInfoDTO">
 select product_info.product_code, 
        product_name, 
        code_name as product_type_name, 
@@ -172,12 +155,29 @@ on product_info.product_code = product_category.product_code
 join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
 where product_info.product_code like '%' || #{productCode} || '%'
-and product_name like '%' || #{productName} || '%'
-and product_info.product_type like '%' || #{productType} || '%'
-and lclas like '%' || #{lclas} || '%'
-and sclas like '%' || #{sclas} || '%'
-and unit_price between #{minPrice} and #{maxPrice}
+<if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
+<if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
+<if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
+<if test='sclas != null and sclas != ""'> and sclas like '%' || #{sclas} || '%' </if>
+<if test='minPrice != null and minPrice != ""'> and unit_price <![CDATA[ >= ]]> #{minPrice} </if>
+<if test='maxPrice != null and maxPrice != ""'> and unit_price <![CDATA[ <= ]]> #{maxPrice} </if>
 order by 1
+</select>
+
+<select id="getCount" parameterType="ProductListInfoDTO">
+select count(product_info.product_code)
+from product_info
+left join product_category
+on product_info.product_code = product_category.product_code
+join common_code_details
+on product_info.product_type = common_code_details.comm_detail_code
+where product_info.product_code like '%' || #{productCode} || '%'
+<if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
+<if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
+<if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
+<if test='sclas != null and sclas != ""'> and sclas like '%' || #{sclas} || '%' </if>
+<if test='minPrice != null and minPrice != ""'> and unit_price <![CDATA[ >= ]]> #{minPrice} </if>
+<if test='maxPrice != null and maxPrice != ""'> and unit_price <![CDATA[ <= ]]> #{maxPrice} </if>
 </select>
 
 <select id="categoryLclas">
