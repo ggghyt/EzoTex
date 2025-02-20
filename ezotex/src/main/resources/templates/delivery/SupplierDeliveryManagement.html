@@ -229,7 +229,7 @@
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar summary-info">
 				<div>			
 					<span class="search-unit info-unit">
-						<span>발주량 합계</span>
+						<span>잔여량 합계</span>
 						<input type="text" class="form-control read-orderTotalQy" readOnly> 
 					</span>
 					<span class="search-unit info-unit">
@@ -315,12 +315,15 @@
 			width: 807,
 			rowHeaders: ['rowNum'],
 			columns: [
-				{ header: "자재코드", name: "productOrderCode"},
-				{ header: "자재명", name: "productCode"},
-				{ header: "업체단가", name: "productName"},
+				{ header: "자재코드", name: "productCode"},
+				{ header: "자재명", name: "productName"},
+				{ header: "색상", name: "productColor"},
+				{ header: "업체단가", name: "unitPrice"},
 				{ header: "발주량", name: "reqQy"},
-				{ header: "납품량", name: "deliveryQy"}
-			]
+				{ header: "잔여량", name: "restQy"},
+				{ header: "납품량", name: "deliveryQy", editor: 'text'}
+			],
+			showDummyRows: true
 		});
 		
 		/*
@@ -359,6 +362,9 @@
     		})
         }
 		
+		//서버에서 가져온 주문 정보 상세
+		let orderInfo = [];
+		
 		//클릭된 행 기억하기 위한 변수
 		let lastClicked = null;
 		
@@ -386,7 +392,24 @@
             fetch(`/delivery/mtrilOrderInfo?orderCode=${selected.mtrilOrderCode}`)
     		.then(rep => rep.json())
     		.then(data => {
+    			console.log(data);
+    			//배열에 담기
+    			orderInfo = data;
     			
+    			//서버에서 가져온 데이터 넣기
+    			productListGrid.resetData(data);
+    			
+    			//발주량 합계
+    			let reqQySum = 0;
+    			//잔여량 합계
+    			let restQySum = 0;
+    			for(let i=0; i<data.length; i++) {
+    				reqQySum += data[i].reqQy;
+    				restQySum += data[i].restQy;
+    				
+    			}
+    			document.querySelector('.read-orderTotalQy').value = restQySum;
+    			console.log(restQySum);
     		})
             
             

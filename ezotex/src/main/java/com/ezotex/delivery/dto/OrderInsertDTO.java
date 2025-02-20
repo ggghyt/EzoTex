@@ -50,5 +50,6 @@ public class OrderInsertDTO {
 	private Integer lotQy;			//로트 수량
 	private Integer unitPrice;		//단가
 	private Integer price;			//제품 단가 금액 합계
-
+	private String productName;		//제품명
+	private Integer restQy;			//잔여수량
 }

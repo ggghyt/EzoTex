@@ -466,6 +466,56 @@
 				return numVal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 			}
 			
+			
+	        
+	        //제품 상세 수량
+		    const productDetailgrid = new Grid({
+			      el: document.getElementById('productDetailgrid'), // 컨테이너 엘리먼트
+		          scrollY: true,
+			      scrollX: true,
+			      bodyHeight: 200,
+			      header: {
+			        	height: 70,
+			            complexColumns: [
+			              {
+			                header: 'S',
+			                name: 'stest',
+			                childNames: ['sizeS', 's']
+			              },
+			              {
+				             header: 'M',
+				             name: 'mtest',
+				             childNames: ['sizeM', 'm']
+				          },
+				          {
+					         header: 'L',
+					         name: 'ltest',
+					         childNames: ['sizeL', 'l']
+					      },
+					      {
+						      header: 'XL',
+						      name: 'xltest',
+						      childNames: ['sizeXl', 'xl']
+						  }
+			             ]},
+			        columns: [
+			            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
+			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "s", align: "center" },
+			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "m", align: "center" },
+			            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "l", align: "center" },
+			            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
+			            { header: "잔여수량", name: "xl", align: "center" }
+			        ],
+				  columnOptions: {
+				        frozenCount: 1,
+				        frozenBorderWidth: 1,
+				        minWidth: 150
+				      }
+			    });  
+	        
 			//주문 상세 데이터 모두 가져오기
 	        grid.on('focusChange', ev => {
 	        	//제품 상세 입력 그리드 초기화
@@ -531,54 +581,7 @@
 	        
 	        
 
-	        
-	        //제품 상세 수량
-		    const productDetailgrid = new Grid({
-			      el: document.getElementById('productDetailgrid'), // 컨테이너 엘리먼트
-		          scrollY: true,
-			      scrollX: true,
-			      bodyHeight: 200,
-			      header: {
-			        	height: 70,
-			            complexColumns: [
-			              {
-			                header: 'S',
-			                name: 'stest',
-			                childNames: ['sizeS', 's']
-			              },
-			              {
-				             header: 'M',
-				             name: 'mtest',
-				             childNames: ['sizeM', 'm']
-				          },
-				          {
-					         header: 'L',
-					         name: 'ltest',
-					         childNames: ['sizeL', 'l']
-					      },
-					      {
-						      header: 'XL',
-						      name: 'xltest',
-						      childNames: ['sizeXl', 'xl']
-						  }
-			             ]},
-			        columns: [
-			            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
-			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
-			            { header: "잔여수량", name: "s", align: "center" },
-			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
-			            { header: "잔여수량", name: "m", align: "center" },
-			            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
-			            { header: "잔여수량", name: "l", align: "center" },
-			            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
-			            { header: "잔여수량", name: "xl", align: "center" }
-			        ],
-				  columnOptions: {
-				        frozenCount: 1,
-				        frozenBorderWidth: 1,
-				        minWidth: 150
-				      }
-			    });  
+
 	        
 	        /*출고 후 잔여량 출력 모달*/
 			const restQyGrid = new Grid({
@@ -858,12 +861,6 @@
 	        	//simulateLoading();
 	        	
 
-                     
-                     
-                
-                
-                
-                
                 const response = fetch('/delivery/deliveryRegist', {
                     method: 'post',
                     headers: {

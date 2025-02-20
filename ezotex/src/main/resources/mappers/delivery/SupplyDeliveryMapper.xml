@@ -75,8 +75,22 @@
        	</if>
 	</select>
 	
-	<select id="">
-		
+
+	<select id="orderInfo">
+		SELECT  md.product_code AS product_code,
+		        pi.product_name AS product_name,
+		        md.product_color AS product_color,
+		        md.order_qy AS req_qy,
+                (md.order_qy - COALESCE(dd.delivery_qy, 0)) AS rest_qy, --잔여량 구하기
+		        md.amount AS price,	-- 제품 단가 금액 합계
+		        md.product_color AS product_color,
+		        md.unit_price AS unit_price
+		FROM    material_order_details md JOIN product_info pi
+		                                    ON (md.product_code = pi.product_code)
+                                     LEFT JOIN delivery_details dd
+                                            ON (md.mtril_order_code = dd.order_code)
+                                            AND (md.product_color = dd.product_color)
+		WHERE   md.mtril_order_code = #{orderCode}
 	</select>
 	
 </mapper>

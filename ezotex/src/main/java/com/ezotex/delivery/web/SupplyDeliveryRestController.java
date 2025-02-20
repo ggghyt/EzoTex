@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.service.SupplyDeliveryService;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class SupplyDeliveryRestController {
 	//납품 관리
 	private SupplyDeliveryService service;
 	
+	//발주 조회
 	@GetMapping("mtrilDelivery")
 	public Map<String, Object> findAll(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									             @RequestParam(name = "page", defaultValue = "1")int page,
@@ -42,6 +44,12 @@ public class SupplyDeliveryRestController {
 		
 		paging.setTotalRecord(service.getCount(searchDTO));
 		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.getList(searchDTO));
+	}
+	
+	@GetMapping("mtrilOrderInfo")
+	public List<OrderInsertDTO> orderInfo(@RequestParam(name = "orderCode")String orderCode) {
+		log.info(orderCode);
+		return service.orderInfo(orderCode);
 	}
 
 }
