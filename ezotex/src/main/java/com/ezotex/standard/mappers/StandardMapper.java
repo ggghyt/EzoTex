@@ -57,4 +57,14 @@ public interface StandardMapper {
 	List<ProductCategoryDTO> categorySclas(String lclas);
 	
 	public int getCount(ProductListInfoDTO productListInfoDTO);
+	
+	// 제품 단위 리스트
+	List<ProductListInfoDTO> unitNameList();
+	
+	// 제품 생성
+	int ProductInfoInsert(ProductListInfoDTO productListInfoDTO);
+	
+	int ProductInfoUpdate(ProductListInfoDTO productListInfoDTO);
+	
+	List<ProductCategoryDTO> productCategory(String productCode);
 }

@@ -28,6 +28,17 @@
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
 </style>
+<style>
+.modal {
+display: block !important; /* Bootstrap 기본 동작 우회 */
+visibility: hidden;
+}
+
+.modal.show {
+visibility: visible;
+}
+
+</style>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 자재/제품 조회</h3>
@@ -98,43 +109,50 @@
 			<div class="col me-2" style="height: 525px; text-align: center;">
 				<img id="preview" style="width: 90%; height: 90%;" />
 			</div>
-			<form action="/" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
+			<form action="/standard/productInsert" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 				<div class="row me-2">
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">코드</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<input type="text" class="form-control" id="selectProductCode" name="selectProductCode" value="" onchange="productCode()" disabled>
+						<input type="text" class="form-control" id="selectProductCode" name="productCode" value="" readonly>
 					</div>
 
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">이름</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<input type="text" class="form-control" id="selectProductName" name="selectProductName" value="">
+						<input type="text" class="form-control" id="selectProductName" name="productName" value="">
+					</div>
+					
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단위</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<select class="form-control" id="unitName" name="unitName">
+							<option value="" selected disabled>선택</option>
+						</select>
 					</div>
 				
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사진</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<input type="file" class="form-control" onchange="readURL(this);" id="selectProductImg" name="selectProductImg">
+						<input type="file" class="form-control" onchange="readURL(this);" id="selectProductImg" name="imgFile">
 					</div>
-					<div class="col-3 col-lg-3 d-flex mb-2"></div>
 				</div>
 				
 				<div class="row me-2">
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<input type="number" class="form-control" id="selectUnitPrice" name="selectUnitPrice" value="">
+						<input type="number" class="form-control" id="selectUnitPrice" name="unitPrice" value="">
 					</div>
 
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">유형</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<select class="form-control" id="selectProductType" name="selectProductType">
-						<option value="" selected disabled>선택</option>
-						<option value="PT01">자재</option>
-						<option value="PT02">제품</option>
-					</select>
+						<select class="form-control" id="selectProductType" name="productType">
+							<option value="" selected disabled>선택</option>
+							<option value="PT01">자재</option>
+							<option value="PT02">제품</option>
+						</select>
 					</div>
 				
 					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">부피</label>
 					<div class="col-2 col-lg-2 d-flex mb-2">
-						<input type="number" class="form-control" id="selectVl" name="selectVl" value="">
+						<input type="number" class="form-control" id="selectVl" name="vl" value="">
 					</div>
 					<div class="col-1 col-lg-1 d-flex mb-2"></div>
 					<div class="col-2 col-lg-2 d-flex mb-2">
@@ -146,18 +164,89 @@
 			<div class="row me-2">
 				<div class="col-1 col-lg-1 d-flex mb-2"></div>
 				<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-					<button onclick="categoryBtn()" class="btn btn-primary">카테고리 관리</button>
+					<button onclick="categoryBtn()" class="btn btn-primary" id="categoryBtn">카테고리 관리</button>
 				</div>
 				<div class="col-1 col-lg-1 d-flex mb-2"></div>
 				<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-					<button onclick="optionBtn()" class="btn btn-primary">상품옵션 관리</button>
+					<button onclick="optionBtn()" class="btn btn-primary" id="optionBtn">상품옵션 관리</button>
 				</div>
 				<div class="col-3 col-lg-3 d-flex mb-2"></div>
 				<div class="col-3 col-lg-3 d-flex mb-2"></div>
 			</div>
 		</div>
 	</div>
+	
+	<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="productCodeModalLabel">카테고리 관리</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					</button>
+				</div> 
+				<div class="card">
+					<div class="card-body">
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">코드</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductCode" name="productCode" value="" readonly>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">이름</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductName" name="productName" value="" readonly>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">대분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalLclas" name="modalLclas" onchange="modal_lclas_change()">
+								</select>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">소분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalSclas" name="modalSclas">
+									<option value="" selected disabled>선택</option>
+								</select>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<div style="text-align: center;">
+							<button id="insertBtn" class="btn btn-primary" onclick="categoryModalRowAdd()">행 추가</button>
+							<button id="editBtn" class="btn btn-danger" onclick="categoryModalRowDel()">행 삭제</button>
+						</div>
+						<div id="categoryGrid" style="width: 100%;">
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">저장</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<script>
+	document.querySelector("#categoryBtn").style.display = "none"
+	document.querySelector("#optionBtn").style.display = "none"
+	
+	fetch('http://localhost:80/standard/unitName')
+	.then((response) => response.json())
+	.then((data) => {
+		let select_unit = document.querySelector("#unitName");
+		for (let i = 0 ; i < data.length ; i++) {
+			let o = document.createElement('option');
+			o.setAttribute("value", data[i].unitNameName);
+			o.innerText = data[i].unitName
+			select_unit.appendChild(o);
+		}
+	})
+	
 	function readURL(input) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
@@ -209,76 +298,54 @@
 			})
 		}
 	}
-	var searchGrid = null;
-	productListAll()
-	function productListAll() {
-		document.getElementById('searchGrid').replaceChildren()
-		let gridData = {
-			api: {
-				readData: { url: '/standard/productListAll', method: 'GET' }
-			},
-			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-		}
-		searchGrid = new Grid({
-			el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
-		    data: gridData,
-		    columns: [
-		        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-		        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-		        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
-		        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
-		        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
-		        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormmater(row.value) }
-		    ],
-		    pageOptions: {
-		        useClient: true, // 페이징을 위해 필요
-		        perPage: 10
-		  	},
-		  	scrollX: false, // 가로 스크롤
-		  	scrollY: false // 세로 스크롤
-		})
+	
+	document.getElementById('searchGrid').replaceChildren()
+	let gridData = {
+		api: {
+			readData: { url: '/standard/productListAll', method: 'GET' }
+		},
+		contentType : 'application/json' // 데이터 전달 시 인코딩 필요
 	}
+	let searchListGrid = new Grid({
+		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
+	    data: gridData,
+	    columns: [
+	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
+	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
+	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
+	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
+	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
+	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormmater(row.value) }
+	    ],
+	    pageOptions: {
+	        useClient: true, // 페이징을 위해 필요
+	        perPage: 10
+	  	},
+	  	scrollX: false, // 가로 스크롤
+	  	scrollY: false // 세로 스크롤
+	})
+
 	
 	function searchBtn() {
-		document.getElementById('searchGrid').replaceChildren()
-		let gridData = {
-				api: {
-					readData: { 
-						url: '/standard/productListSearch?productCode=' + document.querySelector("#productCode").value
-								 + '&productName=' + document.querySelector("#productName").value
-								 + '&productType=' + document.querySelector("#productType").value
-								 + '&lclas=' + document.querySelector("#lclas").value
-								 + '&sclas=' + document.querySelector("#sclas").value
-								 + '&minPrice=' + document.querySelector("#minPrice").value
-								 + '&maxPrice=' + document.querySelector("#maxPrice").value
-								 , 
-						method: 'GET' 
-					}
-				},
-				contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-			}
-			searchGrid = new Grid({
-				el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
-			    data: gridData,
-			    columns: [
-			        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-			        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-			        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
-			        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
-			        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
-			        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormmater(row.value) }
-			    ],
-			    pageOptions: {
-			        useClient: true, // 페이징을 위해 필요
-			        perPage: 10
-			  	},
-			  	scrollX: false, // 가로 스크롤
-			  	scrollY: false // 세로 스크롤
-			})
+		fetch('/standard/productListSearch?productCode=' + document.querySelector("#productCode").value
+				 + '&productName=' + document.querySelector("#productName").value
+				 + '&productType=' + document.querySelector("#productType").value
+				 + '&lclas=' + document.querySelector("#lclas").value
+				 + '&sclas=' + document.querySelector("#sclas").value
+				 + '&minPrice=' + document.querySelector("#minPrice").value
+				 + '&maxPrice=' + document.querySelector("#maxPrice").value)
+		.then(response => response.json())
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
 	}
 	
 	function resetBtn() {
-		productListAll()
+		fetch('/standard/productListAll')
+		.then(response => response.json())
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
 		document.querySelector("#productCode").value = ""
 		document.querySelector("#productName").value = ""
 		document.querySelector("#productType").value = ""
@@ -286,27 +353,149 @@
 		document.querySelector("#sclas").value = ""
 		document.querySelector("#minPrice").value = ""
 		document.querySelector("#maxPrice").value = ""
+		
+		document.querySelector("#selectProductCode").value = ""
+		document.querySelector("#selectProductName").value = ""
+		document.querySelector("#unitName").value = ""
+		document.querySelector("#selectProductImg").value = ""
+		document.querySelector("#preview").src = ""
+		document.querySelector("#selectUnitPrice").value = ""
+		document.querySelector("#selectProductType").value = ""
+		document.querySelector("#selectVl").value = ""
+		
+		document.querySelector("#insertBtn").style.display = "block"
+		document.querySelector("#editBtn").style.display = "none"
+		document.querySelector("#categoryBtn").style.display = "none"
+		document.querySelector("#optionBtn").style.display = "none"
 	}
 	
 	let lastClicked = null
-	searchGrid.on('focusChange', ev => {
-		searchGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-		searchGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	searchListGrid.on('focusChange', ev => {
+		searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+		searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 		lastClicked = ev.rowKey; 
 		
-		selectedRow = searchGrid.getRow(ev.rowKey);
-		console.log(selectedRow)
-
-	});
-
-	function productCode() {
-		if (document.querySelector("#productCode").value == "") {
-			document.querySelector("#insertBtn").style.display = "block"
-			document.querySelector("#editBtn").style.display = "none"
+		selectedRow = searchListGrid.getRow(ev.rowKey);
+		
+		document.querySelector("#insertBtn").style.display = "none"
+		document.querySelector("#editBtn").style.display = "block"
+		document.querySelector("#categoryBtn").style.display = "block"
+		document.querySelector("#optionBtn").style.display = "block"
+		
+		console.log(selectedRow);
+		console.log(selectedRow.PRODUCT_CODE);
+		if (selectedRow.IMG == null) {
+			document.querySelector("#preview").src = ""
 		} else {
-			document.querySelector("#insertBtn").style.display = "none"
-			document.querySelector("#editBtn").style.display = "block"
+			document.querySelector("#preview").src = "/img/" + selectedRow.IMG
 		}
+		document.querySelector("#selectProductCode").value = selectedRow.PRODUCT_CODE
+		document.querySelector("#selectProductName").value = selectedRow.PRODUCT_NAME
+		document.querySelector("#selectUnitPrice").value = selectedRow.UNIT_PRICE
+		document.querySelector("#selectProductType").value = selectedRow.PRODUCT_TYPE
+		document.querySelector("#selectVl").value = selectedRow.VL
+		document.querySelector("#unitName").value = selectedRow.UNIT_NAME
+	});
+	
+	function submit_check() {
+		let check = 0;	
+		if (document.querySelector("#selectProductName").value == 0) {
+			failToast("이름을 입력하세요");
+		} else if (document.querySelector("#unitName").value == 0) {
+			failToast("단위를 선택하세요");
+		} else if (document.querySelector("#selectUnitPrice").value == 0) {
+			failToast("단가를 입력하세요");
+		} else if (document.querySelector("#selectProductType").value == 0) {
+			failToast("유형을 선택하세요");
+		} else if (document.querySelector("#selectVl").value == 0) {
+			failToast("부피를 입력하세요");
+		} else {
+			return true;
+		}
+		return false;
+	}
+	
+	function categoryBtn() {
+		$('#categoryModal').modal('show');
+		
+		document.querySelector("#categoryModalProductCode").value = document.querySelector("#selectProductCode").value
+		document.querySelector("#categoryModalProductName").value = document.querySelector("#selectProductName").value
+		
+		fetch('http://localhost:80/standard/categoryLclas')
+		.then((response) => response.json())
+		.then((data) => {
+			let modal_select_lclas = document.querySelector("#modalLclas");
+			modal_select_lclas.innerHTML = "";
+			let o = document.createElement('option');
+			o.setAttribute("value", "");
+			o.setAttribute("disabled", "");
+			o.setAttribute("selected", "");
+			o.innerText = "선택";
+			modal_select_lclas.appendChild(o);
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].lclas);
+				o.innerText = data[i].lclas
+				modal_select_lclas.appendChild(o);
+			}
+		})
+		
+		fetch('/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value)
+		.then((response) => response.json())
+		.then((data) => {
+			document.getElementById('categoryGrid').replaceChildren()
+			let categoryGrid = new Grid({
+				el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
+		    	data: data,
+		    	columns: [
+		        	{ header: '대분류', name: 'lclas', sortable: true, align: 'center' }, 
+		        	{ header: '소분류', name: 'sclas', sortable: true, align: 'center' }
+		    	],
+		  	scrollX: false, // 가로 스크롤
+		  	scrollY: false // 세로 스크롤
+			})
+		})
+		/*
+		let categoryData = {
+			api: {
+				readData: { url: '/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value, method: 'GET' }
+			},
+			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+		}
+		
+		let searchListGrid = new Grid({
+			el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
+	    	data: categoryData,
+	    	columns: [
+	        	{ header: '대분류', name: 'lclas', width: 100, sortable: true, align: 'center' }, 
+	        	{ header: '소분류', name: 'sclas', width: 100, sortable: true, align: 'center' }, 
+	    	],
+	  	scrollX: false, // 가로 스크롤
+	  	scrollY: false // 세로 스크롤
+		})
+		*/
+	}
+	
+	function modal_lclas_change() {
+		let modal_select_lclas = document.querySelector("#modalLclas");
+		let modal_select_sclas = document.querySelector("#modalSclas");
+		fetch('http://localhost:80/standard/categorySclas?lclas=' + modal_select_lclas.value)
+		.then((response) => response.json())
+		.then((data) => {
+			modal_select_sclas.innerHTML = ""
+			let o = document.createElement('option');
+			o.setAttribute("value", "");
+			o.setAttribute("disabled", "");
+			o.setAttribute("selected", "");
+			o.innerText = "선택";
+			modal_select_sclas.appendChild(o);
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].sclas);
+				o.innerText = data[i].sclas
+				modal_select_sclas.appendChild(o);
+			}
+		})
 	}
 	</script>
 </body>
