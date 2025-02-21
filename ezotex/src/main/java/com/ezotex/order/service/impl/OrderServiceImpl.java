@@ -76,5 +76,10 @@ public class OrderServiceImpl implements OrderService {
 	public String getOrderCode() {
 		return mapper.getOrderCode();
 	}
-
+	
+	@Override
+    public List<OrderDTO> getOrderProduct(String productOrderCode) {
+		System.out.println("impl 통신확인");
+        return mapper.getOrderProduct(productOrderCode);
+    }
 }
