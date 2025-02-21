@@ -46,7 +46,56 @@ const createOptions = function(ele, uri){
 	});
 }
 
-/******************** tui grid 출력 ********************/	
+/******************** Tui Grid Custom Renderer ********************/	
+// 공급계획 총계 그리드 행 삭제버튼 커스텀 렌더링
+class CustomBtnRender {
+  constructor(props) {
+		// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
+		// props = grid, rowKey, columnInfo, value(데이터)
+		const el = document.createElement('button');
+		el.classList = 'btn btn-danger btn-sm';
+		el.id = props.rowKey; // 태그 자체에 rowKey 저장
+		el.innerText = 'X';
+		
+		el.addEventListener('click', (e) => {
+	      let rowKey = e.target.id;
+	      let row = supplyGrid.getRow(rowKey);
+		  // 현재 선택된 제품이 아닌 경우에만 삭제 실행
+	      if(row.productCode != selectedPrd.productCode){ 
+			supplyGrid.removeRow(rowKey);
+			
+			let prdRows = prdGrid.findRows({productCode: row.productCode});
+			let prdRowKey = prdRows[0].rowKey;
+			prdRows[0].inserted = null; // 제품 그리드에 체크 아이콘 숨김
+			prdGrid.setRow(prdRowKey, prdRows[0]);
+		  }
+	      else failToast('현재 작성중인 제품은 삭제할 수 없습니다.');
+    	});
+    this.el = el;
+    this.render(props);
+  }
+  getElement() { return this.el; }
+  render(props) {	
+    this.el.value = props.value;
+  }
+}
+
+// 제품 공급계획 입력 시 체크 표시
+class CustomCheckRender {
+  constructor(props) {
+	const el = document.createElement('i');
+	el.classList = 'fa-solid fa-check';
+	el.style = `color: #34b1aa; display: ${props.value == null ? 'none' : 'block'}`;
+    this.el = el;
+    this.render(props);
+  }
+  getElement() { return this.el; }
+  render(props) {
+    this.el.value = props.value;
+  }
+}
+
+/******************** Tui Grid 출력 ********************/	
 // 제품 그리드
 const prdData = {
 	api: { readData: { url: '/supply/productList', method: 'GET' } }
@@ -57,7 +106,8 @@ const prdGrid = new Grid({
     data: prdData,
     columns: [
         { header: '제품코드', name: 'productCode', width: 100, sortable: true },
-        { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true }
+        { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
+        { header: ' ', name: 'inserted', renderer: { type: CustomCheckRender, options: {}}, width: 50, align: 'center' }
     ],
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
@@ -99,8 +149,9 @@ const supplyGrid = new Grid({
         { header: '공급계획일자', name: 'supplyDate', width: 100, sortable: true, editor: 'datePicker' },
         { header: '총 수량', name: 'totalQy', width: 100, sortable: true, align: 'right',
 				  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-				{ header: '데이터', name: 'allData', hidden: true },
-				{ header: '컬럼정보', name: 'allColumn', hidden: true }
+		{ header: '', name: '', renderer: { type: CustomBtnRender, options: {}}, width: 50, align: 'center' },
+		{ header: '데이터', name: 'allData', hidden: true },
+		{ header: '컬럼정보', name: 'allColumn', hidden: true }
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
@@ -113,7 +164,7 @@ const supplyGrid = new Grid({
 });
 
 // 선택한 제품의 옵션별 입력양식 출력
-const loadBlankGrid = function(productCode){
+function loadBlankGrid(productCode){
 	fetch(`/supply/optionPivot/${productCode}`)
 	.then(response => response.json())
 	.then(result => {
@@ -146,7 +197,8 @@ const loadBlankGrid = function(productCode){
 				             formatter: row => {
 											let value = numberFormatter(row.value)
 											return value == -1 ? null : value; // 입력할 수 없는 셀은 빈칸 처리
-										} };
+					 		 } 
+					 	 };
 			columns.push(newCol);			
 		});
 		
@@ -155,26 +207,59 @@ const loadBlankGrid = function(productCode){
 	});
 }
 
+// 사이즈/색상 중 한 가지만 있거나 단일 제품인 경우
+async function loadBlankList(productCode){
+	let result = await fetch(`/supply/optionList/${productCode}`)
+	.then(response => response.json())
+	.then(result => {
+		let data = result.data.contents;
+		let columns = [];
+		
+		 // 단일제품이 아닌 경우 (사이즈/색상 중 한 가지라도 있는 경우)
+		if(data.length > 0){			
+			let sizeCnt = 0;
+			for(let obj of data){
+				// 한 행이라도 사이즈/색상 둘 다 있으면 반복문 종료
+				if(obj.productSize != null && obj.productColor != null)	return false;
+				else if(obj.productSize != null) sizeCnt++;
+			};
+			
+			// 컬럼, 데이터 반영
+			if(sizeCnt > 0) columns.push({ header: "사이즈", name: "sizeName" });
+			else columns.push({ header: "색상", name: "productColor" });
+			optionGrid.resetData(data);
+		} else {
+			// 옵션이 없는 단일 제품인 경우 빈 입력칸 생성
+			optionGrid.resetData([{qy: 0}]);		
+		}
+		columns.push({ header: "수량", name: "qy", editor: 'text', align: 'right', 
+					   formatter: (row) => numberFormatter(row.value) });
+		optionGrid.setColumns(columns);		
+		return true;
+	});
+	return result;
+}
+
 /******************** 제품 선택 ********************/	
 let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
-prdGrid.on('focusChange', ev => {
+prdGrid.on('focusChange', async ev => {
 	// 배경색 클래스 적용
 	prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 	lastClicked = ev.rowKey; // 선택된 행 기억
 	
 	// 선택한 정보 가져오기
-	selectedPrd = prdGrid.getRow(ev.rowKey);
+	selectedPrd = prdGrid.getRow(ev.rowKey);	
 	document.getElementById('selectedPrdCode').value = selectedPrd.productCode;
 	document.getElementById('selectedPrdName').value = selectedPrd.productName;
 	
 	let supplyRows = supplyGrid.findRows({productCode: selectedPrd.productCode});
-	console.log('row::', supplyRows);	
 	if(supplyRows.length == 0){
-		loadBlankGrid(selectedPrd.productCode) // 옵션 출력
+		let result = await loadBlankList(selectedPrd.productCode); // 단일옵션 제품인지 먼저 확인
+		if(!result) loadBlankGrid(selectedPrd.productCode); // 단일제품이 아닌 경우 옵션 피벗테이블 출력
 	} else {
 		optionGrid.resetData(supplyRows[0].allData); // 이미 입력했던 데이터라면 불러오기
 		optionGrid.setColumns(supplyRows[0].allColumn); // 컬럼 재반영
@@ -184,10 +269,10 @@ prdGrid.on('focusChange', ev => {
 // 제품 목록 검색 적용
 document.getElementById('prdSearchBtn').addEventListener('click', () => {
 	let dto = {
-			productCode: document.getElementById('productCode').value,
-			productName: document.getElementById('productName').value,
-			lclas: document.getElementById('lclas').value,
-			sclas: document.getElementById('sclas').value
+		productCode: document.getElementById('productCode').value,
+		productName: document.getElementById('productName').value,
+		lclas: document.getElementById('lclas').value,
+		sclas: document.getElementById('sclas').value
 	};
 	prdGrid.setRequestParams(dto); // 조회 조건 전달
 	prdGrid.reloadData(); // 그리드 재출력 (readData)
@@ -216,12 +301,13 @@ optionGrid.on('keydown', ev => {
 
 // 수량 입력 후
 optionGrid.on('afterChange', ev => {
-	let changed = ev.changes[0];
+	let changed = ev.changes[0]; // 이벤트 전달 객체
 	let val = Number(changed.value);
 	let allData = optionGrid.getData();
 	let allColumn = optionGrid.getColumns();
 	let row = optionGrid.getRow(changed.rowKey);
 	
+	// 숫자 유효성 검사
 	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
 		failToast('입력값은 문자가 들어갈 수 없습니다.');
 		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
@@ -236,7 +322,7 @@ optionGrid.on('afterChange', ev => {
 	}
 	
 	let findRows = supplyGrid.findRows({productCode: selectedPrd.productCode});
-	
+	// 데이터 반영
 	if(val != 0 && findRows.length == 0){ // 없는 제품이면 행 추가
 		let defaultMonth = getSeasonMonth();
 		
@@ -250,22 +336,24 @@ optionGrid.on('afterChange', ev => {
 		};
 		supplyGrid.appendRow(newRow);
 		limitDatePicker();
+		selectedPrd.inserted = true; // 제품 그리드에 체크 아이콘 표시
+		prdGrid.setRow(lastClicked, selectedPrd);
 	} else { // 이미 있는 제품이면 입력값 업데이트
 		if(val < changed.prevValue){
 			findRows[0].totalQy = findRows[0].totalQy - (changed.prevValue - val);
 		} else {
 			findRows[0].totalQy = findRows[0].totalQy + val;			
-		}
-		
+		} // 계산 완료
 		if(findRows[0].totalQy == 0){ // 총 수량이 0이 되면 그리드에서 삭제
 			supplyGrid.removeRow(findRows[0].rowKey);
+			selectedPrd.inserted = null; // 제품 그리드에 체크 아이콘 숨김
+			prdGrid.setRow(lastClicked, selectedPrd);
 		} else {
 			findRows[0].allData = allData; // allData 업데이트
 			findRows[0].allColumn = allColumn; // allColumn 업데이트
 			supplyGrid.setRow(findRows[0].rowKey, findRows[0]);				
 		}
 	}
-	 
 	// summary 합계를 refresh
 	let gridData = supplyGrid.getData();
 	supplyGrid.resetData(gridData); // 동기화 문제 방지
@@ -290,12 +378,16 @@ yearBox.addEventListener('change', (e) => {
 
 // 시즌 변경
 seasonBox.addEventListener('change', () => {
-	let chMonth = getSeasonMonth();
+	let seasonMonth = getSeasonMonth();
+	let endMonth = Number(getNextSeasonMonth()) - 1;
 	let supplyData = supplyGrid.getData();
+	
 	supplyData.forEach(data => {
-		if(data.supplyDate != ''){
-			let month = data.supplyDate.substr(5, 2);
-			data.supplyDate = data.supplyDate.replace(month, chMonth);
+		let dataMonth = data.supplyDate.substr(5,2);
+		
+		if(data.supplyDate != '' && (dataMonth < seasonMonth || dataMonth > endMonth) && seasonBox.value != 'null'){
+			let date = data.supplyDate.substr(-2);
+			data.supplyDate = `${yearBox.value}-${seasonMonth}-${date}`;
 			data.supplyDate = checkDate(data.supplyDate);
 		}
 	});

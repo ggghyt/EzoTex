@@ -17,7 +17,7 @@
 		ORDER  BY product_code DESC
 	</select>
 	
-	<!-- 해당 제품의 전체 옵션 목록 -->
+	<!-- 해당 제품의 전체 옵션 목록 (사이즈/색상 중 한 가지만 있거나 단일 제품인 경우 필요) -->
 	<select id="findOptions" resultType="ProductDTO">
 		SELECT product_size,
 		       get_comm(product_size) AS size_name,

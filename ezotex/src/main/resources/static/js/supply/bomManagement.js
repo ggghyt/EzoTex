@@ -65,7 +65,54 @@ const createOptions = function(ele, uri){
 	});
 }
 
-/******************** tui grid 출력 ********************/	
+/******************** Tui Grid Custom Renderer ********************/	
+// 자재 그리드의 색상 select 커스텀 렌더링
+class CustomSelectBox {
+  constructor(props) {
+	// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
+	// props = grid, rowKey, columnInfo, value(데이터)
+	const el = document.createElement('select');
+	el.classList = 'form-control h-100 w-75';
+	el.id = props.rowKey; // 태그 자체에 rowKey 저장		
+	
+	let nullOpt = document.createElement('option');
+	nullOpt.value = null;
+	el.append(nullOpt);
+	
+	props.value.forEach(data => { // 단종되지 않았을 때만 옵션으로 추가
+		if(data.productColor != null && data.discontinued != 'Y'){
+			let opt = document.createElement('option');
+			opt.value = data.productColor;
+			opt.innerText = data.productColor;
+			el.append(opt);								
+		}
+	});
+	el.addEventListener('mousedown', (e) => {
+      e.stopPropagation(); // tui 그리드 셀 기본 이벤트 방지
+	});
+	// 옵션을 선택했을 때 저장된 배열에 데이터 반영
+	el.addEventListener('change', (e) => {
+		let rowKey = e.target.id; // 선택한 색상배열 인덱스
+		mtrData[rowKey].mtrilColor = e.target.value; // 선택한 색상 반영
+		
+		//selectedMtrGrid.check(rowKey);
+		let selectedRow = selectedMtrGrid.getRow(rowKey);
+		selectedRow.mtrilColor = e.target.value;
+		selectedMtrGrid.setRow(rowKey, selectedRow); // 다른 그리드에도 반영
+    });
+    this.el = el;
+    this.render(props);
+  }
+
+  getElement() { return this.el; }
+
+  render(props) {
+	// 화면에 표시될 때마다 저장된 데이터로 반영
+    this.el.value = mtrData[props.rowKey].mtrilColor;
+  }
+}
+
+/******************** Tui Grid 출력 ********************/	
 // 제품 그리드
 const prdData = {
 	api: { readData: { url: '/supply/bomProductList', method: 'GET' } }
@@ -105,61 +152,13 @@ const prdGrid = new Grid({
      }
 });
 
-// 자재 그리드의 색상 select 커스텀 렌더링
-class CustomSelectBox {
-  constructor(props) {
-		// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
-		// props = grid, rowKey, columnInfo, value(데이터)
-		const el = document.createElement('select');
-		el.classList = 'form-control h-100 w-75';
-		el.id = props.rowKey; // 태그 자체에 rowKey 저장		
-		
-		let nullOpt = document.createElement('option');
-		nullOpt.value = null;
-		el.append(nullOpt);
-		
-		props.value.forEach(data => { // 단종되지 않았을 때만 옵션으로 추가
-			if(data.productColor != null && data.discontinued != 'Y'){
-				let opt = document.createElement('option');
-				opt.value = data.productColor;
-				opt.innerText = data.productColor;
-				el.append(opt);								
-			}
-		});
-		el.addEventListener('mousedown', (e) => {
-	      e.stopPropagation(); // tui 그리드 셀 기본 이벤트 방지
-    });
-		// 옵션을 선택했을 때 저장된 배열에 데이터 반영
-		el.addEventListener('change', (e) => {
-				let rowKey = e.target.id; // 선택한 색상배열 인덱스
-				mtrData[rowKey].mtrilColor = e.target.value; // 선택한 색상 반영
-				
-				//selectedMtrGrid.check(rowKey);
-				let selectedRow = selectedMtrGrid.getRow(rowKey);
-				selectedRow.mtrilColor = e.target.value;
-				selectedMtrGrid.setRow(rowKey, selectedRow); // 다른 그리드에도 반영
-    });
-    this.el = el;
-    this.render(props);
-  }
-
-  getElement() { return this.el; }
-
-  render(props) {	
-		// 화면에 표시될 때마다 저장된 데이터로 반영
-    this.el.value = mtrData[props.rowKey].mtrilColor;
-  }
-}
-
 // 자재 그리드
 const mtrGrid = new Grid({
     el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
     columns: [
         { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-				{ header: '색상', name: 'colorList', 
-					renderer: { type: CustomSelectBox, options: {}}
-				},
+		{ header: '색상', name: 'colorList', renderer: { type: CustomSelectBox, options: {}} },
         { header: '단위', name: 'unitName', width: 100, sortable: true }
     ],
     rowHeaders: ['checkbox'],
@@ -190,7 +189,7 @@ const selectedMtrGrid = new Grid({
 // 자재 목록 불러오기
 let mtrData = null; // 검색 및 입력값 저장용
 let originBomData = null; // 등록 시 비교용 원본 bom
-const loadMtrGrid = function(obj){
+function loadMtrGrid(obj){
 	let query = new URLSearchParams(obj); // 쿼리스트링으로 변환
 	
 	fetch(`/supply/bomMaterialList?${query}`)

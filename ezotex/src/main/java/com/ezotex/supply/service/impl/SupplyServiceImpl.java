@@ -1,7 +1,5 @@
 package com.ezotex.supply.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,29 +27,9 @@ public class SupplyServiceImpl implements SupplyService {
 		return mapper.listProduct(product);
 	}
 
-	@Override // 사용 안 함
-	public Map<String,List<Map<String,Object>>> findOptions(String productCode) {
-		List<ProductDTO> optList = mapper.findOptions(productCode);
-		log.info(optList.toString());
-		
-		Map<String,List<Map<String,Object>>> colorMap = new HashMap<String,List<Map<String,Object>>>();
-		
-		// WHITE=[{size=SI01, sizeNm=S},....] 형태로 추출
-		for(ProductDTO opt : optList) {
-			String color = opt.getProductColor();
-			String size = opt.getProductSize();
-			String sizeNm = opt.getSizeName();
-
-			if(!colorMap.containsKey(color)) { // 없는 값인 경우 키 추가
-				colorMap.put(color, new ArrayList<>());
-			} else { // 있으면 컬러에 사이즈, 사이즈명 추가
-				Map<String,Object> sizeMap = new HashMap<String,Object>();
-				sizeMap.put("size", size);
-				sizeMap.put("sizeNm", sizeNm);
-				colorMap.get(color).add(sizeMap);
-			}
-		}
-		return colorMap;
+	@Override
+	public List<ProductDTO> findOptions(String productCode) {
+		return mapper.findOptions(productCode);
 	}
 
 	@Override
