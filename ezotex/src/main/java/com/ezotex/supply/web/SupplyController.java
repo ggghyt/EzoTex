@@ -33,15 +33,9 @@ public class SupplyController {
 		int currentYear = current.get(Calendar.YEAR);
 		
 		model.addAttribute("thisYear", currentYear); // 공급년도 기본값 올해부터
-		model.addAttribute("seasonList", new String[] {"봄", "여름", "가을", "겨을"}); // 타임리프 계절 목록
+		model.addAttribute("seasonList", new String[] {"봄", "여름", "가을", "겨울"}); // 타임리프 계절 목록
 		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
 		return "supply/supplyPlan";
-	}
-	
-	// 테스트...
-	@GetMapping("test")
-	public String storeInsert(Model model) {
-		return "supply/insertStore2";
 	}
 		
 }

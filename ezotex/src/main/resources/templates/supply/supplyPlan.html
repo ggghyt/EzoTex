@@ -29,6 +29,15 @@
 						</div>
 					</div>
 					<div id="optionGrid"></div>
+					<!-- 옵션이 없거나 한 개뿐인 단일상품의 경우 노출 -->
+					<div id="singleOpt" class="row"> 
+						<label for="supplyQy" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">수량</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<div class="quantity">
+							  <input id="supplyQy" type="number" min="0" value="0">
+							</div>
+						</div>
+					</div>
 						
 					<hr>
 					<!-- 공급계획 입력 -->
@@ -37,7 +46,7 @@
 						<label for="year" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-overflow">*공급년도</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<div class="quantity">
-							  <input type="number" th:min="${thisYear}" step="1" th:value="${thisYear}">
+							  <input id="year" type="number" th:min="${thisYear}" step="1" th:value="${thisYear}">
 							</div>
 						</div>
 						<label for="season" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
@@ -53,9 +62,9 @@
 					<div id="supplyGrid" class="mt-1"></div>
 						
 					<div class="row mt-3">
-						<label for="rgsde" class="col-4 col-xl-2 d-flex mb-2 justify-content-center wbreak text-center">공급계획량 합계</label>
+						<label for="total" class="col-4 col-xl-2 d-flex mb-2 justify-content-center wbreak text-center">공급계획량 합계</label>
 						<div class="col-8 col-xl-3 d-flex align-items-center mb-2">
-							<input type="text" class="form-control" id="mtr" readonly>
+							<input type="text" class="form-control text-end" id="total" readonly>
 						</div>
 						<label for="chargerName" class="col-4 col-xl-2 d-flex mb-2 justify-content-center align-items-center wbreak">담당자</label>
 						<div class="col-8 col-xl-3 d-flex align-items-center mb-2">

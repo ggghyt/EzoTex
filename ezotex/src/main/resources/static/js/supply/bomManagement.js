@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		type: 'regist',
 		confirm: insertBom,
 		loading: false
-	});
+	});	
 	$('#insertBtn').on('click', () => {
 		let selectedBom = selectedMtrGrid.getData();
 		if(selectedBom.length == 0) return; // 자재가 선택되지 않았으면 종료
@@ -178,7 +178,7 @@ const selectedMtrGrid = new Grid({
 					formatter: row => row.value == 'null' ? null : row.value
 				},
         { header: '소요량', name: 'requireQy', sortable: true, editor: 'text', align: 'right',
-        	formatter: row => numberFormmater(row.value) // 천단위 콤마 포맷 적용
+        	formatter: row => numberFormatter(row.value) // 천단위 콤마 포맷 적용
         },
         { header: '단위', name: 'unitName', sortable: true }
     ],
@@ -208,7 +208,7 @@ const loadMtrGrid = function(obj){
 		
 		originBomData = selectedMtrGrid.getData();
 		
-		let rgsde = dateFormmater(data[0].rgsde);
+		let rgsde = dateFormatter(data[0].rgsde);
 		let charger = data[0].chargerName == null ? session_user_name : data[0].chargerName;
 		document.getElementById('rgsde').value = rgsde;
 		document.getElementById('chargerName').value = charger;

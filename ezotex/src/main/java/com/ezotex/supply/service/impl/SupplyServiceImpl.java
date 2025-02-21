@@ -29,7 +29,7 @@ public class SupplyServiceImpl implements SupplyService {
 		return mapper.listProduct(product);
 	}
 
-	@Override
+	@Override // 사용 안 함
 	public Map<String,List<Map<String,Object>>> findOptions(String productCode) {
 		List<ProductDTO> optList = mapper.findOptions(productCode);
 		log.info(optList.toString());
@@ -57,10 +57,7 @@ public class SupplyServiceImpl implements SupplyService {
 	@Override
 	public List<Map<String, Object>> pivotProductSupply(SupplyDTO dto) {
 		List<ProductDTO> sizeList = mapper.findSize(dto.getProductCode());
-		List<Map<String, Object>> map = mapper.pivotProductSupply(dto, sizeList);
-		List<Map<String, Object>> compareMap = mapper.pivotProductOption(dto.getProductCode(), sizeList);
-		return map;
-		
+		return mapper.pivotProductSupply(dto, sizeList);
 	}
 
 	@Override // 옵션에 따른 빈 양식 반환
