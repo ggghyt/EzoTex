@@ -29,7 +29,7 @@ public class SupplyServiceImpl implements SupplyService {
 		return mapper.listProduct(product);
 	}
 
-	@Override
+	@Override // 사용 안 함
 	public Map<String,List<Map<String,Object>>> findOptions(String productCode) {
 		List<ProductDTO> optList = mapper.findOptions(productCode);
 		log.info(optList.toString());
@@ -53,16 +53,18 @@ public class SupplyServiceImpl implements SupplyService {
 		}
 		return colorMap;
 	}
-	
-	@Override
-	public List<Map<String, Object>> pivotProductSupply(SupplyDTO supply) {
-		return mapper.pivotProductSupply(supply);
-	}
 
 	@Override
-	public List<Map<String, Object>> pivotProductOption(String productCode) {
-		return mapper.pivotProductOption(productCode);
+	public List<Map<String, Object>> pivotProductSupply(SupplyDTO dto) {
+		List<ProductDTO> sizeList = mapper.findSize(dto.getProductCode());
+		return mapper.pivotProductSupply(dto, sizeList);
 	}
+
+	@Override // 옵션에 따른 빈 양식 반환
+	public List<Map<String, Object>> pivotProductOption(String productCode) {
+		List<ProductDTO> sizeList = mapper.findSize(productCode);
+		return mapper.pivotProductOption(productCode, sizeList);
+	}	
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -82,6 +84,6 @@ public class SupplyServiceImpl implements SupplyService {
 			dtlResult--;
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
-	}	
+	}
 	
 }

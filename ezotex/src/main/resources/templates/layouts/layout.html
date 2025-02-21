@@ -74,6 +74,52 @@
 	
 </head>
 <body>
+	<script>
+	  let session_user_code;
+	  let session_user_id;
+	  let session_user_name;
+	  let session_user_email;
+	  let session_user_img;
+	  
+	  function logout() {
+		  let f = document.createElement('form');
+		  f.setAttribute('method', 'post');
+		  f.setAttribute('action', '/logout');
+		  let i = document.createElement("input");
+		  i.setAttribute('name', "_csrf");
+		  i.setAttribute('value', token);
+		  f.appendChild(i);
+		  document.body.appendChild(f);
+		  f.submit();
+	  }
+	  
+	  fetch('http://localhost:80/login/userInfo')
+	  .then((response) => response.json())
+	  .then((data) => {
+		  session_user_code = data.code;
+		  session_user_id = data.id;
+		  session_user_name = data.name;
+		  session_user_email = data.email;
+		  session_user_img = data.img;
+		  document.querySelector("#Thumbnail_user_name").innerText = session_user_name
+		  document.querySelector("#Thumbnail_user_email").innerText = session_user_email
+	  })
+	  
+	  function simulateLoading() {
+	    console.log('작동됨');
+	    var loadingSpinner = document.querySelector(".loading-wrap");
+	    var loadingMessage = document.getElementById("loadingMessage");
+	
+	    // 로딩 시작
+	    loadingSpinner.style.display = "flex";
+	    loadingMessage.style.color = "white";
+	
+	    // 1초 뒤에 로딩 완료
+	    setTimeout(function () {
+	    loadingSpinner.style.display = "none";
+	    }, 3000);
+	  }
+  </script>
   <!-- Spinner 스피너 출력(최상단) -->
   <div class="loading-wrap">
      <div class="loading-spinner"></div>
@@ -472,37 +518,6 @@
   <script src="/js/template/dashboard.js"></script>
   <script src="/js/template/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
-  <script>
-  let session_user_code;
-  let session_user_id;
-  let session_user_name;
-  let session_user_email;
-  let session_user_img;
-  
-  function logout() {
-	  let f = document.createElement('form');
-	  f.setAttribute('method', 'post');
-	  f.setAttribute('action', '/logout');
-	  let i = document.createElement("input");
-	  i.setAttribute('name', "_csrf");
-	  i.setAttribute('value', token);
-	  f.appendChild(i);
-	  document.body.appendChild(f);
-	  f.submit();
-  }
-  
-  fetch('http://localhost:80/login/userInfo')
-  .then((response) => response.json())
-  .then((data) => {
-	  session_user_code = data.code;
-	  session_user_id = data.id;
-	  session_user_name = data.name;
-	  session_user_email = data.email;
-	  session_user_img = data.img;
-	  document.querySelector("#Thumbnail_user_name").innerText = session_user_name
-	  document.querySelector("#Thumbnail_user_email").innerText = session_user_email
-  })
-  </script>
 </body>
 
 </html>

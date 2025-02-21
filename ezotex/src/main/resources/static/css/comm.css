@@ -43,6 +43,10 @@ select {
 	appearance: auto !important;
 }
 
+td.tui-grid-cell select {
+	padding: 0.4375rem 0 !important;
+	margin: 0 auto !important;
+}
 
 
 
