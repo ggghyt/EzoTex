@@ -1,5 +1,7 @@
 package com.ezotex.standard.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +16,10 @@ public class ProductListInfoDTO {
 	private String sclas;
 	private int unitPrice;
 	private int vl;
+	private String unitName;
+	private String unitNameName;
+	private String img;
+	private MultipartFile imgFile;
 	
 	private int maxPrice;
 	private int minPrice;

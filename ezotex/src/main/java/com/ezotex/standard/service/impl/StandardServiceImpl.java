@@ -104,5 +104,29 @@ public class StandardServiceImpl implements StandardService {
 	public int getCount(ProductListInfoDTO productListInfoDTO) {
 		return mapper.getCount(productListInfoDTO);
 	}
+
+	@Override
+	public List<ProductListInfoDTO> unitNameList() {
+		return mapper.unitNameList();
+	}
+
+	@Override
+	public int ProductInfoInsert(ProductListInfoDTO productListInfoDTO) {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		System.out.println(productListInfoDTO.toString());
+		System.out.println(productListInfoDTO.getProductCode() == "");
+		if (productListInfoDTO.getProductCode().length() < 1) {
+			System.out.println("##########################################");
+			return mapper.ProductInfoInsert(productListInfoDTO);
+		} else {
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			return mapper.ProductInfoUpdate(productListInfoDTO);
+		}
+	}
+
+	@Override
+	public List<ProductCategoryDTO> productCategory(String productCode) {
+		return mapper.productCategory(productCode);
+	}
 	
 }
