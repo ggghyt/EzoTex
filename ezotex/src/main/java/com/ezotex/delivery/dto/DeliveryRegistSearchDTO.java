@@ -3,9 +3,12 @@ package com.ezotex.delivery.dto;
 
 import lombok.Data;
 
+/*
+ * 납품 관리 페이지 주문건 검색 DTO(제조업체, 공급업체 둘다 사용)
+ * */
 @Data
 public class DeliveryRegistSearchDTO {
-	//납품 관리 페이지 주문건 검색 DTO
+	
 	int start;
 	int end;
 	

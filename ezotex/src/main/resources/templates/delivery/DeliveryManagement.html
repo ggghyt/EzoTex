@@ -398,7 +398,8 @@
 	                { header : "주문일", name: "orderDate"},
 	                { header : "납기일", name: "dedt"}
 	            ],
-	            data: dataSource
+	            data: dataSource,
+				showDummyRows: true	//더미로우 추가
 	        });
 	        
 			
@@ -424,6 +425,15 @@
 	        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
 	        }
 	        
+	        //검색 엔터 이벤트
+			document.querySelectorAll(".search-bar input").forEach((ele) => {
+				ele.addEventListener('keydown', (ele) => {				
+					if (window.event.keyCode == 13) {
+						searchOrderList();
+				    }
+				})
+			})
+			
 	        //검색 조건 삭제
 	        function resetCondition() {
         		document.querySelectorAll('.search-bar input').forEach((e) => {
@@ -456,71 +466,7 @@
 				return numVal.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 			}
 			
-			//주문 상세 데이터 모두 가져오기
-	        grid.on('focusChange', ev => {
-	        	//제품 상세 입력 그리드 초기화
-	        	productDetailgrid.clear();
-	        	
-	        	document.querySelector(".input-delivery-charger").value = session_user_name;
-	        	//다른 주문건 선택할 때마다 출고 수량입력했던 데이터 초기화
-	        	//registData = [{orderCode : '', productCode : '', productColor : '', columnName : '', deliveryQy: ''}];
-	        	registData = [];
-	            // 배경색 클래스 적용
-	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-	            lastClicked = ev.rowKey; // 선택된 행 기억
-
-	            // 선택한 정보 가져오기
-	            let selected = grid.getRow(ev.rowKey);
-	            
-	            console.log(selected);
-	            document.querySelector('.input-company-code').value = selected.companyCode;
-	            document.querySelector('.input-company-name').value = selected.company;
-	            document.querySelector('.input-order-date').value = selected.orderDate;
-	            document.querySelector('.input-dedt').value = selected.dedt;
-	            /*구매업체코드, 구매업체명,
-	            납품주소, 주문일, 납기일
-	            주문담당자, 납품담당자,
-	            제품수량합계, 주문금액합계,
-	            비고
-	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
-	            
-	            //스피너
-	            simulateLoading();
-	            
-				//주문 상세정보 가져오기
-		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
-	    		.then(rep => rep.json())
-	    		.then(data => {
-	    				//등록해야되는 정보 처음 가져온 내용
-	    				allOrderInfo = data;
-	    				
-	    				//바꾸지 않는 데이터
-	    				//originalData = data;	이렇게 하면 얕은 복사 형태로, allOrderInfo데이터를 변경하면 같이 변경됨.
-	    				originalData = JSON.parse(JSON.stringify(data));
-	    				
-	    				console.log('수정하는 원데이터', allOrderInfo);
-	    				console.log('수정하지 않는 데이터', originalData);
-	    				
-	    				let sum = 0;
-	    				data.orderInfo.forEach(e => {sum += e.reqQy});	//주문합계 구하기
-	    				
-	    				
-	    				document.querySelector('.input-address').value = data.orderInfo[0].address;	//납품 주소
-	    				document.querySelector('.input-total-price').value = CommaFomatter(data.orderInfo[0].amount);	//금액 합계
-	    				document.querySelector('.input-order-charger').value = data.orderInfo[0].charger;	//주문담당자
-	    				document.querySelector('.input-total-qy').value = CommaFomatter(sum);	//주문 합계
-	    				
-	    				
-	    				//데이터 넣기
-	    				productListgrid.resetData(allOrderInfo.orderInfo);
-	    				
-	    			})
-	    		
-	        }); 
-	        
-	        
-
+			
 	        
 	        //제품 상세 수량
 		    const productDetailgrid = new Grid({
@@ -570,6 +516,73 @@
 				      }
 			    });  
 	        
+			//주문 상세 데이터 모두 가져오기
+	        grid.on('focusChange', ev => {
+	        	//제품 상세 입력 그리드 초기화
+	        	productDetailgrid.clear();
+	        	
+	        	document.querySelector(".input-delivery-charger").value = session_user_name;
+	        	//다른 주문건 선택할 때마다 출고 수량입력했던 데이터 초기화
+	        	//registData = [{orderCode : '', productCode : '', productColor : '', columnName : '', deliveryQy: ''}];
+	        	registData = [];
+	            // 배경색 클래스 적용
+	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	            lastClicked = ev.rowKey; // 선택된 행 기억
+
+	            // 선택한 정보 가져오기
+	            let selected = grid.getRow(ev.rowKey);
+	            
+	            console.log(selected);
+	            document.querySelector('.input-company-code').value = selected.companyCode;
+	            document.querySelector('.input-company-name').value = selected.company;
+	            document.querySelector('.input-order-date').value = selected.orderDate;
+	            document.querySelector('.input-dedt').value = selected.dedt;
+	            /*구매업체코드, 구매업체명,
+	            납품주소, 주문일, 납기일
+	            주문담당자, 납품담당자,
+	            제품수량합계, 주문금액합계,
+	            비고
+	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
+	            
+	            //스피너
+	            simulateLoading(900);
+	            
+				//주문 상세정보 가져오기
+		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
+	    		.then(rep => rep.json())
+	    		.then(data => {
+	    				//등록해야되는 정보 처음 가져온 내용
+	    				allOrderInfo = data;
+	    				
+	    				//바꾸지 않는 데이터
+	    				//originalData = data;	이렇게 하면 얕은 복사 형태로, allOrderInfo데이터를 변경하면 같이 변경됨.
+	    				originalData = JSON.parse(JSON.stringify(data));
+	    				
+	    				console.log('수정하는 원데이터', allOrderInfo);
+	    				console.log('수정하지 않는 데이터', originalData);
+	    				
+	    				let sum = 0;
+	    				data.orderInfo.forEach(e => {sum += e.reqQy});	//주문합계 구하기
+	    				
+	    				
+	    				document.querySelector('.input-address').value = data.orderInfo[0].address;	//납품 주소
+	    				document.querySelector('.input-total-price').value = CommaFomatter(data.orderInfo[0].amount);	//금액 합계
+	    				document.querySelector('.input-order-charger').value = data.orderInfo[0].charger;	//주문담당자
+	    				document.querySelector('.input-total-qy').value = CommaFomatter(sum);	//주문 합계
+	    				
+	    				
+	    				//데이터 넣기
+	    				productListgrid.resetData(allOrderInfo.orderInfo);
+	    				
+	    			})
+	    		
+	        }); 
+	        
+	        
+
+
+	        
 	        /*출고 후 잔여량 출력 모달*/
 			const restQyGrid = new Grid({
 				el: document.getElementById('restQyGrid'),
@@ -578,6 +591,9 @@
 				scrollX: false,
 				width: 1050,
 				rowHeaders: ['rowNum'],
+				columnOptions: {
+		  	          resizable: true
+		  	      	},
 				columns: [
 					{ header: "제품코드", name: "productCode", width: "auto", minWidth: 120, align: 'center'},
 					{ header: "제품명", name: "productName", width: "auto", minWidth: 380},
@@ -685,21 +701,27 @@
 	    	        let color = rowData.PRODUCT_COLOR;	 // 제품 색상
     	        	let inputCol = "DE" + columnName;	 //사용자가 수량을 입력하는 컬럼
 	    	        
-    	        	if(change.value < 0) {
-    	        		failToast('입력값은 음수가 될 수 없습니다.');
-   	        	    	return;
-    	        	}
+    	        	if(newValue == 0) return; 
     	        	
-	   	        	if(isNaN(change.value)){ // 입력값이 숫자가 아닌 경우
-	   	        	        failToast('입력값은 문자가 들어갈 수 없습니다.');
-	   	        	        return;
-	   	        	}
+        	        if(change.value < 0) {
+    	        		failToast('입력값은 음수가 될 수 없습니다.');
+    	        		rowData[inputCol] = null;
+    	        		productDetailgrid.setRow(change.rowKey, rowData);
+    	        	    return;
+    	        	}
+        	        
+        	        if(isNaN(newValue)) {
+        	        	failToast('입력값은 문자가 들어갈 수 없습니다.');
+        	        	rowData[inputCol] = null;
+        	        	productDetailgrid.setRow(change.rowKey, rowData);
+    	        	    return;
+        	        }
     	        	
     	        	//console.log('행데이터', rowData);
 	    	        //console.log('입력한 행 정보: ', rowData);
 	    	        //console.log('컬럼명: ', columnName);
 	    	        //값 변경이 없을경우 종료
-	    	        if(newValue == 0) return; 
+	    	        
 	    	        
 	    	        //요청수량 컬럼
 	    	        let reqQy = 'RE' + columnName;
@@ -845,12 +867,6 @@
 	        	//simulateLoading();
 	        	
 
-                     
-                     
-                
-                
-                
-                
                 const response = fetch('/delivery/deliveryRegist', {
                     method: 'post',
                     headers: {

@@ -18,9 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/delivery/*")
 public class DeliveryController {
 	
-
-	//납품 관리
-	private DeliveryService service;
 	
 	
 	//납품 관리 페이지(제조업체 사용)

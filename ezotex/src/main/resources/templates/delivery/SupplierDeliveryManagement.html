@@ -26,7 +26,7 @@
 			margin-top: 0;
 			margin-left: 30px;
 			width: 500px;
-			height: 1000px;
+			height: 1030px;
 		}
 		.search-unit {
 			display: flex;
@@ -40,13 +40,27 @@
 		    vertical-align: top; /* 정렬 보정 */
 		}
 		.search-bar div:nth-of-type(1) {
-			
 			padding-left:10px;
 			width: 300px;
 		}
+		.read-bar div:nth-of-type(1) {
+			margin-left: 40px;
+		}
+		.read-bar div {
+			margin-top: 10px;
+		}
+		.read-bar input[type=text] {
+			width: 180px !important;
+		}
+		.read-bar input[type=text]:nth-of-type(1) {
+			margin-right: 30px;
+		}
+		.read-bar span::nth-of-type(2) {
+			margin-left: 20px;
+		}
 		.search-bar div:nth-of-type(2) {
 			padding-left:10px;
-			width: 410px;
+			width: 360px;
 		}
 		.search-unit span {
 			font-size: smaller;
@@ -74,11 +88,6 @@
 		.search-bar input[type=number] {
 			width: 140px;
 		}
-		.dash {
-			line-height: 1.9;
-			margin-left: 2px;
-			margin-right: 2px;
-		}
 		.search-bar b {
 			display: block;
 			margin-bottom:5px;
@@ -96,7 +105,53 @@
 		.search-bar .btn-section button{
 			margin-right: 10px;
 		}
+		.info-section>div{
+			width: 600px;
+		}
+		.completeBtn-section {
+			display: flex;
+			justify-content: center;
+		}
+		.completeBtn-section button {
+			margin: 10px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
 		/*여기까지 거의 공용*/
+		.read-bar {
+			width: 807px;
+			height: 130px;
+			margin-bottom: 20px !important;
+		}
+		.info-unit span{
+			width: 100px;
+		}
+		.read-memo {
+			width: 643px;
+			height: 100px;
+		}
+		.memo-span {
+			padding-left: 10px;
+		}
+		.order-info b {
+			margin-bottom: 20px;
+		}
+		.summary-info {
+			width: 807px;
+			margin-top: 30px;
+		}
+		.summary-info input {
+			width: 250px !important;
+		}
+		.summary-info div:nth-of-type(2) {
+			margin-left: 80px;
+		}
+		.restQyModalHead{
+			margin-bottom: 30px;
+		}
 	</style>
 </head>
 <body>
@@ -114,16 +169,16 @@
 						<input type="text" class="form-control search-order-code">
 					</span>
 					<span class="search-unit">
+						<span>발주담당자</span>
+						<input type="text" class="form-control search-charger"> 
+					</span>
+					<span class="search-unit">
 						<span>자재코드</span>
 						<input type="text" class="form-control search-mtril-code">
 					</span>
 					<span class="search-unit">
 						<span>자재명</span>
 						<input type="text" class="form-control search-mtril-name"> 
-					</span>
-					<span class="search-unit">
-						<span>발주담당자</span>
-						<input type="text" class="form-control search-charger"> 
 					</span>
 				</div>
 				
@@ -141,70 +196,484 @@
 						<input type="date" class="form-control search-dedt-end">
 					</span>
 					<div class="btn-section">						
-						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-success mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 					</div>
 				</div>
 			</div>
 			<div class="card card-body mt-3 order-list">
 				<b>목록</b>
-				
+				<!-- 검색결과 목록 -->
+				<div id="orderListGrid"></div>
 			</div>
 		</div>
+		
+		
 		<div class="col card card-body order-info">		
 			<b>납품 정보</b>
-			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
-				
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar read-bar ">
+				<div>				
+					<span class="search-unit info-unit">
+						<span>발주코드</span>
+						<input type="text" class="form-control read-orderCode" readOnly> 
+					</span>
+				</div>
+				<div>
+					<span class="search-unit info-unit">
+						<span>발주일</span>
+						<input type="text" class="form-control read-order-date" readOnly> 
+					</span>
+				</div>
 			</div>
-			<!-- 제품 리스트 -->
-			<div id="productListgrid"></div>
-			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+			<div>			
+				<!-- 제품 리스트 -->
+				<div id="productListGrid"></div>
+			</div>
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar summary-info">
 				<div>			
-					<span class="search-unit">
-						<span>제품코드</span>
-						<input type="text" class="form-control search-product-code"> 
+					<span class="search-unit info-unit">
+						<span>잔여량 합계</span>
+						<input type="text" class="form-control read-orderTotalQy" readOnly> 
 					</span>
-					<span class="search-unit">
-						<span>제품코드</span>
-						<input type="text" class="form-control search-product-code"> 
+					<span class="search-unit info-unit">
+						<span>납품량 합계</span>
+						<input type="text" class="form-control read-divyTotalQy" readOnly> 
 					</span>
 				</div>
 				<div>			
-					<span class="search-unit">
-						<span>제품코드</span>
-						<input type="text" class="form-control search-product-code"> 
+					<span class="search-unit info-unit">
+						<span>납기일</span>
+						<input type="text" class="form-control read-dedt" readOnly> 
 					</span>
-					<span class="search-unit">
-						<span>제품코드</span>
-						<input type="text" class="form-control search-product-code"> 
+					<span class="search-unit info-unit">
+						<span>발주담당자</span>
+						<input type="text" class="form-control read-order-charger" readOnly> 
 					</span>
 				</div>
-				<span class="search-unit">
-					<span>제품코드</span>
-					<input type="text" class="form-control search-product-code"> 
+				<span class="search-unit info-unit">
+					<span class="memo-span">비고</span>
+					<textarea class="form-control read-memo" readOnly></textarea>
 				</span>
+			</div>
+			<div class="completeBtn-section">
+				<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
+		    		등록
+		  		</button>
+				<button class="btn btn-outline-secondary resetBtn">초기화</button>
 			</div>
 		</div>
 	</div>
-		
+	
+	
+	<!-- 등록 확인 모달 -->
+    <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="height: 20px;">
+            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">등록 확인</h5>
+          </div>
+          <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+            <div>
+              <img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+            </div>
+            <div>
+              <p style="margin-top: 12px;
+              font-size: 21px;
+              font-weight: bold;">알림</p>
+              <p>내용을 등록하시겠습니까?</p>
+            </div>
+          </div>
+          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+            <!-- -->
+            <button type="button" class="btn btn-outline-success deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
+            <button type="button" class="btn btn-outline-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <!-- 분할 배송 확인 모달 -->
+    <div class="modal fade" id="splitDeliveryCheckModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="height: 20px;">
+            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수량 확인</h5>
+          </div>
+          <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+            <div>
+              <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+            </div>
+            <div>
+              <p style="margin-top: 12px;
+              font-size: 21px;
+              font-weight: bold;">납품 수량 부족</p>
+              <p>납품 수량이 부족합니다 <br>
+                 수량이 부족한 경우 분할출고합니다.</p>
+            </div>
+          </div>
+          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+            <!-- -->
+            <button type="button" class="btn btn-outline-success splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
+            <button type="button" class="btn btn-outline-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 잔여량 출력 모달 -->
+	<div class="modal fade" id="restQyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl" >
+         <div class="modal-content">
+           <div class="modal-header" style="height: 20px;">
+            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">등록 완료</h5>
+           </div>
+           <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+           		<img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+          			<p class="restQyModalHead" style="margin-top: 12px;
+	              font-size: 21px;
+	              font-weight: bold;">출고 후 잔여량</p>
+          			<!-- 잔여량 출력 모달 -->
+                	<div id="restQyGrid" ></div>
+           </div>
+
+            <div style="text-align: center; margin: 20px;">
+               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
+            </div>
+         </div>
+         </div>
+      </div>
+      
 	<script>
 		//session_user_code => 세션에서 가져온 회사코드임
 		
 		
+		/*
+			그리드 정의		
+		*/
+		
+		
+	    const orderListdataSource = {
+	  	      api: {
+	  	          readData: { url: '/delivery/mtrilDelivery' , method: 'GET' },
+	  	        },
+	  	      contentType: 'application/json',
+	  	    };  
+		
+	  	//주문목록 그리드
+		const orderListGrid = new Grid({
+			el: document.getElementById('orderListGrid'),
+			bodyHeight: 619,
+			scrollY: false,
+			scrollX: false,
+            pageOptions: {
+                useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+                perPage: 15
+            },
+            columnOptions: {
+    	          resizable: true
+    	      	},
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "발주코드", name: "mtrilOrderCode"},
+				{ header: "요약", name: "summary"},
+				{ header: "발주담당자", name: "orderCharger"},
+				{ header: "발주일", name: "orderDate"},
+				{ header: "납기일", name: "dedt"},
+				{ header: "비고", name: "remark", hidden: true},
+			],
+            data: orderListdataSource,
+            showDummyRows: true	//더미로우 추가
+		});
+		
+        
+        
 		//제품 목록
-		const productListgrid = new Grid({
-			el: document.getElementById('productListgrid'),
+		const productListGrid = new Grid({
+			el: document.getElementById('productListGrid'),
+			bodyHeight: 500,
+			scrollY: true,
+			scrollX: false,
+			width: 807,
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "발주코드", name: "productOrderCode", hidden: true},
+				{ header: "자재코드", name: "productCode"},
+				{ header: "자재명", name: "productName"},
+				{ header: "색상", name: "productColor"},
+				{ header: "업체단가", name: "unitPrice", align: 'right', formatter:(row)=>numberFormmater(row.value)},
+				{ header: "발주량", name: "reqQy", align: 'right', formatter:(row)=>numberFormmater(row.value)},
+				{ header: "잔여량", name: "restQy", align: 'right', formatter:(row)=>numberFormmater(row.value)},
+				{ header: "납품량", name: "deliveryQy", editor: 'text', align: 'right', formatter:(row)=>numberFormmater(row.value)}
+			],
+			showDummyRows: true
+		});
+		
+		/*출고 후 잔여량 출력 모달*/
+		const restQyGrid = new Grid({
+			el: document.getElementById('restQyGrid'),
 			bodyHeight: 250,
 			scrollY: true,
 			scrollX: false,
+			width: 1050,
 			rowHeaders: ['rowNum'],
+			columnOptions: {
+	  	          resizable: true
+	  	      	},
 			columns: [
-				{ header: "주문번호", name: "productOrderCode"},
-				{ header: "제품코드", name: "productCode"},
-				{ header: "제품명", name: "productName"},
-				{ header: "주문수량", name: "reqQy"}
-			]
+				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 180, align: 'center'},
+				{ header: "제품명", name: "productName", width: "auto", minWidth: 380},
+				{ header: "색상", name: "productColor", width: "auto", minWidth: 120, align: 'center'},
+				{ header: "요청수량", name: "restQy", width: "auto", minWidth: 105, align: 'center'},
+				{ header: "출고수량", name: "deliveryQy", width: "auto", minWidth: 105, align: 'center'},
+				{ header: "잔여량", name: "showQy", validation: {validatorFn: (value, row, columnName) => value <= 0}, width: "auto", minWidth: 105, align: 'center'}
+			],
+			showDummyRows: true	//더미로우 추가
 		});
+		
+		/*
+			함수 정의
+		*/
+		
+		//검색함수
+        function searchOrderList() {
+        	orderListGrid.readData(1, {
+        		orderCode: document.querySelector('.search-order-code').value,
+        		orderCharger:  document.querySelector('.search-charger').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-mtril-code').value,
+        		productName: document.querySelector('.search-mtril-name').value
+        		
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+		
+		document.querySelectorAll(".search-bar input").forEach((ele) => {
+			ele.addEventListener('keydown', (ele) => {				
+				if (window.event.keyCode == 13) {
+					searchOrderList();
+			    }
+			})
+		})
+		
+		
+
+        //검색 조건 삭제
+        function resetCondition() {
+    		document.querySelectorAll('.search-bar input').forEach((e) => {
+    			e.value = null;
+    		})
+        }
+		
+		//서버에서 가져온 주문 정보 상세
+		let orderInfo = [];
+		
+		//클릭된 행 기억하기 위한 변수
+		let lastClicked = null;
+		
+		//주문 상세 데이터 모두 가져오기
+        orderListGrid.on('focusChange', ev => {
+        	
+        	//제품 상세 입력 그리드 초기화
+        	productListGrid.clear();
+        	
+            // 배경색 클래스 적용
+            orderListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+            orderListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+            lastClicked = ev.rowKey; // 선택된 행 기억
+			            
+            // 선택한 정보 가져오기
+            let selected = orderListGrid.getRow(ev.rowKey);
+            
+            //처음 가져왔던 정보들로 주문 정보를 출력
+            document.querySelector(".read-orderCode").value = selected.mtrilOrderCode;
+            document.querySelector(".read-order-date").value = selected.orderDate;
+            document.querySelector(".read-order-charger").value = selected.orderCharger;
+            document.querySelector(".read-dedt").value = selected.dedt;
+            document.querySelector(".read-memo").value = selected.remark;
+            document.querySelector('.read-divyTotalQy').value = '';
+            
+            fetch(`/delivery/mtrilOrderInfo?orderCode=${selected.mtrilOrderCode}`)
+    		.then(rep => rep.json())
+    		.then(data => {
+    			console.log(data);
+    			//배열에 담기
+    			orderInfo = data;
+    			
+    			//발주량 합계
+    			let reqQySum = 0;
+    			
+    			//잔여량 합계
+    			let restQySum = 0;
+    			
+    			//발주량 잔여량 계산
+    			for(let i=0; i<data.length; i++) {
+    				reqQySum += data[i].reqQy;
+    				restQySum += data[i].restQy;
+    			}
+    			
+    			//테이블 insert를 하기 위해서 주문 번호를 넣었음.
+    			orderInfo.forEach(ele => {
+    				ele.productOrderCode = selected.mtrilOrderCode;
+    			})
+    			
+    			//출고해야될 수량 합계 출력
+    			document.querySelector('.read-orderTotalQy').value = restQySum;
+    			console.log(restQySum);
+    			
+    			//서버에서 가져온 데이터 넣기
+    			productListGrid.resetData(data);
+    		})
+
+        }); 
+    	
+		//제품 상세 그리드에서 선택한 제품
+		let selectedProduct = null;
+		
+		//제품 상세 그리드의 행 값이 바뀔때 생기는 이벤트
+        productListGrid.on('afterChange', ev => {
+        	console.log(ev);
+        	ev.changes.forEach(change => {
+        		//행데이터
+        		let rowData = productListGrid.getRow(change.rowKey);
+        		let newValue = Number(change.value); // 변경된 값
+    	        let maxValue = 0; 					 // 컬럼에 들어갈 최대값 담을 변수
+    	        maxValue = Number(rowData.restQy);	 // 최대값
+    	        
+    	        console.log('rowData', rowData);
+    	        //console.log('newValue', newValue);
+    	        //console.log('maxValue', maxValue);
+    	        
+				//입력값이 음수인 경우    	        
+    	        if(newValue < 0) {
+	        		failToast('입력값은 음수가 될 수 없습니다.');
+	        		rowData.deliveryQy = null;
+	        		productListGrid.setRow(change.rowKey, rowData);
+	        	    return;
+	        	}
+    	        
+    	        //입력값이 문자열인 경우
+    	        if(isNaN(newValue)) {
+    	        	failToast('입력값은 문자가 들어갈 수 없습니다.');
+    	        	rowData.deliveryQy = null;
+	        		productListGrid.setRow(change.rowKey, rowData);
+	        	    return;
+    	        }
+    	        
+    	        //잔여량보다 많이 입력한 경우
+    	        if(newValue > maxValue) {
+    	        	failToast(`입력값은  ${maxValue}보다 클 수 없습니다.`);
+	        		rowData.deliveryQy = maxValue;
+	        		productListGrid.setRow(change.rowKey, rowData);
+	        	    return;
+	        	}
+    	        
+    	        //출고량 합계 계산을 위해서 서버에서 가져온 객체에 출고 수량 추가
+    	        orderInfo.forEach(ele => {
+    	        	if(ele.productCode == rowData.productCode &&
+    	        	   ele.productColor == rowData.productColor) {
+    	        		ele.deliveryQy = newValue;
+    	        	}
+    	        })
+    	        
+    	        //출고량 합계 구하기
+    	        let divyQySum = 0;
+    	        for(let i=0; i<orderInfo.length; i++) {
+    	        	divyQySum += orderInfo[i].deliveryQy;
+    	        }
+    	        
+    	        //출고량 합께 화면에 출력
+    	        document.querySelector('.read-divyTotalQy').value = divyQySum;
+        	})
+        })
+        
+        //등록버튼
+        document.querySelector('.sendData').addEventListener('click', () => {
+        	if(orderInfo.length == 0) {
+        		failToast('주문건을 선택해주세요');
+        		return;
+        	}
+        	//입력후 삭제하면 0이라서, 출고 수량이 0인것의 개수와 배열의 길이가 같으면 작동되면 안됨.
+        	let zeroCnt = 0;
+        	for(let i=0; i<orderInfo.length; i++) {
+        		if(orderInfo[i].deliveryQy == null) {
+        			failToast('수량을 입력해주세요');
+        			return;
+        		}
+        		if(orderInfo[i].deliveryQy == 0) {
+        			zeroCnt++;
+        		}
+        	}
+        	
+        	if(zeroCnt == orderInfo.length) {
+        		failToast('수량을 입력해주세요');
+    			return;
+        	}
+        	
+        	
+        	let registModal = new bootstrap.Modal(document.getElementById("registModal"));
+    		registModal.show();
+        })
+        
+        //리셋버튼
+        document.querySelector('.resetBtn').addEventListener('click', () => {
+        	location.href = location.href;
+        })
+        
+        
+        
+        //등록 데이터 보내기 통신 + 잔여량 모달 출력
+        function sendData() {
+			//잔여량 모달에 데이터 보여줄 내용 배열 객체 변수
+			orderInfo.forEach(ele => {
+				//showQy는 출고 후 잔여량
+				ele.showQy = (ele.restQy - ele.deliveryQy);
+			})
+			
+			//그리드 데이터 초기화
+			restQyGrid.resetData(orderInfo);
+			
+			
+			//잔여량 출력 모달
+        	const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
+        	restQyModal.show();
+		}
+		
+		
+        /* 납품 등록 */
+        document.querySelector('.deliveryRegistBtn').addEventListener('click', () => {
+        	//출고 수량이 부족한 경우 확인을 위한 변수
+        	let isDivyCnt = 0;
+        	orderInfo.forEach(ele => {
+        		//출고 수량이 부족한 경우
+        		if(ele.restQy > ele.deliveryQy) {
+	       	   		isDivyCnt = 1;
+        		}
+        	})
+        	
+        	if(isDivyCnt == 1) {        		
+	        	//납품 수량 부족한 경우 분할 출고 여부 체크
+	   			const splitDeliveryCheckModal = new bootstrap.Modal(document.getElementById("splitDeliveryCheckModal"));
+	   	   		splitDeliveryCheckModal.show();
+        	} else {
+				//납품 수량 다 채움. 출고등록        		
+				sendData();
+        	}
+   	   		
+
+        }) 
+        
+       	/* 분할 출고 등록*/
+        document.querySelector('.splitDeliveryBtn').addEventListener('click', () => {
+        	//alert('분할출고 등록');
+        	sendData();
+        })
+        
+        //잔여량 출력 모달 닫기 후 화면 새로고침
+		document.querySelector('.restQyModalClose').addEventListener('click', () => {
+			location.href = location.href;
+		})
 	</script>
 </body>
 </html>

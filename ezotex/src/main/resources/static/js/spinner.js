@@ -1,4 +1,4 @@
-function simulateLoading() {
+function simulateLoading(loadingTime) {
     console.log('작동됨');
     var loadingSpinner = document.querySelector(".loading-wrap");
     var loadingMessage = document.getElementById("loadingMessage");
@@ -10,5 +10,5 @@ function simulateLoading() {
     // 1초 뒤에 로딩 완료
     setTimeout(function () {
     loadingSpinner.style.display = "none";
-    }, 900);
+    }, loadingTime);
 }
