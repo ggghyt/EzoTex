@@ -21,7 +21,7 @@
 	                FROM   order_list ol             
 	               	<where>	               	
 			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
-			                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
+			                AND ol.product_order_code LIKE '%' || UPPER(#{cri.orderCode}) || '%'    --주문코드
 			            </if>
 			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
 			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd}              --금액합계
@@ -35,13 +35,13 @@
 			            <if test="cri.productCode != null and cri.productCode != null">		    
 			                AND ol.product_order_code IN (SELECT  product_order_code 
                                  						  FROM order_product
-                                 						  WHERE LOWER(product_code) LIKE '%' || #{cri.productCode} || '%')               --제품코드
+                                 						  WHERE LOWER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
 			            </if>
 			            <if test='cri.companyName != null and cri.companyName != ""'>
 			                AND ol.company LIKE '%' || #{cri.companyName} || '%'                          --업체명
 			            </if>
 			            <if test='cri.companyCode != null and cri.companyCode != ""'>
-			                AND ol.company_code LIKE '%' || #{cri.companyCode} || '%'                --업체코드
+			                AND ol.company_code LIKE '%' || UPPER(#{cri.companyCode}) || '%'                --업체코드
 			            </if>
 			            <if test='cri.orderCharger != null and cri.orderCharger != ""'>		    
 			                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
@@ -139,8 +139,8 @@
 		    --회사정보
 		    SELECT cp.company_code AS company_code,
 		           al.address_main || ' ' || al.address_info AS address -- 주소 결합 시 공백 추가
-		    FROM company cp 
-		    JOIN address_list al ON cp.address_seq = al.address_seq
+		    FROM company cp JOIN address_list al 
+		                      ON cp.address_seq = al.address_seq
 		)
 		-- 주문번호, 주문담당자, 주문수량, 금액합계, 주소, 제품코드, 제품명
 		SELECT m.product_order_code AS product_order_code,
@@ -165,7 +165,7 @@
 		FROM   product_option
 		WHERE  product_code = #{productCode}
 		GROUP BY product_size, product_code
-		ORDER BY SUBSTR(size_sort, 3)
+		ORDER BY TO_NUMBER(SUBSTR(size_sort, 3))
 	</select>
 	
 	<!-- 제품 코드 기반 옵션,잔여량 리스트 -->
@@ -234,9 +234,9 @@
 	<!-- 출고 상세 등록(제조업체 사용) -->
 	<insert id="insertDeliveryDetails">
 		INSERT INTO delivery_details(delivery_product_no, delivery_code, product_code, product_size, product_color, product_lot
-									 , request_qy, delivery_qy, product_se, order_code)
+									 , request_qy, delivery_qy, product_se, order_code, unit_price, price)
 		VALUES (delivery_details_seq.NEXTVAL, #{pinfo.deliveryCode}, #{pinfo.productCode}, #{pinfo.productSize}, #{pinfo.productColor}, #{pinfo.productLot},
-				#{pinfo.reqQy}, #{pinfo.deliveryQy}, #{pinfo.productSe}, #{pinfo.productOrderCode})
+				#{pinfo.reqQy}, #{pinfo.deliveryQy}, #{pinfo.productSe}, #{pinfo.productOrderCode}, #{pinfo.unitPrice}, #{pinfo.price})
 	</insert>
 	
 	<!-- 제품 옵션에 맞는 로트 수량 가져오기 -->
@@ -259,4 +259,14 @@
 		AND   product_color = #{deInfo.productColor}
 		AND   product_size = #{deInfo.productSize}
 	</update>
+	
+	<select id="getPrice">
+		select unit_price AS unit_price,
+		       unit_price * #{pinfo.deliveryQy} AS price
+		from order_product
+		where product_order_code = #{pinfo.productOrderCode}
+		and   product_code = #{pinfo.productCode}
+		and   product_size = #{pinfo.productSize}
+		and   product_color = #{pinfo.productColor}
+	</select>
 </mapper>

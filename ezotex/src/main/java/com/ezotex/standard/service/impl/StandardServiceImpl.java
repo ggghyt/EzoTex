@@ -1,6 +1,7 @@
 package com.ezotex.standard.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,8 +86,8 @@ public class StandardServiceImpl implements StandardService {
 	}
 
 	@Override
-	public List<ProductListInfoDTO> productListAll() {
-		return mapper.productListAll();
+	public List<Map<String, Object>> productListAll(ProductListInfoDTO productListInfoDTO) {
+		return mapper.productListAll(productListInfoDTO);
 	}
 
 	@Override
@@ -97,6 +98,35 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<ProductCategoryDTO> categorySclas(String lclas) {
 		return mapper.categorySclas(lclas);
+	}
+
+	@Override
+	public int getCount(ProductListInfoDTO productListInfoDTO) {
+		return mapper.getCount(productListInfoDTO);
+	}
+
+	@Override
+	public List<ProductListInfoDTO> unitNameList() {
+		return mapper.unitNameList();
+	}
+
+	@Override
+	public int ProductInfoInsert(ProductListInfoDTO productListInfoDTO) {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		System.out.println(productListInfoDTO.toString());
+		System.out.println(productListInfoDTO.getProductCode() == "");
+		if (productListInfoDTO.getProductCode().length() < 1) {
+			System.out.println("##########################################");
+			return mapper.ProductInfoInsert(productListInfoDTO);
+		} else {
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			return mapper.ProductInfoUpdate(productListInfoDTO);
+		}
+	}
+
+	@Override
+	public List<ProductCategoryDTO> productCategory(String productCode) {
+		return mapper.productCategory(productCode);
 	}
 	
 }

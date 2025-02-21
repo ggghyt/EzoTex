@@ -2,6 +2,10 @@ package com.ezotex.delivery.dto;
 
 import lombok.Data;
 
+
+/*
+ * (제조업체 사용)제품 상세 정보
+ * */
 @Data
 public class DeliveryProductInfo {
 	//제품 옵션 사이즈별로 수량 출력을 위한DTO

@@ -132,7 +132,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 				insertInfo.setDeliveryQy(insertDivyQy);	//출고 수량
 				insertInfo.setProductSe("PT02");	//제품 구분 "제품"
 				insertInfo.setProductOrderCode((orderInfoList.get(orderInfoList.size()-1)).getProductOrderCode());	//제품 주문번호
-
+				
+				//제품 단가, 금액 가져오기 
+				List<OrderInsertDTO> priceInfo = mapper.getPrice(insertInfo);
+				for(int n=0; n<priceInfo.size(); n++) {
+					insertInfo.setUnitPrice(priceInfo.get(n).getUnitPrice());	//단가
+					insertInfo.setPrice(priceInfo.get(n).getPrice());			//금액
+				}
+				
 				/*출고 수량 인서트*/
 				mapper.insertDeliveryDetails(insertInfo);
 				

@@ -140,44 +140,49 @@ set company_password = #{password}
 where company_id = #{id}
 </update>
 
-<select id="productListAll" resultType="ProductListInfoDTO">
+<select id="productListAll" resultType="map" parameterType="ProductListInfoDTO">
 select product_info.product_code, 
        product_name, 
-       code_name as product_type_name, 
+       common_code_details.code_name as product_type_name, 
        product_info.product_type, 
        lclas, 
        sclas, 
        unit_price, 
-       vl
+       vl, 
+       img, 
+       product_info.unit_name,
+       common_code_details_2.code_name as unit_name_name
 from product_info
 left join product_category
 on product_info.product_code = product_category.product_code
 join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
+join common_code_details common_code_details_2
+on product_info.unit_name = common_code_details_2.comm_detail_code
+where product_info.product_code like '%' || #{productCode} || '%'
+<if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
+<if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
+<if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
+<if test='sclas != null and sclas != ""'> and sclas like '%' || #{sclas} || '%' </if>
+<if test='minPrice != null and minPrice != ""'> and unit_price <![CDATA[ >= ]]> #{minPrice} </if>
+<if test='maxPrice != null and maxPrice != ""'> and unit_price <![CDATA[ <= ]]> #{maxPrice} </if>
 order by 1
 </select>
 
-<select id="productListSearch" resultType="ProductListInfoDTO">
-select product_info.product_code, 
-       product_name, 
-       code_name as product_type_name, 
-       product_info.product_type, 
-       lclas, 
-       sclas, 
-       unit_price, 
-       vl
+<select id="getCount" parameterType="ProductListInfoDTO">
+select count(product_info.product_code)
 from product_info
 left join product_category
 on product_info.product_code = product_category.product_code
 join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
 where product_info.product_code like '%' || #{productCode} || '%'
-and product_name like '%' || #{productName} || '%'
-and product_info.product_type like '%' || #{productType} || '%'
-and lclas like '%' || #{lclas} || '%'
-and sclas like '%' || #{sclas} || '%'
-and unit_price between #{minPrice} and #{maxPrice}
-order by 1
+<if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
+<if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
+<if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
+<if test='sclas != null and sclas != ""'> and sclas like '%' || #{sclas} || '%' </if>
+<if test='minPrice != null and minPrice != ""'> and unit_price <![CDATA[ >= ]]> #{minPrice} </if>
+<if test='maxPrice != null and maxPrice != ""'> and unit_price <![CDATA[ <= ]]> #{maxPrice} </if>
 </select>
 
 <select id="categoryLclas">
@@ -189,6 +194,42 @@ from product_category
 select distinct sclas
 from product_category
 where lclas = #{lclas}
+</select>
+
+<select id="unitNameList">
+select code_name as unit_name, 
+       comm_detail_code as unit_name_name
+from common_code_details
+where comm_code = 'UN'
+</select>
+
+<insert id="ProductInfoInsert" parameterType="ProductListInfoDTO">
+insert into product_info
+values(concat('PRD', LPAD(PRODUCT_CODE_SEQ.nextval, 4, 0)), 
+       #{productName}, 
+       #{productType}, 
+       #{unitPrice}, 
+       #{vl}, 
+       #{img}, 
+       #{unitName}
+)
+</insert>
+
+<update id="ProductInfoUpdate">
+update product_info
+set product_name = #{productName}, 
+    product_type = #{productType}, 
+    unit_price = #{unitPrice}, 
+    vl = #{vl}, 
+    img = #{img}, 
+    unit_name = #{unitName}
+where product_code = #{productCode}
+</update>
+
+<select id="productCategory" resultType="ProductCategoryDTO">
+select *
+from product_category
+where product_code = #{productCode}
 </select>
 
 </mapper>

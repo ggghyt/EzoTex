@@ -1,7 +1,9 @@
 package com.ezotex.standard.mappers;
 
 import java.util.List;
+import java.util.Map;
 
+import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.standard.dto.AddressListDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
@@ -48,9 +50,21 @@ public interface StandardMapper {
 	int passwordCompanyUpdate(String id, String password);
 	
 	// 제품 리스트
-	List<ProductListInfoDTO> productListAll();
+	List<Map<String, Object>> productListAll(ProductListInfoDTO productListInfoDTO);
 	
 	// 카테고리 반환
 	List<ProductCategoryDTO> categoryLclas();
 	List<ProductCategoryDTO> categorySclas(String lclas);
+	
+	public int getCount(ProductListInfoDTO productListInfoDTO);
+	
+	// 제품 단위 리스트
+	List<ProductListInfoDTO> unitNameList();
+	
+	// 제품 생성
+	int ProductInfoInsert(ProductListInfoDTO productListInfoDTO);
+	
+	int ProductInfoUpdate(ProductListInfoDTO productListInfoDTO);
+	
+	List<ProductCategoryDTO> productCategory(String productCode);
 }

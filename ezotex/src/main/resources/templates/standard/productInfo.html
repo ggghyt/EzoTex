@@ -28,10 +28,20 @@
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
 </style>
+<style>
+.modal {
+display: block !important; /* Bootstrap 기본 동작 우회 */
+visibility: hidden;
+}
+
+.modal.show {
+visibility: visible;
+}
+
+</style>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 자재/제품 조회</h3>
-	<div class="col" style="padding: 10px"></div>
 	<div class="col" style="padding: 10px">
 		<div class="row">
 			<!-- 제품 검색 조건 -->
@@ -50,6 +60,8 @@
 				<div class="col-2 col-lg-2 d-flex mb-2">
 					<select class="form-control" id="productType" name="productType">
 						<option value="">전체</option>
+						<option value="PT01">자재</option>
+						<option value="PT02">제품</option>
 					</select>
 				</div>
 				<div class="col-3 col-lg-3 d-flex mb-2"></div>
@@ -72,150 +84,181 @@
 				
 				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
 				<div class="col-2 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="maxPrice" name="maxPrice" placeholder="이상" value="">
+					<input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="이상" value="">
 				</div>
 
 				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak"> ~ </label>
 				<div class="col-2 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="minPrice" name="minPrice" placeholder="이하" value="">
+					<input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="이하" value="">
 				</div>
 			</div>
 
 			<div class="d-flex justify-content-center mt-2 mb-4">
-				<button type="button" id="prdSearchBtn"
-					class="btn btn-secondary mag-glass-btn me-2">
-					<i class="fa-solid fa-magnifying-glass icon-left"
-						style="color: #646464;"></i>
+				<button type="button" id="searchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchBtn()">
+					<i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i>
 				</button>
-				<button type="reset" class="btn btn-warning mag-glass-btn">
+				<button type="reset" class="btn btn-warning mag-glass-btn" onclick="resetBtn()">
 					<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
 				</button>
 			</div>
-
-			<div id="prdGrid"></div>
-		</div>
-
-		<div class="row">
-			<div class="card card-body mt-3">
-
-				<!-- 제품 상세 정보 및 BOM 정보 -->
-				<div class="d-flex align-items-top">
-					<p class="fs-5 fw-bolder mb-4 me-3">선택한 제품</p>
-					<label style="font-size: 10pt" for="remember">입력항목 유지</label><input
-						type="checkbox" id="remember" class="ms-1 mb-4">
+			
+			<div class="col me-2">
+				<div id="searchGrid" style="height: 525px">
 				</div>
-				<div class="row">
-					<label
-						class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<input type="text" class="form-control" id="selectedPrdCode"
-							readonly>
-					</div>
-					<label
-						class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<input type="text" class="form-control" id="selectedPrdName"
-							readonly>
+			</div>
+			<div class="col me-2" style="height: 525px; text-align: center;">
+				<img id="preview" style="width: 90%; height: 90%;" />
+			</div>
+			<form action="/standard/productInsert" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+				<div class="row me-2">
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">코드</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<input type="text" class="form-control" id="selectProductCode" name="productCode" value="" readonly>
 					</div>
 
-					<label for="color"
-						class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<select class="form-control" id="color" name="color">
-							<option value="null">전체</option>
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">이름</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<input type="text" class="form-control" id="selectProductName" name="productName" value="">
+					</div>
+					
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단위</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<select class="form-control" id="unitName" name="unitName">
+							<option value="" selected disabled>선택</option>
 						</select>
 					</div>
-					<label for="size"
-						class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<select class="form-control" id="size" name="size">
-							<option value="null">전체</option>
-						</select>
+				
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사진</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<input type="file" class="form-control" onchange="readURL(this);" id="selectProductImg" name="imgFile">
 					</div>
 				</div>
+				
+				<div class="row me-2">
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<input type="number" class="form-control" id="selectUnitPrice" name="unitPrice" value="">
+					</div>
 
-				<hr>
-				<!-- BOM 선택 -->
-				<p class="fs-5 fw-bolder mb-4">자재 목록</p>
-				<form class="row">
-					<label for="mtr-lclas"
-						class="col-4 col-lg-2 d-flex align-items-center mb-2 justify-content-center wbreak">대분류</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<select class="form-control" id="mtr-lclas" name="mtr-lclas">
-							<option value="null">전체</option>
-							<option th:each="lclas : ${mtrLclasList}" th:value="${lclas}">[[
-								${lclas} ]]</option>
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">유형</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<select class="form-control" id="selectProductType" name="productType">
+							<option value="" selected disabled>선택</option>
+							<option value="PT01">자재</option>
+							<option value="PT02">제품</option>
 						</select>
 					</div>
-					<label for="mtr-sclas"
-						class="col-4 col-lg-2 d-flex align-items-center mb-2 justify-content-center wbreak">소분류</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<select class="form-control" id="mtr-sclas" name="mtr-sclas">
-							<option value="null">전체</option>
-						</select>
+				
+					<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">부피</label>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<input type="number" class="form-control" id="selectVl" name="vl" value="">
 					</div>
-
-					<label for="mtrilCode"
-						class="col-4 col-lg-2 d-flex align-items-center mb-2 justify-content-center wbreak">자재코드</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<input type="text" class="form-control" id="mtrilCode"
-							name="mtrilCode">
-					</div>
-					<label for="mtrilName"
-						class="col-4 col-lg-2 d-flex align-items-center mb-2 justify-content-center wbreak">자재명</label>
-					<div class="col-8 col-lg-4 d-flex mb-2">
-						<input type="text" class="form-control" id="mtrilName"
-							name="mtrilName">
-					</div>
-
-					<div class="d-flex justify-content-center mt-2 mb-4">
-						<button type="button" id="mtrSearchBtn"
-							class="btn btn-secondary mag-glass-btn btn-sm me-2">
-							<i class="fa-solid fa-magnifying-glass icon-left-sm"
-								style="color: #646464;"></i>
-						</button>
-						<button type="reset" class="btn btn-warning mag-glass-btn btn-sm">
-							<i class="fa-solid fa-repeat icon-left-sm"
-								style="color: #ffffff;"></i>
-						</button>
-					</div>
-				</form>
-
-				<div id="mtrGrid"></div>
-
-				<hr style="height: 0.1px">
-				<div class="row">
-					<div class="col">
-						<!-- 해당 제품의 BOM에 등록할 자재 -->
-						<p class="fs-5 fw-bolder mb-4">선택한 자재</p>
-						<div id="selectedMtrGrid"></div>
-
-						<div class="row mt-3">
-							<label for="chargerName"
-								class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<input type="text" class="form-control" id="chargerName"
-									readonly>
-							</div>
-							<label for="rgsde"
-								class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">최종등록일</label>
-							<div class="col-8 col-lg-4 d-flex mb-2">
-								<input type="text" class="form-control" id="rgsde" readonly>
-							</div>
-						</div>
-						<div class="text-end">
-							<button id="insertBtn" class="btn btn-primary">등록</button>
-							<button id="resetBtn" class="btn btn-secondary m-2">초기화</button>
-							<button class="btn btn-dark btn-sm">EXCEL 내보내기</button>
-							<!-- 아직 미구현 -->
-						</div>
+					<div class="col-1 col-lg-1 d-flex mb-2"></div>
+					<div class="col-2 col-lg-2 d-flex mb-2">
+						<button id="insertBtn" class="btn btn-primary" style="display: block">등록하기</button>
+						<button id="editBtn" class="btn btn-warning" style="display: none">수정하기</button>
 					</div>
 				</div>
-
+			</form>
+			<div class="row me-2">
+				<div class="col-1 col-lg-1 d-flex mb-2"></div>
+				<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+					<button onclick="categoryBtn()" class="btn btn-primary" id="categoryBtn">카테고리 관리</button>
+				</div>
+				<div class="col-1 col-lg-1 d-flex mb-2"></div>
+				<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+					<button onclick="optionBtn()" class="btn btn-primary" id="optionBtn">상품옵션 관리</button>
+				</div>
+				<div class="col-3 col-lg-3 d-flex mb-2"></div>
+				<div class="col-3 col-lg-3 d-flex mb-2"></div>
 			</div>
 		</div>
 	</div>
+	
+	<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="productCodeModalLabel">카테고리 관리</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					</button>
+				</div> 
+				<div class="card">
+					<div class="card-body">
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">코드</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductCode" name="productCode" value="" readonly>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">이름</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductName" name="productName" value="" readonly>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">대분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalLclas" name="modalLclas" onchange="modal_lclas_change()">
+								</select>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">소분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalSclas" name="modalSclas">
+									<option value="" selected disabled>선택</option>
+								</select>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<div style="text-align: center;">
+							<button id="insertBtn" class="btn btn-primary" onclick="categoryModalRowAdd()">행 추가</button>
+							<button id="editBtn" class="btn btn-danger" onclick="categoryModalRowDel()">행 삭제</button>
+						</div>
+						<div id="categoryGrid" style="width: 100%;">
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">저장</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<script>
+	document.querySelector("#categoryBtn").style.display = "none"
+	document.querySelector("#optionBtn").style.display = "none"
+	
+	fetch('http://localhost:80/standard/unitName')
+	.then((response) => response.json())
+	.then((data) => {
+		let select_unit = document.querySelector("#unitName");
+		for (let i = 0 ; i < data.length ; i++) {
+			let o = document.createElement('option');
+			o.setAttribute("value", data[i].unitNameName);
+			o.innerText = data[i].unitName
+			select_unit.appendChild(o);
+		}
+	})
+	
+	function readURL(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				document.getElementById('preview').src = e.target.result;
+			};
+			reader.readAsDataURL(input.files[0]);
+		} else {
+			document.getElementById('preview').src = "";
+		}
+	}
+	
 	fetch('http://localhost:80/standard/categoryLclas')
 	.then((response) => response.json())
 	.then((data) => {
@@ -256,341 +299,203 @@
 		}
 	}
 	
-
-	/******************** tui grid 출력 ********************/	
-	// 제품 그리드
-	const prdData = {
+	document.getElementById('searchGrid').replaceChildren()
+	let gridData = {
 		api: {
-			readData: { url: '/supply/bomProductList', method: 'GET' }
+			readData: { url: '/standard/productListAll', method: 'GET' }
 		},
 		contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-	};
-		
-	const prdGrid = new Grid({
-	    el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
-	    data: prdData,
+	}
+	let searchListGrid = new Grid({
+		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
+	    data: gridData,
 	    columns: [
-	        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-	        { header: '제품명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
-	        { header: '상태', name: 'STATUS', width: 100, sortable: true, align: 'center',
-	          renderer: {
-	      	    styles: {
-	      	      fontWeight: 'bold',
-	      	      color: props => props.value == '완료' ? '#aaa' : 'orange'
-	      	    }
-	          }
-	        }
+	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
+	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
+	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
+	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
+	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
+	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormmater(row.value) }
 	    ],
 	    pageOptions: {
 	        useClient: true, // 페이징을 위해 필요
 	        perPage: 10
 	  	},
 	  	scrollX: false, // 가로 스크롤
-	  	scrollY: false, // 세로 스크롤
-	  	summary: {
-	  		height: 40,
-	         position: 'bottom', // or 'top'
-	         columnContent: {
-	         		PRODUCT_CODE: { // 컬럼명
-	                 template: (valueMap) => {
-	                     return `총 ${valueMap.cnt}건`
-	                 }
-	             }
-	         }
-	     }
-	});
-
-	// 자재 그리드
-	const mtrGrid = new Grid({
-	    el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
-	    data: [],
-	    columns: [
-	        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
-	        { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-	        { header: '단위', name: 'unitName', width: 100, sortable: true }
-	    ],
-	    rowHeaders: ['checkbox'],
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: true, // 세로 스크롤
-	  	bodyHeight: 150
-	});
-
-	// 선택한 자재 그리드
-	const selectedMtrGrid = new Grid({
-		el: document.getElementById('selectedMtrGrid'), // 해당 위치에 그리드 출력
-	    data: [],
-	    columns: [
-	        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
-	        { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-	        { header: '소요량', name: 'requireQy', width: 100, sortable: true, editor: 'text', align: 'right',
-	        	formatter: row => Number(row.value).toLocaleString() // 천단위 콤마 포맷 적용
-	        },
-	        { header: '단위', name: 'unitName', width: 100, sortable: true }
-	    ],
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: true, // 세로 스크롤
-	  	bodyHeight: 150	
-	});
-
-	let mtrData = null; // 검색 및 입력값 저장용
-	let originBomData = null; // 등록 시 비교용 원본 bom
-	const loadMtrGrid = function(obj){
-		let query = new URLSearchParams(obj); // 쿼리스트링으로 변환
-		// 서버에서 데이터 불러오기
-		fetch(`/supply/bomMaterialList?${query}`)
-		.then(response => response.json())
-		.then(result => {
-			let data = result.data.contents;
-			selectedMtrGrid.resetData([]); // 선택된 자재 초기화
-			mtrGrid.resetData(data); // 데이터 입력
-			mtrData = data;
-			
-			data.forEach((obj, idx) => {
-				if(obj.requireQy != null) mtrGrid.check(idx) // bom 등록된 자재는 자동 선택
-			});
-			
-			originBomData = selectedMtrGrid.getData();
-			
-			let rgsde = dateFormmater(data[0].rgsde);
-			let charger = data[0].chargerName == null ? session_user_name : data[0].chargerName;
-			document.getElementById('rgsde').value = rgsde;
-			document.getElementById('chargerName').value = charger;
-		});
-	}
-
-	/******************** 제품/자재 선택 ********************/	
-	let selectedPrd = null;
-	let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
-
-	// 선택된 행 강조 & 정보 가져오기
-	prdGrid.on('focusChange', ev => {
-		// 배경색 클래스 적용
-		prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-		prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-		lastClicked = ev.rowKey; // 선택된 행 기억
-		
-		// 선택한 정보 가져오기
-		selectedPrd = prdGrid.getRow(ev.rowKey);
-		document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
-		document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
-		loadOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
-		loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
-	});
-
-	// 선택한 제품-색상의 사이즈 불러오기
-	const changeOpt = (isReset) => {
-		let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
-		if(saveCk == false || isReset){
-			let selectedOpt = {
-				productCode: selectedPrd.PRODUCT_CODE,
-				productColor: colorBox.value,
-				productSize: sizeBox.value
-			};
-			loadMtrGrid(selectedOpt);		
-		}
-	}
-
-	colorBox.addEventListener('change', e => {
-		loadOptions(sizeBox, `/supply/options/${selectedPrd.PRODUCT_CODE}/${e.target.value}`);
-		changeOpt();
-	});
-
-	sizeBox.addEventListener('change', () => {
-		changeOpt();
+	  	scrollY: false // 세로 스크롤
 	})
 
-	// 제품 목록 검색 적용
-	document.getElementById('prdSearchBtn').addEventListener('click', () => {
-		let dto = {
-				productCode: document.getElementById('productCode').value,
-				productName: document.getElementById('productName').value,
-				lclas: document.getElementById('lclas').value,
-				sclas: document.getElementById('sclas').value
-		};
-		prdGrid.setRequestParams(dto); // 조회 조건 전달
-		prdGrid.reloadData(); // 그리드 재출력 (readData)
-	});
-
-	// 자재 목록 검색 적용
-	let rowEventOn = true;
-	document.getElementById('mtrSearchBtn').addEventListener('click', () => {
-		// 검색조건 가져오기
-		let searchObj = {
-			mtrilCode: document.getElementById('mtrilCode').value,
-			mtrilName: document.getElementById('mtrilName').value,
-			lclas: document.getElementById('mtr-lclas').value,
-			sclas: document.getElementById('mtr-sclas').value
-		};
-		// 원본 데이터 중 필터링 반영
-		let filtered = mtrData.filter(obj => {
-			return obj.mtrilCode.indexOf(searchObj.mtrilCode) != -1  &&
-						 obj.mtrilName.indexOf(searchObj.mtrilName) != -1 &&
-						 (searchObj.lclas == 'null' ? true : obj.lclas == searchObj.lclas) &&
-						 (searchObj.sclas == 'null' ? true : obj.sclas == searchObj.sclas);
-		});
-		mtrGrid.resetData(filtered);
-		
-		rowEventOn = false; // check 이벤트 appendRow() 임시 방지
-		syncCheck('search');
-		rowEventOn = true;
-	});
-
-	// 체크박스 상태 동기화
-	function syncCheck(type){
-		let currentData = mtrGrid.getData();
-		currentData.forEach(data => {
-			let findArr = selectedMtrGrid.findRows({mtrilCode: data.mtrilCode});
-			
-			if(type == 'search'){
-				if(findArr.length > 0) mtrGrid.check(data.rowKey);
-				else mtrGrid.uncheck(data.rowKey);
-			} else if(type == 'checkAll'){
-				if(findArr.length == 0) mtrGrid.check(data.rowKey);		
-			} else {
-				if(findArr.length > 0) mtrGrid.uncheck(data.rowKey);		
-			}
-		});
-	}
-
-	// 자재 선택 시 그리드 추가/삭제
-	mtrGrid.on('check', ev => {
-		mtrGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가		
-		if(rowEventOn){
-			let row = mtrGrid.getRow(ev.rowKey);
-			let findArr = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode}); // 행 추가 중복오류 방지
-			if(findArr.length > 0) return;
-			selectedMtrGrid.appendRow(row, {focus: true}); // 행 추가
-		}
-	});
-
-	mtrGrid.on('uncheck', ev => {
-		mtrGrid.removeRowClassName(ev.rowKey, 'bg-blue'); // 취소한 행 배경색 삭제
-		if(rowEventOn){
-			let row = mtrGrid.getRow(ev.rowKey); // 선택된 데이터와 취소한 데이터 비교하여 제거
-			let find = selectedMtrGrid.findRows({mtrilCode: row.mtrilCode});
-			selectedMtrGrid.removeRow(find[0].rowKey);
-		}
-	});
-
-	// 전체 선택/해제
-	mtrGrid.on('checkAll', () => {
-		syncCheck('checkAll');
-	});
-
-	mtrGrid.on('uncheckAll', () => {
-		syncCheck('uncheckAll');
-	});
-
-	// 입력값 유효성 검사
-	selectedMtrGrid.on('afterChange', ev => {
-		let changed = ev.changes[0];
-		let rowKey = changed.rowKey;
-		let row = selectedMtrGrid.getRow(rowKey);
-		let val = changed.value;
-		if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-			failToast('입력값은 문자가 들어갈 수 없습니다.');
-			
-			// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
-			row.requireQy = changed.prevValue == null ? 0 : changed.prevValue;
-			selectedMtrGrid.setRow(rowKey, row);
-			return;
-		} else if (val < 0){ // 음수면 양수로 전환 
-			val = val * -1;
-			row.requireQy = val;
-			selectedMtrGrid.setRow(rowKey, row);
-			failToast('입력값은 음수가 될 수 없습니다.');
-		}
-		// 자재 원본 데이터에서 해당하는 rowKey를 찾아 입력값 저장
-		let mtrRowKey;
-		mtrData.forEach((data) => {
-			if(data.mtrilCode == row.mtrilCode){
-				mtrRowKey = data.rowKey;
-				data.requireQy = val;
-				return;
-			}
-		});
-		mtrGrid.setRow(mtrRowKey, row);
-		selectedMtrGrid.startEditing(rowKey + 1, 'requireQy');
-	});
-
-	// 초기화 버튼 동작
-	document.getElementById('resetBtn').addEventListener('click', () => {
-		createModal({ 
-			type: 'confirm',
-			content: '입력한 자재 정보를 모두 초기화하시겠습니까?',
-			confirm(){
-				changeOpt(true);
-			}
-		});
-		$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
-	});
-
-	/******************** BOM 자재 등록 ********************/
-	function insertBom(loading){
-		let selectedBom = selectedMtrGrid.getData();
-		
-		let headerObj = {
-			productCode: selectedPrd.PRODUCT_CODE,
-			productColor: colorBox.value,
-			productSize: sizeBox.value,
-			chargerCode: session_user_code,
-			chargerName: session_user_name
-		};
-		
-		let detailArr = selectedBom.map(obj => {
-			return {
-				mtrilCode: obj.mtrilCode,
-				requireQy: obj.requireQy
-			};
-		});
-		
-		loading();
-		fetch('/supply/bom', {
-			method: 'POST',
-			headers: {...headers, 'Content-Type': 'application/json'},
-			body: JSON.stringify({headerObj, detailArr})
-		})
+	
+	function searchBtn() {
+		fetch('/standard/productListSearch?productCode=' + document.querySelector("#productCode").value
+				 + '&productName=' + document.querySelector("#productName").value
+				 + '&productType=' + document.querySelector("#productType").value
+				 + '&lclas=' + document.querySelector("#lclas").value
+				 + '&sclas=' + document.querySelector("#sclas").value
+				 + '&minPrice=' + document.querySelector("#minPrice").value
+				 + '&maxPrice=' + document.querySelector("#maxPrice").value)
 		.then(response => response.json())
-		.then(result => {
-			console.log(result);
-			if(result == true){
-				successToast('자재명세서가 등록되었습니다.');
-				originBomData = selectedBom; // 비교값을 입력한 값으로 업데이트 (중복 등록 방지)
-				selectedPrd.STATUS = '완료'; // 등록 상태 반영
-				prdGrid.setRow(selectedPrd.rowKey, selectedPrd);
-			} else failToast('알 수 없는 오류로 실패했습니다.');
-		});
-	};
-
-	// 입력값 유효성 검사
-	function validBom(selectedBom){
-		let isZero = false; // 소요량이 0인 값이 있는지 검증
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
+	}
+	
+	function resetBtn() {
+		fetch('/standard/productListAll')
+		.then(response => response.json())
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
+		document.querySelector("#productCode").value = ""
+		document.querySelector("#productName").value = ""
+		document.querySelector("#productType").value = ""
+		document.querySelector("#lclas").value = ""
+		document.querySelector("#sclas").value = ""
+		document.querySelector("#minPrice").value = ""
+		document.querySelector("#maxPrice").value = ""
 		
-		let updatedArr = selectedBom.filter(data => {
-			if(data.requireQy == 0 || data.requireQy == null) { // 수량이 0인 값이 있으면 즉시 종료
-				isZero = true;
-				return false;
-			} else {
-				for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
-					if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
-						return false;
-					}
-				}	
+		document.querySelector("#selectProductCode").value = ""
+		document.querySelector("#selectProductName").value = ""
+		document.querySelector("#unitName").value = ""
+		document.querySelector("#selectProductImg").value = ""
+		document.querySelector("#preview").src = ""
+		document.querySelector("#selectUnitPrice").value = ""
+		document.querySelector("#selectProductType").value = ""
+		document.querySelector("#selectVl").value = ""
+		
+		document.querySelector("#insertBtn").style.display = "block"
+		document.querySelector("#editBtn").style.display = "none"
+		document.querySelector("#categoryBtn").style.display = "none"
+		document.querySelector("#optionBtn").style.display = "none"
+	}
+	
+	let lastClicked = null
+	searchListGrid.on('focusChange', ev => {
+		searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+		searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+		lastClicked = ev.rowKey; 
+		
+		selectedRow = searchListGrid.getRow(ev.rowKey);
+		
+		document.querySelector("#insertBtn").style.display = "none"
+		document.querySelector("#editBtn").style.display = "block"
+		document.querySelector("#categoryBtn").style.display = "block"
+		document.querySelector("#optionBtn").style.display = "block"
+		
+		console.log(selectedRow);
+		console.log(selectedRow.PRODUCT_CODE);
+		if (selectedRow.IMG == null) {
+			document.querySelector("#preview").src = ""
+		} else {
+			document.querySelector("#preview").src = "/img/" + selectedRow.IMG
+		}
+		document.querySelector("#selectProductCode").value = selectedRow.PRODUCT_CODE
+		document.querySelector("#selectProductName").value = selectedRow.PRODUCT_NAME
+		document.querySelector("#selectUnitPrice").value = selectedRow.UNIT_PRICE
+		document.querySelector("#selectProductType").value = selectedRow.PRODUCT_TYPE
+		document.querySelector("#selectVl").value = selectedRow.VL
+		document.querySelector("#unitName").value = selectedRow.UNIT_NAME
+	});
+	
+	function submit_check() {
+		let check = 0;	
+		if (document.querySelector("#selectProductName").value == 0) {
+			failToast("이름을 입력하세요");
+		} else if (document.querySelector("#unitName").value == 0) {
+			failToast("단위를 선택하세요");
+		} else if (document.querySelector("#selectUnitPrice").value == 0) {
+			failToast("단가를 입력하세요");
+		} else if (document.querySelector("#selectProductType").value == 0) {
+			failToast("유형을 선택하세요");
+		} else if (document.querySelector("#selectVl").value == 0) {
+			failToast("부피를 입력하세요");
+		} else {
+			return true;
+		}
+		return false;
+	}
+	
+	function categoryBtn() {
+		$('#categoryModal').modal('show');
+		
+		document.querySelector("#categoryModalProductCode").value = document.querySelector("#selectProductCode").value
+		document.querySelector("#categoryModalProductName").value = document.querySelector("#selectProductName").value
+		
+		fetch('http://localhost:80/standard/categoryLclas')
+		.then((response) => response.json())
+		.then((data) => {
+			let modal_select_lclas = document.querySelector("#modalLclas");
+			modal_select_lclas.innerHTML = "";
+			let o = document.createElement('option');
+			o.setAttribute("value", "");
+			o.setAttribute("disabled", "");
+			o.setAttribute("selected", "");
+			o.innerText = "선택";
+			modal_select_lclas.appendChild(o);
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].lclas);
+				o.innerText = data[i].lclas
+				modal_select_lclas.appendChild(o);
 			}
-			return true; // true인 값만 배열에 남김
-		});
+		})
 		
-		// 입력값 중 0이 있으면 종료
-		if(isZero){
-			failToast('소요량을 모두 입력하지 않았습니다.');
-			return false;
+		fetch('/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value)
+		.then((response) => response.json())
+		.then((data) => {
+			document.getElementById('categoryGrid').replaceChildren()
+			let categoryGrid = new Grid({
+				el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
+		    	data: data,
+		    	columns: [
+		        	{ header: '대분류', name: 'lclas', sortable: true, align: 'center' }, 
+		        	{ header: '소분류', name: 'sclas', sortable: true, align: 'center' }
+		    	],
+		  	scrollX: false, // 가로 스크롤
+		  	scrollY: false // 세로 스크롤
+			})
+		})
+		/*
+		let categoryData = {
+			api: {
+				readData: { url: '/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value, method: 'GET' }
+			},
+			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
 		}
-		// 새로운 값이 하나도 없으면 종료
-		if(updatedArr.length == 0) {
-			failToast('변경된 값이 없습니다.');
-			return false;
-		}
-		return true; // 유효성 검사 통과
+		
+		let searchListGrid = new Grid({
+			el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
+	    	data: categoryData,
+	    	columns: [
+	        	{ header: '대분류', name: 'lclas', width: 100, sortable: true, align: 'center' }, 
+	        	{ header: '소분류', name: 'sclas', width: 100, sortable: true, align: 'center' }, 
+	    	],
+	  	scrollX: false, // 가로 스크롤
+	  	scrollY: false // 세로 스크롤
+		})
+		*/
+	}
+	
+	function modal_lclas_change() {
+		let modal_select_lclas = document.querySelector("#modalLclas");
+		let modal_select_sclas = document.querySelector("#modalSclas");
+		fetch('http://localhost:80/standard/categorySclas?lclas=' + modal_select_lclas.value)
+		.then((response) => response.json())
+		.then((data) => {
+			modal_select_sclas.innerHTML = ""
+			let o = document.createElement('option');
+			o.setAttribute("value", "");
+			o.setAttribute("disabled", "");
+			o.setAttribute("selected", "");
+			o.innerText = "선택";
+			modal_select_sclas.appendChild(o);
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].sclas);
+				o.innerText = data[i].sclas
+				modal_select_sclas.appendChild(o);
+			}
+		})
 	}
 	</script>
 </body>

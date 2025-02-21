@@ -39,12 +39,10 @@ public class OrderServiceImpl implements OrderService {
 
 	// 주문 등록
 	@Override
-	public boolean insertOrder(List<OrderDTO> order) {
-		order.forEach(data -> {
-			System.out.println(data);
-			mapper.insertOrder(data);
-		});
-		return true;
+	public OrderDTO insertOrder(OrderDTO order) {
+			System.out.println(order);
+			mapper.insertOrder(order);
+		return order;
 	}
 
 	// 제품 등록
@@ -60,13 +58,15 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public boolean insertProductOrder(Map<String, Object> product) {
 
-		String productOrderCode = (String) product.get("productCode");
+		String productOrderCode = (String) product.get("productOrderCode");
 
 		List<OrderDTO> odto = (List<OrderDTO>) product.get("option");
-		System.out.println("dsds"+odto);
 		System.out.println("sdsd"+productOrderCode);
+		System.out.println("dsds"+odto);
 		odto.forEach(data -> {
-			mapper.insertProductOrder(data,productOrderCode);
+			data.setProductOrderCode(productOrderCode);
+			System.out.println(data);
+			mapper.insertProductOrder(data);
 		});
 		
 		return true;
@@ -76,5 +76,10 @@ public class OrderServiceImpl implements OrderService {
 	public String getOrderCode() {
 		return mapper.getOrderCode();
 	}
-
+	
+	@Override
+    public List<OrderDTO> getOrderProduct(String productOrderCode) {
+		System.out.println("impl 통신확인");
+        return mapper.getOrderProduct(productOrderCode);
+    }
 }

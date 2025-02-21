@@ -18,8 +18,11 @@ public interface OrderMapper {
 		// 주문 등록
 		int insertOrder(OrderDTO order);
 		// 제품 등록
-		int insertProductOrder(@Param("dto")OrderDTO productOrderList , @Param("productOrderCode")String productOrderCode);
+		int insertProductOrder(OrderDTO productOrderList);
 		
 		// 주문 코드
 		String getOrderCode();
+		
+		// 주문
+		List<OrderDTO> getOrderProduct(String productOrderCode);
 }

@@ -9,12 +9,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/*
+ * 납품 관리 페이지 검색 결과 화면 출력용 DTO (공급업체, 제조업체 둘 다 사용)
+ * */
 @Data
 @NoArgsConstructor
 public class OrderProductDeliveryDTO {
-	//납품 검색 결과 화면 출력용 DTO
-	//주문코드, 납품코드, 업체코드, 구매 업체명, 요약, 상태, 납품담당자, 주문일, 납기일
+	
 	private String productOrderCode;
+	private String mtrilOrderCode;
 	private String deliveryCode;
 	private String companyCode;
 	private String company;
@@ -27,5 +31,5 @@ public class OrderProductDeliveryDTO {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date dedt;
 	private String orderStatus;
-	
+	private String remark;
 }
