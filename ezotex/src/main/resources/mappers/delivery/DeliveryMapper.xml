@@ -139,8 +139,8 @@
 		    --회사정보
 		    SELECT cp.company_code AS company_code,
 		           al.address_main || ' ' || al.address_info AS address -- 주소 결합 시 공백 추가
-		    FROM company cp 
-		    JOIN address_list al ON cp.address_seq = al.address_seq
+		    FROM company cp JOIN address_list al 
+		                      ON cp.address_seq = al.address_seq
 		)
 		-- 주문번호, 주문담당자, 주문수량, 금액합계, 주소, 제품코드, 제품명
 		SELECT m.product_order_code AS product_order_code,

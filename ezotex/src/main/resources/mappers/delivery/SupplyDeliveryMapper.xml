@@ -93,4 +93,10 @@
 		WHERE   md.mtril_order_code = #{orderCode}
 	</select>
 	
+	<select id="getAddress">
+		SELECT address_main || ' ' || al.address_info AS address
+		FROM   company cy JOIN address_list al
+		                    ON (cy.address_seq = al.address_seq)
+		WHERE company_code = #{companyCode}
+	</select>
 </mapper>

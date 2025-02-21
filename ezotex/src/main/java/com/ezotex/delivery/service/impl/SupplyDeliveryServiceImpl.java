@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.mappers.DeliveryMapper;
 import com.ezotex.delivery.mappers.SupplyDeliveryMapper;
@@ -41,6 +42,15 @@ public class SupplyDeliveryServiceImpl implements SupplyDeliveryService {
 	public List<OrderInsertDTO> orderInfo(String orderCode) {
 		return mapper.orderInfo(orderCode);
 	}
+
+	@Override
+	public OrderInfoDTO getAddress(String CompanyCode) {
+		OrderInfoDTO oInfo = new OrderInfoDTO();
+		oInfo.setAddress(mapper.getAddress(CompanyCode));
+		return oInfo;
+	}
+	
+	
 
 
 

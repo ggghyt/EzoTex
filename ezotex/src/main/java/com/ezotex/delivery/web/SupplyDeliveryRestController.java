@@ -3,6 +3,7 @@ package com.ezotex.delivery.web;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.service.SupplyDeliveryService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @RequestMapping("/delivery/*")
 public class SupplyDeliveryRestController {
-	
 
 	//납품 관리
 	private SupplyDeliveryService service;
@@ -43,6 +44,7 @@ public class SupplyDeliveryRestController {
 		searchDTO.setEnd(paging.getLast());		//끝번호
 		
 		paging.setTotalRecord(service.getCount(searchDTO));
+
 		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.getList(searchDTO));
 	}
 	

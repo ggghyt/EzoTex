@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 
 public interface SupplyDeliveryService {
@@ -12,5 +13,7 @@ public interface SupplyDeliveryService {
 	public int getCount(DeliveryRegistSearchDTO searchDTO);
 	
 	public List<OrderInsertDTO> orderInfo(String orderCode);
+	
+	public OrderInfoDTO getAddress(String CompanyCode);
 	
 }
