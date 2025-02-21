@@ -701,21 +701,27 @@
 	    	        let color = rowData.PRODUCT_COLOR;	 // 제품 색상
     	        	let inputCol = "DE" + columnName;	 //사용자가 수량을 입력하는 컬럼
 	    	        
-    	        	if(change.value < 0) {
-    	        		failToast('입력값은 음수가 될 수 없습니다.');
-   	        	    	return;
-    	        	}
+    	        	if(newValue == 0) return; 
     	        	
-	   	        	if(isNaN(change.value)){ // 입력값이 숫자가 아닌 경우
-	   	        	        failToast('입력값은 문자가 들어갈 수 없습니다.');
-	   	        	        return;
-	   	        	}
+        	        if(change.value < 0) {
+    	        		failToast('입력값은 음수가 될 수 없습니다.');
+    	        		rowData[inputCol] = null;
+    	        		productDetailgrid.setRow(change.rowKey, rowData);
+    	        	    return;
+    	        	}
+        	        
+        	        if(isNaN(newValue)) {
+        	        	failToast('입력값은 문자가 들어갈 수 없습니다.');
+        	        	rowData[inputCol] = null;
+        	        	productDetailgrid.setRow(change.rowKey, rowData);
+    	        	    return;
+        	        }
     	        	
     	        	//console.log('행데이터', rowData);
 	    	        //console.log('입력한 행 정보: ', rowData);
 	    	        //console.log('컬럼명: ', columnName);
 	    	        //값 변경이 없을경우 종료
-	    	        if(newValue == 0) return; 
+	    	        
 	    	        
 	    	        //요청수량 컬럼
 	    	        let reqQy = 'RE' + columnName;
