@@ -17,4 +17,7 @@ public interface SupplyDeliveryMapper {
 	
 	//발주 상세내용
 	public List<OrderInsertDTO> orderInfo(@Param("orderCode")String orderCode);
+	
+	//주소 가져오기
+	public String getAddress(@Param("companyCode")String companyCode);
 }

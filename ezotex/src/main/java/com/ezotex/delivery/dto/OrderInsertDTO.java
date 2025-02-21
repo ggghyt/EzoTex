@@ -38,6 +38,7 @@ public class OrderInsertDTO {
 	private String updde;			//수정일
 	private Integer time;			//회차(분할배송)
 	private Integer amount;			//총 합계 금액
+	private String divyCompanyCode;	//출고 주문 회사 코드(공급회사 사용)
 	
 	//제품정보
 	private String productCode;		//제품 코드

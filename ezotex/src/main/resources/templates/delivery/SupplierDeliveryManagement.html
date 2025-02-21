@@ -400,7 +400,7 @@
 				{ header: "자재코드", name: "productCode"},
 				{ header: "자재명", name: "productName"},
 				{ header: "색상", name: "productColor"},
-				{ header: "업체단가", name: "unitPrice", align: 'right', formatter:(row)=>numberFormmater(row.value)},
+				{ header: "업체단가", name: "unitPrice", align: 'right', formatter:(row)=>numberFormmater(row.value)},		//numberFormmatter로 함수명 변경됨. 바꾸기
 				{ header: "발주량", name: "reqQy", align: 'right', formatter:(row)=>numberFormmater(row.value)},
 				{ header: "잔여량", name: "restQy", align: 'right', formatter:(row)=>numberFormmater(row.value)},
 				{ header: "납품량", name: "deliveryQy", editor: 'text', align: 'right', formatter:(row)=>numberFormmater(row.value)}
@@ -471,6 +471,9 @@
 		
 		//클릭된 행 기억하기 위한 변수
 		let lastClicked = null;
+
+		//분할출고 여부 가지는 변수
+       	let isDivyCnt = 0;
 		
 		//주문 상세 데이터 모두 가져오기
         orderListGrid.on('focusChange', ev => {
@@ -621,10 +624,40 @@
         	location.href = location.href;
         })
         
+        //입력시 서버로 보낼 데이터
+        //let sendData = [];
+        function makeData() {
+			//마스터 정보
+			console.log(orderInfo);
+			
+			let totalPrice = 0;
+			orderInfo.forEach(ele => {
+				totalPrice += ele.deliveryQy * unitPrice;
+			})
+			
+			let masterObj = {
+				companySe : 'CP01',
+				productOrderCode: document.querySelector(".read-orderCode").value,
+				companyCode: 'COM0001',
+				companyName: '예담 직업 전문 학교',
+				dedtAddress: '대구 중구 중앙대로 403 태왕아너스타워 5층',
+				deliveryStatus: isDivyCnt == 0 ? 'RS03' : 'RS02',
+				remark: document.querySelector(".read-memo").value,
+				chargerCode: session_user_code,
+				chargerName: session_user_name,
+				amount: totalPrice,
+				divyCompanyCode: session_user_code
+			}
+			console.log(masterObj);
+			//디테일 정보
+			
+		}
         
         
         //등록 데이터 보내기 통신 + 잔여량 모달 출력
         function sendData() {
+        	
+        	makeData();
 			//잔여량 모달에 데이터 보여줄 내용 배열 객체 변수
 			orderInfo.forEach(ele => {
 				//showQy는 출고 후 잔여량
@@ -638,13 +671,16 @@
 			//잔여량 출력 모달
         	const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
         	restQyModal.show();
+        	
+        	isDivyCnt = 0;
+        	
 		}
 		
-		
+
+       	
         /* 납품 등록 */
         document.querySelector('.deliveryRegistBtn').addEventListener('click', () => {
         	//출고 수량이 부족한 경우 확인을 위한 변수
-        	let isDivyCnt = 0;
         	orderInfo.forEach(ele => {
         		//출고 수량이 부족한 경우
         		if(ele.restQy > ele.deliveryQy) {
