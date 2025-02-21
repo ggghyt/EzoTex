@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.storageInfoDTO;
 import com.ezotex.store.mappers.InventoryMapper;
 import com.ezotex.store.mappers.StoreMapper;
 import com.ezotex.store.service.InventoryService;
@@ -68,6 +69,11 @@ public class InventoryServiceImpl implements InventoryService {
 		mapper.InsertErrorProduct(edto, name);
 		mapper.InventoryUpdate(edto);
 		return true;
+	}
+
+	@Override
+	public List<storageInfoDTO> storageInfoList() {
+		return mapper.storageInfoList();
 	}
 
 	

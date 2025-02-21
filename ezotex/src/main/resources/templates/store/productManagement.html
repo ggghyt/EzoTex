@@ -1,235 +1,248 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      layout:fragment="content">
-	<head>
-		<meta charset="UTF-8">
-		<title>이조텍스SCM</title>
-		<!-- timePicker -->
-		<link rel="stylesheet"
-			href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
-		<script
-			src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
-		
-		<!-- datePicker -->
-		<link rel="stylesheet"
-			href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
-		<script
-			src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
-		
-		<!-- paging -->
-		<link rel="stylesheet"
-			href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
-		<script
-			src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
-		
-		<!-- toast grid -->
-		<link rel="stylesheet"
-			href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-		<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-		
-		
-		<style type="text/css">
-			.custom-dropdown-container {
-    position: relative;
-    width: 100%;
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+
+
+<style type="text/css">
+.custom-dropdown-container {
+	position: relative;
+	width: 100%;
 }
 
 .custom-dropdown-input {
-    width: 100%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+	width: 100%;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 
 .custom-dropdown-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 150px;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #ccc;
-    border-top: none;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: none;
-    z-index: 1000;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	max-height: 150px;
+	overflow-y: auto;
+	background: white;
+	border: 1px solid #ccc;
+	border-top: none;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: none;
+	z-index: 1000;
 }
 
 .custom-dropdown-item {
-    padding: 8px;
-    cursor: pointer;
+	padding: 8px;
+	cursor: pointer;
 }
 
 .custom-dropdown-item:hover {
-    background: #f0f0f0;
+	background: #f0f0f0;
 }
-			
-		</style>
-		
-		
-	</head>
-	<body>
-	
-		<!-- 경고 모달 -->
-		<button type="button" class="btn btn-warning registBtn" data-bs-toggle="modal" data-bs-target="#modifyMOdal" hidden="true">
-			    수정
-			  </button>
-		
-		
-		
-		<div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		        <div class="modal-dialog">
-		          <div class="modal-content">
-		            <div class="modal-header" style="height: 20px;">
-		              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
-		              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		            </div>
-		            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
-		              <div>
-		                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
-		              </div>
-		              <div>
-		                <p style="margin-top: 12px;
-		                font-size: 21px;
-		                font-weight: bold;">경고</p>
-		                <p id="modalText"></p>
-		              </div>
-		            </div>
-		            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
-		              <!---->
-		              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
-		            </div>
-		          </div>
-		        </div>
-		      </div>	
-		<!-- 경고 모달 END -->
-		
-		<!-- 위치이동 모달 -->
-		<div class="modal fade" id="exampleModal" tabindex="-1"
-			aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-xl">
-				<div class="modal-content">
-					<div class="modal-header"></div>
-					<div class="card">
-						<div class="card-body">
-							<div class="mb-3 row">
-								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputPassword"
-										style="width: 200px;">
-								</div>
+</style>
+
+
+</head>
+<body>
+
+	<!-- 경고 모달 -->
+	<button type="button" class="btn btn-warning registBtn"
+		data-bs-toggle="modal" data-bs-target="#modifyMOdal" hidden="true">
+		수정</button>
+
+
+
+	<div class="modal fade" id="modifyMOdal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">수정 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/modify.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">경고</p>
+						<p id="modalText"></p>
+					</div>
+				</div>
+				<div class="modal-footer modify"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" class="btn btn-outline-warning checkBtn"
+						data-bs-dismiss="modal">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 경고 모달 END -->
+
+	<!-- 위치이동 모달 -->
+	<div class="modal fade" id="exampleModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header"></div>
+				<div class="card">
+					<div class="card-body">
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
 							</div>
-							<div class="mb-3 row">
-								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" 
-										style="width: 200px;">
-								</div>
-							</div>
-	
-							<div id="modalGrid"></div>
 						</div>
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" style="width: 200px;">
+							</div>
+						</div>
+
+						<div id="modalGrid"></div>
 					</div>
-					<div style="text-align: center; margin: 20px;">
-						<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
-						<button type="button" class="btn btn-inverse-dark btn-fw"
-							data-bs-dismiss="modal">취소</button>
-					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" id="locationUpdate" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
 		</div>
-		<!-- 위치이동 모달 END -->
-		
-		
-	
-		<h3 class="fs-3 fw-bold">| 재고 조정</h3>
-		<div class="card card-body mt-3">
-			<div class="col-12 card card-body m-2">
-				<div class="row g-3 align-items-center">
-					<div class="col-auto">
-						<label class="col-form-label">납품코드</label>
-					</div>
-					<div class="col-auto">
-						<input type="text"  class="form-control">
-					</div>
-				</div>
-				<div class="row g-3 align-items-center">
-					<div class="col-auto">
-						<label class="col-form-label">검색조건2</label>
-					</div>
-					<div class="col-auto">
-						<input type="text"  class="form-control">
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		
-		<div class="row">
-			<div class="col-6 card card-body m-2">
-				<p class="fs-5 fw-bolder mt-2">재고 현황</p>
-				<div class="modal-footer regist"
-					style="display: flex; justify-content: flex-end; border-top: none;">
-					<button class="btn btn-warning" id="productLocation" style="width:110px">위치이동</button>
-					<button class="btn btn-danger" id="productError" style="width:110px">불량처리</button>
-				</div>
-				<div id="Management"></div>
-			</div>
+	</div>
+	<!-- 위치이동 모달 END -->
 
 
-				<div class="col-4 card card-body m-2">
-					<p class="fs-5 fw-bolder mt-2">재고조정 불량처리</p>
-					<div class="form-group" style="margin-top: 37px;">
-					  <p class="fs-5 fw-bolder mt-2">선택 재고</p>
-					  <label style="font-weight: bold;">제품코드</label>
-	                  <input type="text" class="form-control form-control-lg" name="productCode" placeholder="" id="productCode" readonly>
-	                </div>
-	                <div class="form-group">
-	                  <label style="font-weight: bold;">제품명</label>
-	                  <input type="text" class="form-control form-control-lg" name="productName" placeholder="" id="productName" readonly>
-	                </div>
-	                <div class="form-group">
-	                  <label style="font-weight: bold;">LOT번호</label>
-	                  <input type="text" class="form-control form-control-lg" name="lot" placeholder="" id="lot" readonly>
-	                </div>
-	                <div class="form-group">
-	                  <label style="font-weight: bold;">제품수량</label>
-	                  <input type="text" class="form-control form-control-lg" name="productQy" placeholder="" id="productQy" readonly>
-	                </div>
-	                <div class="form-group">
-	                  <label style="font-weight: bold;">색상</label>
-	                  <input type="text" class="form-control form-control-lg" name="productColor" placeholder="" id="color" readonly>
-	                </div>
-	                <div class="form-group">
-	                  <label style="font-weight: bold;">사이즈</label>
-	                  <input type="text" class="form-control form-control-lg" name="productSize" placeholder="" id="size" readonly >
-	                </div>
-	                <div class="modal-footer regist"
-						style="display: flex; justify-content: center; border-top: none;">
-		                <label style="font-weight: bold;">불량처리 할 수량</label>
-		                <input type="text" id="errorQy" class="form-control form-control-lg" name="errorQy" placeholder=""  style="width: 200px;">
-		                <label style="font-weight: bold;">불량사유</label>
-		                <div class="form-group">
-		                    <select name="errorInfo" class="form-control form-control-lg" id="exampleFormControlSelect1" style="width: 200px; margin-top: 20px;">
-		                      <option value="변색">변색</option>
-		                      <option value="찢어짐">찢어짐</option>
-		                    </select>
-		                </div> 
-		                <!-- <input type="text" id="errorInfo" class="form-control form-control-lg" name="" placeholder="폐기" readonly style="width: 200px;"> -->
-	                </div>	
+
+	<h3 class="fs-3 fw-bold">| 재고 조정</h3>
+	<div class="card card-body mt-3">
+		<div class="col-12 card card-body m-2">
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">납품코드</label>
 				</div>
-				<div class="modal-footer regist"
-						style="display: flex; justify-content: flex-end; border-top: none;">
-						<button id="InsertError" class="btn btn-danger"  style="width:110px">불량처리</button>
-						<button type="reset" class="btn btn-secondary" style="width:110px">초기화</button>
+				<div class="col-auto">
+					<input type="text" class="form-control">
 				</div>
+			</div>
+			<div class="row g-3 align-items-center">
+				<div class="col-auto">
+					<label class="col-form-label">검색조건2</label>
+				</div>
+				<div class="col-auto">
+					<input type="text" class="form-control">
+				</div>
+			</div>
 		</div>
-		
-		<script>
+	</div>
+
+
+	<div class="row">
+		<div class="col-6 card card-body m-2">
+			<p class="fs-5 fw-bolder mt-2">재고 현황</p>
+			<div class="modal-footer regist"
+				style="display: flex; justify-content: flex-end; border-top: none;">
+				<button class="btn btn-warning" id="productLocation"
+					style="width: 110px">위치이동</button>
+				<button class="btn btn-danger" id="productError"
+					style="width: 110px">불량처리</button>
+			</div>
+			<div id="Management"></div>
+		</div>
+
+
+		<div class="col-4 card card-body m-2">
+			<p class="fs-5 fw-bolder mt-2">재고조정 불량처리</p>
+			<div class="form-group" style="margin-top: 37px;">
+				<p class="fs-5 fw-bolder mt-2">선택 재고</p>
+				<label style="font-weight: bold;">제품코드</label> <input type="text"
+					class="form-control form-control-lg" name="productCode"
+					placeholder="" id="productCode" readonly>
+			</div>
+			<div class="form-group">
+				<label style="font-weight: bold;">제품명</label> <input type="text"
+					class="form-control form-control-lg" name="productName"
+					placeholder="" id="productName" readonly>
+			</div>
+			<div class="form-group">
+				<label style="font-weight: bold;">LOT번호</label> <input type="text"
+					class="form-control form-control-lg" name="lot" placeholder=""
+					id="lot" readonly>
+			</div>
+			<div class="form-group">
+				<label style="font-weight: bold;">제품수량</label> <input type="text"
+					class="form-control form-control-lg" name="productQy"
+					placeholder="" id="productQy" readonly>
+			</div>
+			<div class="form-group">
+				<label style="font-weight: bold;">색상</label> <input type="text"
+					class="form-control form-control-lg" name="productColor"
+					placeholder="" id="color" readonly>
+			</div>
+			<div class="form-group">
+				<label style="font-weight: bold;">사이즈</label> <input type="text"
+					class="form-control form-control-lg" name="productSize"
+					placeholder="" id="size" readonly>
+			</div>
+			<div class="modal-footer regist"
+				style="display: flex; justify-content: center; border-top: none;">
+				<label style="font-weight: bold;">불량처리 할 수량</label> <input
+					type="text" id="errorQy" class="form-control form-control-lg"
+					name="errorQy" placeholder="" style="width: 200px;"> <label
+					style="font-weight: bold;">불량사유</label>
+				<div class="form-group">
+					<select name="errorInfo" class="form-control form-control-lg"
+						id="exampleFormControlSelect1"
+						style="width: 200px; margin-top: 20px;">
+						<option value="변색">변색</option>
+						<option value="찢어짐">찢어짐</option>
+					</select>
+				</div>
+				<!-- <input type="text" id="errorInfo" class="form-control form-control-lg" name="" placeholder="폐기" readonly style="width: 200px;"> -->
+			</div>
+		</div>
+		<div class="modal-footer regist"
+			style="display: flex; justify-content: flex-end; border-top: none;">
+			<button id="InsertError" class="btn btn-danger" style="width: 110px">불량처리</button>
+			<button type="reset" class="btn btn-secondary" style="width: 110px">초기화</button>
+		</div>
+	</div>
+
+	<script>
 		
 		
 			const ManagementData = {
@@ -389,7 +402,8 @@
 					},
 					{ header: "재고수량", name: "inventoryQy", align: "center", editor: 'text' }
 				],
-				data: []
+				data: [],
+				      
 			})
 			
 			
@@ -407,6 +421,20 @@
 		   	*========================================================================
 		   	*/
 		   	
+		   	// 체인지 이벤트 데이터 저장 처리
+		   	modalGrid.on('afterChange', ev => {
+		   		let data = ev.changes.rowData;
+		   		let rowData = modalGrid.getRow(ev.rowKey);
+		   		console.log('key : ', rowData);
+		   		console.log('ev : ', ev);
+		   	})
+
+		   	
+		   	
+		   	// 클릭 이벤트 처리
+		   	locationUpdate.addEventListener("click", function(){
+		   		
+		   	})
 		   	
 		   	
 		   	/*
@@ -460,7 +488,31 @@
 			productLocation.addEventListener("click", function (){
 				let check = ManagementGrid.getCheckedRows();
 				let data = []
+			    let listItems = [];
+
 				
+			    // 서버에서 데이터 가져오기
+			    fetch(`http://localhost:80/store/storageInfoList`, {
+			        method: 'GET',
+			    })
+			    .then(req => req.json())
+			    .then(result => {
+			        listItems = result.map(data => ({
+			            text: data.storageInfoCode,
+			            value: data.storageInfoCode
+			        }));
+			        console.log('listItems', listItems);
+			        modalGrid.setColumns("storageLocation", {
+			            editor: {
+			                type: SearchableSelectEditor,
+			                options: { listItems }  // 업데이트된 listItems 적용
+			            }
+			        });
+			        
+			    })
+				
+   
+
 				if(check.length > 0){
 					for(let i = 0; i < check.length; i++){
 						data.push(check[i]);
@@ -586,5 +638,5 @@
 			
 			
 		</script>
-	</body>
+</body>
 </html>
