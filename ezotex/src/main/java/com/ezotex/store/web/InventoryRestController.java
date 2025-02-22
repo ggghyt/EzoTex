@@ -17,6 +17,7 @@ import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.storageInfoDTO;
 import com.ezotex.store.service.InventoryService;
 import com.ezotex.store.service.StoreService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -117,6 +118,13 @@ public class InventoryRestController {
 	@PostMapping("InsertProductError")
 	public boolean InsertProductError(@RequestBody ErrorProductDTO edto) {
 		return iService.InsertErrorProduct(edto);
+	}
+	
+	
+	// 창고 위치코드 리스트
+	@GetMapping("storageInfoList")
+	public List<storageInfoDTO> storageInfoList(){
+		return iService.storageInfoList();
 	}
 
 

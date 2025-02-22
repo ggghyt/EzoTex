@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.storageInfoDTO;
 
 public interface InventoryMapper {
 
@@ -27,5 +28,8 @@ public interface InventoryMapper {
 	
 	// 불량처리 후 재고량 업데이트
 	public int InventoryUpdate(ErrorProductDTO edto);
+	
+	// 창고 위치 코드 리스트
+	public List<storageInfoDTO> storageInfoList();
 	
 }
