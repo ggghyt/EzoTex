@@ -1,5 +1,6 @@
 package com.ezotex.delivery.web;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,10 +66,14 @@ public class SupplyDeliveryRestController {
 		return service.orderInfo(orderCode);
 	}
 	
-	@PostMapping("insertMtrilOrderInfo")
+	@PostMapping("supplyDeliveryRegist")
 	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
+		log.info("====================================================================");
+		log.info(insertData.toString());
 		
-		return null;
+		Map<String, String> map = new HashMap<>();
+		map.put("state", service.insertDelivery(insertData));
+		return map;
 	}
 
 }

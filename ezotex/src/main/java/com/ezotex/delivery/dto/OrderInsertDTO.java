@@ -21,7 +21,7 @@ public class OrderInsertDTO {
 	
 	//제품 주문정보
 	private String deliveryCode; 	//출고코드
-	private String orderStatus;		//주문 상태	--> OR06이면 부분출고
+	private String orderStatus;		//주문 상태	
 	private String companySe;		//회사 구분(공급업체에서 사용하는지, 제조업체에서 사용하는지)
 	private String productOrderCode;//제품 주문 코드(제조업체 -> 구매업체)
 	private String companyCode;		//받는 업체 코드

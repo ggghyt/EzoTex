@@ -11,7 +11,7 @@ const dateFormmater = function(value){
 
 // 천 단위 콤마 숫자 포맷 함수 (9,999,999)
 function numberFormmater(value){ // 그리드 내부 포맷으로 사용 시 row.value
-	return Number(value).toLocaleString() 
+	return (value == null || value == '') ? null : Number(value).toLocaleString();
 };
 
 //사이즈 입력 -> 공통코드 리턴 함수
