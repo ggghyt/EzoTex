@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SupplyServiceImpl implements SupplyService {
 	
 	private final SupplyMapper mapper;
+	private final ObjectMapper objMapper;
 
 	@Override
 	public List<ProductDTO> listProduct(ProductDTO product) {
@@ -49,10 +50,10 @@ public class SupplyServiceImpl implements SupplyService {
 	@Transactional
 	public boolean insertSupplyPlan(Map<String, Object> supplies) {
 		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
-		int headerResult = mapper.insertSupplyPlan(supplies.get("headerObj"));
-		
 		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
-		ObjectMapper objMapper = new ObjectMapper();
+		SupplyDTO header = objMapper.convertValue(supplies.get("headerObj"), SupplyDTO.class); // DTO로 변환
+		int headerResult = mapper.insertSupplyPlan(header);
+		
 		List<Object> detailList = (List<Object>) supplies.get("detailArr");
 		
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교

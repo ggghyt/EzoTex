@@ -65,6 +65,7 @@
 		       p.product_name mtril_name,
 		       get_comm(p.unit_name) unit_name,
 		       d.require_qy,
+		       d.mtril_color,
 		       c.lclas,
      		   c.sclas,
      		   b.rgsde,

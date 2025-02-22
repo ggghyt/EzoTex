@@ -95,10 +95,11 @@ class CustomSelectBox {
 		let rowKey = e.target.id; // 선택한 색상배열 인덱스
 		mtrData[rowKey].mtrilColor = e.target.value; // 선택한 색상 반영
 		
-		//selectedMtrGrid.check(rowKey);
 		let selectedRow = selectedMtrGrid.getRow(rowKey);
-		selectedRow.mtrilColor = e.target.value;
-		selectedMtrGrid.setRow(rowKey, selectedRow); // 다른 그리드에도 반영
+		if(selectedRow != null){
+			selectedRow.mtrilColor = e.target.value;
+			selectedMtrGrid.setRow(rowKey, selectedRow); // 다른 그리드에도 반영			
+		}
     });
     this.el = el;
     this.render(props);

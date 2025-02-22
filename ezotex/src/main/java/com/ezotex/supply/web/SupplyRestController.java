@@ -38,30 +38,6 @@ public class SupplyRestController {
 		return map;
 	}
 	
-	// 단순 제품 목록
-	@GetMapping("productList")
-	public Map<String, Object> productList(ProductDTO product) { // 검색 조건 파라미터
-		log.info(product.toString());
-		int totalCnt = bomService.countProduct(product);
-		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listProduct(product));
-		log.info(map.toString());
-		return map;
-	}
-	
-	// (공급계획서) 해당 제품의 색상+사이즈 집계
-	@GetMapping("optionPivot/{productCode}")
-	public Map<String, Object> optionPivot(@PathVariable String productCode) { // 검색 조건 파라미터
-		Map<String, Object> map = GridUtil.grid(0, 0, service.pivotProductOption(productCode));
-		return map;
-	}
-	
-	// (공급계획서) 해당 제품의 색상 or 사이즈 일괄 목록
-	@GetMapping("optionList/{productCode}")
-	public Map<String, Object> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
-		Map<String, Object> map = GridUtil.grid(0, 0, service.findOptions(productCode));
-		return map;
-	}
-	
 	// 해당 제품의 색상 목록
 	@GetMapping("options/{prdCode}")
 	public List<ProductDTO> sizeList(@PathVariable String prdCode) {
@@ -87,9 +63,42 @@ public class SupplyRestController {
 	
 	// bom 등록
 	@PostMapping("bom")
-	public Boolean insertBom(@RequestBody Map<String, Object> bomlist) {
-		log.info("bom::: " + bomlist.toString());
-		return bomService.insertBom(bomlist); // true/false 반환
+	public Boolean insertBom(@RequestBody Map<String, Object> bomList) {
+		log.info("bom::: " + bomList.toString());
+		return bomService.insertBom(bomList); // true/false 반환
+	}
+	
+	
+	// 공급계획서
+	// 단순 제품 목록
+	@GetMapping("productList")
+	public Map<String, Object> productList(ProductDTO product) { // 검색 조건 파라미터
+		log.info(product.toString());
+		int totalCnt = bomService.countProduct(product);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listProduct(product));
+		log.info(map.toString());
+		return map;
+	}
+	
+	// (공급계획서) 해당 제품의 색상 and 사이즈 집계
+	@GetMapping("optionPivot/{productCode}")
+	public Map<String, Object> optionPivot(@PathVariable String productCode) { // 검색 조건 파라미터
+		Map<String, Object> map = GridUtil.grid(0, 0, service.pivotProductOption(productCode));
+		return map;
+	}
+	
+	// (공급계획서) 해당 제품의 색상 or 사이즈 일괄 목록
+	@GetMapping("optionList/{productCode}")
+	public Map<String, Object> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
+		Map<String, Object> map = GridUtil.grid(0, 0, service.findOptions(productCode));
+		return map;
+	}
+	
+	// bom 등록
+	@PostMapping("plan")
+	public Boolean insertSupplyPlan(@RequestBody Map<String, Object> supplyList) {
+		log.info("planData::: " + supplyList.toString());
+		return service.insertSupplyPlan(supplyList); // true/false 반환
 	}
 	
 }

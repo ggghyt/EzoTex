@@ -11,15 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	createModal({ 
 		type: 'regist',
-		confirm: null,
+		confirm: insertPlan,
 		loading: false
 	});
 	$('#insertBtn').on('click', () => {
 		let supplyPlan = supplyGrid.getData();
 		if(supplyPlan.length == 0) return; // 아무것도 입력되지 않았으면 종료
-		let isValid = validCheck(supplyPlan);
-		if(!isValid) return; // 유효성 검사 실패 시 종료
-		$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
+		$('#simpleModal').modal('show'); // 입력값이 있다면 등록 모달 표시
 	});
 });
 
@@ -85,7 +83,7 @@ class CustomCheckRender {
   constructor(props) {
 	const el = document.createElement('i');
 	el.classList = 'fa-solid fa-check';
-	el.style = `color: #34b1aa; display: ${props.value == null ? 'none' : 'block'}`;
+	el.style = `color: #4b96e6; display: ${props.value == null ? 'none' : 'block'}`;
     this.el = el;
     this.render(props);
   }
@@ -207,7 +205,7 @@ function loadBlankGrid(productCode){
 	});
 }
 
-// 사이즈/색상 중 한 가지만 있거나 단일 제품인 경우
+// 사이즈/색상 중 한 가지만 있거나 단일제품인 경우
 async function loadBlankList(productCode){
 	let result = await fetch(`/supply/optionList/${productCode}`)
 	.then(response => response.json())
@@ -227,9 +225,10 @@ async function loadBlankList(productCode){
 			// 컬럼, 데이터 반영
 			if(sizeCnt > 0) columns.push({ header: "사이즈", name: "sizeName" });
 			else columns.push({ header: "색상", name: "productColor" });
+			data.forEach(obj => obj.qy = 0); // null과 구분하기 위해 기본값 넣음.
 			optionGrid.resetData(data);
 		} else {
-			// 옵션이 없는 단일 제품인 경우 빈 입력칸 생성
+			// 옵션이 없는 단일제품인 경우 빈 입력칸 생성
 			optionGrid.resetData([{qy: 0}]);		
 		}
 		columns.push({ header: "수량", name: "qy", editor: 'text', align: 'right', 
@@ -281,7 +280,6 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 /******************** 제품별 공급계획 입력 ********************/	
 // 수량 입력 가능한지 체크하여 입력 방지
 optionGrid.on('click', ev => {
-	console.log(ev);
 	let clicked = optionGrid.getRow(ev.rowKey);
 	if(clicked[ev.columnName] == -1){
 		failToast('입력할 수 없는 옵션입니다.');
@@ -454,6 +452,81 @@ function checkDate(dateStr){
 }
 
 /******************** 공급계획 일괄 등록 ********************/	
-function insertPlan(){
+function insertPlan(loading){
+	let planArr = supplyGrid.getData();
+	let detailArr = []; // 데이터 입력용 디테일
+	console.log(planArr);
 	
+	// 각 행의 allData 배열에 담아둔 모든 입력정보로 디테일 입력
+	planArr.forEach(plan => {
+		// 옵션유형 판단
+		let optType = null;
+		// 'noOpt': 단일제품인 경우. qy(수량)만 존재
+		// 'sizeOpt' or 'colorOpt': 색상/사이즈 중 하나는 있는 경우. qy와 productColor 또는 productSize, sizeName 존재 
+		// 'multiOpt': 색상/사이즈 모두 있는 경우 qy 없음. {PRODUCT_COLOR, SI~~, SI~~... : 수량 다중값}
+		if(typeof(plan.allData[0].qy) == 'undefined' || plan.allData[0].qy == null) optType = 'multiOpt';
+		else if(plan.allData[0].productSize != null) optType = 'sizeOpt'
+		else if(plan.allData[0].productColor != null) optType = 'colorOpt';
+		else optType = 'noOpt'; // 색상, 사이즈 없고 qy만 있으면 단일제품
+		
+		// 수량이 있는 데이터만 디테일데이터에 입력 (공백, 0 체크)
+		let sizeCodes = null;
+		plan.allData.forEach((data, idx) => {
+			if(optType == 'multiOpt'){
+				if(idx == 0){ // SI로 시작하는 사이즈 코드만 분리
+					sizeCodes = Object.keys(data).filter(key => key.substr(0,2) == 'SI');
+				}
+				sizeCodes.forEach(size => {
+					if(data[size] > 0 && data[size] != '0' && data[size] != ''){
+						detailArr.push({
+							productCode: plan.productCode,
+							productColor: data.PRODUCT_COLOR,
+							productSize: size,
+							supplyQy: data[size],
+							supplyDate: plan.supplyDate
+						});	
+					}
+				});	
+			} else { // 다중 옵션이 아닌 경우 기본값
+				if(data.qy == '0' || data.qy == '') return;
+				let dtlObj = {
+					productCode: plan.productCode,
+					supplyQy: data.qy,
+					supplyDate: plan.supplyDate
+				};
+				if(optType == 'sizeOpt'){ // 사이즈만 있는 데이터
+					dtlObj.productSize = data.productSize;
+				} else if(optType == 'colorOpt'){ // 색상만 있는 데이터
+					dtlObj.productColor = data.productColor;
+				}
+				detailArr.push(dtlObj);
+			}
+		});
+	});
+	console.log('디테일:: ', detailArr);
+	
+	// 헤더 정보 #{supplyYear}, #{season}, #{chargerCode}, #{chargerName}, #{remark}
+	let headerObj = {
+		supplyYear: yearBox.value,
+		season: seasonBox.value,
+		chargerCode: session_user_code,
+		chargerName: session_user_name,
+		remark: document.getElementById('remark').value
+	};
+	console.log('헤더:: ', headerObj);
+	
+	loading();
+	fetch('/supply/plan', {
+		method: 'POST',
+		headers: {...headers, 'Content-Type': 'application/json'},
+		body: JSON.stringify({headerObj, detailArr})
+	})
+	.then(response => response.json())
+	.then(result => {
+		console.log(result);
+		if(result == true){
+			successToast('공급계획서가 등록되었습니다.');
+			supplyGrid.resetData([]); // 등록 이후 처리 어떻게 할지? 
+		} else failToast('알 수 없는 오류로 실패했습니다.');
+	});
 }

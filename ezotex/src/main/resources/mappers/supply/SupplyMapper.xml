@@ -91,7 +91,7 @@
 	<!-- 공급계획 등록(헤더) -->
 	<insert id="insertSupplyPlan" parameterType="SupplyDTO">
 		INSERT INTO supply_plan (SUPPLY_PLAN_CODE, SUPPLY_YEAR, SEASON, CHARGER_CODE, CHARGER_NAME, REMARK) 
-		VALUES ((SELECT 'SUD' || LPAD(NVL(SUBSTR(MAX(supply_plan_code), -4), 0) + 1, 4, 0) FROM supply_plan),
+		VALUES ((SELECT 'SUP' || LPAD(NVL(SUBSTR(MAX(supply_plan_code), -4), 0) + 1, 4, 0) FROM supply_plan),
 		         #{supplyYear}, #{season}, #{chargerCode}, #{chargerName}, #{remark})
 	</insert>
 	
