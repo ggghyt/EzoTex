@@ -1,5 +1,5 @@
 // 날짜 포맷 함수 (0000-00-00)
-const dateFormmater = function(value){
+const dateFormatter = function(value){
 	let date = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
     
     let year = date.getFullYear();
@@ -10,7 +10,7 @@ const dateFormmater = function(value){
 }
 
 // 천 단위 콤마 숫자 포맷 함수 (9,999,999)
-function numberFormmater(value){ // 그리드 내부 포맷으로 사용 시 row.value
+function numberFormatter(value){ // 그리드 내부 포맷으로 사용 시 row.value
 	return Number(value).toLocaleString() 
 };
 
@@ -73,17 +73,23 @@ jQuery(document).ready(function() {
 				} else oldValue = parseFloat(input.val());
         
 				if (typeof(oldValue) == 'undefined') oldValue = 0;
-				console.log(oldValue);
         if (typeof(max) == 'undefined' || oldValue < max) {
-          input.val(oldValue + step).trigger('change');
+          input.val(oldValue + step);
+					input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
         }
       });
 
       btnDown.click(function() {
         var oldValue = parseFloat(input.val());
         if (typeof(min) == 'undefined' || oldValue > min) {
-          input.val(oldValue - step).trigger('change');
+          input.val(oldValue - step);
+					input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
         }
       });
+			
+			//
+			input.change(function() {
+				
+			});
     });
   });

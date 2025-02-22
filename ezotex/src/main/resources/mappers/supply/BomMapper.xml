@@ -90,9 +90,9 @@
 	
 	<!-- BOM 등록(디테일) -->
 	<insert id="insertBomDetail" parameterType="BomDTO">
-		INSERT INTO bom_details (bom_detail_code, bom_code, mtril_code, require_qy) 
-		VALUES ((SELECT 'BOD' || LPAD(NVL(SUBSTR(MAX(bom_detail_code), -4), 0) + 1, 4, 0) FROM bom_details), -- 다음 번호 조회
-		        (SELECT MAX(bom_code) FROM bom), #{mtrilCode}, #{requireQy})
+		INSERT INTO bom_details (bom_detail_code, bom_code, mtril_code, mtril_color, require_qy) 
+		VALUES ((SELECT NVL(MAX(bom_detail_code), 0) + 1 FROM bom_details), -- 다음 번호 조회
+		        (SELECT MAX(bom_code) FROM bom), #{mtrilCode}, #{mtrilColor}, #{requireQy})
 	</insert>
 
 </mapper>

@@ -84,7 +84,7 @@ addEventListener("DOMContentLoaded", () => {
     var isRegist = false;
     var isModify = false;
     var isDelete = false;
-
+		
     //등록 - 확인 버튼
     document.querySelector(".regist .checkBtn").addEventListener("click", () => {
 		var loadingSpinner = document.querySelector(".loading-wrap");

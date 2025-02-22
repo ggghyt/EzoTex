@@ -37,7 +37,7 @@
 						resizable : true
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders : [ 'rowNum' ],
 					columns : [
 							{
 								header : '주문코드',
@@ -62,7 +62,24 @@
 							{
 								header : '주문상태',
 								name : 'orderStatus',
-								align : 'center'
+								align : 'center',
+							    formatter: function (value) {
+							    	
+							    	let orderStatus = value.value;
+							    	
+							        if (orderStatus === 'OR01') {
+							            return '대기'; // 주문 상태가 'OR01'이면 '대기'로 출력
+							        }else if (orderStatus === 'OR02'){
+							        	return '입고';	
+							        }else if (orderStatus === 'OR03'){
+							        	return '출고';
+							        }else if (orderStatus === 'OR04'){
+							        	return '주문완료';
+							        }else if (orderStatus === 'OR05'){
+							        	return '주문취소';
+							        }
+							        return value; // 그 외의 값은 그대로 출력
+							    }
 							},
 							{
 								header : '요약',
@@ -81,125 +98,245 @@
 							},
 							{
 								header : '주문금액합계',
-								name : 'totalAmount',
+								name : 'amount',
 								align : 'right',
-								formatter : 'money'
 							},
 							{
 								header : '상세보기',
 								name : 'details',
 								align : 'center',
-								formatter : function() {
-									return '<button type = "button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal2">상세보기</button>';
+								formatter : function(value , row) {
+									return `<button type = "button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#orderDetailModal">상세보기</button>`;
 								}
-							} ]
+							},
+					        {
+					            header : '비고',
+					            name : 'remarks',
+					            hidden : true  // 이 컬럼을 숨김
+					        },
+					        {
+					            header : '업체담당자 연락처',
+					            name : 'companyTel',
+					            hidden : true  // 이 컬럼을 숨김
+					        },
+							],
+					pageOptions : {
+						useClient : true, // 페이징을 위해 필요
+						perPage : 10
+					},
 				});
 	</script>
 	<!-- 상세보기 모달 시작 -->
-	<div class="modal fade" id="exampleModal2" tabindex="-1"
+	<div class="modal fade" id="orderDetailModal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl">
 			<div class="modal-content">
-				<div class="modal-header" style="background-color: gray;"></div>
 				<div class="card">
 					<div class="card-body">
-						<div>
-							<div class="mb-3 row">
-								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputPassword"
-										style="width: 200px;">
+						<h3>주문 상세 조회</h3>
+						<div class="card card-body mt-3">
+							<div class="col-12 card card-body m-2">
+								<div class="row">
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">주문코드</label> <input type="text"
+											id="productOrderCode" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">업체명</label> <input type="text"
+											id="company" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">업체 담당자</label> <input type="text"
+											id="companyRepresentative" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">업체담당자 연락처</label> <input type="text"
+											id="companyTel" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">주문담당자</label> <input type="text"
+											id="charger" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">주문일</label> <input type="text"
+											id="orderDate" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">납기일</label> <input type="text"
+											id="deliveryRequestDeadline" class="form-control w-50">
+									</div>
+									<div class="col-md-6 d-flex align-items-center">
+										<label class="col-form-label me-5 text-end"
+											style="width: 80px;">주문상태</label> <input type="text"
+											id="orderStatus" class="form-control w-50">
+									</div>
+								</div>
+								<div class="col-md-6 d-flex align-items-center">
+									<label class="col-form-label me-5 text-end"
+										style="width: 80px;">비고</label> <input type="text"
+										id="remarks" class="form-control" style="max-width: 580px;">
 								</div>
 							</div>
-							<div class="mb-3 row">
-								<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
-								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputPassword"
-										style="width: 200px;">
-								</div>
-							</div>
-
-							<!-- 체크박스 -->
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" value=""
-									id="flexCheckChecked" checked> <label
-									class="form-check-label" for="flexCheckChecked"> </label>
-								<!-- end 체크박스 -->
-
-								<!-- 라디오박스 -->
-								<div class="form-check">
-									<input class="form-check-input" type="radio"
-										name="flexRadioDefault" id="flexRadioDefault1"> <label
-										class="form-check-label" for="flexRadioDefault1">
-										Default radio </label>
-								</div>
-								<div class="form-check">
-									<input class="form-check-input" type="radio"
-										name="flexRadioDefault" id="flexRadioDefault2" checked>
-									<label class="form-check-label" for="flexRadioDefault2">
-										Default checked radio </label>
-								</div>
-								<!-- end 라디오 박스 -->
-							</div>
-						</div>
-						<div class="table-responsive" style="text-align: center;">
-							<table class="table">
-								<thead>
-									<tr>
-										<th>Profile</th>
-										<th>VatNo.</th>
-										<th>Created</th>
-										<th>Status</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>Jacob</td>
-										<td>53275531</td>
-										<td>12 May 2017</td>
-										<td><label class="badge badge-danger">Pending</label></td>
-									</tr>
-									<tr>
-										<td>Messsy</td>
-										<td>53275532</td>
-										<td>15 May 2017</td>
-										<td><label class="badge badge-warning">In
-												progress</label></td>
-									</tr>
-									<tr>
-										<td>John</td>
-										<td>53275533</td>
-										<td>14 May 2017</td>
-										<td><label class="badge badge-info">Fixed</label></td>
-									</tr>
-									<tr>
-										<td>Peter</td>
-										<td>53275534</td>
-										<td>16 May 2017</td>
-										<td><label class="badge badge-success">Completed</label></td>
-									</tr>
-									<tr>
-										<td>Dave</td>
-										<td>53275535</td>
-										<td>20 May 2017</td>
-										<td><label class="badge badge-warning">In
-												progress</label></td>
-									</tr>
-								</tbody>
-							</table>
 						</div>
 					</div>
+					<div id="orderDetailGrid" style="width: 100%;"></div>
+					<script th:inline="javascript">
+						const orderDeltailList = /*[[${getOrderList}]]*/[];
+						const orderDetailGrid = new tui.Grid({
+							el : document.getElementById('orderDetailGrid'), // 그리드를 표시할 엘리먼트
+							scrollX : false, // 가로 스크롤바 비활성화
+							scrollY : true, // 세로 스크롤바 비활성화
+							bodyHeight : 400,
+							//rowHeight : 'auto', // 행 높이를 자동으로 조정
+							rowHeaders : [ 'checkbox', {
+								type : 'rowNum',
+								header : 'NO'
+							} ],
+							columns : [ {
+								header : '주문코드',
+								name : 'productOrderCode',
+								align : 'center',
+							}, {
+								header : '제품코드',
+								name : 'productCode',
+								align : 'center',
+							}, {
+								header : '색상',
+								name : 'productColor',
+								align : 'center',
+							}, {
+								header : '사이즈',
+								name : 'productSize',
+								align : 'center',
+							}, {
+								header : '수량',
+								name : 'qy',
+								align : 'center',
+							}, {
+								header : '단가',
+								name : 'unitPrice',
+								align : 'center',
+							}, ],
+						});
+					</script>
 				</div>
 				<div style="text-align: center; margin: 20px;">
-					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
-					<button type="button" class="btn btn-inverse-dark btn-fw"
-						data-bs-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-danger btn-fw"
+						data-bs-toggle="modal" data-bs-target="#deleteModal">삭제</button>
+					<button type="button" class="btn btn-secondary btn-fw"
+						data-bs-dismiss="modal">닫기</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- 상세보기 모달 끝 -->
-	<!-- 	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#exampleModal2">ModalTest2</button> -->
+	<!-- 삭제 모달 -->
+	<div class="modal fade" id="deleteModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">삭제 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/delete.png" alt="삭제확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>해당 주문건을 삭제하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer delete"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!-- 주문 삭제 버튼 -->
+					<button type="button" id="AllDelete"
+						class="btn btn-outline-danger checkBtn" data-bs-dismiss="modal">삭제</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
 </body>
+<script>
+// 선택된 행의 오더코드 전역변수 지정
+let selectedOrderCode = '';
+
+// 클릭 이벤트 등록
+grid.on('click', function(ev) {
+    console.log("클릭 이벤트 성공 했는지 확인");
+    const clickedRowKey = ev.rowKey; // 클릭한 행의 key 가져오기
+    const clickedRowData = grid.getRow(clickedRowKey); // 해당 행의 데이터 가져오기
+    selectedOrderCode = clickedRowData.productOrderCode; // 서버에 통신할 주문코드
+    console.log(selectedOrderCode);
+    
+    openOrderDetailModal(clickedRowData); // 데이터 전달하여 모달 열기
+    
+    // 주문코드 서버에 전달
+    orderDetails(selectedOrderCode);
+});	    
+// 삭제버튼 이벤트 리스너
+document.getElementById('AllDelete').addEventListener('click', function() {
+    console.log("삭제버튼 클릭됨. 선택된 주문코드: " + selectedOrderCode); // 선택된 주문코드 출력
+    fetch(`http://localhost:80/order/orderDelete?productOrderCode=${selectedOrderCode}`)
+});
+// 서버 통신
+function orderDetails(orderCode) {
+	console.log("통신시작",orderCode);
+	fetch(`http://localhost:80/order/orderProductList?productOrderCode=${orderCode}`,{
+		method:'GET',
+		headers:headers,
+	}).then(req => req.json())
+	  .then(result => orderDetailGrid.resetData(result))
+	  .catch(error => console.log('오류 : ', error))
+}
+
+// 모달 데이터 채우는 함수
+function openOrderDetailModal(rowData) {
+	console.log("rowData출력",rowData);
+    document.getElementById('productOrderCode').value = rowData.productOrderCode;
+    document.getElementById('company').value = rowData.company;
+    document.getElementById('companyRepresentative').value = rowData.companyRepresentative;
+    document.getElementById('companyTel').value = rowData.companyTel;
+    document.getElementById('charger').value = rowData.charger;
+    document.getElementById('orderDate').value = rowData.orderDate;
+    document.getElementById('deliveryRequestDeadline').value = rowData.deliveryRequestDeadline;
+    document.getElementById('orderStatus').value = rowData.orderStatus;
+    document.getElementById('remarks').value = rowData.remarks;
+}
+
+// 서버에서 받은 제품 정보로 그리드를 업데이트하는 함수
+function updateProductDetails(products) {
+    orderDetailGrid.resetData(products); // 그리드 업데이트
+}
+</script>
+
+<style>
+.modal {
+	display: block !important; /* Bootstrap 기본 동작 우회 */
+	visibility: hidden;
+}
+
+.modal.show {
+	visibility: visible;
+}
+
+.regibtn {
+	text-align: right;
+}
+</style>
+
 </html>

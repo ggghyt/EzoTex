@@ -22,4 +22,7 @@ public interface OrderMapper {
 		
 		// 주문 코드
 		String getOrderCode();
+		
+		// 주문
+		List<OrderDTO> getOrderProduct(String productOrderCode);
 }
