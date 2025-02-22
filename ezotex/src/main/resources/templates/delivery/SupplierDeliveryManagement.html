@@ -344,9 +344,8 @@
       </div>
       
 	<script>
-		//session_user_code => 세션에서 가져온 회사코드임
-		
-		
+		//session_user_code
+
 		/*
 			그리드 정의		
 		*/
@@ -436,6 +435,8 @@
 		
 		//검색함수
         function searchOrderList() {
+        	let companyCode = session_user_code;
+        	
         	orderListGrid.readData(1, {
         		orderCode: document.querySelector('.search-order-code').value,
         		orderCharger:  document.querySelector('.search-charger').value,
@@ -444,8 +445,8 @@
         		dedtStart: document.querySelector('.search-dedt-start').value,
         		dedtEnd: document.querySelector('.search-dedt-end').value,
         		productCode: document.querySelector('.search-mtril-code').value,
-        		productName: document.querySelector('.search-mtril-name').value
-        		
+        		productName: document.querySelector('.search-mtril-name').value,
+        		targetCompany: companyCode
         	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
         }
 		
@@ -631,6 +632,7 @@
 			console.log(orderInfo);
 			
 			let totalPrice = 0;
+			
 			orderInfo.forEach(ele => {
 				totalPrice += ele.deliveryQy * unitPrice;
 			})

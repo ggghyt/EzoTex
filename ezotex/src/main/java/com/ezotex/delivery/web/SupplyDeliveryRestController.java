@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,11 +30,20 @@ public class SupplyDeliveryRestController {
 	//납품 관리
 	private SupplyDeliveryService service;
 	
+	@Autowired
+	 private HttpSession session;
+	
+	
 	//발주 조회
 	@GetMapping("mtrilDelivery")
 	public Map<String, Object> findAll(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									             @RequestParam(name = "page", defaultValue = "1")int page,
 												 DeliveryRegistSearchDTO searchDTO) {
+		
+		String targetComCode = (String) session.getAttribute("code");
+		
+		searchDTO.setTargetCompany(targetComCode);
+	
 		
 		PagingDTO paging = new PagingDTO();
 		
@@ -52,6 +63,12 @@ public class SupplyDeliveryRestController {
 	public List<OrderInsertDTO> orderInfo(@RequestParam(name = "orderCode")String orderCode) {
 		log.info(orderCode);
 		return service.orderInfo(orderCode);
+	}
+	
+	@PostMapping("insertMtrilOrderInfo")
+	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
+		
+		return null;
 	}
 
 }

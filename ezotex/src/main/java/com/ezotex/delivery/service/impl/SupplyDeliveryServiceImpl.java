@@ -49,6 +49,11 @@ public class SupplyDeliveryServiceImpl implements SupplyDeliveryService {
 		oInfo.setAddress(mapper.getAddress(CompanyCode));
 		return oInfo;
 	}
+
+	@Override
+	public String insertDelivery(List<OrderInsertDTO> orderInfoList) {
+		return null;
+	}
 	
 	
 
