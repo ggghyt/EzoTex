@@ -1,5 +1,7 @@
 package com.ezotex.supply.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BomServiceImpl implements BomService {
 	
 	private final BomMapper mapper;
+	private final ObjectMapper objMapper;
 
 	@Override
 	public List<Map<String, Object>> listBomProduct(ProductDTO product) {
@@ -42,9 +45,22 @@ public class BomServiceImpl implements BomService {
 		return mapper.listSizeByColor(productCode, productColor);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<BomDTO> listBomMaterial(ProductDTO product) {
-		return mapper.listBomMaterial(product);
+	public List<Map<String, Object>> listBomMaterial(ProductDTO product) {
+		// 자재 색상 조회 추가
+		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
+		
+		List<BomDTO> mtrList = mapper.listBomMaterial(product);
+		mtrList.forEach((mtr) -> {
+			List<ProductDTO> colorList = mapper.listColor(mtr.getMtrilCode());
+			// 색상 조회 후 Map으로 변환하여 객체에 필드 추가
+			Map<String, Object> objMtr = (Map<String, Object>) objMapper.convertValue(mtr, HashMap.class);
+			objMtr.put("colorList", colorList);
+			results.add(objMtr);
+		});
+		
+		return results;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,7 +71,7 @@ public class BomServiceImpl implements BomService {
 		int bomResult = mapper.insertBom(boms.get("headerObj"));
 		
 		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
-		ObjectMapper objMapper = new ObjectMapper();
+		//ObjectMapper objMapper = new ObjectMapper();
 		List<Object> detailList = (List<Object>) boms.get("detailArr");
 		
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교

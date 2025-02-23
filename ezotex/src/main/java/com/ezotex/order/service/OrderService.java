@@ -13,4 +13,5 @@ public interface OrderService {
 	OrderDTO insertOrder(OrderDTO order);
 	boolean insertProductOrder(Map<String, Object> product);
 	String getOrderCode();
+	List<OrderDTO> getOrderProduct(String productOrderCode);
 }

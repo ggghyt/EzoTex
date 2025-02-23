@@ -23,18 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @RequestMapping("/order/*")
 public class RestController {
-	
-	
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	
+
 	private final OrderServiceImpl service;
-	
+
 	@GetMapping("/ProductOption")
-	public List<OrderDTO> ProductCode(@RequestParam(name="productCode") String productCode) {
+	public List<OrderDTO> ProductCode(@RequestParam(name = "productCode") String productCode) {
 		return service.getProductOption(productCode);
 	}
-	
+
 	// 주문 등록
 	@PostMapping("/insertOrder")
 	public OrderDTO InsertOrder(@RequestBody OrderDTO order) {
@@ -42,6 +41,7 @@ public class RestController {
 		System.out.println(order);
 		return service.insertOrder(order);
 	}
+
 	// 제품 등록
 	/*
 	 * @PostMapping("/insertProductOrder") public boolean
@@ -51,16 +51,22 @@ public class RestController {
 	 * service.insertProductOrder(productOrderList); }
 	 */
 	// 제품 등록
-	   @PostMapping("/insertProductOrder")
-	   public boolean InsertProductOrder(@RequestBody Map<String, Object> productOrderList) {
-	      
+	@PostMapping("/insertProductOrder")
+	public boolean InsertProductOrder(@RequestBody Map<String, Object> productOrderList) {
 
-	      List<OrderDTO> odto = objectMapper.convertValue(productOrderList.get("option"),
-                  new TypeReference<List<OrderDTO>>() {});
-	      
-	      productOrderList.put("option",odto);
-	      
-	      return service.insertProductOrder(productOrderList);
-	   }
+		List<OrderDTO> odto = objectMapper.convertValue(productOrderList.get("option"),
+				new TypeReference<List<OrderDTO>>() {
+				});
+
+		productOrderList.put("option", odto);
+
+		return service.insertProductOrder(productOrderList);
+	}
+	
+	@GetMapping("/orderProductList")
+	public List<OrderDTO> getOrderProduct(@RequestParam String productOrderCode) {
+		System.out.println("컨트롤러 통신확인");
+	    return service.getOrderProduct(productOrderCode);
+	}
 	
 }

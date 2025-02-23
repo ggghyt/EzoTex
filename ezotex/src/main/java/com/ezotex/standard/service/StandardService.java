@@ -24,5 +24,8 @@ public interface StandardService {
 	List<Map<String, Object>> productListAll(ProductListInfoDTO productListInfoDTO);
 	List<ProductCategoryDTO> categoryLclas();
 	List<ProductCategoryDTO> categorySclas(String lclas);
-	public int getCount(ProductListInfoDTO productListInfoDTO);
+	int getCount(ProductListInfoDTO productListInfoDTO);
+	List<ProductListInfoDTO> unitNameList();
+	int ProductInfoInsert(ProductListInfoDTO productListInfoDTO);
+	List<ProductCategoryDTO> productCategory(String productCode);
 }
