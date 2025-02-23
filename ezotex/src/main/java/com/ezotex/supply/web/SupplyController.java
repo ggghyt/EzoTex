@@ -1,7 +1,5 @@
 package com.ezotex.supply.web;
 
-import java.util.Calendar;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +27,14 @@ public class SupplyController {
 	
 	@GetMapping("plan")
 	public String supplyPlan(Model model) {		
-		Calendar current = Calendar.getInstance();
-		int currentYear = current.get(Calendar.YEAR);
-		
-		model.addAttribute("thisYear", currentYear); // 공급년도 기본값 올해부터
-		model.addAttribute("seasonList", new String[] {"봄", "여름", "가을", "겨울"}); // 타임리프 계절 목록
 		model.addAttribute("prdLclasList", prdService.listLclas("PT02")); // 제품 대분류 기본 출력
 		return "supply/supplyPlan";
+	}
+	
+	@GetMapping("mtrOrder")
+	public String materialOrder(Model model) {
+		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
+		return "supply/materialOrder";
 	}
 		
 }

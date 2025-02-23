@@ -12,7 +12,7 @@ public interface SupplyMapper {
 	// 제품 목록 단순조회
 	List<ProductDTO> listProduct(ProductDTO product);
 	
-	// 해당 제품의 옵션 목록 조회 (배열 분리 방식)
+	// 해당 제품의 옵션 목록 조회 (사이즈/색상 중 한 가지만 있거나 단일 제품인 경우 필요)
 	List<ProductDTO> findOptions(String productCode);
 	
 	// 제품의 모든 사이즈 조회

@@ -1,0 +1,172 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<style>
+			.modal {
+				display: block !important; /* Bootstrap 기본 동작 우회 */
+				visibility: hidden;
+			}
+			
+			.modal.show {
+				visibility: visible;
+			}
+		</style>
+	</head>
+	<body>
+		<h3 class="fs-3 fw-bold">| 발주서 등록</h3>
+		<form class="card card-body mt-4">
+			<!-- 발주할 자재, 업체 선택 -->
+			<p class="fs-5 fw-bolder mb-3">발주 품목</p>
+			<div class="row ps-2">
+			
+				<label for="companyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer" id="companyCode" placeholder="찾기" readonly>
+				</div>
+				<label for="companyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="companyName" readonly>
+				</div>
+				<label for="duration" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">예상소요일</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="duration" readonly>
+				</div>
+				<label for="unitPrice" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="unitPrice" readonly>
+				</div>
+				
+				<label for="mtrilCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">자재코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer" id="mtrilCode" placeholder="찾기" readonly>
+				</div>
+				<label for="mtrilName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">자재명</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="mtrilName" readonly>
+				</div>
+				<label for="color" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="color">
+						<option value="null">미선택</option>
+					</select>
+				</div>
+				<label for="qy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">발주량</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="qy">
+				</div>
+				
+				<label for="storeQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">현재고량</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="storeQy" readonly>
+				</div>
+				<label for="storingQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고예정량</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="storingQy" readonly>
+				</div>
+				<label for="safetyQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">안전재고량</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="safetyQy" readonly>
+				</div>
+				<label for="unitName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단위</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="unitName" readonly>
+				</div>
+				
+			</div>
+			<div class="d-flex justify-content-center mt-2">
+				<button type="button" id="insertBtn" class="btn btn-primary btn-sm">입력</button>
+				<button type="reset" id="resetBtn" class="btn btn-secondary btn-sm ms-3">초기화</button>
+			</div>
+		</form>
+		
+		<!-- 입력한 발주 내역 -->
+		<div class="card card-body mt-4">
+			<div class="mb-3 d-flex align-items-center">
+				<p class="fs-5 fw-bolder mt-2 me-4 ">발주 목록</p>
+				<button type="button" id="loadPlan" class="btn btn-dark btn-sm">발주계획서 불러오기</button>
+			</div>
+			<div id="orderGrid"></div>
+		</div>
+		
+		<!-- 합계, 헤더 정보 -->
+		<div class="card card-body mt-4">
+			<div class="row ps-2">
+			
+				<label for="amount" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak text-center">발주금액 합계</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="amount" readonly>
+				</div>
+				<label for="totalQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak text-center">발주량 합계</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="totalQy" readonly>
+				</div>
+				<label for="dueDate" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납기일</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="date" class="form-control" id="dueDate">
+				</div>
+				<label for="chargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">발주담당자</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="chargerName" readonly>
+				</div>
+				
+				<label for="remark" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+				<div class="col-8 col-sm-4 col-lg-8 d-flex mb-2">
+					<input type="text" class="form-control" id="remark">
+				</div>
+				
+				<div class="col-12 col-sm-6 col-lg-3 text-end">
+					<button type="button" id="finalBtn" class="btn btn-primary w-50">등록</button>
+				</div>
+				
+			</div>
+		</div>
+		<!-- 모달 -->
+		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+		      <div class="modal-dialog modal-xl mt-4">
+		         <div class="modal-content">
+		           <div class="modal-header" style="height: 20px;">
+		            <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">자재 선택</h5>
+		           </div>
+		           
+		           <div class="modal-body p-3">
+		           		<form id="materialList" style="display: none">
+		           			<div th:replace="supply/bomManagement :: productList"></div>
+		           		</form>
+		           		<form id="companyList" style="display: none">
+		           			<div class="row ps-2">
+								<label for="scCompanyCode" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+								<div class="col-8 col-lg-3 d-flex mb-2">
+									<input type="text" class="form-control pointer" id="scCompanyCode">
+								</div>
+								<label for="scCompanyName" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+								<div class="col-8 col-lg-3 d-flex mb-2">
+									<input type="text" class="form-control" id="scCompanyName">
+								</div>
+								<label for="address" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+								<div class="col-8 col-lg-3 d-flex mb-2">
+									<input type="text" class="form-control" id="address">
+								</div>
+							</div>
+							<div class="d-flex justify-content-center mt-2 mb-4">
+								<button type="button" id="ComSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+								<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+							</div>
+							<div id="companyGrid"></div>
+		           		</form>
+		           </div>
+	
+		            <div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
+		         </div>
+	         </div>
+	   </div>
+		
+	</body>
+	
+	<script src="/js/supply/materialOrder.js"></script>
+</html>

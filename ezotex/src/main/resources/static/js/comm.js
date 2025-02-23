@@ -38,13 +38,14 @@ function getSizeCommonCode(size) {
 
 
 
-
 // <input type="number"> 커스텀
 /* 사용법 : <div class="quantity">
 						 <input type="number" min="1" max="10" step="1" value="1">
 					 </div>
 */ 
-jQuery(document).ready(function() {
+//jQuery(document).ready(makeQuantityTag);
+
+function makeQuantityTag() {
     // .quantity 엘리먼트 뒤에 버튼 추가
     jQuery('.quantity').each(function() {
 			// 변수 한꺼번에 선언
@@ -52,12 +53,12 @@ jQuery(document).ready(function() {
         input = spinner.find('input[type="number"]'),
         min = input.attr('min'),
         max = input.attr('max'),
-				step = input.attr('step');
+		step = input.attr('step');
+	
+	  // 속성이 지정되지 않았으면 기본값 적용	
+	  step = typeof(step) == 'undefined' ? 1 : Number(step);
 			
-			// 속성이 지정되지 않았으면 기본값 적용	
-			step = typeof(step) == 'undefined' ? 1 : Number(step);
-				
-			// 새로운 버튼 추가
+	  // 새로운 버튼 추가
       jQuery('<div class="quantity-nav"><div class="quantity-button quantity-up"><span class="quantity-up-text">+</span></div><div class="quantity-button quantity-down"><span class="quantity-down-text">-</span></div></div>')
 			.insertAfter(input);
 
@@ -66,16 +67,16 @@ jQuery(document).ready(function() {
           btnDown = spinner.find('.quantity-down');
 
       btnUp.click(function() {
-				var oldValue;
-				if(input.val() == ''){
-					if(typeof(min) != 'undefined') oldValue = Number(min);
-					else oldValue = 0;
-				} else oldValue = parseFloat(input.val());
-        
-				if (typeof(oldValue) == 'undefined') oldValue = 0;
+		var oldValue;
+		if(input.val() == ''){
+			if(typeof(min) != 'undefined') oldValue = Number(min);
+			else oldValue = 0;
+		} else oldValue = parseFloat(input.val());
+
+		if (typeof(oldValue) == 'undefined') oldValue = 0;
         if (typeof(max) == 'undefined' || oldValue < max) {
           input.val(oldValue + step);
-					input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
+		  input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
         }
       });
 
@@ -83,13 +84,8 @@ jQuery(document).ready(function() {
         var oldValue = parseFloat(input.val());
         if (typeof(min) == 'undefined' || oldValue > min) {
           input.val(oldValue - step);
-					input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
+		  input[0].dispatchEvent(new Event('change')); // 원시 DOM객체에 이벤트 발생
         }
       });
-			
-			//
-			input.change(function() {
-				
-			});
     });
-  });
+  }
