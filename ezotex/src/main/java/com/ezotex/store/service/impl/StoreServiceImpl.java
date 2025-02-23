@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.comm.dto.PagingDTO;
-import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -31,15 +31,21 @@ public class StoreServiceImpl implements StoreService {
 	
 	// 페이지 총 수
 	@Override
-	public int getCount() {
-		return mapper.getCount();
+	public int getCount(DeliverySearchDTO searchDTO) {
+		return mapper.getCount(searchDTO);
 	}
+	
+	// 납품리스트별 총 제품 수량
+//	@Override
+//	public StoreDeliveryDTO deliveryQy() {
+//		return mapper.deliveryQy();
+//	}
 
 	// 입고 예정 리스트
 	@Override
-	public List<StoreDeliveryDTO> DeliveryList(PagingDTO paging) {
-		mapper.deliveryQy();
-		return mapper.DeliveryList(paging);
+	public List<StoreDeliveryDTO> DeliveryList(DeliverySearchDTO searchDTO) {
+		//mapper.deliveryQy();
+		return mapper.DeliveryList(searchDTO);
 	}
 
 	// 납품리스트 기반 입고 제품 상세 조회
@@ -50,13 +56,13 @@ public class StoreServiceImpl implements StoreService {
 
 	// 제품코드 기반 옵션 리스트
 	@Override
-	public Map<String, Object> findByProductCode(String productCode) {
+	public Map<String, Object> findByProductCode(String productCode, String deliveryCode) {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		List<StoreDeliveryDetailsDTO> list = mapper.findBySize(productCode);
+		List<StoreDeliveryDetailsDTO> list = mapper.findBySizeInventory(productCode);
 		map.put("optionList", list);
-		map.put("qyList", mapper.findByProductCode(productCode, list));
+		map.put("qyList", mapper.findByProductCode(productCode, list, deliveryCode));
 		
 		return map;
 	}
@@ -73,7 +79,6 @@ public class StoreServiceImpl implements StoreService {
 		return true;
 	}
 
-	
 
 	
 	

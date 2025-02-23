@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
+import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.SizeDTO;
@@ -37,8 +37,8 @@ public class InventoryRestController {
 	
 	@GetMapping("deliveryList")
 	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
-									@RequestParam(name = "page", defaultValue = "1") int page
-									
+									@RequestParam(name = "page", defaultValue = "1") int page,
+									DeliverySearchDTO searchDTO
 			) throws JsonMappingException, JsonProcessingException {
 
 		PagingDTO paging = new PagingDTO();
@@ -47,17 +47,17 @@ public class InventoryRestController {
 		paging.setPage(page);			// 현재 페이지
 
 //		// 페이징 조건
-//		searchDTO.setStart(paging.getFirst());
-//		searchDTO.setEnd(paging.getLast());
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
 //
 //		// 페이징처리
-		paging.setTotalRecord(service.getCount());
+		paging.setTotalRecord(service.getCount(searchDTO));
 		
-		
+		//service.deliveryQy();
 		// 페이징처리 만들어야됨
 //		paging.getPage());
 //		service.getCount(searchDTO));
-		return GridUtil.grid(paging.getPage(), service.getCount(), service.DeliveryList(paging));
+		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.DeliveryList(searchDTO));
 	}
 	
 	// 납품리스트 기반 입고 제품 상세 조회
@@ -68,8 +68,9 @@ public class InventoryRestController {
 
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
-	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode){
-		return service.findByProductCode(productCode);
+	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode,
+			                                     @RequestParam(name= "deliveryCode")String deliveryCode){
+		return service.findByProductCode(productCode,deliveryCode);
 	}
 	
 	// 제품 옵션별 등록

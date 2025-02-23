@@ -11,5 +11,6 @@ public class SizeDTO {
 	private String color;
 	private String sizeCode;
 	private String productQy;
+	private String deliveryCode;
 	
 }

@@ -19,15 +19,15 @@
 	<select id="productInfoList">
 		with product as
           (SELECT product_color,
-                  UPPER(get_comm(product_size)) as product_size,
-                  inventory_qy
+                  'sz' || get_comm(product_size) as product_size_info,
+                  NVL(inventory_qy,0) as inventory_qy
            FROM inventory
            WHERE product_code = #{productCode})
     	select * from product
 		pivot( sum(inventory_qy)
-       		for product_size in (
+       		for product_size_info in (
        		<foreach collection="list" item="size" separator=",">
-       			'${size.productSizeInfo}' AS ${size.productSizeInfo}
+       			'${'sz'+size.productSizeInfo}' AS ${'sz'+size.productSizeInfo}
        		</foreach>)
 		)pvt
 	</select>

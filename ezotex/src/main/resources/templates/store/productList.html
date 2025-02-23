@@ -160,11 +160,12 @@
 	   	            // 데이터 넣기
 	   	            let rowData = [];
 	   	            data.pivotList.forEach(pivotData => {
-	   	                let row = { productColor: pivotData.productColor }; // 색상 데이터 넣기
+	   	            	console.log(pivotData);
+	   	                let row = { productColor: pivotData.PRODUCT_COLOR }; // 색상 데이터 넣기
 	   	                // 실제 수량 넣는 곳
 	   	                data.optionList.forEach(sizeItem => {
 	   	                    let sizeKey = sizeItem.productSizeInfo.toLowerCase();
-	   	                    row['size'+sizeKey] = pivotData[sizeKey] || "0";  // 값이 없으면 0
+	   	                    row['size'+sizeKey] = pivotData['SZ' + sizeKey.toUpperCase()] || "0";  // 값이 없으면 0
 	   	                });
 	   	                rowData.push(row);
 	   	            });

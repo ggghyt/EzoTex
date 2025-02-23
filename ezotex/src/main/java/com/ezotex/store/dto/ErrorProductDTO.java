@@ -13,5 +13,6 @@ public class ErrorProductDTO {
 	private String lot;
 	private String productColor;
 	private String productSize;
+	private String deliveryCode;
 	
 }

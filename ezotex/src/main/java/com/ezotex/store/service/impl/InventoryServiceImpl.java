@@ -42,7 +42,7 @@ public class InventoryServiceImpl implements InventoryService {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		List<StoreDeliveryDetailsDTO> list = smapper.findBySize(productCode);
+		List<StoreDeliveryDetailsDTO> list = smapper.findBySizeInventory(productCode);
 		map.put("optionList", list);
 		map.put("pivotList", mapper.productInfoList(productCode, list));
 		
