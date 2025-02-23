@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.order.mappers.OrderMapper">
+
+ <!-- 주문내역조회 -->
 	<select id="getOrderList">
 		SELECT *
 		FROM ORDER_LIST
-		order by PRODUCT_ORDER_CODE
+		order by PRODUCT_ORDER_CODE desc
 	</select>
-
+<!-- 제품 조회 -->
 	<select id="getProductList">
 		SELECT *
 		FROM PRODUCT_INFO
 		WHERE PRODUCT_TYPE != 'PT01'
 		order by product_code
 	</select>
+	<!-- 업체 조회 -->
 	<select id="getCompanyList">
 		SELECT *
 		FROM COMPANY
 	</select>
-
+<!-- 제품 옵션 조회 -->
 	<select id="getProductOption">
 		SELECT product_color
 		FROM PRODUCT_OPTION
@@ -43,18 +46,22 @@
 		FROM DUAL
 	</select>
 	<insert id="insertOrder" parameterType="OrderDTO">
-		<selectKey resultType="String" keyProperty="productOrderCode" order="BEFORE">
+		<selectKey resultType="String"
+			keyProperty="productOrderCode" order="BEFORE">
 			SELECT COALESCE(
-			(SELECT CASE WHEN LENGTH('POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			(SELECT CASE
+			WHEN LENGTH('POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
 			LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)) = 9
 			THEN null
 			ELSE 'POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
 			LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)
 			END
 			FROM ORDER_LIST
-			WHERE TO_CHAR(ORDER_DATE, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE,
+			WHERE TO_CHAR(ORDER_DATE, 'YY/MM/DD') = (SELECT
+			TO_CHAR(SYSDATE,
 			'YY/MM/DD') FROM DUAL)),
-			('POD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS product_order_code
+			('POD' || TO_CHAR(SYSDATE,
+			'YYMMDD') || '0001')) AS product_order_code
 			FROM DUAL
 		</selectKey>
 		INSERT INTO ORDER_LIST
@@ -111,9 +118,22 @@
 		)
 	</insert>
 	<!-- 주문코드 받아서 제품목록 조회 -->
- 	<select id="getOrderProduct">
+	<select id="getOrderProduct">
 		select *
 		from order_product
-		where product_order_code = #{productOrderCode}
+		where product_order_code =
+		#{productOrderCode}
 	</select>
+
+	<!-- 주문코드로 주문 삭제하기 -->
+	<delete id="deleteOrderProduct">
+		DELETE FROM order_product 
+		WHERE product_order_code = #{productOrderCode}
+	</delete>
+
+	<delete id="deleteOrderList">
+		DELETE FROM order_list 
+		WHERE product_order_code = #{productOrderCode}
+	</delete>
+
 </mapper>

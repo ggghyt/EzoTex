@@ -82,4 +82,15 @@ public class OrderServiceImpl implements OrderService {
 		System.out.println("impl 통신확인");
         return mapper.getOrderProduct(productOrderCode);
     }
+	
+	@Override
+	public boolean deleteOrderList(String productOrderCode) {
+		System.out.println("주문 삭제 연결 확인");
+		return true;
+	}
+	@Override
+	public boolean deleteOrderProduct(String productOrderCode) {
+		System.out.println("제품 삭제 연결 확인");
+		return true;
+	}
 }

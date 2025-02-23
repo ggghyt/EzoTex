@@ -25,4 +25,9 @@ public interface OrderMapper {
 		
 		// 주문
 		List<OrderDTO> getOrderProduct(String productOrderCode);
+		
+		// 주문 삭제
+		int deleteOrderProduct(String productOrderCode);
+		int deleteOrderList(String productOrderCode);
+		
 }
