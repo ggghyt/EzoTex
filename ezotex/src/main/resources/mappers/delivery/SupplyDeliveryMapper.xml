@@ -14,9 +14,10 @@
 		               charger_name AS orderCharger,
 		               rgsde AS orderDate,
 		               due_date AS dedt,
-		               remark AS remark
+		               remark AS remark,
+		               get_comm(status) AS orderStatus
 		        FROM   material_order 
-		        WHERE   status = 'RS01'
+		       	WHERE    company_code = #{searchDto.targetCompany}
 	        	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
 	        		AND  mtril_order_code LIKE '%' || UPPER(#{searchDto.orderCode}) || '%'
 	        	</if>
@@ -40,6 +41,14 @@
 	        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
 	        		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
 	        	</if>
+       			<choose>
+	                  <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 
+	                            AND status = #{searchDto.orderStatus}
+	                  </when>
+	                  <otherwise> 
+	                           AND status IN ('RS01', 'RS02')
+	                  </otherwise>
+	            </choose> 
 		        ) info
 		    WHERE info.rn <![CDATA[ <= ]]> 10) page
 		WHERE page.rn <![CDATA[ >= ]]> 1
@@ -49,9 +58,9 @@
 	<select id="getCount">
 		SELECT COUNT(*)
         FROM   material_order 
-        WHERE   status = 'RS01'
+       	WHERE    company_code = #{searchDto.targetCompany}
        	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
-       		AND  mtril_order_code LIKE '%' || #{searchDto.orderCode} || '%'
+       		AND  mtril_order_code LIKE '%' || UPPER(#{searchDto.orderCode}) || '%'
        	</if>
        	<if test='searchDto.orderCharger != null and searchDto.orderCharger != ""'>	--발주담당자
        		AND charger_name LIKE '%' || #{searchDto.orderCharger} || '%'
@@ -59,7 +68,7 @@
        	<if test='searchDto.productCode != null and searchDto.productCode != ""'>	--제품코드
        		AND    mtril_order_code IN (SELECT mtril_order_code
                                   FROM   material_order_details
-                                  WHERE  product_code LIKE '%' || #{searchDto.productCode} || '%')
+                                  WHERE  product_code LIKE '%' || UPPER(#{searchDto.productCode}) || '%')
        	</if>
        	<if test='searchDto.productName != null and searchDto.productName != ""'>	--제품명
        		AND    mtril_order_code IN (SELECT m.mtril_order_code
@@ -73,6 +82,14 @@
        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
        		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
        	</if>
+     	<choose>
+                 <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 
+                           AND status = #{searchDto.orderStatus}
+                 </when>
+                 <otherwise> 
+                          AND status IN ('RS01', 'RS02')
+                 </otherwise>
+           </choose> 
 	</select>
 	
 
@@ -91,6 +108,7 @@
                                             ON (md.mtril_order_code = dd.order_code)
                                             AND (md.product_color = dd.product_color)
 		WHERE   md.mtril_order_code = #{orderCode}
+		ORDER BY md.product_code
 	</select>
 	
 	<select id="getAddress">
@@ -99,4 +117,42 @@
 		                    ON (cy.address_seq = al.address_seq)
 		WHERE company_code = #{companyCode}
 	</select>
+	
+	<update id="updateOrderStatus">
+		UPDATE material_order
+		SET status = #{info.orderStatus}
+		WHERE mtril_order_code = #{info.productOrderCode}
+	</update>
+	
+	<!-- 분할출고 여부 체크 -->
+	<select id="getTime">
+		SELECT COUNT(*) AS time
+		FROM delivery
+		WHERE product_order_code = #{productOrderCode}
+	</select>
+	
+	<select id="getDeliveryCode">
+		SELECT COALESCE(
+		    (SELECT  CASE WHEN LENGTH('DEV' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(delivery_code), 10)) + 1), 4, 0)) = 9 THEN null
+		             ELSE 'DEV' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(delivery_code), 10)) + 1), 4, 0)
+		             END
+		     FROM delivery 
+		     WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
+		    ('DEV' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS delivery_code
+		FROM DUAL
+	</select>
+	
+	<insert id="insertDeliveryMaster">
+		INSERT INTO delivery(delivery_code, company_se, product_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
+							,delivery_status , remark, charger_code, charger_name, rgsde, updde, time, amount, delivery_company_code)
+		VALUES (#{info.deliveryCode}, #{info.companySe}, #{info.productOrderCode}, #{info.companyCode}, #{info.companyName}, #{info.orderDate}, #{info.dedt}, #{info.storageName}, #{info.dedtAddress}
+				, #{info.deliveryStatus}, #{info.remark}, #{info.chargerCode}, #{info.chargerName}, SYSDATE, SYSDATE, #{info.time}, #{info.amount}, #{info.divyCompanyCode})
+	</insert>
+	
+	<insert id="insertDeliveryDetails">
+		INSERT INTO delivery_details(delivery_product_no, delivery_code, product_code, product_size, product_color, product_lot
+									 , request_qy, delivery_qy, product_se, order_code, unit_price, price)
+		VALUES (delivery_details_seq.NEXTVAL, #{pinfo.deliveryCode}, #{pinfo.productCode}, #{pinfo.productSize}, #{pinfo.productColor}, ' ',
+				#{pinfo.reqQy}, #{pinfo.deliveryQy}, 'PT01', #{pinfo.productOrderCode}, #{pinfo.unitPrice}, #{pinfo.price})
+	</insert>
 </mapper>

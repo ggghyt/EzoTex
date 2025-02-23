@@ -49,6 +49,35 @@ public class SupplyDeliveryServiceImpl implements SupplyDeliveryService {
 		oInfo.setAddress(mapper.getAddress(CompanyCode));
 		return oInfo;
 	}
+
+	@Override
+	public String insertDelivery(List<OrderInsertDTO> orderInfoList) {
+		
+		//출고 코드 가져오기
+		String divyCode = mapper.getDeliveryCode();
+		orderInfoList.get(orderInfoList.size()-1).setDeliveryCode(divyCode);
+		
+		//주소 가져오기
+		String address = mapper.getAddress(orderInfoList.get(orderInfoList.size()-1).getDivyCompanyCode());
+		orderInfoList.get(orderInfoList.size()-1).setStorageName(address);
+		
+		int time = mapper.getTime(orderInfoList.get(0).getProductOrderCode());
+		orderInfoList.get(orderInfoList.size()-1).setTime(time);;
+		
+		//주문 정보 업데이트
+		mapper.updateOrderStatus(orderInfoList.get(orderInfoList.size()-1));
+		
+		//마스터 정보 입력
+		mapper.insertDeliveryMaster(orderInfoList.get(orderInfoList.size()-1));
+		
+		//디테일 정보 입력하기
+		for(int i=0; i<orderInfoList.size()-1; i++) {			
+			orderInfoList.get(i).setDeliveryCode(divyCode);
+			mapper.insertDeliveryDetails(orderInfoList.get(i));
+		}
+		
+		return "success";
+	}
 	
 	
 

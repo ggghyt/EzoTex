@@ -20,4 +20,20 @@ public interface SupplyDeliveryMapper {
 	
 	//주소 가져오기
 	public String getAddress(@Param("companyCode")String companyCode);
+	
+	//출고번호 최근+1가져오기, 
+    public String getDeliveryCode();
+    
+    //분할출고 수 출력
+    public int getTime(@Param("productOrderCode")String productOrderCode);
+    
+    //(공급업체 사용)출고 등록
+    public void insertDeliveryMaster(@Param("info")OrderInsertDTO info);
+    
+    //(제조업체에서 사용)출고 제품 등록
+    public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
+       	
+    //주문 상태 업데이트
+    public void updateOrderStatus(@Param("info")OrderInsertDTO pinfo);
+    
 }

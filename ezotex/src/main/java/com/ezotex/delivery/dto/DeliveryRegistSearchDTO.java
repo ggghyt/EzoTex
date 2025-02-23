@@ -42,5 +42,7 @@ public class DeliveryRegistSearchDTO {
 	String productName;
 	//제품코드
 	String productCode;
+	//공급업체 페이지 사용 
+	String targetCompany;	
 	
 }
