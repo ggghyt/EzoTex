@@ -31,4 +31,9 @@ public class DeliveryController {
 		return "delivery/SupplierDeliveryManagement";
 	}
 	
+	//납품 조회 페이지(제조업체)
+	@GetMapping("List")
+	public String deliveryList() {
+		return "delivery/DeliveryList";
+	}
 }

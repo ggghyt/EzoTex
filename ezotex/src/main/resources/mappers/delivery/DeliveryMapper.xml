@@ -269,4 +269,17 @@
 		and   product_size = #{pinfo.productSize}
 		and   product_color = #{pinfo.productColor}
 	</select>
+	
+	<!-- 납품 조회(제조업체) -->
+	<select id="">
+		SELECT  de.delivery_code,
+		        ol.product_order_code,
+		        de.company_code,
+		        de.company_name,
+		        de.order_date,
+		        de.dedt,
+		        product_summary('delivery_details', de.delivery_code) 
+		FROM   delivery de JOIN order_list ol
+		                     ON de.product_order_code = ol.product_order_code
+	</select>
 </mapper>

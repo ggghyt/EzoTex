@@ -1,0 +1,226 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>납품등록</title>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<style>
+		#container {
+			height: 1000px;
+		}
+		.search-bar {
+			width: 100%;
+			height: 300px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			display: inline-block;
+			flex-direction:row;
+		}
+
+		.order-list {
+			width: 100%;
+			height: 778px;
+		}
+		.order-info{
+			margin-top: 0;
+			margin-left: 30px;
+			width: 500px;
+			height: 1030px;
+		}
+		.search-unit {
+			width: 420px;
+			display: flex;
+			margin-bottom:8px;
+		}
+		.search-unit div {
+			display: inline-block;
+		}
+		.search-bar > div {
+		    display: inline-block;
+		    vertical-align: top; /* 정렬 보정 */
+		}
+		.search-bar div {
+			margin-left: 7%;
+		}
+		.search-bar div{
+			width: 300px;
+		}
+		.search-bar div:nth-of-type(2) {
+			margin-left: 10%;
+			padding-left:10px;
+			width: 410px;
+		}
+		.search-bar div:nth-of-type(3) {
+			margin-left: 6%;
+			width: 410px;
+		}
+		.search-unit span {
+			font-size: smaller;
+			line-height: 2.5;
+			width: 67px;
+		}
+		.search-bar div:nth-of-type(1) input{
+			margin-left: 10px;
+		}
+		.search-bar div input[type=text] {
+			width: 200px;
+		}
+		.search-bar select {
+			width: 176px;
+			border: 1px solid #dee2e6;
+		    font-weight: 400;
+		    font-size: 0.875rem;
+		    border-radius: 4px;
+		    height: 2rem;
+		}
+		input[type=date] {
+			width: 200px;
+		}
+		.search-bar input[type=number] {
+			width: 200px;
+		}
+		.search-bar b {
+			display: block;
+			margin-bottom:5px;
+		}
+		.btn-secondary {
+			background-color: #b1b1b1;
+		}
+		.search-bar .btn-section{
+			margin-left: 0 !important;
+			width: 100% !important;
+			text-align: center;
+		}
+		.search-bar .btn-section button{
+			margin: 10px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+		.search-status-group span{
+			width: 58px;
+		}
+	</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 납품조회</h3>
+	<div id="container row" style="display: flex;">
+		<div class="col">			
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+				<b>검색</b>
+									
+				<!-- 검색조건1: 발주코드, 자재코드, 자재명, 발주담당자 -->
+				<div>
+					<span class="search-unit">
+						<span>주문코드</span>
+						<input type="text" class="form-control search-order-code">
+					</span>
+					<span class="search-unit">
+						<span>납품코드</span>
+						<input type="text" class="form-control search-charger"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-mtril-code">
+					</span>
+					<span class="search-unit">
+						<span>제품명</span>
+						<input type="text" class="form-control search-mtril-name"> 
+					</span>
+				</div>
+				
+				<div>
+					<span class="search-unit">
+						<span>업체코드</span>
+						<input type="text" class="form-control search-order-code">
+					</span>
+					<span class="search-unit">
+						<span>업체명</span>
+						<input type="text" class="form-control search-charger"> 
+					</span>
+					<span class="search-unit">
+						<span>담당자코드</span>
+						<input type="text" class="form-control search-mtril-code">
+					</span>
+					<span class="search-unit">
+						<span>담당자</span>
+						<input type="text" class="form-control search-mtril-name"> 
+					</span>
+				</div>
+				
+				
+				<div>
+					
+					<span class="search-unit">
+						<span>주문일</span>
+						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-date-end">
+					</span>
+					<span class="search-unit">
+						<span>납기일</span>
+						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-dedt-end">
+					</span>
+					<span class="search-unit search-status-group">
+						<span>상태</span>
+						<select class="search-status">
+							<option value="">전체</option>
+							<option value="OR01">대기</option>
+							<option value="OR06">분할출고</option>
+						</select>
+					</span>
+				</div>
+				
+
+				<div class="btn-section">						
+					<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+					<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				</div>
+			</div>
+			<div class="card card-body mt-3 order-list">
+				<b>목록</b>
+				<!-- 검색결과 목록 -->
+				<div id="orderListGrid"></div>
+			</div>
+		</div>
+		
+		
+
+	</div>
+		
+	<script>
+		//session_user_code => 세션에서 가져온 회사코드임
+		
+		//제품 목록
+		const orderListGrid = new Grid({
+			el: document.getElementById('orderListGrid'),
+			bodyHeight: 619,
+			scrollY: false,
+			scrollX: false,
+            pageOptions: {
+                useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+                perPage: 15
+            },
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "납품코드", name: "productOrderCode"},
+				{ header: "주문코드", name: "productCode"},
+				{ header: "업체코드", name: "productName"},
+				{ header: "업체명", name: "reqQy"},
+				{ header: "주문일", name: "deliveryQy"},
+				{ header: "납기일", name: "deliveryQy"},
+				{ header: "요약", name: "deliveryQy"},
+				{ header: "상태", name: "deliveryQy"},
+				{ header: " ", name: " "},
+				{ header: " ", name: " "},
+				{ header: " ", name: " "},
+			]
+		});
+		
+	</script>
+</body>
+</html>
