@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezotex.comm.GridUtil;
 import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.service.impl.BomServiceImpl;
+import com.ezotex.supply.service.impl.MaterialOrderServiceImpl;
 import com.ezotex.supply.service.impl.SupplyServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SupplyRestController {
 	
 	private final BomServiceImpl bomService;
 	private final SupplyServiceImpl service;
+	private final MaterialOrderServiceImpl orderService;
 		
 	// 내부 데이터 출력
 	// bom 제품 목록
@@ -80,25 +82,47 @@ public class SupplyRestController {
 		return map;
 	}
 	
-	// (공급계획서) 해당 제품의 색상 and 사이즈 집계
+	// 해당 제품의 색상 and 사이즈 집계
 	@GetMapping("optionPivot/{productCode}")
 	public Map<String, Object> optionPivot(@PathVariable String productCode) { // 검색 조건 파라미터
 		Map<String, Object> map = GridUtil.grid(0, 0, service.pivotProductOption(productCode));
 		return map;
 	}
 	
-	// (공급계획서) 해당 제품의 색상 or 사이즈 일괄 목록
+	// 해당 제품의 색상 or 사이즈 일괄 목록
 	@GetMapping("optionList/{productCode}")
 	public Map<String, Object> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
 		Map<String, Object> map = GridUtil.grid(0, 0, service.findOptions(productCode));
 		return map;
 	}
 	
-	// bom 등록
+	// 공급계획서 등록
 	@PostMapping("plan")
 	public Boolean insertSupplyPlan(@RequestBody Map<String, Object> supplyList) {
 		log.info("planData::: " + supplyList.toString());
 		return service.insertSupplyPlan(supplyList); // true/false 반환
+	}
+	
+	
+	// 발주서
+	// 발주할 자재 목록 조회
+	@GetMapping("materialList")
+	public Map<String, Object> materialList(Map<String, String> params) { // 검색 조건 파라미터
+		log.info(params.toString());
+		int totalCnt = orderService.countProductByCompany(params);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, orderService.listProductByCompany(params));
+		log.info(map.toString());
+		return map;
+	}
+	
+	// 업체 목록 조회
+	@GetMapping("companyList")
+	public Map<String, Object> companyList(Map<String, String> params) { // 검색 조건 파라미터
+		log.info(params.toString());
+		int totalCnt = orderService.countCompanyByProduct(params);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, orderService.listCompanyByProduct(params));
+		log.info(map.toString());
+		return map;
 	}
 	
 }

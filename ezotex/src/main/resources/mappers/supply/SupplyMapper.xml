@@ -90,14 +90,14 @@
 	
 	<!-- 공급계획 등록(헤더) -->
 	<insert id="insertSupplyPlan" parameterType="SupplyDTO">
-		INSERT INTO supply_plan (SUPPLY_PLAN_CODE, SUPPLY_YEAR, SEASON, CHARGER_CODE, CHARGER_NAME, REMARK) 
+		INSERT INTO supply_plan (supply_plan_code, supply_year, season, charger_code, charger_name, remark) 
 		VALUES ((SELECT 'SUP' || LPAD(NVL(SUBSTR(MAX(supply_plan_code), -4), 0) + 1, 4, 0) FROM supply_plan),
 		         #{supplyYear}, #{season}, #{chargerCode}, #{chargerName}, #{remark})
 	</insert>
 	
 	<!-- 공급계획 등록(디테일) -->
 	<insert id="insertSupplyPlanDetail" parameterType="SupplyDTO">
-		INSERT INTO supply_plan_details (SUPPLY_PLAN_DETAIL_CODE, SUPPLY_PLAN_CODE, PRODUCT_CODE, PRODUCT_COLOR, PRODUCT_SIZE, SUPPLY_QY, SUPPLY_DATE) 
+		INSERT INTO supply_plan_details (supply_plan_detail_code, supply_plan_code, product_code, product_color, product_size, supply_qy, supply_date) 
 		VALUES ((SELECT NVL(MAX(supply_plan_detail_code), 0) + 1 FROM supply_plan_details), -- 다음 번호 조회
 		        (SELECT MAX(supply_plan_code) FROM supply_plan), #{productCode}, #{productColor}, #{productSize}, #{supplyQy}, #{supplyDate})
 	</insert>

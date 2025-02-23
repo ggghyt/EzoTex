@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.supply.mappers.MaterialOrderMapper">
+
+	<!-- 업체 목록 -->
+	<select id="listCompanyByProduct" resultType="CompanyDTO" parameterType="map">
+		SELECT DISTINCT(c.company_code),
+		       c.company_exponent, 
+		       c.company_charger, 
+		       c.company_phone, 
+		       c.company_name,
+		       '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference addressInfo
+		FROM company c JOIN address_list a ON c.address_seq = a.address_seq
+		               JOIN material_of_company m ON m.company_code = c.company_code
+		               LEFT JOIN product_option o ON o.option_code = m.option_code
+		WHERE c.section = 'CP01'
+		  AND  m.discontinued = 'YN02'
+		<if test='companyCode != null and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
+		<if test='companyName != null and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='address != null and address != ""'> 
+			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
+		</if> 
+		<if test='productCode != null and productCode != ""'> AND m.product_code = #{productCode} </if> 
+		<if test='productColor != null and productColor != ""'> AND o.product_color = #{productColor} </if>
+		ORDER  BY company_code DESC
+	</select>
+	
+	<!-- 업체 조회 개수 -->
+	<select id="countCompanyByProduct" parameterType="map">
+		SELECT COUNT(DISTINCT(c.company_code))
+		FROM company c JOIN address_list a ON c.address_seq = a.address_seq
+		               JOIN material_of_company m ON m.company_code = c.company_code
+		               LEFT JOIN product_option o ON o.option_code = m.option_code
+		WHERE c.section = 'CP01'
+		  AND  m.discontinued = 'YN02'
+		<if test='companyCode != null and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
+		<if test='companyName != null and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='address != null and address != ""'> 
+			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
+		</if> 
+		<if test='productCode != null and productCode != ""'> AND m.product_code = #{productCode} </if> 
+		<if test='productColor != null and productColor != ""'> AND o.product_color = #{productColor} </if>
+	</select>
+	
+	<!-- 자재 목록 -->
+	<select id="listProductByCompany" resultType="ProductDTO" parameterType="map">
+		SELECT DISTINCT(p.product_code),
+		       p.product_name,
+		       get_comm(p.unit_name) unit_name,
+		       p.unit_price
+		FROM   product_info p LEFT JOIN  product_category c ON p.product_code = c.product_code
+		                      JOIN material_of_company m ON p.product_code = m.product_code
+		WHERE  p.product_type = 'PT01'
+		  AND  m.discontinued = 'YN02'
+		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='companyCode != null and companyCode != ""'> AND m.company_code = #{companyCode} </if>
+		ORDER  BY product_code DESC
+	</select>
+	
+	<!-- 자재 조회 개수 -->
+	<select id="countProductByCompany" parameterType="map">
+		SELECT COUNT(DISTINCT(p.product_code))
+		FROM   product_info p LEFT JOIN  product_category c ON p.product_code = c.product_code
+		                      JOIN material_of_company m ON p.product_code = m.product_code
+		WHERE  p.product_type = 'PT01'
+		  AND  m.discontinued = 'YN02'
+		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='companyCode != null and companyCode != ""'> AND m.company_code = #{companyCode} </if>
+	</select>
+	
+	<!-- 해당 자재의 옵션 조회 -->
+	<select id="listColorByCompany" resultType="ProductDTO" parameterType="String">
+		SELECT DISTINCT(o.product_color),
+		       o.unit_price
+		FROM   product_option o JOIN material_of_company m ON o.option_code = m.option_code
+		WHERE  o.product_code = #{productCode}
+		  AND  o.discontinued = 'YN02'
+		<if test='companyCode != null and companyCode != ""'> 
+		  AND  m.company_code = #{companyCode} 
+		  AND  m.discontinued = 'YN02'		  
+		</if>
+		ORDER  BY product_color
+	</select>
+	
+	<!-- 발주서 등록(헤더) -->
+	<insert id="insertMaterialOrder" parameterType="MaterialOrderDTO">
+		INSERT INTO material_order (mtril_order_code, company_code, due_date, charger_code, charger_name, remark, status)
+		VALUES ((SELECT 'MOD' || LPAD(NVL(SUBSTR(MAX(mtril_order_code), -4), 0) + 1, 4, 0) FROM material_order),
+		         #{companyCode}, #{dueDate}, #{chargerCode}, #{chargerName}, #{remark}, #{status})
+	</insert>
+	
+	<!-- 발주서 등록(디테일) -->
+	<insert id="insertMaterialOrderDetail" parameterType="MaterialOrderDTO">
+		INSERT INTO material_order_details (mtril_order_detail_code, mtril_order_code, product_code, order_qy, amount, product_color, unit_price)
+		VALUES ((SELECT NVL(MAX(mtril_order_detail_code), 0) + 1 FROM material_order_details), -- 다음 번호 조회
+		        (SELECT MAX(mtril_order_code) FROM material_order), #{productCode}, #{orderQy}, #{amount}, #{productColor}, #{unitPrice})
+	</insert>
+	
+</mapper>

@@ -10,8 +10,11 @@
 		<h3 class="fs-3 fw-bold">| 공급계획서 등록</h3>
 		<div class="row">
 			<div class="col-5">
-				<!-- 제품 목록 및 검색 -->
-				<div th:replace="supply/bomManagement :: productList"></div>
+				<form class="card card-body mt-3">
+					<p class="fs-5 fw-bolder mb-3">제품 목록</p>
+					<!-- 제품 목록 및 검색 -->
+					<div th:replace="supply/bomManagement :: productList"></div>
+				</form>
 			</div>
 			
 			<div class="col-7">
@@ -37,14 +40,17 @@
 						<label for="year" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-overflow">*공급년도</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
 							<div class="quantity">
-							  <input id="year" type="number" th:min="${thisYear}" step="1" th:value="${thisYear}">
+								<input id="year" type="number">
 							</div>
 						</div>
 						<label for="season" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
-							<select class="form-control" id="season" name="season">
+							<select class="form-control" id="season">
 								<option value="null">미정</option>
-								<option th:each="season : ${seasonList}" th:value="${season}">[[ ${season} ]]</option>
+								<option value="SE01">봄</option>
+								<option value="SE02">여름</option>
+								<option value="SE03">가을</option>
+								<option value="SE04">겨울</option>
 							</select>
 						</div>
 					</form>

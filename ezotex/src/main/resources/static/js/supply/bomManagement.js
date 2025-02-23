@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 });
 
-// 대분류 onChange 이벤트 등록 함수
 const changeClas = function(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
 		createOptions(sclasEle, `/product/category/${lclasEle.value}`);		
@@ -77,6 +76,7 @@ class CustomSelectBox {
 	
 	let nullOpt = document.createElement('option');
 	nullOpt.value = null;
+	nullOpt.innerText = '미선택';
 	el.append(nullOpt);
 	
 	props.value.forEach(data => { // 단종되지 않았을 때만 옵션으로 추가
@@ -134,9 +134,10 @@ const prdGrid = new Grid({
           }
         }
     ],
+    rowHeaders: ['rowNum'],
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
-        perPage: 10
+        perPage: 15
   	},
   	scrollX: false, // 가로 스크롤
   	scrollY: false, // 세로 스크롤
@@ -184,7 +185,19 @@ const selectedMtrGrid = new Grid({
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
-  	bodyHeight: 150	
+  	bodyHeight: 155,
+  	summary: {
+  		 height: 37,
+	     position: 'bottom', // or 'top'
+	     align: 'right',
+	     columnContent: {
+	     		unitName: { // 컬럼명
+		             template: (valueMap) => {
+		                 return `총 ${valueMap.cnt}건`
+		             }
+	            }
+	     }
+     }
 });
 
 // 자재 목록 불러오기

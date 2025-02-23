@@ -4,8 +4,24 @@ let sclasBox = document.getElementById('sclas');
 
 let yearBox = document.getElementById('year');
 let seasonBox = document.getElementById('season');
+let seasonOpts = document.querySelectorAll('#season option'); // null,봄,여름,가을,겨울 옵션이 그대로 담긴 노드배열
+
+let today = new Date();
+let thisYear = today.getFullYear();
+let thisMonth = today.getMonth();
 
 document.addEventListener('DOMContentLoaded', () => {
+	// 현재 날짜에 따라 공급년도 및 시즌 제한 (시즌에서 한 달 이상 남아있어야 등록 가능)
+	if(thisMonth >= 10){ // 11~12월인 경우 내년 봄시즌부터 등록 가능
+		yearBox.value = thisYear + 1;
+		yearBox.min = thisYear + 1;
+	} else {
+		yearBox.value = thisYear;
+		yearBox.min = thisYear;
+		validSeason(thisYear);
+	}
+	makeQuantityTag(); // 커스텀 input 생성 함수
+	
 	changeClas(lclasBox, sclasBox);
 	$('#chargerName').val(session_user_name);
 	
@@ -22,13 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 대분류 onChange 이벤트 등록 함수
-const changeClas = function(lclasEle, sclasEle){
+function changeClas(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
 		createOptions(sclasEle, `/product/category/${lclasEle.value}`);		
 	});
 }
 
-const createOptions = function(ele, uri){	
+function createOptions(ele, uri){	
 	// 서버에서 데이터 불러오기
 	fetch(uri)
 	.then(response => response.json())
@@ -107,22 +123,23 @@ const prdGrid = new Grid({
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
         { header: ' ', name: 'inserted', renderer: { type: CustomCheckRender, options: {}}, width: 50, align: 'center' }
     ],
+    rowHeaders: ['rowNum'],
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
-        perPage: 10
+        perPage: 12
   	},
   	scrollX: false, // 가로 스크롤
   	scrollY: false, // 세로 스크롤
   	summary: {
-  		 height: 40,
-			 position: 'bottom', // or 'top'
-			 columnContent: {
-			 		productCode: { // 컬럼명
+		 height: 40,
+		 position: 'bottom', // or 'top'
+		 columnContent: {
+		 		productCode: { // 컬럼명
 			         template: (valueMap) => {
 			             return `총 ${valueMap.cnt}건`
 			         }
-			     }
-			 }
+		       }
+		 }
      }
 });
 
@@ -151,13 +168,14 @@ const supplyGrid = new Grid({
 		{ header: '데이터', name: 'allData', hidden: true },
 		{ header: '컬럼정보', name: 'allColumn', hidden: true }
     ],
+    rowHeaders: ['rowNum'],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
-  	bodyHeight: 238,
-		summary: {
+  	bodyHeight: 202,
+	summary: {
 	     columnContent: {
 	     		totalQy: {  }
-       }
+	     }
    }
 });
 
@@ -352,7 +370,7 @@ optionGrid.on('afterChange', ev => {
 			supplyGrid.setRow(findRows[0].rowKey, findRows[0]);				
 		}
 	}
-	// summary 합계를 refresh
+	// summary 합계 refresh
 	let gridData = supplyGrid.getData();
 	supplyGrid.resetData(gridData); // 동기화 문제 방지
 	let sum = supplyGrid.getSummaryValues('totalQy').sum;
@@ -362,6 +380,7 @@ optionGrid.on('afterChange', ev => {
 // 공급년도 변경
 yearBox.addEventListener('change', (e) => {
 	let supplyYear = e.target.value;
+	validSeason(supplyYear); // 올해를 다시 선택했을 경우 시즌 제한 재적용
 	let supplyData = supplyGrid.getData();
 	supplyData.forEach(data => {
 		if(data.supplyDate != ''){
@@ -370,7 +389,7 @@ yearBox.addEventListener('change', (e) => {
 			data.supplyDate = checkDate(data.supplyDate);		
 		}
 	});
-	supplyGrid.resetData(supplyData); // 변경한 연도로 일괄 반영
+	supplyGrid.resetData(supplyData); // 변경한 연도로 데이터에 일괄 반영
 	limitDatePicker();
 });
 
@@ -397,10 +416,10 @@ seasonBox.addEventListener('change', () => {
 function getSeasonMonth(){
 	let season = seasonBox.value;
 	switch(season){
-		case '봄': return '03';
-		case '여름': return '06';
-		case '가을': return '09';
-		case '겨울': return '12';
+		case 'SE01': return '03';
+		case 'SE02': return '06';
+		case 'SE03': return '09';
+		case 'SE04': return '12';
 		default: return '01';
 	}
 }
@@ -409,10 +428,10 @@ function getSeasonMonth(){
 function getNextSeasonMonth(){
 	let season = seasonBox.value;
 	switch(season){
-		case '봄': return '06';
-		case '여름': return '09';
-		case '가을': return '12';
-		case '겨울': return '03';
+		case 'SE01': return '06';
+		case 'SE02': return '09';
+		case 'SE03': return '12';
+		case 'SE04': return '03';
 		default: return '01';
 	}
 }
@@ -422,7 +441,7 @@ function limitDatePicker(){
 	let startDate = new Date(`${yearBox.value}-${getSeasonMonth()}-01`);
 	let nextSeasonMonth = getNextSeasonMonth();	
 	let endYear = Number(yearBox.value);
-	if(seasonBox.value == 'null' || seasonBox.value == '겨울'){
+	if(seasonBox.value == 'null' || seasonBox.value == 'SE04'){
 		endYear = endYear + 1;
 	}
 	let endDate = new Date(`${endYear}-${nextSeasonMonth}-01`);
@@ -431,6 +450,23 @@ function limitDatePicker(){
 	// DatePicker options 속성에 반영
 	let col = supplyGrid.getColumn('supplyDate');
 	col.editor.options.selectableRanges = [[startDate, endDate]]; // 2차원 배열 속성
+}
+
+// 공급년도에서 올해를 선택했을 때 시즌 선택 제한
+function validSeason(year){
+	if(year != thisYear && seasonBox.childElementCount == 5) return; // 변경할 내용이 없으면 종료
+	
+	seasonBox.innerHTML = ''; // 내용 비우고 미리 저장해둔 option 노드배열로 재구성
+	if(year == thisYear){
+		if(thisMonth >= 1 && thisMonth <= 3){ // 2~4월인 경우 여름시즌부터 등록 가능
+			seasonBox.append(seasonOpts[2], seasonOpts[3], seasonOpts[4]);
+		} else if(thisMonth >= 4 && thisMonth <= 6){ // 5~7월인 경우 가을시즌부터 등록 가능
+			seasonBox.append(seasonOpts[3], seasonOpts[4]);
+		} else seasonBox.append(seasonOpts[4]); // 8~10월인 경우 겨울시즌만 등록 가능
+	} else { // 입력년도가 올해가 아니라면 전체 옵션 표시	
+		seasonBox.append(seasonOpts[0], seasonOpts[1], seasonOpts[2], seasonOpts[3], seasonOpts[4]);
+	}
+	seasonBox.dispatchEvent(new Event('change')); // DOM객체에 변경 이벤트 발생
 }
 
 // 2000-02-31 같은 값이 되지 않기 위해 검증

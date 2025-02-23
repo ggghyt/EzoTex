@@ -7,7 +7,7 @@
 		SELECT p.product_code,
 		       p.product_name,
 		       c.lclas,
-			     c.sclas,
+			   c.sclas,
 		       CASE WHEN p.product_code IN (SELECT o.product_code -- BOM 없는 옵션이 하나라도 있는 경우
 		                                    FROM   product_option o LEFT JOIN bom b ON o.product_code = b.product_code 
 		                                                                  AND o.product_color = b.product_color 
@@ -19,7 +19,7 @@
 		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
 		WHERE  p.product_type = 'PT02' 
 		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
+		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
 		ORDER  BY status, product_code DESC
@@ -59,7 +59,7 @@
 		ORDER  BY discontinued, product_size
 	</select>
 	
-	<!-- 전체 자재 목록 + 해당되는 BOM 조회 -->
+	<!-- 전체 자재 목록 + 제품에 해당되는 BOM 조회 -->
 	<select id="listBomMaterial" resultType="BomDTO" parameterType="ProductDTO">
 		SELECT p.product_code mtril_code,
 		       p.product_name mtril_name,
