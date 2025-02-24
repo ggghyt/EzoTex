@@ -81,11 +81,28 @@
 				// 컬럼 크기 조절 가능
 				},
 				rowHeaders : [ 'rowNum' ],
-				columns : [ {
+				columns : [
+				{
 					header : '납품코드',
 					name : 'deliveryCode',
 					align : 'center',
-				} ],
+				},
+				{
+					header : '색상',
+					name : 'productColor',
+					align : 'center',
+				},
+				{
+					header : '사이즈',
+					name : 'productSize',
+					align : 'center',
+				},
+				{
+					header : '단가',
+					name : 'unitPrice',
+					align : 'center',
+				}
+				],
 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
 					perPage : 5
