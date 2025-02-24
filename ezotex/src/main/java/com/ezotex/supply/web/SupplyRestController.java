@@ -30,7 +30,7 @@ public class SupplyRestController {
 	private final SupplyServiceImpl service;
 	private final MaterialOrderServiceImpl orderService;
 		
-	// 내부 데이터 출력
+	/******************** 자재명세서 ********************/	
 	// bom 제품 목록
 	@GetMapping("bomProductList")
 	public Map<String, Object> bomProductList(ProductDTO product) { // 검색 조건 파라미터
@@ -72,7 +72,7 @@ public class SupplyRestController {
 	}
 	
 	
-	// 공급계획서
+	/******************** 공급계획서 ********************/	
 	// 단순 제품 목록
 	@GetMapping("productList")
 	public Map<String, Object> productList(ProductDTO product) { // 검색 조건 파라미터
@@ -105,7 +105,7 @@ public class SupplyRestController {
 	}
 	
 	
-	// 발주서
+	/******************** 발주서 ********************/	
 	// 발주할 자재 목록
 	@GetMapping("materialList")
 	public Map<String, Object> materialList(@RequestParam Map<String, String> params) { // 검색 조건 파라미터
@@ -126,13 +126,20 @@ public class SupplyRestController {
 		return map;
 	}
 	
-	// 업체/자재별 옵션과 단가 목록 업데이트
+	// 업체/자재별 옵션 및 단가 목록
 	@GetMapping("optionPriceList")
 	public List<Map<String, Object>> optionPriceList(@RequestParam("productCode") String productCode, 
 										  		@RequestParam("companyCode")String companyCode) { // 검색 조건 파라미터
 		List<Map<String, Object>> list = orderService.listColorByCompany(productCode, companyCode);
 		log.info(list.toString());
 		return list;
+	}
+	
+	// 공급계획서 등록
+	@PostMapping("mtrOrder")
+	public Boolean insertMaterialOrder(@RequestBody Map<String, Object> orderList) {
+		log.info("orderList::: " + orderList.toString());
+		return orderService.insertMaterialOrder(orderList); // true/false 반환
 	}
 	
 }

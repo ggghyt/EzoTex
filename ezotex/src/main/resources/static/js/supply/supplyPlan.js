@@ -67,7 +67,7 @@ class CustomBtnRender {
 		// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
 		// props = grid, rowKey, columnInfo, value(데이터)
 		const el = document.createElement('button');
-		el.classList = 'btn btn-danger btn-sm';
+		el.classList = 'btn btn-outline-danger btn-sm';
 		el.id = props.rowKey; // 태그 자체에 rowKey 저장
 		el.innerText = 'X';
 		
