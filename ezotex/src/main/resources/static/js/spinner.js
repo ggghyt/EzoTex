@@ -1,5 +1,5 @@
-function simulateLoading(loadingTime) {
-    console.log('작동됨');
+function loading(loadingTime) {
+    //console.log('작동됨');
     var loadingSpinner = document.querySelector(".loading-wrap");
     var loadingMessage = document.getElementById("loadingMessage");
 

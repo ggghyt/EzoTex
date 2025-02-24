@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.DeliveryAllCharger;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
@@ -54,4 +55,21 @@ public interface DeliveryMapper {
     
     //제품 단가, 금액 가져오기
     public List<OrderInsertDTO> getPrice(@Param("pinfo")OrderInsertDTO pinfo);
+    
+    //납품조회
+    public List<OrderProductDeliveryDTO> deliveryList(@Param("cri") DeliveryRegistSearchDTO search);
+    
+    //납품조회 카운트
+    public int deliveryListCnt(@Param("cri") DeliveryRegistSearchDTO searchDTO);
+    
+    //납품 관련 모든 담당자
+    public DeliveryAllCharger allcharger(@Param("deliveryCode")String deliveryCode);
+    
+    //납품 제품
+    public List<DeliveryProductInfo> deliveryProductList(@Param("deliveryCode")String deliveryCode);
+    
+    //납품 제품 상세(피벗)
+    public List<Map<String, Object>> deliveryProductDetails(@Param("productCode")String productCode, 
+			@Param("list")List<DeliveryProductInfo> list,
+			@Param("deliveryCode")String orderCode);
 }

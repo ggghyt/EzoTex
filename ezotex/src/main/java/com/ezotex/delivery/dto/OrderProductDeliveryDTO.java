@@ -31,6 +31,10 @@ public class OrderProductDeliveryDTO {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date dedt;
 	private String orderStatus;
+	private String deliveryStatus;
 	private String remark;
-	
+	private Integer time;
+	private String registDate;
+	private String storageName;
+	private String dedtAddress;
 }

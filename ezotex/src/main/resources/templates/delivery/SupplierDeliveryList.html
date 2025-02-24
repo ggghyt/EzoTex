@@ -1,0 +1,264 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>납품등록</title>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<style>
+		#container {
+			height: 1000px;
+		}
+		.search-bar {
+			width: 100%;
+			height: 300px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			display: inline-block;
+			flex-direction:row;
+		}
+
+		.delivery-list {
+			width: 100%;
+			height: 778px;
+		}
+		.order-info{
+			margin-top: 0;
+			margin-left: 30px;
+			width: 500px;
+			height: 1030px;
+		}
+		.search-unit {
+			width: 420px;
+			display: flex;
+			margin-bottom:8px;
+		}
+		.search-unit div {
+			display: inline-block;
+		}
+		.search-bar > div {
+		    display: inline-block;
+		    vertical-align: top; /* 정렬 보정 */
+		}
+		.search-bar div {
+			margin-left: 7%;
+		}
+		.search-bar div{
+			width: 300px;
+		}
+		.search-bar div:nth-of-type(2) {
+			margin-left: 10%;
+			padding-left:10px;
+			width: 410px;
+		}
+		.search-bar div:nth-of-type(3) {
+			margin-left: 6%;
+			width: 410px;
+		}
+		.search-unit span {
+			font-size: smaller;
+			line-height: 2.5;
+			width: 67px;
+		}
+		.search-bar div:nth-of-type(1) input{
+			margin-left: 10px;
+		}
+		.search-bar div input[type=text] {
+			width: 200px;
+		}
+		.search-bar select {
+			width: 176px;
+			border: 1px solid #dee2e6;
+		    font-weight: 400;
+		    font-size: 0.875rem;
+		    border-radius: 4px;
+		    height: 2rem;
+		}
+		input[type=date] {
+			width: 200px;
+		}
+		.search-bar input[type=number] {
+			width: 200px;
+		}
+		.search-bar b {
+			display: block;
+			margin-bottom:5px;
+		}
+		.btn-secondary {
+			background-color: #b1b1b1;
+		}
+		.search-bar .btn-section{
+			margin-left: 0 !important;
+			width: 100% !important;
+			text-align: center;
+		}
+		.search-bar .btn-section button{
+			margin: 10px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+		.search-status-group span{
+			width: 58px;
+		}
+	</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 납품조회</h3>
+	<div id="container row" style="display: flex;">
+		<div class="col">			
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+				<b>납품검색</b>
+								
+				<div>
+					<span class="search-unit">
+						<span>주문코드</span>
+						<input type="text" class="form-control search-order-code">
+					</span>
+					<span class="search-unit">
+						<span>납품코드</span>
+						<input type="text" class="form-control search-delivery-code"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code">
+					</span>
+					<span class="search-unit">
+						<span>제품명</span>
+						<input type="text" class="form-control search-product-name"> 
+					</span>
+				</div>
+				
+				<div>
+					<span class="search-unit">
+						<span>업체코드</span>
+						<input type="text" class="form-control search-company-code">
+					</span>
+					<span class="search-unit">
+						<span>업체명</span>
+						<input type="text" class="form-control search-company-name"> 
+					</span>
+					<span class="search-unit">
+						<span>담당자코드</span>
+						<input type="text" class="form-control search-delivery-chargerCode">
+					</span>
+					<span class="search-unit">
+						<span>담당자</span>
+						<input type="text" class="form-control search-delivery-charger"> 
+					</span>
+				</div>
+				
+				
+				<div>
+					
+					<span class="search-unit">
+						<span>주문일</span>
+						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-date-end">
+					</span>
+					<span class="search-unit">
+						<span>납기일</span>
+						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-dedt-end">
+					</span>
+					<span class="search-unit search-status-group">
+						<span>상태</span>
+						<select class="search-status">
+							<option value="">전체</option>
+							<option value="DS01">납품등록</option>
+							<option value="DS02">포장완료</option>
+							<option value="DS03">기사배정</option>
+							<option value="DS04">배송출발</option>
+							<option value="DS05">납품완료</option>
+						</select>
+					</span>
+				</div>
+
+				<div class="btn-section">						
+					<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+					<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				</div>
+			</div>
+			<div class="card card-body mt-3 delivery-list">
+				<b>납품목록</b>
+				<!-- 검색결과 목록 -->
+				<div id="deliveryListGrid"></div>
+			</div>
+		</div>
+		
+		
+
+	</div>
+		
+	<script>
+		
+		//출고 목록
+		const dataSource = {
+		  	      api: {
+		  	          readData: { url: '/delivery/deliveryList' , method: 'GET' },
+		  	        },
+		  	      contentType: 'application/json',
+		  	    };  
+		
+		const orderListGrid = new Grid({
+			el: document.getElementById('deliveryListGrid'),
+			bodyHeight: 619,
+			scrollY: false,
+			scrollX: false,
+            pageOptions: {
+                useClient: false,   
+                perPage: 10
+            },
+			rowHeaders: ['rowNum'],
+			columnOptions: {
+	  	          resizable: true
+	  	      	},
+			columns: [
+				{ header: "납품코드", name: "deliveryCode"},
+				{ header: "주문코드", name: "productOrderCode"},
+				{ header: "업체코드", name: "companyCode"},
+				{ header: "업체명", name: "company"},
+				{ header: "주문일", name: "orderDate"},
+				{ header: "납기일", name: "dedt"},
+				{ header: "요약", name: "summary"},
+				{ header: "상태", name: "status"},
+				{ header: " ", name: "btn1"},
+				{ header: " ", name: "btn2"},
+				{ header: " ", name: "btn3"},
+			],
+			data: dataSource,
+			showDummyRows: true,
+		});
+		
+        function searchOrderList() {
+			orderListGrid.readData(1, {
+        		orderCode: document.querySelector('.search-order-code').value,
+        		deliveryCode: document.querySelector('.search-delivery-code').value,
+        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
+        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-product-code').value,
+        		productName: document.querySelector('.search-product-name').value,
+        		companyCode: document.querySelector('.search-company-code').value,
+        		companyName: document.querySelector('.search-company-name').value,
+        		deliveryStatus: document.querySelector('.search-status').value
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+        
+        //검색 엔터 이벤트
+		document.querySelectorAll(".search-bar input").forEach((ele) => {
+			ele.addEventListener('keydown', (ele) => {				
+				if (window.event.keyCode == 13) {
+					searchOrderList();
+			    }
+			})
+		})
+	</script>
+</body>
+</html>

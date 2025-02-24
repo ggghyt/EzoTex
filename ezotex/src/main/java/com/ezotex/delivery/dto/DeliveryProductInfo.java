@@ -28,6 +28,8 @@ public class DeliveryProductInfo {
 	
 	//잔여량
 	private int reqQy;
+	//수량 합꼐
+	private int qySum;
 	//사이즈
 	private String sizeSort;
 }

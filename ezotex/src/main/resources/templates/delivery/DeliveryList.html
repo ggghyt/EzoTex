@@ -18,7 +18,7 @@
 			flex-direction:row;
 		}
 
-		.order-list {
+		.delivery-list {
 			width: 100%;
 			height: 778px;
 		}
@@ -103,6 +103,45 @@
 		.search-status-group span{
 			width: 58px;
 		}
+		.delivery-info{
+			padding: 20px;
+			border-radius: 20px;
+			border: 3px solid #e5e5e5;
+			width: 400px;
+		}
+		.table td {
+			padding: 5px;
+		}
+		.deliveryProductDetails {
+			margin-left: 30px;
+			display: inline-block;
+			width: 400px;
+		}
+		.modal-body{
+			display: flex;		
+		}
+		.read-memo {
+			height: 100px;
+		}
+		.more-info-group {
+			width: 650px;
+			display: flex;
+			justify-content: right;
+		}
+		.more-info-group button {
+			height: 20px;
+			line-height: 1px;
+			margin-left: 20px;
+		}
+		#deliveryDetails::-webkit-scrollbar{
+		  	display:none;
+		}
+		.read-dedt-address {
+			height: 60px;
+		}
+		.chargerInfo td{
+			padding: 10px;
+		}
 	</style>
 </head>
 <body>
@@ -111,9 +150,8 @@
 		<div class="col">			
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 				
-				<b>검색</b>
-									
-				<!-- 검색조건1: 발주코드, 자재코드, 자재명, 발주담당자 -->
+				<b>납품검색</b>
+								
 				<div>
 					<span class="search-unit">
 						<span>주문코드</span>
@@ -121,34 +159,34 @@
 					</span>
 					<span class="search-unit">
 						<span>납품코드</span>
-						<input type="text" class="form-control search-charger"> 
+						<input type="text" class="form-control search-delivery-code"> 
 					</span>
 					<span class="search-unit">
 						<span>제품코드</span>
-						<input type="text" class="form-control search-mtril-code">
+						<input type="text" class="form-control search-product-code">
 					</span>
 					<span class="search-unit">
 						<span>제품명</span>
-						<input type="text" class="form-control search-mtril-name"> 
+						<input type="text" class="form-control search-product-name"> 
 					</span>
 				</div>
 				
 				<div>
 					<span class="search-unit">
 						<span>업체코드</span>
-						<input type="text" class="form-control search-order-code">
+						<input type="text" class="form-control search-company-code">
 					</span>
 					<span class="search-unit">
 						<span>업체명</span>
-						<input type="text" class="form-control search-charger"> 
+						<input type="text" class="form-control search-company-name"> 
 					</span>
 					<span class="search-unit">
 						<span>담당자코드</span>
-						<input type="text" class="form-control search-mtril-code">
+						<input type="text" class="form-control search-delivery-chargerCode">
 					</span>
 					<span class="search-unit">
 						<span>담당자</span>
-						<input type="text" class="form-control search-mtril-name"> 
+						<input type="text" class="form-control search-delivery-charger"> 
 					</span>
 				</div>
 				
@@ -169,58 +207,351 @@
 						<span>상태</span>
 						<select class="search-status">
 							<option value="">전체</option>
-							<option value="OR01">대기</option>
-							<option value="OR06">분할출고</option>
+							<option value="DS01">납품등록</option>
+							<option value="DS02">포장완료</option>
+							<option value="DS03">기사배정</option>
+							<option value="DS04">배송출발</option>
+							<option value="DS05">납품완료</option>
 						</select>
 					</span>
 				</div>
-				
 
 				<div class="btn-section">						
 					<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 					<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 				</div>
 			</div>
-			<div class="card card-body mt-3 order-list">
-				<b>목록</b>
+			<div class="card card-body mt-3 delivery-list">
+				<b>납품목록</b>
 				<!-- 검색결과 목록 -->
-				<div id="orderListGrid"></div>
+				<div id="deliveryListGrid"></div>
 			</div>
 		</div>
-		
+	</div>
+		<!-- 출고 상세 -->
+		<div class="modal fade" id="deliveryDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	      <div class="modal-dialog modal-xl" >
+	         <div class="modal-content">
+	           <div class="modal-header" style="height: 20px;">
+	            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">납품 상세</h5>
+	           </div>
+	           <div class="modal-body" style="padding: 20px; padding-bottom:10px;">
+           			<div class="delivery-info">
+			            <b>납품정보</b>
+			            <table class="table mt-3">
+							<tbody>
+								<tr>
+									<td>납품코드</td>
+									<td><input type="text" class="form-control read-delivery-code" disabled></td>
+								</tr>
+								<tr>
+									<td>주문코드</td>
+									<td><input type="text" class="form-control read-order-code" disabled></td>
+								</tr>
+								<tr>
+									<td>업체명</td>
+									<td><input type="text" class="form-control read-company-name" disabled></td>
+								</tr>
+								<tr>
+									<td>등록일</td>
+									<td colspan="3"><input type="text" class="form-control read-regist-date" disabled></td>
+	
+								</tr>
+								<tr>
+									<td>주문일</td>
+									<td><input type="text" class="form-control read-order-date" disabled></td>
+								</tr>
+								<tr>
+									<td>납기일</td>
+									<td><input type="text" class="form-control read-dedt" disabled></td>
+								</tr>
+								<tr>
+									<td>출고창고</td>
+									<td><input type="text" class="form-control read-storage" disabled></td>
+								</tr>
+								<tr>
+									<td>납기주소</td>
+									<td><textarea type="text" class="form-control read-dedt-address" disabled></textarea></td>
+								</tr>
+								<tr>
+									<td>비고</td>
+									<td><textarea class="form-control read-memo" disabled></textarea></td>
+								</tr>
+							</tbody>
+						</table>
+						<table class="table mt-3 chargerInfo">
+							<tbody>
+								<tr>
+									<td>구분</td>
+									<td>담당자코드</td>
+									<td>담당자</td>
+									<td>등록일</td>
+								</tr>
+								<tr>
+									<td>출고</td>
+									<td class="deliveryChargerCode">담당자코드</td>
+									<td class="deliveryCharger">담당자</td>
+									<td class="deliveryRgsde">등록일</td>
+								</tr>
+								<tr>
+									<td>포장</td>
+									<td class="packingChargerCode">담당자코드</td>
+									<td class="packingCharger">담당자</td>
+									<td class="packingRgsde">등록일</td>
+								</tr>
+								<tr>
+									<td>배차</td>
+									<td class="driverChargerCode">담당자코드</td>
+									<td class="driverChargerName">담당자</td>
+									<td class="driverChargerRgsde">등록일</td>
+								</tr>
+								<tr>
+									<td>배송</td>
+									<td class="driverCode">담당자코드</td>
+									<td class="driverName">담당자</td>
+									<td class="driveStartTime">등록일</td>
+								</tr>
+									
+								
+							</tbody>
+						</table>
+           			</div>
+           			<div class="deliveryProductDetails">
+           				<div class="mb-2 more-info-group">						
+							<button type="button" class="btn btn-primary btn-rounded">납품카드</button>
+							<button type="button" class="btn btn-primary btn-rounded">배송현황</button>
+						</div>
+						<!-- 출고 제품 목록 -->
+						<b>출고 제품 목록</b>
+						<div id="productList"  class="mb-3"></div>
+						<b>상세 출고 수량</b>
+						<div id="productDetails"></div>
+
+           			</div>
+                 	
+	           </div>
+
+	            <div style="text-align: center; margin: 20px;">
+	               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
+	            </div>
+	         </div>
+	         </div>
+	      </div>
 		
 
-	</div>
 		
 	<script>
-		//session_user_code => 세션에서 가져온 회사코드임
-		
-		//제품 목록
-		const orderListGrid = new Grid({
-			el: document.getElementById('orderListGrid'),
-			bodyHeight: 619,
-			scrollY: false,
-			scrollX: false,
+		//출고 목록
+		const dataSource = {
+		  	      api: {
+		  	          readData: { url: '/delivery/deliveryList' , method: 'GET' },
+		  	        },
+		  	      contentType: 'application/json',
+		  	    };  
+
+        const deliveryListGrid = new Grid({
+            el: document.getElementById('deliveryListGrid'),
+            rowHeaders: ['rowNum'],
             pageOptions: {
                 useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
                 perPage: 15
             },
-			rowHeaders: ['rowNum'],
-			columns: [
-				{ header: "납품코드", name: "productOrderCode"},
-				{ header: "주문코드", name: "productCode"},
-				{ header: "업체코드", name: "productName"},
-				{ header: "업체명", name: "reqQy"},
-				{ header: "주문일", name: "deliveryQy"},
-				{ header: "납기일", name: "deliveryQy"},
-				{ header: "요약", name: "deliveryQy"},
-				{ header: "상태", name: "deliveryQy"},
-				{ header: " ", name: " "},
-				{ header: " ", name: " "},
-				{ header: " ", name: " "},
-			]
-		});
+            bodyHeight: 619,
+            columnOptions: {
+  	          resizable: true
+  	      	},
+			scrollY: true,
+			scrollX: false,
+            columns: [
+				{ header: "납품코드", name: "deliveryCode"},
+				{ header: "주문코드", name: "productOrderCode"},
+				{ header: "업체코드", name: "companyCode"},
+				{ header: "업체명", name: "company"},
+				{ header: "주문일", name: "orderDate"},
+				{ header: "납기일", name: "dedt"},
+				{ header: "요약", name: "summary"},
+				{ header: "회차", name: "time"},					
+				{ header: "상태", name: "deliveryStatus"},
+				{ header: "출고등록일", name: "registDate"},
+				{ header: "비고", name: "remark", hidden: true},
+				{ header: "출고창고", name: "storageName", hidden: true},
+				{ header: "납기주소", name: "dedtAddress", hidden: true}
+            ],
+            data: dataSource,
+			showDummyRows: true	//더미로우 추가
+        });
+	    
+        const productList = new Grid({
+            el: document.getElementById('productList'),
+            rowHeaders: ['rowNum'],
+            bodyHeight: 345,
+            width: 600,
+            scrollY: true,
+			scrollX: false,
+            columnOptions: {
+  	          resizable: true
+  	      	},
+            columns: [
+				{ header: "출고번호", name: "deliveryCode", hidden: true},
+				{ header: "제품코드", name: "productCode"},
+				{ header: "제품명", name: "productName"},
+				{ header: "출고량합계", name: "qySum"},
+            ],
+			showDummyRows: true	//더미로우 추가
+        });
+        
+        const productDetails = new Grid({
+            el: document.getElementById('productDetails'),
+            bodyHeight: 240,
+            width: 600,
+  	        header: {
+	        	height: 70,
+	            complexColumns: [
+	              {
+	                header: 'S',
+	                name: 'stest',
+	                childNames: ['sizeS', 's']
+	              },
+	              {
+		             header: 'M',
+		             name: 'mtest',
+		             childNames: ['sizeM', 'm']
+		          },
+		          {
+			         header: 'L',
+			         name: 'ltest',
+			         childNames: ['sizeL', 'l']
+			      },
+			      {
+				      header: 'XL',
+				      name: 'xltest',
+				      childNames: ['sizeXl', 'xl']
+				  }
+	             ]},
+	        columns: [
+	            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
+	            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
+	            { header: "잔여수량", name: "s", align: "center" },
+	            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
+	            { header: "잔여수량", name: "m", align: "center" },
+	            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
+	            { header: "잔여수량", name: "l", align: "center" },
+	            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
+	            { header: "잔여수량", name: "xl", align: "center" }
+	        ],
+		  columnOptions: {
+		        frozenCount: 1,
+		        frozenBorderWidth: 1,
+		        minWidth: 150
+		      },
+			showDummyRows: true	//더미로우 추가
+        });
+        
+        /*
+        const chargerGrid = new Grid({
+            el: document.getElementById('chargerGrid'),
+            bodyHeight: 200,
+            width: 350,
+            columnOptions: {
+  	          resizable: true
+  	      	},
+            columns: [
+				{ header: "구분", name: "productCode"},
+				{ header: "담당자코드", name: "productName"},
+				{ header: "담당자", name: "deliveryQy"},
+				{ header: "등록일", name: "sumQy"}
+            ],
+			showDummyRows: true	//더미로우 추가
+        });
+        */
+	    //출고목록 검색 함수
+        function searchOrderList() {
+        	deliveryListGrid.readData(1, {
+        		orderCode: document.querySelector('.search-order-code').value,
+        		deliveryCode: document.querySelector('.search-delivery-code').value,
+        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
+        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-product-code').value,
+        		productName: document.querySelector('.search-product-name').value,
+        		companyCode: document.querySelector('.search-company-code').value,
+        		companyName: document.querySelector('.search-company-name').value,
+        		deliveryStatus: document.querySelector('.search-status').value
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+        
+        //검색 엔터 이벤트
+		document.querySelectorAll(".search-bar input").forEach((ele) => {
+			ele.addEventListener('keydown', (ele) => {				
+				if (window.event.keyCode == 13) {
+					searchOrderList();
+			    }
+			})
+		})
 		
+		//검색 조건 삭제
+        function resetCondition() {
+       		document.querySelectorAll('.search-bar input').forEach((e) => {
+       			e.value = null;
+       		})
+       		document.querySelector('.search-bar select').value = '';
+       		searchOrderList();
+        }
+        
+		let lastClicked = null;
+		
+		deliveryListGrid.on('focusChange', ev => {
+			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			lastClicked = ev.rowKey; // 선택된 행 기억
+			
+			//선택행 데이터
+			let data = deliveryListGrid.getRow(ev.rowKey);
+			
+			//출고정보 인풋 박스 안에 넣기
+			document.querySelector(".read-delivery-code").value = data.deliveryCode;
+			document.querySelector(".read-order-code").value = data.productOrderCode;
+			document.querySelector(".read-company-name").value = data.company;
+			document.querySelector(".read-regist-date").value = data.registDate;
+			document.querySelector(".read-order-date").value = data.orderDate;
+			document.querySelector(".read-dedt").value = data.dedt;
+			document.querySelector(".read-storage").value = data.storageName;
+			document.querySelector(".read-dedt-address").value = data.dedtAddress;
+			document.querySelector(".read-memo").value = data.remark;
+			
+			//제품 데이터 가져오기
+			fetch(`/delivery/deliveryInfo?deliveryCode=${data.deliveryCode}`)
+	    		.then(rep => rep.json())
+	    		.then(res => {
+	    			console.log('서버에서 가져온 데이터',res);
+	    			//res.chargerInfo
+	    			//담당자 정보 넣기
+									
+					document.querySelector('.deliveryChargerCode').innerHTML = res.chargerInfo.deliveryChargerCode;
+					document.querySelector('.deliveryCharger').innerHTML = res.chargerInfo.deliveryChargerName;
+					document.querySelector('.deliveryRgsde').innerHTML = res.chargerInfo.deliveryRgsde;
+					document.querySelector('.packingChargerCode').innerHTML = res.chargerInfo.packingChargerCode;
+					document.querySelector('.packingCharger').innerHTML = res.chargerInfo.packingChargerName;
+					document.querySelector('.packingRgsde').innerHTML = res.chargerInfo.packingRgsde;
+					document.querySelector('.driverChargerCode').innerHTML = res.chargerInfo.driverChargerCode;
+					document.querySelector('.driverChargerName').innerHTML = res.chargerInfo.driverChargerName;
+					document.querySelector('.driverChargerRgsde').innerHTML = res.chargerInfo.driverChargerRgsde;
+					document.querySelector('.driverCode').innerHTML = res.chargerInfo.driverCode;
+					document.querySelector('.driverName').innerHTML = res.chargerInfo.driverName;
+					document.querySelector('.driveStartTime').innerHTML = res.chargerInfo.driveStartTime;
+					
+					//제품 리스트 그리드 초기화
+	    			productList.resetData(res.productList);
+					
+					//모달 열기
+					const deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
+					deliveryDetails.show();
+					
+	    		})
+		})
 	</script>
 </body>
 </html>
