@@ -113,6 +113,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		
+		<!-- 리포팅 툴: 제스퍼 리포트-->
+		<dependency>
+			 <groupId>net.sf.jasperreports</groupId>
+			 <artifactId>jasperreports</artifactId>
+			 <version>6.4.0</version>
+		</dependency>
 
 	</dependencies>
 

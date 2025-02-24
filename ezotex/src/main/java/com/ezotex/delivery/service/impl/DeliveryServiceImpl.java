@@ -180,6 +180,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return mapper.deliveryListCnt(searchDTO);
 	}
 
+	//출고 단건조회
 	@Override
 	public Map<String, Object> deliveryInfo(String deliveryCode) {
 		DeliveryAllCharger charger = mapper.allcharger(deliveryCode);
@@ -193,7 +194,17 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return map;
 	}
 
+	@Override
+	public Map<String, Object> deliveryProductDetails(String deliveryCode, String productCode) {
+		Map<String, Object> map = new HashMap<>();
+		
+		List<DeliveryProductInfo> list = mapper.findBySize(productCode);
 
+		map.put("optionList", list);
+		map.put("qyList", mapper.deliveryProductDetails(productCode, list, deliveryCode));
+		return map;
+	}
 
+	
 	
 }
