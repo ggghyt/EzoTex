@@ -66,19 +66,32 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	@Override
 	@Transactional
 	public boolean insertMaterialOrder(Map<String, Object> map) {
-		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
-		int headerResult = mapper.insertMaterialOrder(map.get("headerObj"));
+		// 들어온 map = { companyArr: ['COM0001',...], COM0001: {header, details},... }
+		List<String> companyArr = (List<String>) map.get("companyArr");
+		int companyCnt = companyArr.size();
 		
-		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
-		List<Object> detailList = (List<Object>) map.get("detailArr");
-		
-		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
-		for(Object detail : detailList) {
-			MaterialOrderDTO dto = objMapper.convertValue(detail, MaterialOrderDTO.class); // DTO로 변환
-			mapper.insertMaterialOrderDetail(dto);
-			dtlResult--;
+		// 들어온 업체만큼 발주서 입력하기 위해 반복문 사용
+		for(String companyCode : companyArr) {
+			Map<String, Object> companyMap = (Map<String, Object>) map.get(companyCode); // 해당 업체 데이터
+			
+			// Object의 String타입을 Integer나 Date로 변환할 수 없으므로 DTO로 변환
+			Object headerData = companyMap.get("header");
+			MaterialOrderDTO headerDto = objMapper.convertValue(headerData, MaterialOrderDTO.class);
+			headerDto.setCompanyCode(companyCode); // 없는 값 추가
+			int headerResult = mapper.insertMaterialOrder(headerDto);
+			
+			List<Object> detailList = (List<Object>) companyMap.get("details");
+			
+			int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
+			for(Object detail : detailList) {
+				MaterialOrderDTO dto = objMapper.convertValue(detail, MaterialOrderDTO.class); // DTO로 변환
+				mapper.insertMaterialOrderDetail(dto);
+				dtlResult--;
+			}
+			if(headerResult == 1 && dtlResult == 0) companyCnt--; // 모두 성공하면 숫자 체크
 		}
-		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
+		
+		return companyCnt == 0 ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
 	}
 
 }

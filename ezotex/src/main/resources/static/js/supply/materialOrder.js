@@ -8,22 +8,29 @@ let mtrNameBox = document.getElementById('mtrilName');
 let colorBox = document.getElementById('color');
 let unitNameBox = document.getElementById('unitName');
 let unitPriceBox = document.getElementById('unitPrice');
+
 let inventoryQyBox = document.getElementById('inventoryQy');
 let storingQyBox = document.getElementById('storingQy');
 let orderQyBox = document.getElementById('qy');
+let dueDateBox = document.getElementById('dueDate');
 
 document.addEventListener('DOMContentLoaded', () => {	
 	changeClas(lclasBox, sclasBox);
 	$('#chargerName').val(session_user_name);
+	dueDateBox.min = dateFormatter(); // 오늘 이전 날짜 선택 방지
 	
 	createModal({ 
 		type: 'regist',
-		confirm: null,
+		confirm: insertOrder,
 		loading: false
 	});
 	$('#finalBtn').on('click', () => {
 		let orderData = orderGrid.getData();
 		if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
+		else if(dueDateBox.value == ''){
+			failToast('납기일을 입력해주세요.');
+			return;
+		}
 		$('#simpleModal').modal('show'); // 입력값이 있다면 등록 모달 표시
 	});
 });
@@ -77,13 +84,18 @@ class CustomDelBtnRender {
 	// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
 	// props = grid, rowKey, columnInfo, value(데이터)
 	const el = document.createElement('button');
-	el.classList = 'btn btn-danger btn-sm';
+	el.classList = 'btn btn-outline-danger btn-sm';
 	el.id = props.rowKey; // 태그 자체에 rowKey 저장
 	el.innerText = '삭제';
 	
+	el.addEventListener('mousedown', (e) => {
+      e.stopPropagation(); // tui 그리드 셀 기본 이벤트 방지
+	});
 	el.addEventListener('click', (e) => {
 		let rowKey = e.target.id;
 		orderGrid.removeRow(rowKey);
+		if(isModifying) modifyMode(false);
+		getSum();
 	});
     this.el = el;
     this.render(props);
@@ -201,18 +213,18 @@ const orderGrid = new Grid({
     data: [],
     columns: [
 			{ header: '업체코드', name: 'companyCode', sortable: true },
-	    { header: '업체명', name: 'companyName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
-	    { header: '제품코드', name: 'productCode', sortable: true },
-	    { header: '제품명', name: 'productName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
+		    { header: '업체명', name: 'companyName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
+		    { header: '제품코드', name: 'productCode', sortable: true },
+		    { header: '제품명', name: 'productName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
 			{ header: '색상', name: 'productColor', sortable: true, formatter: row => row.value == 'null' ? null : row.value},
-	    { header: '발주량', name: 'orderQy', sortable: true, align: 'right',
+	    	{ header: '발주량', name: 'orderQy', sortable: true, align: 'right',
 			  		formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-	    { header: '단위', name: 'unitName', width: 50, sortable: true },
+	    	{ header: '단위', name: 'unitName', width: 50, sortable: true },
 			{ header: '단가', name: 'unitPrice', sortable: true, align: 'right',
 					  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-			{ header: '금액', name: 'totalPrice', sortable: true, align: 'right',
+			{ header: '금액', name: 'amount', sortable: true, align: 'right',
 					  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-	    { header: '', name: '', renderer: { type: CustomDelBtnRender, options: {}}, minWidth: 60, align: 'center' },
+	    	{ header: '', name: '', renderer: { type: CustomDelBtnRender, options: {}}, minWidth: 60, align: 'center' },
 			{ header: '색상 및 단가정보', name: 'colorInfo', hidden: true }
     ],
     rowHeaders: ['rowNum'],
@@ -229,7 +241,7 @@ const orderGrid = new Grid({
 					     }
 				    },
 		     		orderQy: { template: () => {} },
-						totalPrice: { template: () => {} }
+					amount: { template: () => {} }
 			 }
      }
 });
@@ -339,6 +351,8 @@ function changeByColor(val){
 /******************** 발주목록 추가 ********************/	
 document.getElementById('insertBtn').addEventListener('click', () => {
 	insertRow();
+	orderQyBox.value = '';
+	orderQyBox.focus();
 });
 
 let modifyRowKey;
@@ -348,6 +362,8 @@ orderGrid.on('focusChange', ev => {
 	orderGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 	
 	modifyRowKey = ev.rowKey; // rowKey 저장하여 수정 시 사용
+	
+	// 입력정보 재표시
 	let row = orderGrid.getRow(ev.rowKey);
 	compCodeBox.value = row.companyCode;
 	compNameBox.value = row.companyName;
@@ -373,16 +389,16 @@ orderGrid.on('focusChange', ev => {
 	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	
 	unitPriceBox.value = numberFormatter(colorInfo[colorIdx].UNIT_PRICE);
 	
-	modifyOrder(true); // 수정 모드로 전환
+	modifyMode(true); // 수정모드로 전환
 });
 
 document.getElementById('modifyBtn').addEventListener('click', () => {
 	insertRow(modifyRowKey);
-	modifyOrder(false);
+	modifyMode(false); // 수정모드 종료
 });
 
 document.getElementById('modifyCancelBtn').addEventListener('click', () => {
-	modifyOrder(false);
+	modifyMode(false); // 수정모드 종료
 });
 
 // 발주목록 데이터 추가
@@ -415,7 +431,7 @@ function insertRow(rowKey){
 		orderQy: orderQy,
 		unitName: unitNameBox.value,
 		unitPrice: unitPrice,
-		totalPrice: unitPrice * orderQyBox.value, // 단가 * 입력수량 = 총 금액
+		amount: unitPrice * orderQyBox.value, // 단가 * 입력수량 = 총 금액
 		colorInfo: colorInfo // 표시 항목 한꺼번에 저장
 	};
 	if(rowKey != null) orderGrid.setRow(rowKey, insertObj);
@@ -424,8 +440,10 @@ function insertRow(rowKey){
 }
 
 // 수정버튼 토글기능
-function modifyOrder(boolean){
-	if(boolean){
+let isModifying = false;
+function modifyMode(boolean){
+	isModifying = boolean;
+	if(isModifying){
 		document.getElementById('insertBtn').style.display = 'none'; // 등록버튼 숨김
 		document.getElementById('modifyCancelBtn').style.display = 'block'; // 수정취소버튼 노출
 		document.getElementById('modifyBtn').style.display = 'block'; // 수정버튼 노출
@@ -434,6 +452,7 @@ function modifyOrder(boolean){
 		document.getElementById('modifyCancelBtn').style.display = 'none'; // 수정취소버튼 숨김
 		document.getElementById('insertBtn').style.display = 'block'; // 등록버튼 노출
 		
+		// 초기화
 		document.getElementById('resetBtn').dispatchEvent(new Event('click')); // 리셋버튼 클릭 이벤트 동작
 		document.getElementById('orderForm').reset(); // 폼 이벤트 - 입력값 모두 초기화
 		orderGrid.removeRowClassName(modifyRowKey, 'bg-blue'); // 행 배경색 삭제
@@ -442,9 +461,54 @@ function modifyOrder(boolean){
 
 // 그리드 summary 집계 반영
 function getSum(){
-	let amount = orderGrid.getSummaryValues('totalPrice').sum;
-	$('#amount').val(numberFormatter(amount));
+	let totalAmount = orderGrid.getSummaryValues('amount').sum;
+	$('#totalAmount').val(numberFormatter(totalAmount));
 	
 	let sum = orderGrid.getSummaryValues('orderQy').sum;
 	$('#totalQy').val(numberFormatter(sum));
 };
+
+/******************** 발주목록 등록 ********************/	
+function insertOrder(loading){
+	let defaultRemark = document.getElementById('remark').value;
+	let orderData = orderGrid.getData();
+	
+	let companyArr = orderData.map(data => data.companyCode)
+	companyArr = companyArr.filter((data, idx) => companyArr.indexOf(data) != idx); // 중복값 제거
+	
+	let insertObj = {companyArr};
+	// 입력값에서 업체코드별로 키-값 분리하여 객체 생성
+	// insertObj = { companyArr: ['COM0001',...], COM0001: {header, details},... }
+	for(let compCode of companyArr){
+		let compData = orderData.filter(data => data.companyCode == compCode);
+		
+		insertObj[compCode] = {}; // header, details 넣을 빈 공간
+		insertObj[compCode].header = {
+			companyCode: compCode,
+			companyName: compData[0].companyName,
+			dueDate: dueDateBox.value,
+			dueDate: dueDateBox.value,
+			chargerCode: session_user_code,
+			chargerName: session_user_name,
+			remark: defaultRemark
+		};
+		insertObj[compCode].details = compData;
+	}
+	console.log(insertObj);
+	
+	loading();
+	fetch('/supply/mtrOrder', {
+		method: 'POST',
+		headers: {...headers, 'Content-Type': 'application/json'},
+		body: JSON.stringify(insertObj)
+	})
+	.then(response => response.json())
+	.then(result => {
+		console.log(result);
+		if(result == true){
+			successToast('발주서가 등록되었습니다.');
+			orderGrid.resetData([]);
+			getSum(); // 합계 초기화
+		} else failToast('알 수 없는 오류로 실패했습니다.');
+	});
+}
