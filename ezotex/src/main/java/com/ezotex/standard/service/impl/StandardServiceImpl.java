@@ -15,6 +15,7 @@ import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
+import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.mappers.StandardMapper;
 import com.ezotex.standard.service.StandardService;
@@ -127,6 +128,31 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<ProductCategoryDTO> productCategory(String productCode) {
 		return mapper.productCategory(productCode);
+	}
+
+	@Override
+	public int productCategoryInsert(List<ProductCategoryDTO> productCategoryDTO) {
+		mapper.productCategoryDelete(productCategoryDTO.get(0).getProductCode());
+		System.out.println(productCategoryDTO.toString());
+		for (int i = 0 ; i < productCategoryDTO.size() ; i++) {
+			mapper.productCategoryInsert(productCategoryDTO.get(i));
+		}
+		return 0;
+	}
+
+	@Override
+	public List<CompanyDTO> searchCom(String companyName) {
+		return mapper.searchCom(companyName);
+	}
+
+	@Override
+	public List<ProductOptionDTO> optionSizeList() {
+		return mapper.optionSizeList();
+	}
+
+	@Override
+	public List<ProductOptionDTO> productOption(String productCode) {
+		return mapper.productOption(productCode);
 	}
 	
 }

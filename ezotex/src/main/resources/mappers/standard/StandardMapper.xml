@@ -232,4 +232,46 @@ from product_category
 where product_code = #{productCode}
 </select>
 
+<delete id="productCategoryDelete">
+delete product_category
+where product_code = #{productCode}
+</delete>
+
+<insert id="productCategoryInsert" parameterType="ProductCategoryDTO">
+insert into product_category
+values (#{lclas}, 
+        #{sclas}, 
+        #{productCode}
+)
+</insert>
+
+<select id="searchCom" resultType="CompanyDTO">
+select company_code, 
+       company_name
+from company
+where company_name like '%' || #{companyName} || '%'
+</select>
+
+<select id="optionSizeList" resultType="ProductOptionDTO">
+select comm_detail_code as product_code, 
+       code_name as size_name
+from common_code_details
+where comm_detail_code like 'SI%'
+</select>
+
+<select id="productOption" resultType="ProductOptionDTO">
+select option_code, 
+       product_code, 
+       product_color, 
+       product_size, 
+       code_name as size_name, 
+       unit_price, 
+       discontinued
+from product_option
+join common_code_details
+on product_option.product_size = common_code_details.comm_detail_code
+where product_code = #{productCode}
+</select>
+
+
 </mapper>

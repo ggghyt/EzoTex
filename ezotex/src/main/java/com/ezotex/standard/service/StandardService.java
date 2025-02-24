@@ -10,6 +10,7 @@ import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
+import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 
 public interface StandardService {
@@ -28,4 +29,8 @@ public interface StandardService {
 	List<ProductListInfoDTO> unitNameList();
 	int ProductInfoInsert(ProductListInfoDTO productListInfoDTO);
 	List<ProductCategoryDTO> productCategory(String productCode);
+	int productCategoryInsert(List<ProductCategoryDTO> productCategoryDTO);
+	List<CompanyDTO> searchCom(String companyName);
+	List<ProductOptionDTO> optionSizeList();
+	List<ProductOptionDTO> productOption(String productCode);
 }
