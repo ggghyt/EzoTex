@@ -125,9 +125,15 @@ public class DeliveryRestController {
 	//출고건 담당자, 제품 리스트
 	@GetMapping("deliveryInfo")
 	public Map<String, Object> deliveryInfo(@RequestParam(name="deliveryCode")String deliveryCode) {
-		log.info("===============================================================================");
-		log.info(deliveryCode);
 		Map<String, Object> info = service.deliveryInfo(deliveryCode);
 		return info;
+	}
+	
+	@GetMapping("deliveryProductDetails")
+	public Map<String, Object> deliveryDetails(@RequestParam(name="deliveryCode")String deliveryCode,
+											   @RequestParam(name="productCode")String productCode) {
+		log.info(productCode);
+		log.info(deliveryCode);
+		return service.deliveryProductDetails(deliveryCode, productCode);
 	}
 }

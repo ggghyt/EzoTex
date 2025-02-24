@@ -31,4 +31,8 @@ public interface DeliveryService {
 	
 	//출고 조회 단건
 	public Map<String, Object> deliveryInfo(String deliveryCode);
+	
+	//출고건 제품 출고 내역
+	public Map<String, Object> deliveryProductDetails(String deliveryCode,
+													  String productCode);
 }

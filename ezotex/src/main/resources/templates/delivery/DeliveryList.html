@@ -501,6 +501,7 @@
        		searchOrderList();
         }
         
+        //출고건 선택 저장 변수
 		let lastClicked = null;
 		
 		deliveryListGrid.on('focusChange', ev => {
@@ -551,6 +552,61 @@
 					deliveryDetails.show();
 					
 	    		})
+		})
+		
+		//선택한 제품
+		let selectedProduct = '';
+		
+		productList.on('focusChange', ev => {
+			productList.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			productList.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			selectedProduct = ev.rowKey; // 선택된 행 기억
+			
+			//선택행 데이터
+			let data = productList.getRow(ev.rowKey);
+			
+			console.log('선택한 행 데이터:', data);
+			
+			fetch(`/delivery/deliveryProductDetails?deliveryCode=${data.deliveryCode}&productCode=${data.productCode}`)
+    		.then(rep => rep.json())
+    		.then(res => {
+    			console.log(res);
+    			// 선택한 제품코드 저장
+	    		productCode = data.productCode;
+	    		
+	            //사이즈 정보 담을 배열
+	            let products = [];
+	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
+	    		let size = [];
+	            //색상, 사이즈 컬럼
+				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center", minWidth: 80 }];
+	            
+	            let deliveryDetails = res;
+	            for(let i=0; i<deliveryDetails.optionList.length; i++) {
+	            	let sizeCode = deliveryDetails.optionList[i].showSize;
+	            	
+	            	size.push({
+		                header: sizeCode,
+		                name: 'DE' + sizeCode,
+		                minWidth: 150
+		             })
+		             
+		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "center", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+	            }
+	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
+	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
+	            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
+	            	if(productCode == deliveryDetails.qyList[i].PRODUCT_CODE) {	
+	            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
+						products.push({...deliveryDetails.qyList[i], productName : data.productName});
+						
+	            	}
+	            }
+				
+				productDetails.setColumns(color);
+				productDetails.resetData(products);
+		    	
+    		})
 		})
 	</script>
 </body>

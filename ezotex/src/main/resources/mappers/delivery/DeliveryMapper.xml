@@ -18,7 +18,7 @@
 	                       ol.order_date AS order_date,
 	                       ol.delivery_request_deadline AS dedt,
 	                       get_comm(ol.order_status) AS orderStatus
-	                FROM   order_list ol             
+	                FROM   order_list ol
 	               	<where>	               	
 			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
 			                AND ol.product_order_code LIKE '%' || UPPER(#{cri.orderCode}) || '%'    --주문코드
@@ -431,7 +431,7 @@
 		WITH product_size AS(
 					    SELECT  dd.product_code AS product_code,
 	                            dd.product_color AS product_color,
-	                            get_comm(dd.product_size) AS forpvt,
+	                            'de' || get_comm(dd.product_size) AS forpvt,
 	                            dd.delivery_qy AS qy
 					    FROM delivery de JOIN delivery_details dd
 	                                       ON (de.delivery_code = dd.delivery_code)
@@ -444,7 +444,7 @@
 			            FOR forpvt IN (
 	
 						<foreach collection="list" item="size" separator=",">
-		                 '${size.showSize}' AS ${size.showSize}
+		                 '${"de" + size.showSize}' AS ${"de" + size.showSize}
 		               </foreach>
 	
 			            )

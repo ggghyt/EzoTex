@@ -71,5 +71,5 @@ public interface DeliveryMapper {
     //납품 제품 상세(피벗)
     public List<Map<String, Object>> deliveryProductDetails(@Param("productCode")String productCode, 
 			@Param("list")List<DeliveryProductInfo> list,
-			@Param("deliveryCode")String orderCode);
+			@Param("deliveryCode")String deliveryCode);
 }
