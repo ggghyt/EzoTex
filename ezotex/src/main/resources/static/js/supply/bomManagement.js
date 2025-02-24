@@ -160,7 +160,7 @@ const mtrGrid = new Grid({
     columns: [
         { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
-		{ header: '색상', name: 'colorList', renderer: { type: CustomSelectBox, options: {}} },
+				{ header: '색상', name: 'colorList', renderer: { type: CustomSelectBox, options: {}} },
         { header: '단위', name: 'unitName', width: 100, sortable: true }
     ],
     rowHeaders: ['checkbox'],

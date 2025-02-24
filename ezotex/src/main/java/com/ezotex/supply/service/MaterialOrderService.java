@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.ezotex.standard.dto.CompanyDTO;
-import com.ezotex.standard.dto.ProductDTO;
 
 public interface MaterialOrderService {
 	// 발주할 업체 조회
@@ -12,8 +11,11 @@ public interface MaterialOrderService {
 	int countCompanyByProduct(Map<String, String> map);
 	
 	// 발주할 자재 및 옵션 조회
-	List<ProductDTO> listProductByCompany(Map<String, String> map);
+	List<Map<String, Object>> listProductByCompany(Map<String, String> map);
 	int countProductByCompany(Map<String, String> map);
+	
+	// 해당 자재의 옵션 조회
+	List<Map<String, Object>> listColorByCompany(String productCode, String companyCode);
 	
 	// 발주서 등록
 	boolean insertMaterialOrder(Map<String, Object> map);

@@ -33,7 +33,7 @@ public class SupplyController {
 	
 	@GetMapping("mtrOrder")
 	public String materialOrder(Model model) {
-		model.addAttribute("mtrLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
+		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "supply/materialOrder";
 	}
 		
