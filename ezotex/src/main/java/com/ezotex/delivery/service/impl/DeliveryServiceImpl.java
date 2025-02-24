@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.comm.ezoTexCustomException.LotNotFoundException;
+import com.ezotex.delivery.dto.DeliveryAllCharger;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
@@ -154,10 +155,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 				mapper.updateLotQy(insertInfo);
 				
 				//요청 수량에서 로트 합을 계속 빼기
-				reqQy -= sumLotQy;
+				divyQy -= sumLotQy;
 				
 				//로트 합을 계속 빼서, 0보다 작아지면 바로 종료함.
-	            if(reqQy <= 0) {
+	            if(divyQy <= 0) {
 	                break;
 	            };
 				
@@ -167,6 +168,29 @@ public class DeliveryServiceImpl implements DeliveryService {
 		
 		//로트 재고 수량이 충분한 경우 아래 값 보냄
 		return "success";
+	}
+
+	@Override
+	public List<OrderProductDeliveryDTO> deliveryList(DeliveryRegistSearchDTO searchDTO) {
+		return mapper.deliveryList(searchDTO);
+	}
+
+	@Override
+	public int deliveryListCnt(DeliveryRegistSearchDTO searchDTO) {
+		return mapper.deliveryListCnt(searchDTO);
+	}
+
+	@Override
+	public Map<String, Object> deliveryInfo(String deliveryCode) {
+		DeliveryAllCharger charger = mapper.allcharger(deliveryCode);
+		
+		List<DeliveryProductInfo> productList = mapper.deliveryProductList(deliveryCode);
+		//담당자 정보
+		Map<String, Object> map = new HashMap<>();
+		map.put("chargerInfo", charger);
+		map.put("productList", productList);
+		
+		return map;
 	}
 
 

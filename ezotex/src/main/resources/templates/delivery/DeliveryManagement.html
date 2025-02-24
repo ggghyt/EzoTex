@@ -548,7 +548,7 @@
 	            제품코드, 대분류, 소분류, 제품명, 출고량 합계*/
 	            
 	            //스피너
-	            simulateLoading(900);
+	            loading(900);
 	            
 				//주문 상세정보 가져오기
 		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
@@ -817,7 +817,7 @@
 		        				return;
 		        			}
 		        			if(isNaN(info[j][deliveryQy])) {
-		        				failToast('입력값은 문자가 들어갈 수 없습니다.');
+		        				failToast('출고 수량을 입력해주세요.');
 		        				return;
 		        			} 
 		        			

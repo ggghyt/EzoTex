@@ -126,7 +126,7 @@
 	
 	<!-- 분할출고 여부 체크 -->
 	<select id="getTime">
-		SELECT COUNT(*) AS time
+		SELECT COUNT(*)+1 AS time
 		FROM delivery
 		WHERE product_order_code = #{productOrderCode}
 	</select>

@@ -20,6 +20,8 @@ public class DeliveryRegistSearchDTO {
 	String orderCharger;
 	//납품담당자
 	String deliveryCharger;
+	//납품담당자 코드
+	String deliveryChargerCode;
 	//주문일시작
 	String orderDateStart;
 	//주문일끝
@@ -44,5 +46,7 @@ public class DeliveryRegistSearchDTO {
 	String productCode;
 	//공급업체 페이지 사용 
 	String targetCompany;	
+	//
+	String deliveryStatus;
 	
 }

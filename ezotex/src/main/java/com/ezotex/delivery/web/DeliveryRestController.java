@@ -19,6 +19,7 @@ import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
+import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 import com.ezotex.delivery.service.DeliveryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -56,11 +57,6 @@ public class DeliveryRestController {
 
 		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.getList(searchDTO));
 		
-	}
-	
-	@GetMapping("deliveryList")
-	public String deliveryList() {
-		return "성공";
 	}
 	
 	//주문정보
@@ -103,5 +99,35 @@ public class DeliveryRestController {
 		map.put("state", service.insertDelivery(insertData));
 		//map.put("state", "fail");
 		return map;
+	}
+	
+	//출고 조회
+	@GetMapping("deliveryList")
+	public Map<String, Object> deliveryList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+											            @RequestParam(name = "page", defaultValue = "1")int page,
+											            DeliveryRegistSearchDTO searchDTO) {
+		
+		log.info(searchDTO.toString());
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	//페이지당 최대 건수
+		paging.setPage(page);			//현재 페이지
+
+		// 페이징 조건
+		searchDTO.setStart(paging.getFirst());	//시작
+		searchDTO.setEnd(paging.getLast());		//끝번호
+		
+		paging.setTotalRecord(service.getCount(searchDTO));
+
+		return GridUtil.grid(paging.getPage(), service.deliveryListCnt(searchDTO), service.deliveryList(searchDTO));
+	}
+	
+	//출고건 담당자, 제품 리스트
+	@GetMapping("deliveryInfo")
+	public Map<String, Object> deliveryInfo(@RequestParam(name="deliveryCode")String deliveryCode) {
+		log.info("===============================================================================");
+		log.info(deliveryCode);
+		Map<String, Object> info = service.deliveryInfo(deliveryCode);
+		return info;
 	}
 }
