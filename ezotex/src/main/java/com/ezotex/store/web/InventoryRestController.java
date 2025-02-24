@@ -35,6 +35,7 @@ public class InventoryRestController {
 	private final StoreService service;
 	private final InventoryService iService;
 	
+	// 입고 예정 리스트(제품)
 	@GetMapping("deliveryList")
 	public Map<String, Object> list(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									@RequestParam(name = "page", defaultValue = "1") int page,
@@ -60,11 +61,46 @@ public class InventoryRestController {
 		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.DeliveryList(searchDTO));
 	}
 	
+	
+	// 입고 예정 리스트(자재)
+	@GetMapping("mtDeliveryList")
+	public Map<String, Object> Mtlist(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+									@RequestParam(name = "page", defaultValue = "1") int page,
+									DeliverySearchDTO searchDTO
+			) throws JsonMappingException, JsonProcessingException {
+
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
+
+//			// 페이징 조건
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
+//
+//			// 페이징처리
+		paging.setTotalRecord(service.getMtCount(searchDTO));
+		
+		//service.deliveryQy();
+		// 페이징처리 만들어야됨
+//			paging.getPage());
+//			service.getCount(searchDTO));
+		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.MtDeliveryList(searchDTO));
+	}
+	
+	
 	// 납품리스트 기반 입고 제품 상세 조회
 	@GetMapping("deliveryDetailsList")
 	public List<StoreDeliveryDetailsDTO> findByDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
 		return service.findByDeliveryCode(deliveryCode);
 	}
+	
+	// 납품리스트 기반 입고 자재 상세 조회
+	@GetMapping("mtDeliveryDetailsList")
+	public List<StoreDeliveryDetailsDTO> findByMtDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
+		return service.findByMtDeliveryCode(deliveryCode);
+	}
+	
 
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
@@ -126,6 +162,12 @@ public class InventoryRestController {
 	@GetMapping("storageInfoList")
 	public List<storageInfoDTO> storageInfoList(){
 		return iService.storageInfoList();
+	}
+	
+	// 자재 등록
+	@PostMapping("productMtInsert")
+	public boolean productMtInsert(@RequestBody List<StoreDeliveryDetailsDTO> idto){
+		return service.MtInsertProduct(idto);
 	}
 
 

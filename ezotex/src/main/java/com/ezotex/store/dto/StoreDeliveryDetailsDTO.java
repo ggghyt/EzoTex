@@ -30,5 +30,8 @@ public class StoreDeliveryDetailsDTO {
 	// 불량량 합계
 	private int errorTotalQy;
 	
+	// 입고 수량
+	private int productInsertQy;
+	
 	
 }

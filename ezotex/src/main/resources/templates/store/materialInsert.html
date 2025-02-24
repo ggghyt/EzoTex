@@ -1,0 +1,188 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+	</head>
+	<body>
+		<h3 class="fs-3 fw-bold">| 자재 입고 등록</h3>
+		<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+			<table class="table mt-3">
+					<tbody>
+						<!-- 첫 번째 줄 -->
+						<tr>
+							<!-- 							<td class="col-auto"><label class="col-form-label">주문코드</label>
+								<input type="text" id="productOrderCode" class="form-control"
+								readonly></td> -->
+							<td class="col-auto"><label class="col-form-label">납품코드</label> <input type="text" id="charger" class="form-control">
+							</td>
+							<td class="col-auto"><label class="col-form-label">납품요청일</label>
+								<input type="date" id="orderDate" class="form-control" > - <input type="date" id="orderDate" class="form-control" > 
+							</td>
+							<td class="col-auto"><label class="col-form-label">입고예정일</label>
+								<input type="date" id="orderDate" class="form-control" > - <input type="date" id="orderDate" class="form-control" >
+							</td>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+		
+		
+		<div class="row">
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">납품 목록</p>
+				<div id="grid"></div>
+			</div>
+			
+			
+			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">납품 목록상세</p>
+				<div id="mtGrid2"></div>
+				
+				<div class="d-flex justify-content-end mt-2">
+					<button type="button" class="btn btn-primary registBtn"
+						data-bs-toggle="modal" data-bs-target="#registModal"
+						style="height: 45px; margin-top: 10px;">등록</button>
+					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+		
+		<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="productMtInsert"
+						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+		
+		
+		
+		
+		<script>
+		
+			//납품코드
+			let deliveryCode = '';
+		
+		
+		
+			const mtDataSource = {
+					api: {
+						readData: { url: 'http://localhost:80/store/mtDeliveryList', method: 'GET' }
+					},
+					contentType: 'application/json',
+			};
+			
+			const mtGrid = new Grid({
+				el: document.getElementById('grid'),
+				rowHeaders: ['rowNum'],
+				pageOptions:{
+					useClient: false,
+					perPage: 10
+				},
+				columns: [
+					{ header: "납품코드", name: "deliveryCode", align: "center" },
+					{ header: "제품 종류 수", name: "deliveryQy", align: "center" },
+					{ header: "납품 요청일", name: "orderDate", align: "center" },
+					{ header: "입고 예정일", name: "dedt", align: "center" },
+				],
+				data: mtDataSource,
+			})
+			
+			
+			mtGrid.on('click', ev => {
+				
+				let data = mtGrid.getRow(ev.rowKey);
+				deliveryCode = data.deliveryCode;
+				console.log(deliveryCode);
+				fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+				     .then(rep => rep.json())
+				     .then(data => {
+				    	 data.forEach(item => item.deliveryCode = deliveryCode); 
+				    	 mtGrid2.resetData(data);
+				     })
+			})
+			
+			
+			const mtGrid2 = new Grid({
+				el: document.getElementById('mtGrid2'),
+				rowHeaders: ['rowNum','checkbox'],
+				scrollY: true,
+				height: 500,
+				columns: [
+					{ header: "제품코드", name: "productCode", align: "center" },
+					{ header: "제품명", name: "productName", align: "center" },
+					{ header: "색상", name: "productColor", align: "center" },
+					{ header: "납품수량", name: "productQy", align: "center" },
+					{ header: "입고수량", name: "productInsertQy", editor: "text" },
+					{ header: "납품코드", name: "deliveryCode", hidden: true },
+				],
+				data: []
+			}) 
+			
+			let insertData = []
+			
+			mtGrid2.on('afterChange', ev => {
+				if (!ev || !ev.changes) return;
+				
+				ev.changes.forEach(change => {
+					let data = mtGrid2.getRow(change.rowKey);
+					if(data.productQy < data.productInsertQy){
+						console.log('수량확인');
+					}else{
+						insertData.push(data);
+						console.log(insertData);
+					}
+				})
+			})
+			
+			productMtInsert.addEventListener('click', function(){
+				fetch(`http://localhost:80/store/productMtInsert`, {
+					method: 'POST',
+					headers: {...headers, 'Content-Type': 'application/json'},
+					body: JSON.stringify(insertData)
+				}).then(rep => rep.json())
+				  .then(result => {
+					  console.log(result);
+				  })
+			})
+			
+			
+			
+		</script>
+		
+		
+		
+	</body>
+</html>

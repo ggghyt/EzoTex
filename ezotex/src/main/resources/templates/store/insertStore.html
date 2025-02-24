@@ -73,9 +73,9 @@
 
 
 	<div class="d-flex align-items-center">
-		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
-		<button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
-		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button>
+		<h3 class="fs-3 fw-bold">| 제품 입고 등록</h3>
+		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
+		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
 	<div class="card card-body mt-3">
 		<div class="col-12 card card-body m-2">
@@ -297,7 +297,7 @@
 		          contentType: 'application/json'
 		      },
 	            scrollY: true,
-		        scrollX: false,
+		        scrollX: true,
 		        header: {
 		        height: 80,
 		            complexColumns: [
@@ -512,12 +512,14 @@
 	    	        let sizeCode = getSizeCommonCode(size);
 	    	        console.log(rowData[columnName],sizeCode, rowData[columnQy]);
 	    	        
+	    	        let errorQy = rowData[columnQy] - rowData[columnName]; 
+	    	        
 	    	        if(rowData[columnName] <= rowData[columnQy]){
 		    	        errObj = {
 		    	        		deliveryCode: deliveryCode,
 		    	        		productCode: productCode,
 		    	   				productName: productName,
-		    	        		errorQy: rowData[columnName],
+		    	        		errorQy: errorQy,
 		    	        		size: size,
 		    	        		productSize: sizeCode,
 		    	        		productColor: rowData.productColor,
@@ -628,11 +630,56 @@
 			    });
 	   	
 	   
+	   	let info = []
 	   	
 	   	StoreDelete.addEventListener("click", function () {
-	   		console.log("클릭테스트")
-	   		storeGrid4.resetData(err);
+	   		/* let data = storeGrid3.getData()
 	   		
+	   		console.log('그리드3 데이터 확인 : ', data);
+	   		let filed = Object.keys(data[0]);
+	   		
+	   		console.log('필드명 확인 : ',filed);
+	   		
+			let arr = filed.filter(ele => ele.startsWith('SZ'));
+			console.log(arr[0]);
+			for(let i = 0; i <= data.length; i++){
+				for(let j = 0; j < arr.length; j++){
+					console.log('필드 데이터 확인 : ',data[i][arr[j]]);
+					if(data[i][arr[j]] != 0 && data[i][arr[j]] != null){
+						let gridSize = arr[j].replace('SZ','').toUpperCase();
+						let gridQy = data[i][arr[j]]
+						let gridColor = data[i].productColor;
+						let gridSizeCode = getSizeCommonCode(gridSize);
+						
+						let gridObj = {
+								productCode: productCode,
+					        	productName: productName,
+					        	productColor: productColor,
+					        	size: gridSize,
+					        	errorQy: gridQy,
+					        	sizeCode: gridSizeCode
+						}
+						info.push(gridObj);
+					}
+				} 
+			}
+			
+			console.log('배열확인 : ',info)
+			
+			
+			
+			console.log(data); */
+			
+			/* let obj = {
+					productCode: productCode,
+		        	productName: productName,
+		        	productColor: productColor,
+		        	size:
+		        	errorQy:
+			}
+			 */
+			//storeGrid4.resetData(data);
+	   		storeGrid4.resetData(err);
 	   	})
 	    
 	    

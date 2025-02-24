@@ -29,11 +29,17 @@ public class InventoryController {
 	 * =========================================
 	 */
 
-	// 자재/제품 입고 등록 페이지
+	// 제품 입고 등록 페이지
 	@GetMapping("insertStore")
 	public String storeInsert() {
 		return "store/insertStore";
 	}
+	
+	@GetMapping("materialInsert")
+	public String materialInsert() {
+		return "store/materialInsert";
+	}
+	
 
 	// 반품 입고 등록 페이지
 	@GetMapping("insertReturnStore")

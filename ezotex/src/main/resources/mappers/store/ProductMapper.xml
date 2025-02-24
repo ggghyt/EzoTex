@@ -62,6 +62,8 @@
 		       i.store_date
 		FROM inventory i JOIN product_info p 
 		ON i.product_code = p.product_code
+		WHERE product_se = 'PT02'
+		AND i.inventory_qy > 0
 		GROUP BY i.lot,
 		         p.product_name,
 		         i.product_color,
