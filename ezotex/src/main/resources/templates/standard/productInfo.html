@@ -30,14 +30,13 @@
 </style>
 <style>
 .modal {
-display: block !important; /* Bootstrap 기본 동작 우회 */
+display: block !important;
 visibility: hidden;
 }
 
 .modal.show {
 visibility: visible;
 }
-
 </style>
 </head>
 <body>
@@ -218,15 +217,101 @@ visibility: visible;
 							<button id="insertBtn" class="btn btn-primary" onclick="categoryModalRowAdd()">행 추가</button>
 							<button id="editBtn" class="btn btn-danger" onclick="categoryModalRowDel()">행 삭제</button>
 						</div>
-						<div id="categoryGrid" style="width: 100%;">
+						<div style="margin: 0px auto; width: 60%">
+							<div id="categoryGrid">
+							</div>
 						</div>
 					</div>
 				</div>
 				<div style="text-align: center; margin: 20px;">
-					<button type="button" class="btn btn-outline-primary btn-fw">저장</button>
-					<button type="button" class="btn btn-inverse-dark btn-fw"
-						data-bs-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-outline-primary btn-fw" onclick="categorySubmit()">저장</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
 				</div>
+			</div>
+		</div>
+		<div style="margin: 0px auto; width: 300px">
+			<div id="categoryToast" style="width: 300px; text-align: center;">
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="optionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="productCodeModalLabel">상품옵션 관리</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					</button>
+				</div> 
+				<div class="card">
+					<div class="card-body">
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">코드</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="optionModalProductCode" name="productCode" value="" readonly>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">이름</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="optionModalProductName" name="productName" value="" readonly>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<!-- 
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">업체</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="optionModalComInput" name="productCode" value="" placeholder="입력" oninput="modalOptionComChange()">
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">선택</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="optionModalComSelect" name="productName">
+									<option value="" selected disabled>선택</option>
+								</select>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						 -->
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">색상</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="modalColor" name="modalColor" value="" placeholder="영문">
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">사이즈</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalSize" name="modalSize">
+									<option value="" selected disabled>선택</option>
+								</select>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<div class="row me-2" style="text-align: center;">
+							<div class="col-4 col-lg-4 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">
+								<button id="insertBtn" class="btn btn-primary" onclick="optionModalAddColor()">색상 추가</button>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">
+								<button id="editBtn" class="btn btn-primary" onclick="optionModalAddSize()">사이즈 추가</button>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<div style="margin: 0px auto; width: 80%">
+							<div id="optionGrid">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw" onclick="optionSubmit()">저장</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+		<div style="margin: 0px auto; width: 300px">
+			<div id="optionToast" style="width: 300px; text-align: center;">
 			</div>
 		</div>
 	</div>
@@ -310,12 +395,12 @@ visibility: visible;
 		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
 	    data: gridData,
 	    columns: [
-	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
-	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
+	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true }, 
+	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
 	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
 	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
 	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
-	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormmater(row.value) }
+	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formater: row => numberFormmater(row.value) }
 	    ],
 	    pageOptions: {
 	        useClient: true, // 페이징을 위해 필요
@@ -382,8 +467,6 @@ visibility: visible;
 		document.querySelector("#categoryBtn").style.display = "block"
 		document.querySelector("#optionBtn").style.display = "block"
 		
-		console.log(selectedRow);
-		console.log(selectedRow.PRODUCT_CODE);
 		if (selectedRow.IMG == null) {
 			document.querySelector("#preview").src = ""
 		} else {
@@ -415,6 +498,8 @@ visibility: visible;
 		return false;
 	}
 	
+	let product_category_arr = null;
+	let categoryGrid
 	function categoryBtn() {
 		$('#categoryModal').modal('show');
 		
@@ -443,10 +528,12 @@ visibility: visible;
 		fetch('/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value)
 		.then((response) => response.json())
 		.then((data) => {
+			product_category_arr = data;
 			document.getElementById('categoryGrid').replaceChildren()
-			let categoryGrid = new Grid({
+			categoryGrid = new Grid({
 				el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
 		    	data: data,
+		    	rowHeaders: ['checkbox',{ type: 'rowNum', header: 'NO' }],
 		    	columns: [
 		        	{ header: '대분류', name: 'lclas', sortable: true, align: 'center' }, 
 		        	{ header: '소분류', name: 'sclas', sortable: true, align: 'center' }
@@ -455,25 +542,6 @@ visibility: visible;
 		  	scrollY: false // 세로 스크롤
 			})
 		})
-		/*
-		let categoryData = {
-			api: {
-				readData: { url: '/standard/productCategory?productCode=' + document.querySelector("#categoryModalProductCode").value, method: 'GET' }
-			},
-			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-		}
-		
-		let searchListGrid = new Grid({
-			el: document.getElementById('categoryGrid'), // 해당 위치에 그리드 출력
-	    	data: categoryData,
-	    	columns: [
-	        	{ header: '대분류', name: 'lclas', width: 100, sortable: true, align: 'center' }, 
-	        	{ header: '소분류', name: 'sclas', width: 100, sortable: true, align: 'center' }, 
-	    	],
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: false // 세로 스크롤
-		})
-		*/
 	}
 	
 	function modal_lclas_change() {
@@ -496,6 +564,237 @@ visibility: visible;
 				modal_select_sclas.appendChild(o);
 			}
 		})
+	}
+	
+	function categoryModalRowAdd() {
+		let push = 1;
+		if (document.querySelector("#modalLclas").value != "" && document.querySelector("#modalSclas").value != "") {
+			for (let i = 0 ; i < product_category_arr.length ; i++) {
+				if (product_category_arr[i].lclas == document.querySelector("#modalLclas").value && product_category_arr[i].sclas == document.querySelector("#modalSclas").value) {
+					failCategoryModalToast("이미 존재하는 카테고리입니다");
+					push = 0;
+					break;
+				} 
+			}
+		} else {
+			failCategoryModalToast("카테고리를 입력해주세요");
+			push = 0;
+		}
+		if (push == 1) {
+			product_category_arr.push({"productCode" : document.querySelector("#selectProductCode").value, "lclas" : document.querySelector("#modalLclas").value, "sclas" : document.querySelector("#modalSclas").value})
+		}
+		categoryGrid.resetData(product_category_arr)
+	}
+	
+	function categoryModalRowDel() {
+		let checkedRows = categoryGrid.getCheckedRows(); // 선택된 행 가져오기
+  	    let rowKeys = checkedRows.map(row => row.rowKey); // 행 키 배열 만들기
+  	  	rowKeys.forEach(rowKey => categoryGrid.removeRow(rowKey)); // 선택된 행 삭제
+  	    product_category_arr = categoryGrid.getData();
+	}
+	
+	function categorySubmit() {
+		if (product_category_arr.length == 0) {
+			failCategoryModalToast("저장할 카테고리가 없습니다");
+		} else {
+			fetch('http://localhost:80/standard/categorySubmit', {
+				method : 'POST', 
+				headers : {
+					...headers, 'Content-Type': 'application/json'
+				}, 
+				body: JSON.stringify(product_category_arr)
+			})
+		
+			$('#categoryModal').modal('hide');
+			successToast("저장되었습니다")
+		}
+		
+	}
+	
+	let optionGrid = null
+	let option_data = null
+	let option_columns = null
+	function optionBtn() {
+		$('#optionModal').modal('show');
+		document.querySelector("#optionModalProductCode").value = document.querySelector("#selectProductCode").value
+		document.querySelector("#optionModalProductName").value = document.querySelector("#selectProductName").value
+		
+		fetch('http://localhost:80/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
+		.then((response) => response.json())
+		.then((data) => {
+			option_columns = [{ header: '색상', name: 'color', align: 'center' }]
+			let option_size = []
+			let push
+			for (let i = 0 ; i < data.length ; i++) {
+				push = 1
+				for (let j = 0 ; j < option_size.length ; j++) {
+					if (data[i].productSize == option_size[j][1]) {
+						push = 0
+					}
+				}
+				if (push == 1) {
+					option_size.push([data[i].sizeName, data[i].productSize])
+				}
+			}
+			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
+			for (let i = 0 ; i < option_size.length ; i++) {
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text' })
+			}
+			
+			let option_color = []
+			for (let i = 0 ; i < data.length ; i++) {
+				push = 1
+				for (let j = 0 ; j < option_color.length ; j++) {
+					if (data[i].productColor == option_color[j]) {
+						push = 0
+					}
+				}
+				if (push == 1) {
+					option_color.push(data[i].productColor)
+				}
+			}
+			
+			option_data = []
+			for (let i = 0 ; i < option_color.length ; i++) {
+				option_data.push({"color" : option_color[i]})
+			}
+			
+			for (i = 0 ; i < data.length ; i++) {
+				for (j = 0 ; j < option_data.length ; j++) {
+					if (option_data[j].color == data[i].productColor) {
+						option_data[j][data[i].productSize] = data[i].unitPrice
+					}
+				} 
+			}
+			
+			document.getElementById('optionGrid').replaceChildren()
+			optionGrid = new Grid({
+				el: document.getElementById('optionGrid'), // 해당 위치에 그리드 출력
+		    	data: option_data,
+		    	columns: option_columns,
+		  	scrollX: false, // 가로 스크롤
+		  	scrollY: false // 세로 스크롤
+			})
+		})
+	}
+	/*
+	modalOptionComChange()
+	function modalOptionComChange() {
+		fetch('http://localhost:80/standard/searchCom?companyName=' + document.querySelector("#optionModalComInput").value)
+		.then((response) => response.json())
+		.then((data) => {
+			document.querySelector("#optionModalComSelect").innerHTML = ""
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].companyCode);
+				o.innerText = data[i].companyName
+				document.querySelector("#optionModalComSelect").appendChild(o);
+			}
+		})
+	}
+	*/
+	fetch('http://localhost:80/standard/optionSizeList')
+	.then((response) => response.json())
+	.then((data) => {
+		let modalSize = document.querySelector("#modalSize");
+		modalSize.innerHTML = "";
+		let o = document.createElement('option');
+		o.setAttribute("value", "");
+		o.innerText = "없음";
+		modalSize.appendChild(o);
+		for (let i = 0 ; i < data.length ; i++) {
+			let o = document.createElement('option');
+			o.setAttribute("value", data[i].productCode);
+			o.innerText = data[i].sizeName
+			modalSize.appendChild(o);
+		}
+	})
+	
+	function optionModalAddColor() {
+		if (document.querySelector("#modalColor").value == "") {
+			failOptionModalToast("색상을 입력해주세요")
+			return
+		}
+		for (let i = 0 ; i < optionGrid.getData().length ; i++) {
+			if (optionGrid.getData()[i].color == document.querySelector("#modalColor").value.toUpperCase()) {
+				failOptionModalToast("중복되는 색상이 있습니다")
+				return
+			}
+		}
+		optionGrid.appendRow({"color" : document.querySelector("#modalColor").value.toUpperCase()})
+	}
+	
+	function optionModalAddSize() {
+		for (let i = 1 ; i < option_columns.length ; i++) {
+			if (option_columns[i].name == document.querySelector("#modalSize").value) {
+				failOptionModalToast("중복되는 사이즈가 있습니다")
+				return
+			}
+		}
+		option_columns = [...option_columns, {header : $("#modalSize option:checked").text(), name : document.querySelector("#modalSize").value, editor: 'text'}]
+		optionGrid.setColumns(option_columns)
+	}
+	
+	function optionSubmit() {
+		console.log(optionGrid.getData()[0])
+		
+		if (option_columns.length < 2 || optionGrid.getData().length == 0) {
+			failOptionModalToast("저장할 옵션이 없습니다");
+		} else {
+			fetch('http://localhost:80/standard/optionSubmit?productCode=' + document.querySelector("#optionModalProductCode").value, {
+				method : 'POST', 
+				headers : {
+					...headers, 'Content-Type': 'application/json'
+				}, 
+				body: JSON.stringify(optionGrid.getData())
+			})
+		
+			$('#categoryModal').modal('hide');
+			successToast("저장되었습니다")
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	function failCategoryModalToast(message) {
+	    let toastContainer = document.getElementById('categoryToast');
+	    let toast = document.createElement('div');
+	    toast.classList.add('failToast');
+	    toast.textContent = message;
+	    
+	    toastContainer.appendChild(toast);
+	    
+	    setTimeout(() => { 
+	        toast.classList.add('show');
+	    }, 100);
+
+	    setTimeout(() => {
+	        toast.classList.remove('show');
+	        setTimeout(() => toast.remove(), 500);
+	    }, 2000);
+	}
+	
+	function failOptionModalToast(message) {
+	    let toastContainer = document.getElementById('optionToast');
+	    let toast = document.createElement('div');
+	    toast.classList.add('failToast');
+	    toast.textContent = message;
+	    
+	    toastContainer.appendChild(toast);
+	    
+	    setTimeout(() => { 
+	        toast.classList.add('show');
+	    }, 100);
+
+	    setTimeout(() => {
+	        toast.classList.remove('show');
+	        setTimeout(() => toast.remove(), 500);
+	    }, 2000);
 	}
 	</script>
 </body>

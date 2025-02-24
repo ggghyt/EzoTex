@@ -12,6 +12,7 @@ import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
+import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 
 public interface StandardMapper {
@@ -66,5 +67,20 @@ public interface StandardMapper {
 	
 	int ProductInfoUpdate(ProductListInfoDTO productListInfoDTO);
 	
+	// 카테고리 리스트
 	List<ProductCategoryDTO> productCategory(String productCode);
+	
+	// 카테고리 삭제, 추가
+	int productCategoryDelete(String productCode);
+	
+	int productCategoryInsert(ProductCategoryDTO productCategoryDTO);
+	
+	// 기업 리스트
+	List<CompanyDTO> searchCom(String companyName);
+	
+	// 옵션 리스트
+	List<ProductOptionDTO> optionSizeList();
+	
+	// 단일 제품 옵션 리스트
+	List<ProductOptionDTO> productOption(String productCode);
 }
