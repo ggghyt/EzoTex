@@ -73,9 +73,9 @@
 
 
 	<div class="d-flex align-items-center">
-		<h3 class="fs-3 fw-bold">| 자재/제품 입고 등록</h3>
-		<button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
-		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button>
+		<h3 class="fs-3 fw-bold">| 제품 입고 등록</h3>
+		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
+		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
 	<div class="card card-body mt-3">
 		<div class="col-12 card card-body m-2">
@@ -100,6 +100,7 @@
 
 		<div class="row">
 			<div class="col-5 card card-body m-2">
+				<p class="fs-5 fw-bolder mt-2">납품 목록</p>
 				<div id="grid">
 					<div id="pagination" class="tui-pagination"></div>
 				</div>
@@ -210,7 +211,7 @@
 	      },
 	      pageOptions:{
 	          useClient: false,
-	          perPage: 5
+	          perPage: 10
 	        },
 	      columns: [ 
 	        { header: "납품 코드", name: "deliveryCode", align: "center"},
@@ -247,8 +248,8 @@
 			        { header: "제품 코드", name: "productCode", align: "center"},
 			        { header: "제품명", name: "productName", align: "center"},
 			        { header: "요청 수량", name: "productQy", align: "center"},
-			        { header: "입고량 합계", name: "", align: "center"},
-			        { header: "불량 합계", name: "", align: "center"},
+			        { header: "입고량 합계", name: "totalQy", align: "center"},
+			        { header: "불량 합계", name: "errorTotalQy", align: "center"},
 			        { header: "추천 위치", name: "dedt", align: "center"},
 			        { header: "창고위치", name: "창고위치", align: "center"},
 			  ],
@@ -296,7 +297,7 @@
 		          contentType: 'application/json'
 		      },
 	            scrollY: true,
-		        scrollX: false,
+		        scrollX: true,
 		        header: {
 		        height: 80,
 		            complexColumns: [
@@ -349,32 +350,64 @@
 	    	  .then(result =>
 	    	      {
 	    	    		// 옵션 그리드 변경 데이터 수정 처리
-	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}`)
+	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&deliveryCode=${deliveryCode}`)
 	    		            .then(rep => rep.json())
 	    		            .then(data => {
-	    		                let size = [];
-	    		                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
-
-	    		                data.optionList.forEach(data => {
-	    		                    size.push(
-	    		                        {
-	    		                            header: data.productSizeInfo,
-	    		                            name: data.productSizeInfo + 'test',
-	    		                            childNames: ['size' + data.productSizeInfo, data.productSizeInfo.toLowerCase()]
-	    		                        },
-	    		                    );
-	    		                    color.push(
-	    		                        { header: "입고할수량", name: "size" + data.productSizeInfo, align: "center", editor: "text" },
-	    		                        { header: "요청수량", name: data.productSizeInfo.toLowerCase(), align: "center" },
-	    		                        { header: "제품코드", name: "productCode", hidden: true },
-	    		                        { header: "납품코드", name: deliveryCode, hidden: true }
-	    		                    );
-	    		                });
-
-	    		                storeGrid3.setHeader({ complexColumns: size });
-	    		                storeGrid3.setColumns(color);
-	    		                storeGrid3.resetData(data.qyList); 
+	    		            	let size = []
+			    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
+			    				
+			    					console.log(data);
+			    				data.optionList.forEach(data => {
+			    					size.push(
+			    					 {
+						                header: data.productSizeInfo,
+						                name: 'sz'+data.productSizeInfo+'test',
+						                childNames: ['size'+data.productSizeInfo, 'SZ'+data.productSizeInfo.toLowerCase()]
+						             },
+			    					)
+						             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
+						 		                { header: "요청수량", name: "SZ"+data.productSizeInfo.toLowerCase() , align: "center" },
+						 		                { header: "제품코드", name: "productCode" , hidden: true },
+						 		                { header: "납품코드", name: deliveryCode , hidden: true })
+			    				})
+				    			storeGrid3.setHeader({complexColumns:size});
+				    			storeGrid3.setColumns(color);
+				    			
+				    			
+				    			// 데이터 처리 및 그리드에 반영
+				                let rowData = [];
+				                
+				                data.qyList.forEach(pivotData => {
+				                	
+				                	console.log('pivotData : ',pivotData)
+				                	
+				                    let row = { productColor: pivotData.PRODUCT_COLOR }; // 색상 데이터
+				                    
+				                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
+				                    data.optionList.forEach(option => {
+				                        let sizeKey = option.productSizeInfo.toLowerCase();
+				                        // 수량 값이 없으면 0으로 설정
+				                        console.log(pivotData['SZ'+sizeKey.toUpperCase()])
+				                        row['SZ' + sizeKey.toLowerCase()] = pivotData['SZ'+sizeKey.toUpperCase()] || "0";
+				                    });
+				                    
+				                    rowData.push(row);
+				                });
+				                
+				                // 데이터 그리드에 설정
+				                storeGrid3.resetData(rowData);
+				                
 	    		            });
+	    	    		
+	    		        fetch(dataSource.api.readData.url, {
+	    		            method: 'GET',
+	    		            headers: { 'Content-Type': 'application/json' }
+	    		        })
+	    		        .then(response => response.json())
+	    		        .then(data => {
+	    		        	console.log('첫번째 그리드 초기화 : ',data)
+	    		            storeGrid.resetData(data);
+	    		        });
 	    	    }
 	    	  )
 	    })
@@ -394,8 +427,9 @@
 	    		
 	    		// 선택한 제품코드 저장
 	    		productCode = data.productCode
-	    		
-		    	fetch(`http://localhost:80/store/productCodeList?productCode=${data.productCode}`)
+	    		console.log(productCode);
+	    		console.log(deliveryCode);
+		    	fetch(`http://localhost:80/store/productCodeList?productCode=${data.productCode}&deliveryCode=${deliveryCode}`)
 		    		.then(rep => rep.json())
 		    		.then(data => {
 		    			
@@ -408,24 +442,46 @@
 		    				let size = []
 		    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
 		    				
+		    					console.log(data);
 		    				data.optionList.forEach(data => {
-		    					console.log(data.productSizeInfo);
 		    					size.push(
 		    					 {
 					                header: data.productSizeInfo,
-					                name: data.productSizeInfo+'test',
-					                childNames: ['size'+data.productSizeInfo, data.productSizeInfo.toLowerCase()]
+					                name: 'sz'+data.productSizeInfo+'test',
+					                childNames: ['size'+data.productSizeInfo, 'SZ'+data.productSizeInfo.toLowerCase()]
 					             },
 		    					)
 					             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
-					 		                { header: "요청수량", name: data.productSizeInfo.toLowerCase() , align: "center" },
+					 		                { header: "요청수량", name: "SZ"+data.productSizeInfo.toLowerCase() , align: "center" },
 					 		                { header: "제품코드", name: "productCode" , hidden: true },
 					 		                { header: "납품코드", name: deliveryCode , hidden: true })
 		    				})
-		    				//console.log(JSON.stringify(size));
 			    			storeGrid3.setHeader({complexColumns:size});
 			    			storeGrid3.setColumns(color);
-		    				storeGrid3.resetData(data.qyList);
+			    			
+			    			
+			    			// 데이터 처리 및 그리드에 반영
+			                let rowData = [];
+			                
+			                data.qyList.forEach(pivotData => {
+			                	
+			                	console.log('pivotData : ',pivotData)
+			                	
+			                    let row = { productColor: pivotData.PRODUCT_COLOR }; // 색상 데이터
+			                    
+			                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
+			                    data.optionList.forEach(option => {
+			                        let sizeKey = option.productSizeInfo.toLowerCase();
+			                        // 수량 값이 없으면 0으로 설정
+			                        console.log(pivotData['SZ'+sizeKey.toUpperCase()])
+			                        row['SZ' + sizeKey.toLowerCase()] = pivotData['SZ'+sizeKey.toUpperCase()] || "0";
+			                    });
+			                    
+			                    rowData.push(row);
+			                });
+			                
+			                // 데이터 그리드에 설정
+			                storeGrid3.resetData(rowData);
 		    				
 		    				/*
 			    		   	*========================================================================
@@ -436,7 +492,9 @@
 	    	}
 	    	})
 	    	
-	    	
+	    	let err = []
+	    	let errObj = {}
+	    	        		
 	    // 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
 	    	storeGrid3.on('afterChange', ev => {
 	    	    console.log('선택 제품코드:', productCode);
@@ -447,6 +505,31 @@
 	    	        let columnName = change.columnName; // 변경된 컬럼명
 	    	        let newValue = Number(change.value); // 변경된 값
 	    	        let maxValue = 0; // 허용 최대 값 초기화
+	    	        
+	    	        console.log(rowData);
+	    	        let size = columnName.replace('size','');
+	    	        let columnQy = 'SZ' + size.toLowerCase(); 
+	    	        let sizeCode = getSizeCommonCode(size);
+	    	        console.log(rowData[columnName],sizeCode, rowData[columnQy]);
+	    	        
+	    	        let errorQy = rowData[columnQy] - rowData[columnName]; 
+	    	        
+	    	        if(rowData[columnName] <= rowData[columnQy]){
+		    	        errObj = {
+		    	        		deliveryCode: deliveryCode,
+		    	        		productCode: productCode,
+		    	   				productName: productName,
+		    	        		errorQy: errorQy,
+		    	        		size: size,
+		    	        		productSize: sizeCode,
+		    	        		productColor: rowData.productColor,
+		    	        }
+		    	        err.push(errObj)
+	    	        }
+	    	        
+	    	        
+	    	        console.log('errObj : ',errObj);
+	    	        console.log('err : ',err);
 	    	        
 
 	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
@@ -495,7 +578,8 @@
 									productCode: productCode,
 									sizeCode: getSizeCommonCode(sizeCode),
 									productQy: newValue,
-									color: rowData.productColor
+									color: rowData.productColor,
+									deliveryCode: deliveryCode
 							}
 							obj.push(objInfo);
 						}
@@ -524,27 +608,78 @@
 			      columns: [ 
 			        { header: "제품 코드", name: "productCode", editor: "text"},
 			        { header: "제품명", name: "productName", editor: "text"},
-			        { header: "색상", name: "orderDate", editor: "text"},
-			        { header: "사이즈", name: "dedt", editor: "text"},
-			        { header: "불량 수량", name: "dedt", editor: "text"},
-			        { header: "불량 사유", name: "dedt", editor: "text"},
+			        { header: "색상", name: "productColor", editor: "text"},
+			        { header: "사이즈", name: "size", editor: "text"},
+			        { header: "불량 수량", name: "errorQy", editor: "text"},
+			        {
+			            header: "불량 사유",
+			            name: "errorInfo",
+			            editor: {
+			                type: "select",
+			                options: [
+			                    { value: 'defect1', label: '불량 사유 1' },
+			                    { value: 'defect2', label: '불량 사유 2' },
+			                    { value: 'defect3', label: '불량 사유 3' }
+			                ],
+			                defaultValue: 'defect1'  // 기본값 지정
+			            }
+			        },
+			        { header: "사이즈코드", name: "sizeCode", hidden: true }
 			      ],
 			      data: [],
 			    });
 	   	
-	   	
+	   
+	   	let info = []
 	   	
 	   	StoreDelete.addEventListener("click", function () {
-	   		console.log("클릭테스트")
-	   		let test = [
-	   			{
-	   				productCode: productCode,
-	   				productName: productName
-	   			}
-	   		]
+	   		/* let data = storeGrid3.getData()
 	   		
-	   		storeGrid4.resetData(test);
+	   		console.log('그리드3 데이터 확인 : ', data);
+	   		let filed = Object.keys(data[0]);
 	   		
+	   		console.log('필드명 확인 : ',filed);
+	   		
+			let arr = filed.filter(ele => ele.startsWith('SZ'));
+			console.log(arr[0]);
+			for(let i = 0; i <= data.length; i++){
+				for(let j = 0; j < arr.length; j++){
+					console.log('필드 데이터 확인 : ',data[i][arr[j]]);
+					if(data[i][arr[j]] != 0 && data[i][arr[j]] != null){
+						let gridSize = arr[j].replace('SZ','').toUpperCase();
+						let gridQy = data[i][arr[j]]
+						let gridColor = data[i].productColor;
+						let gridSizeCode = getSizeCommonCode(gridSize);
+						
+						let gridObj = {
+								productCode: productCode,
+					        	productName: productName,
+					        	productColor: productColor,
+					        	size: gridSize,
+					        	errorQy: gridQy,
+					        	sizeCode: gridSizeCode
+						}
+						info.push(gridObj);
+					}
+				} 
+			}
+			
+			console.log('배열확인 : ',info)
+			
+			
+			
+			console.log(data); */
+			
+			/* let obj = {
+					productCode: productCode,
+		        	productName: productName,
+		        	productColor: productColor,
+		        	size:
+		        	errorQy:
+			}
+			 */
+			//storeGrid4.resetData(data);
+	   		storeGrid4.resetData(err);
 	   	})
 	    
 	    

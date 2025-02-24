@@ -19,15 +19,15 @@
 	<select id="productInfoList">
 		with product as
           (SELECT product_color,
-                  UPPER(get_comm(product_size)) as product_size,
-                  inventory_qy
+                  'sz' || get_comm(product_size) as product_size_info,
+                  NVL(inventory_qy,0) as inventory_qy
            FROM inventory
            WHERE product_code = #{productCode})
     	select * from product
 		pivot( sum(inventory_qy)
-       		for product_size in (
+       		for product_size_info in (
        		<foreach collection="list" item="size" separator=",">
-       			'${size.productSizeInfo}' AS ${size.productSizeInfo}
+       			'${'sz'+size.productSizeInfo}' AS ${'sz'+size.productSizeInfo}
        		</foreach>)
 		)pvt
 	</select>
@@ -62,6 +62,8 @@
 		       i.store_date
 		FROM inventory i JOIN product_info p 
 		ON i.product_code = p.product_code
+		WHERE product_se = 'PT02'
+		AND i.inventory_qy > 0
 		GROUP BY i.lot,
 		         p.product_name,
 		         i.product_color,
@@ -70,6 +72,48 @@
 		         i.inventory_qy,
 		         i.product_code,
 		         i.store_date
+		ORDER BY lot desc
+	</select>
+	
+	
+	<!-- LOT별 불량처리 등록 -->
+	<insert id="InsertErrorProduct" parameterType="ErrorProductDTO">
+		INSERT INTO inventory_error(error_code,
+		                            product_code,
+                                    error_qy,
+                                    error_info,
+                                    process_date,
+                                    error_charger,
+                                    lot,
+                                    product_color,
+                                    product_size
+                                                )
+		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(product_error_seq.nextval, 4,'0')),
+		       #{edto.productCode},
+		       #{edto.errorQy},
+		       #{edto.errorInfo},
+		       sysdate,
+		       #{name},
+		       #{edto.lot},
+		       #{edto.productColor},
+		       #{edto.productSize})
+	</insert>
+	
+	
+	<!-- 불량처리 후 재고 업데이트 -->
+	<update id="InventoryUpdate">
+		UPDATE inventory
+		SET inventory_qy = inventory_qy - #{errorQy}
+		WHERE product_color = #{productColor}
+		AND product_size = #{productSize}
+		AND product_code = #{productCode}
+		AND lot = #{lot}
+	</update>
+	
+	<!-- 창고 위치 코드 리스트 -->
+	<select id="storageInfoList" resultType="storageInfoDTO">
+		SELECT *
+		FROM storage_info
 	</select>
 	
 	

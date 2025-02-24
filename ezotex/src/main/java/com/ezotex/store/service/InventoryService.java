@@ -3,9 +3,9 @@ package com.ezotex.store.service;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
+import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.storageInfoDTO;
 
 public interface InventoryService {
 
@@ -20,5 +20,11 @@ public interface InventoryService {
 	
 	// 위치별 재고 상세 리스트(재고조정)
 	public List<InventoryDTO> location();
+	
+	// LOT별 불량처리 등록
+	public boolean InsertErrorProduct(ErrorProductDTO edto);
+	
+	// 창고 위치 코드 리스트
+	public List<storageInfoDTO> storageInfoList();
 	
 }
