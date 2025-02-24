@@ -363,7 +363,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			    // 각 사이즈 값들을 숫자로 변환하여 합산
 			    totalQuantity += Object.values(row).reduce((sum, value) => {
 			        const numericValue = Number(value);  // 문자열을 숫자로 변환
-			        return sum + (isNaN(numericValue) ? 0 : nuwmericValue);  // 숫자가 아닌 값은 0으로 처리
+			        return sum + (isNaN(numericValue) ? 0 : numericValue);  // 숫자가 아닌 값은 0으로 처리
 			    }, 0);
 			});
 			
@@ -553,6 +553,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				        XXL: "SI07"
 				    };
 
+			    	console.log("savedProductData",savedProductData.length);
 			    for (let i = 0; i < savedProductData.length; i++) {
 			        newData.push(savedProductData[i]);
 			    
