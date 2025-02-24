@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.standard.dto.CompanyDTO;
-import com.ezotex.standard.dto.ProductDTO;
 import com.ezotex.supply.dto.MaterialOrderDTO;
 import com.ezotex.supply.mappers.MaterialOrderMapper;
 import com.ezotex.supply.service.MaterialOrderService;
@@ -36,7 +35,7 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	}
 
 	@Override
-	public List<ProductDTO> listProductByCompany(Map<String, String> map) {
+	public List<Map<String, Object>> listProductByCompany(Map<String, String> map) {
 		/*
 		// 자재 색상 조회 추가
 		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
@@ -57,6 +56,11 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	@Override
 	public int countProductByCompany(Map<String, String> map) {
 		return mapper.countProductByCompany(map);
+	}
+	
+	@Override
+	public List<Map<String, Object>> listColorByCompany(String productCode, String companyCode) {
+		return mapper.listColorByCompany(productCode, companyCode);
 	}
 
 	@Override

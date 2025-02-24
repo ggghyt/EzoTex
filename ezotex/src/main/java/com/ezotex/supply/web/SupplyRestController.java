@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
@@ -105,24 +106,33 @@ public class SupplyRestController {
 	
 	
 	// 발주서
-	// 발주할 자재 목록 조회
+	// 발주할 자재 목록
 	@GetMapping("materialList")
-	public Map<String, Object> materialList(Map<String, String> params) { // 검색 조건 파라미터
-		log.info(params.toString());
+	public Map<String, Object> materialList(@RequestParam Map<String, String> params) { // 검색 조건 파라미터
+		log.info("params::", params.toString());
 		int totalCnt = orderService.countProductByCompany(params);
 		Map<String, Object> map = GridUtil.grid(1, totalCnt, orderService.listProductByCompany(params));
 		log.info(map.toString());
 		return map;
 	}
 	
-	// 업체 목록 조회
+	// 업체 목록
 	@GetMapping("companyList")
-	public Map<String, Object> companyList(Map<String, String> params) { // 검색 조건 파라미터
-		log.info(params.toString());
+	public Map<String, Object> companyList(@RequestParam Map<String, String> params) { // 검색 조건 파라미터
+		log.info("params::", params.get("productCode"));
 		int totalCnt = orderService.countCompanyByProduct(params);
 		Map<String, Object> map = GridUtil.grid(1, totalCnt, orderService.listCompanyByProduct(params));
 		log.info(map.toString());
 		return map;
+	}
+	
+	// 업체/자재별 옵션과 단가 목록 업데이트
+	@GetMapping("optionPriceList")
+	public List<Map<String, Object>> optionPriceList(@RequestParam("productCode") String productCode, 
+										  		@RequestParam("companyCode")String companyCode) { // 검색 조건 파라미터
+		List<Map<String, Object>> list = orderService.listColorByCompany(productCode, companyCode);
+		log.info(list.toString());
+		return list;
 	}
 	
 }

@@ -10,18 +10,18 @@
 		       c.company_phone, 
 		       c.company_name,
 		       '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference addressInfo
-		FROM company c JOIN address_list a ON c.address_seq = a.address_seq
+		FROM  company c JOIN address_list a ON c.address_seq = a.address_seq
 		               JOIN material_of_company m ON m.company_code = c.company_code
 		               LEFT JOIN product_option o ON o.option_code = m.option_code
 		WHERE c.section = 'CP01'
 		  AND  m.discontinued = 'YN02'
-		<if test='companyCode != null and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
-		<if test='companyName != null and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
-		<if test='address != null and address != ""'> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
+		<if test='companyName != null and companyName != "null" and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='address != null and address != "null" and address != ""'> 
 			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
 		</if> 
-		<if test='productCode != null and productCode != ""'> AND m.product_code = #{productCode} </if> 
-		<if test='productColor != null and productColor != ""'> AND o.product_color = #{productColor} </if>
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND m.product_code = #{productCode} </if> 
+		<if test='productColor != null and productColor != "null" and productColor != ""'> AND o.product_color = #{productColor} </if>
 		ORDER  BY company_code DESC
 	</select>
 	
@@ -33,30 +33,33 @@
 		               LEFT JOIN product_option o ON o.option_code = m.option_code
 		WHERE c.section = 'CP01'
 		  AND  m.discontinued = 'YN02'
-		<if test='companyCode != null and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
-		<if test='companyName != null and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
-		<if test='address != null and address != ""'> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
+		<if test='companyName != null and companyName != "null" and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='address != null and address != "null" and address != ""'> 
 			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
 		</if> 
-		<if test='productCode != null and productCode != ""'> AND m.product_code = #{productCode} </if> 
-		<if test='productColor != null and productColor != ""'> AND o.product_color = #{productColor} </if>
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND m.product_code = #{productCode} </if> 
+		<if test='productColor != null and productColor != "null" and productColor != ""'> AND o.product_color = #{productColor} </if>
 	</select>
 	
-	<!-- 자재 목록 -->
-	<select id="listProductByCompany" resultType="ProductDTO" parameterType="map">
+	<!-- 자재 목록과 기본 단가 -->
+	<select id="listProductByCompany" resultType="map" parameterType="map">
 		SELECT DISTINCT(p.product_code),
 		       p.product_name,
 		       get_comm(p.unit_name) unit_name,
-		       p.unit_price
+		       p.unit_price,
+		       NVL(( SELECT SUM(i.inventory_qy)
+		               FROM inventory i
+		              WHERE i.product_code = p.product_code ), 0) inventory_qy
 		FROM   product_info p LEFT JOIN  product_category c ON p.product_code = c.product_code
 		                      JOIN material_of_company m ON p.product_code = m.product_code
 		WHERE  p.product_type = 'PT01'
 		  AND  m.discontinued = 'YN02'
-		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
-		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
-		<if test='companyCode != null and companyCode != ""'> AND m.company_code = #{companyCode} </if>
+		<if test='lclas != null and lclas != "null" and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null" and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != "null" and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 		ORDER  BY product_code DESC
 	</select>
 	
@@ -67,17 +70,26 @@
 		                      JOIN material_of_company m ON p.product_code = m.product_code
 		WHERE  p.product_type = 'PT01'
 		  AND  m.discontinued = 'YN02'
-		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
-		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
-		<if test='companyCode != null and companyCode != ""'> AND m.company_code = #{companyCode} </if>
+		<if test='lclas != null and lclas != "null" and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
+		<if test='sclas != null and sclas != "null" and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
+		<if test='productName != null and productName != "null" and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 	</select>
 	
 	<!-- 해당 자재의 옵션 조회 -->
-	<select id="listColorByCompany" resultType="ProductDTO" parameterType="String">
+	<select id="listColorByCompany" resultType="map" parameterType="String">
 		SELECT DISTINCT(o.product_color),
-		       o.unit_price
+		       o.unit_price,
+		       NVL(( SELECT SUM(i.inventory_qy) -- 현재고량
+		               FROM inventory i
+		              WHERE i.product_code = o.product_code
+		                AND i.product_color = o.product_color ), 0) inventory_qy,
+		       NVL(( SELECT SUM(mod.order_qy) -- 아직 처리되지 않은 기발주량 합계
+		               FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
+		              WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
+		                AND mod.product_code = o.product_code
+		                AND mod.product_color = o.product_color ), 0) storing_qy
 		FROM   product_option o JOIN material_of_company m ON o.option_code = m.option_code
 		WHERE  o.product_code = #{productCode}
 		  AND  o.discontinued = 'YN02'

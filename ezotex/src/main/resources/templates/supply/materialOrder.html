@@ -7,7 +7,7 @@
 		<title>이조텍스SCM</title>
 		<style>
 			.modal {
-				display: block !important; /* Bootstrap 기본 동작 우회 */
+				display: block !important; /* Bootstrap 기본 동작 우회 (모달에서 데이터 안 보이는 현상) */
 				visibility: hidden;
 			}
 			
@@ -18,14 +18,14 @@
 	</head>
 	<body>
 		<h3 class="fs-3 fw-bold">| 발주서 등록</h3>
-		<form class="card card-body mt-4">
+		<form class="card card-body mt-4" id="orderForm">
 			<!-- 발주할 자재, 업체 선택 -->
 			<p class="fs-5 fw-bolder mb-3">발주 품목</p>
 			<div class="row ps-2">
 			
 				<label for="companyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer" id="companyCode" placeholder="찾기" readonly>
+					<input type="text" class="form-control pointer bg-white" id="companyCode" placeholder="찾기" readonly>
 				</div>
 				<label for="companyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
@@ -42,7 +42,7 @@
 				
 				<label for="mtrilCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">자재코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer" id="mtrilCode" placeholder="찾기" readonly>
+					<input type="text" class="form-control pointer bg-white" id="mtrilCode" placeholder="찾기" readonly>
 				</div>
 				<label for="mtrilName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">자재명</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
@@ -59,9 +59,9 @@
 					<input type="text" class="form-control text-end" id="qy">
 				</div>
 				
-				<label for="storeQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">현재고량</label>
+				<label for="inventoryQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">현재고량</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control text-end" id="storeQy" readonly>
+					<input type="text" class="form-control text-end" id="inventoryQy" readonly>
 				</div>
 				<label for="storingQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고예정량</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
@@ -73,12 +73,14 @@
 				</div>
 				<label for="unitName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단위</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control text-end" id="unitName" readonly>
+					<input type="text" class="form-control" id="unitName" readonly>
 				</div>
 				
 			</div>
 			<div class="d-flex justify-content-center mt-2">
 				<button type="button" id="insertBtn" class="btn btn-primary btn-sm">입력</button>
+				<button type="button" id="modifyBtn" class="btn btn-warning btn-sm" style="display: none">수정</button>
+				<button type="button" id="modifyCancelBtn" class="btn btn-outline-secondary btn-sm ms-3" style="display: none">수정취소</button>
 				<button type="reset" id="resetBtn" class="btn btn-secondary btn-sm ms-3">초기화</button>
 			</div>
 		</form>
@@ -124,15 +126,17 @@
 				
 			</div>
 		</div>
+		
 		<!-- 모달 -->
 		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-		      <div class="modal-dialog modal-xl mt-4">
+		      <div class="modal-dialog modal-xl">
 		         <div class="modal-content">
 		           <div class="modal-header" style="height: 20px;">
-		            <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">자재 선택</h5>
+			            <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">자재 선택</h5>
+			            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 		           </div>
 		           
-		           <div class="modal-body p-3">
+		           <div class="modal-body p-3 pt-4">
 		           		<form id="materialList" style="display: none">
 		           			<div th:replace="supply/bomManagement :: productList"></div>
 		           		</form>
