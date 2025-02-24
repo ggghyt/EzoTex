@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.order.dto.OrderDTO;
 import com.ezotex.order.service.impl.OrderServiceImpl;
@@ -21,10 +22,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@org.springframework.web.bind.annotation.RestController
+@RestController
 @AllArgsConstructor
 @RequestMapping("/order/*")
-public class RestController {
+public class OrderRestController {
 
 	@Autowired
 	private ObjectMapper objectMapper;

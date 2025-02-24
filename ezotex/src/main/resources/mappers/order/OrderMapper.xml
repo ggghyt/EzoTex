@@ -28,6 +28,8 @@
 		product_code = #{productCode}
 		GROUP BY product_color
 	</select>
+	
+	
 	<select id="getOrderCode">
 		SELECT COALESCE(
 		(SELECT CASE WHEN LENGTH('POD' ||

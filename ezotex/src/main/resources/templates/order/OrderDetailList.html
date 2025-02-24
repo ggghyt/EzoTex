@@ -307,9 +307,10 @@ document.getElementById('AllDelete').addEventListener('click', function() {
     fetch(`http://localhost:80/order/orderDelete`, {
         method: 'POST',  // DELETE 대신 POST 사용
         headers: {
+        	...headers,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ selectedOrderCode })
+        body: JSON.stringify({ productOrderCode:selectedOrderCode })
     })
     .then(req => req.json())
     .then(result => console.log('삭제 성공:', result))

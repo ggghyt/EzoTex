@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.returns.mappers.ReturnsMapper">
+<select id="getDeliveryList">
+	SELECT *
+	FROM DELIVERY
+	order by DELIVERY_CODE desc
+</select>
+<select id="getDeliProduct" resultType="DeliveryDetailsReturnsDTO">
+	SELECT *
+	FROM DELIVERY_DETAILS
+	WHERE DELIVERY_CODE = #{deliveryCode}
+</select>
+</mapper>
