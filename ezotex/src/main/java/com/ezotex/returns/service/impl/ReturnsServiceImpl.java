@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
+import com.ezotex.returns.dto.ReturnsDTO;
+import com.ezotex.returns.dto.ReturnsProductDTO;
 import com.ezotex.returns.mappers.ReturnsMapper;
 import com.ezotex.returns.service.ReturnsService;
 
@@ -23,8 +25,22 @@ public class ReturnsServiceImpl implements ReturnsService {
 
 	@Override
 	public List<DeliveryDetailsReturnsDTO> getDeliProduct(String deliveryCode) {
-		System.out.println("래셯뫠롷"+mapper.getDeliProduct(deliveryCode));
+		System.out.println("매퍼출력"+mapper.getDeliProduct(deliveryCode));
 		return mapper.getDeliProduct(deliveryCode);
+	}
+
+	@Override
+	public ReturnsDTO insertReturn(ReturnsDTO returnData) {
+		System.out.println(returnData);
+		mapper.insertReturn(returnData);
+		return returnData;
+	}
+	
+	@Override
+	public List<ReturnsProductDTO> insertProductReturn(List<ReturnsProductDTO> returnProductData) {
+		System.out.println("대체 왜 등록이 안되냐"+returnProductData);
+		mapper.insertProductReturn(returnProductData);
+		return returnProductData;
 	}
 
 }

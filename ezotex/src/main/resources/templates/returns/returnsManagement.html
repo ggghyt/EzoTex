@@ -160,6 +160,8 @@
 			    // 처리상태 저장
 			    const status = deliProductGrid.getValue(clickedRow, 'status');
 			    
+			    console.log(clickedData.productCode);
+			    console.log(clickedData.productCode);
 			        // 처리상태를 포함한 데이터 객체를 처리할 제품 목록에 추가
 			        selectedProduct.push({
 			            productCode : clickedData.productCode,
@@ -366,6 +368,12 @@
 	</div>
 </div>
 <script>
+	// 페이지 시작 할때 작업
+	window.onload = function() {
+		// 현재 로그인된 사용자 입력
+		document.getElementById('requestor').value = '[[${name}]]';
+	};
+	
 	let clickedRow = []; // 클릭된 행
 	let clickedData = [];
 	// 납품 내역 선택 모달 행 클릭 이벤트
@@ -389,7 +397,7 @@
 								deliProductGrid.resetData(data);
 							});
 					});
-	function insertReturn(){
+	function insertReturn(returnCode){
 		console.log("등록 버튼 클릭 이벤트");
 		// 반품 등록 헤더 데이터
 		const returnData = {
@@ -401,32 +409,119 @@
 				// 요청일 sysdate로 등록
 		};
 		console.log(selectProductGrid);
-		// 반품 등록 제품 데이터
-		const returnProductData = {
-				// 반품제품번호 시퀀스로 등록
-				// 반품 코드 반품 헤더에서 가져옴
-				productCode : selectProductGrid.column('productCode'), // 제품코드
-				productName : selectProductGrid.productName, // 제품명
-				productColor : selectProductGrid.productColor, // 색상
-				productSize : selectProductGrid.productSize, // 사이즈
-				faulty_reason : document.getElementById("faultyReason").value, // 불량사유
-/* 				qy : , // 수량 */
-				requestor : document.getElementById("requestor").value, // 요청자
-				//요청일은 sysdate로 등록
-/* 				return_date : , // 반품일 */
-				processing_status : deliProductGrid.getValue(clickedRow, 'status'), // 처리상태
-				unit_price : clickedData.unitPrice,
-		};
+		
+		// selectProductGrid의 데이터 가져오기
+		const selectedProducts = selectProductGrid.getData();
+		
+		// 오늘 날짜 가져오기
+		const today = new Date();
+		
+		// 요청일
+		const requestDate = today.toISOString().split('T')[0];
+		
+		// 반품일 (오늘 날짜 + 7일)
+		const returnDate = new Date();
+		returnDate.setDate(today.getDate() + 7);
+		const formattedReturnDate = returnDate.toISOString().split('T')[0];
+		
+		
+		// 반품 등록 제품 데이터에 selectProductGrid 데이터 넣기
+		const returnProductData = selectedProducts.map(row => ({
+			
+		    productCode: row.productCode,  // 제품 코드
+		    productName: row.productName,  // 제품명
+		    productColor: row.productColor,  // 색상
+		    productSize: row.productSize,  // 사이즈
+		    faultyReason: document.getElementById("faultyReason").value, // 불량 사유
+		    qy: row.requestQy,  // 수량
+		    requestor: document.getElementById("requestor").value,  // 요청자
+		    requestDate: requestDate,
+		    returnDate: formattedReturnDate,
+		    processingStatus: row.status,  // 처리 상태
+		    unitPrice: row.unitPrice  // 단가
+		}));
+		
+		console.log(returnProductData);  // 확인용 콘솔 출력
 		
 		console.log("returnData",returnData);
 		console.log("returnProductData",returnProductData);
 		
+		// 등록 실행 fetch
+		fetch(`http://localhost:80/returns/insertReturn`, {
+			method : 'POST',
+			headers : {
+				...headers,
+	            "Content-Type": "application/json"
+			},
+			body : JSON.stringify(returnData), // 반품 등록 헤더 데이터 추가
+		})
+		.then(rep => rep.json())
+		.then(result => {
+			// 반품코드 넘겨주기
+			returnProductData[0].returnCode = result.returnCode;
+			console.log("result찍기",result);
+			console.log("리턴코드 넘어오는지",result.returnCode);
+			console.log("returnProductData 출력",returnProductData);
+			// 반품 헤더 등록 성공시 반품 제품 등록 실행
+			fetch(`http://localhost:80/returns/insertProductReturn`,{
+				method : 'POST',
+				headers : {
+					...headers,
+		            "Content-Type": "application/json"
+				},
+				body: JSON.stringify(returnProductData),
+			})
+			.then(rep => rep.json())
+			.then(data => {
+				if (data === true){
+					console.log("반품 등록 성공:", data);
+				} else {
+					console.log(data);
+					throw new Error("반품 등록 실패");
+				}
+			})
+		})
+		.catch(error =>{
+			console.error("반품 등록 오류:",error);
+		});
 	}
-	// 페이지 시작 할때 작업
-	window.onload = function() {
-		// 현재 로그인된 사용자 입력
-		document.getElementById('requestor').value = '[[${name}]]';
-	};
+	// 납품 등록된 수량보다 적게 입력할때 0으로 초기화
+	selectProductGrid.on('afterChange', function (ev) {
+	    ev.changes.forEach(change => {
+	        if (change.columnName === 'requestQy') { // 수량 입력 필드 변경 감지
+	            const rowKey = change.rowKey;
+	            const newQuantity = Number(change.value); // 입력된 새 수량
+	            const productName = selectProductGrid.getValue(rowKey, 'productName');
+
+	            // deliProductGrid에서 해당 제품코드의 최대 수량 찾기
+	            const deliRow = deliProductGrid.getData().find(row => row.productName === productName);
+	            const maxQuantity = deliRow ? Number(deliRow.requestQy) : 0; // 최대 수량 가져오기
+
+	            if (newQuantity > maxQuantity) { // 초과 검사
+	                alert(`수량은 ${maxQuantity} 이하로 입력해야 합니다.`);
+	                selectProductGrid.setValue(rowKey, 'requestQy', 0); // 최대 수량으로 되돌리기
+	            }
+	        }
+	    });
+	});
+	
+	// 반품 , 교환 , 폐기 등록할 제품 수량 0 보다 낮게 입력시 등록 안되게 하기
+	document.getElementById('returnRegisterBtn').addEventListener('click', function() {
+	    const invalidRows = returnProductData.filter(row => (row.requestQy || 0) <= 0);
+
+	    if (invalidRows.length > 0) {
+	        alert('수량이 0 이하인 제품이 있습니다. 올바른 값을 입력해주세요.');
+	        return;  // 등록 중단
+	    }
+		
+	    // 0보다 큰수 일때 반품 등록
+	    /* registerReturn(); */ // 등록할때 쓸 function
+	});
+
+	function registerReturn() {
+	    // 반품 등록 처리 로직
+	    console.log('반품 등록이 완료되었습니다.');
+	}
 </script>
 
 <style>
