@@ -100,7 +100,7 @@
 
 		<div class="row">
 			<div class="col-5 card card-body m-2">
-				<p class="fs-5 fw-bolder mt-2">납품 목록</p>
+				<p class="fs-5 fw-bolder mt-2">제품 목록</p>
 				<div id="grid">
 					<div id="pagination" class="tui-pagination"></div>
 				</div>
@@ -110,18 +110,40 @@
 				<p class="fs-5 fw-bolder mt-2">입고 등록</p>
 				<div id="grid2"></div>
 
-				<p class="fs-5 fw-bolder mt-2">입고 수량 입력</p>
-				<div id="grid3"></div>
-				<button class="btn btn-danger" id="StoreDelete">불량 처리</button>
-
-				<p class="fs-5 fw-bolder mt-2">불량 발생 내역</p>
-				<div id="grid4"></div>
-
 				<div class="d-flex justify-content-end mt-2">
-					<button type="button" class="btn btn-primary registBtn"
-						data-bs-toggle="modal" data-bs-target="#registModal"
-						style="height: 45px; margin-top: 10px;">등록</button>
-					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+					<div class="col">
+				<div class="card card-body mt-3">
+					
+					<!-- 제품 상세 정보 및 BOM 정보 -->
+					<div class="d-flex align-items-top">
+							<p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
+							<label style="font-size: 10pt" for="remember">입력항목 유지</label><input type="checkbox" id="remember" class="ms-1 mb-4">
+					</div>
+					<div class="row">
+						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<input type="search" class="form-control" id="productCode" readonly>
+						</div>
+						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<input type="search" class="form-control" id="productName" readonly>
+						</div>
+						
+						<label for="color" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<select class="form-control" id="color" name="color">
+								<option value="null">전체</option>
+							</select>
+						</div>
+						<label for="size" class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
+						<div class="col-8 col-lg-4 d-flex mb-2">
+							<select class="form-control" id="size" name="size">
+								<option value="null">전체</option>
+							</select>
+						</div>
+					</div>
+					
+					<hr style="height: 0.1px">
 				</div>
 
 			</div>
@@ -170,40 +192,11 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
-		// obj 배열에 변경된 사이즈 정보 저장
-	    let obj = [];
 		
-	    let test = document.getElementById('pagination')
-	    
-	    console.log(test);
-	    
-	    //const Grid = tui.Grid;
-	    
-	    // 납품코드 저장 변수
-	    let deliveryCode = "";
-	    // 불량 수량 저장 변수
-	    let sum = 0;
-	    // 제품명 저장 변수
-	    let productName = "";
-	    // 제품 색상 저장 변수
-	    let productColor = "";
-	    // 제품 코드 저장 변수
-	    let productCode = "";
-	    
-	    // 상태변환을 위한 요청량,입고수량 비교 변수
-	    let requestQy = 0;
-	    let storeQy = 0;
-	    let storeSum = 0;
-	    
-	   
-	   	/*
-	   	*========================================================================
-	   	* 입고 대기 리스트 출력 및 그리드
-	   	*========================================================================
-	   	*/
+	   	
 	    const dataSource = {
 	      api: {
-	          readData: { url: 'http://localhost:80/store/deliveryList', method: 'GET' },
+	          readData: { url: 'http://localhost:80/store/productInfoList', method: 'GET' },
 	        },
 	      contentType: 'application/json',
 	    };  
@@ -219,555 +212,31 @@
 	          perPage: 10
 	        },
 	      columns: [ 
-	        { header: "납품 코드", name: "deliveryCode", align: "center"},
-	        { header: "제품 종류 수", name: "deliveryQy", align: "center"},
-	        { header: "납품 요청일", name: "orderDate", align: "center"},
-	        { header: "입고 예정일", name: "dedt", align: "center"},
+	        { header: "제품코드", name: "productCode", align: "center"},
+	        { header: "제품명", name: "productName", align: "center"},
+	        { header: "단가", name: "unitPrice", align: "center"},
 	      ],
 	      data: dataSource,
 	    });
 	    
-	    /*
-	   	*========================================================================
-	   	* 입고 대기 리스트 출력 및 그리드 END!!
-	   	*========================================================================
-	   	*/
 	    
-	   	
-	   	
-	   	
-	   	
-	   	
-	   	
-	   	/*
-	   	*========================================================================
-	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드
-	   	*========================================================================
-	   	*/
-
-	   	 
-	    const storeGrid2 = new Grid({
-		      el: document.getElementById('grid2'), // 컨테이너 엘리먼트
-		      rowHeaders: ['rowNum'],
-		      columns: [ 
-			        { header: "제품 코드", name: "productCode", align: "center"},
-			        { header: "제품명", name: "productName", align: "center"},
-			        { header: "요청 수량", name: "requestQy", align: "center"},
-			        { header: "납품 수량", name: "productQy", align: "center"},
-			        { header: "입고량 합계", name: "totalQy", align: "center"},
-			        { header: "불량 합계", name: "errorTotalQy", align: "center"},
-			        { header: "추천 위치", name: "dedt", align: "center"},
-			        { header: "창고위치", name: "창고위치", align: "center"},
-			  ],
-			  data: []
-		    });
-	    
-	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
 	    storeGrid.on('click', ev => {
-	    	
+
 	    	let data = storeGrid.getRow(ev.rowKey);
-	    	// 납품코드 재정의
-	    	deliveryCode = data.deliveryCode;
+	    	document.querySelector('#productCode').value = data.productCode;
+	    	document.querySelector('#productName').value = data.productName;
 	    	
-	    	console.log(productName);
-	    	console.log(deliveryCode);
-	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
-	    		.then(rep => rep.json())
-	    		.then(data => {
-	    				storeGrid2.resetData(data);
-	    			})
-	    		})
-	    		
-	    /*
-	   	*========================================================================
-	   	* 입고 대기 제품 상세조회 리스트 출력 및 그리드 END!!
-	   	*========================================================================
-	   	*/		
-	    
-	   	
-	   	
-	   	
-	   	/*
-	   	*========================================================================
-	   	* 입고 대기 제품 옵션 리스트 출력 및 그리드
-	   	*========================================================================
-	   	*/
-	  
-	    const storeGrid3 = new Grid({
-		      el: document.getElementById('grid3'), // 컨테이너 엘리먼트
-		      data: {
-		          api: {
-		        	  readData: { url: '/store/productCodeList', method: 'GET' },
-		              modifyData: { url: '/store/InsertTest', method: 'POST', headers }
-		          },
-		          contentType: 'application/json'
-		      },
-	            scrollY: true,
-		        scrollX: true,
-		        header: {
-		        height: 80,
-		            complexColumns: [
-		              {
-		                header: 'S',
-		                name: 'stest',
-		                childNames: ['sizeS', 's']
-		              },
-		              {
-			             header: 'M',
-			             name: 'mtest',
-			             childNames: ['sizeM', 'm']
-			          },
-			          {
-				         header: 'L',
-				         name: 'ltest',
-				         childNames: ['sizeL', 'l']
-				      },
-				      {
-					      header: 'XL',
-					      name: 'xltest',
-					      childNames: ['sizeXL', 'xl']
-					  }
-		             ]},
-		        columns: [
-		            { header: "색상/사이즈", name: "productColor", align: "center" },
-		            { header: "입고할수량", name: "sizeS", align: "center", editor: "text"},
-		            { header: "요청수량", name: "s", align: "center" },
-		            { header: "입고할수량", name: "sizeM", align: "center", editor: "text"},
-		            { header: "요청수량", name: "m", align: "center" },
-		            { header: "입고할수량", name: "sizeL", align: "center", editor: "text"},
-		            { header: "요청수량", name: "l", align: "center" },
-		            { header: "입고할수량", name: "sizeXL", align: "center", editor: "text"},
-		            { header: "요청수량", name: "xl", align: "center" }
-		        ],
-		    });
-	    
-	    //저장
-	     InsertTest.addEventListener("click", function () {
+	    	fetch(`http://localhost:80/store/productColor?productCode=${data.productCode}`)
+	    	     .then(rep => rep.json())
+	    	     .then(data => {
+	    	    	 console.log('data: ', data);
+	    	     })
 	    	
-	    	//storeGrid3.blur();
-	    	//storeGrid3.request('modifyData');
-	    	
-	    	// 변경 데이터 등록 처리
-	    	fetch(`http://localhost:80/store/InsertTest`,{
-	    		method: 'POST',
-	    		headers: {...headers, 'Content-Type': 'application/json'},
-	    		body: JSON.stringify(obj)
-	    	}).then(rep => rep.json()) 
-	    	  .then(result =>
-	    	      {
-	    	    		// 옵션 그리드 변경 데이터 수정 처리
-	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&deliveryCode=${deliveryCode}`)
-	    		            .then(rep => rep.json())
-	    		            .then(data => {
-	    		            	let size = []
-			    				let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }]
-			    				
-			    					console.log(data);
-			    				data.optionList.forEach(data => {
-			    					size.push(
-			    					 {
-						                header: data.productSizeInfo,
-						                name: 'sz'+data.productSizeInfo+'test',
-						                childNames: ['size'+data.productSizeInfo, 'SZ'+data.productSizeInfo.toLowerCase()]
-						             },
-			    					)
-						             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
-						 		                { header: "요청수량", name: "SZ"+data.productSizeInfo.toLowerCase() , align: "center" },
-						 		                { header: "제품코드", name: "productCode" , hidden: true },
-						 		                { header: "납품코드", name: deliveryCode , hidden: true })
-			    				})
-				    			storeGrid3.setHeader({complexColumns:size});
-				    			storeGrid3.setColumns(color);
-				    			
-				    			
-				    			// 데이터 처리 및 그리드에 반영
-				                let rowData = [];
-				                
-				                data.qyList.forEach(pivotData => {
-				                	
-				                	console.log('pivotData : ',pivotData)
-				                	
-				                    let row = { productColor: pivotData.PRODUCT_COLOR }; // 색상 데이터
-				                    
-				                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
-				                    data.optionList.forEach(option => {
-				                        let sizeKey = option.productSizeInfo.toLowerCase();
-				                        // 수량 값이 없으면 0으로 설정
-				                        console.log(pivotData['SZ'+sizeKey.toUpperCase()])
-				                        row['SZ' + sizeKey.toLowerCase()] = pivotData['SZ'+sizeKey.toUpperCase()] || "0";
-				                    });
-				                    
-				                    rowData.push(row);
-				                });
-				                
-				                // 데이터 그리드에 설정
-				                storeGrid3.resetData(rowData);
-				                
-	    		            });
-	    	    		
-	    		        fetch(dataSource.api.readData.url, {
-	    		            method: 'GET',
-	    		            headers: { 'Content-Type': 'application/json' }
-	    		        })
-	    		        .then(response => response.json())
-	    		        .then(data => {
-	    		        	console.log('첫번째 그리드 초기화 : ',data)
-	    		            storeGrid.resetData(data);
-	    		        });
-	    	    }
-	    	  )
 	    })
-	    
-	    // 제품 상세보기 그리드 클릭 이벤트
-	    
-	    // 각 제품에 대한 변경된 값을 저장할 객체
-		let productChanges = {};
-		
-		// 제품 상세보기 그리드 클릭 이벤트
-		storeGrid2.on('click', ev => {
-		    let data = storeGrid2.getRow(ev.rowKey);
-		    productName = data.productName;
-		    console.log('제품 이름:', productName);
-		
-		    // 창고 위치 컬럼 클릭 시 모달 출력
-		    if (ev.columnName === '창고위치') {
-		        let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-		        modal.show();
-		    } else {
-		        // 선택한 제품코드 저장
-		        productCode = data.productCode;
-		        console.log('선택한 제품코드:', productCode);
-		        console.log('배송 코드:', deliveryCode);
-		
-		        // 서버에서 해당 제품 코드에 대한 옵션 목록을 받아오기
-		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&deliveryCode=${deliveryCode}`)
-		            .then(rep => rep.json())
-		            .then(data => {
-		                let size = [];
-		                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
-		                console.log(data);
-		                
-		                // 옵션 리스트에 대해 컬럼 동적 생성
-		                data.optionList.forEach(option => {
-		                    size.push({
-		                        header: option.productSizeInfo,
-		                        name: 'sz' + option.productSizeInfo + 'test',
-		                        childNames: ['size' + option.productSizeInfo, 'SZ' + option.productSizeInfo.toLowerCase()]
-		                    });
-		                    color.push({
-		                        header: "입고할수량", name: "size" + option.productSizeInfo, align: "center", editor: "text"
-		                    }, {
-		                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: "center"
-		                    }, {
-		                        header: "제품코드", name: "productCode", hidden: true
-		                    }, {
-		                        header: "납품코드", name: deliveryCode, hidden: true
-		                    });
-		                });
-		
-		                // 그리드3에 동적 컬럼 설정
-		                storeGrid3.setHeader({complexColumns: size});
-		                storeGrid3.setColumns(color);
-		
-		                // 피벗 데이터 생성
-		                let rowData = [];
-		                data.qyList.forEach(pivotData => {
-		                    let row = { productColor: pivotData.PRODUCT_COLOR };
-		
-		                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
-		                    data.optionList.forEach(option => {
-		                        let sizeKey = option.productSizeInfo.toLowerCase();
-		                        row['SZ' + sizeKey] = pivotData['SZ' + sizeKey.toUpperCase()] || "0";
-		                    });
-		
-		                    rowData.push(row);
-		                });
-		
-		                // 기존에 변경된 값이 있으면 반영
-		                if (productChanges[productCode]) {
-		                    rowData = rowData.map(row => {
-		                        const updatedData = productChanges[productCode].find(item => item.productColor === row.productColor);
-		                        if (updatedData) {
-		                            return { ...row, ...updatedData }; // 기존에 수정된 데이터를 덮어쓰지 않고 병합
-		                        }
-		                        return row;
-		                    });
-		                }
-		
-		                // 그리드3에 데이터 설정
-		                storeGrid3.resetData(rowData);
-		
-		                // 변경된 데이터를 productChanges 객체에 저장
-		                productChanges[productCode] = rowData;
-		                
-		                
-		                let filed = Object.keys(rowData);
-						let arr = filed.filter(ele => ele.startsWith('size'));
-						
-					
-							
-						for(let i = 0; i < arr.length; i++){
-							if(rowData[arr[i]] != null && rowData[arr[i]] != 0){
-								let sizeCode = arr[i].replace('size','').toUpperCase();
-								let objInfo = {
-										productCode: productCode,
-										sizeCode: getSizeCommonCode(sizeCode),
-										productQy: newValue,
-										color: rowData.productColor,
-										deliveryCode: deliveryCode
-								}
-								obj.push(objInfo);
-							}
-						}
-		            });
-		    }
-		});
-		
-		// 제품 옵션 그리드 체인지 이벤트
-		storeGrid3.on('afterChange', ev => {
-		    console.log('선택 제품코드:', productCode);
-		    if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
-		
-		    ev.changes.forEach(change => {
-		        let rowData = storeGrid3.getRow(change.rowKey); // 변경된 행 데이터 가져오기
-		        let columnName = change.columnName; // 변경된 컬럼명
-		        let newValue = Number(change.value); // 변경된 값
-		
-		        let size = columnName.replace('size', '');
-		        let columnQy = 'SZ' + size.toLowerCase();
-		        let sizeCode = getSizeCommonCode(size);
-		        console.log(rowData[columnName], sizeCode, rowData[columnQy]);
-		        
-		 
-		        let errorQy = rowData[columnQy] - rowData[columnName]; 
-		
-		        // 오류 처리: 입고 수량보다 요청 수량이 많을 경우
-		        if (rowData[columnName] <= rowData[columnQy]) {
-		            let errObj = {
-		                deliveryCode: deliveryCode,
-		                productCode: productCode,
-		                productName: productName,
-		                errorQy: errorQy,
-		                size: size,
-		                productSize: sizeCode,
-		                productColor: rowData.productColor
-		            };
-		            console.log('errObj:', errObj);
-		        }
-		
-		        // 해당 productCode의 변경된 데이터를 저장
-		        if (!productChanges[productCode]) {
-		            productChanges[productCode] = [];
-		        }
-		
-		        // 현재 row 데이터를 변경된 데이터로 업데이트
-		        let updatedRowData = productChanges[productCode].map(row => {
-		            if (row.productColor === rowData.productColor) {
-		                row[columnName] = newValue;
-		            }
-		            return row;
-		        });
-		        
-		        
-		        // 저장된 데이터 갱신
-		        productChanges[productCode] = updatedRowData;
-		
-		     	// 사이즈에 대한 정보 처리
-		        let filed = Object.keys(rowData);
-		        let arr = filed.filter(ele => ele.startsWith('size'));
-
-		        // productChanges에서 해당 productCode의 변경된 값만을 기반으로 obj 생성
-		        if (productChanges[productCode]) {
-		        	
-		        	// 최종 입고 수량 (입고향 합계)을 저장할 변수
-		            let totalStock = 0;
-		        	
-		            productChanges[productCode].forEach(item => {
-		            	
-		                arr.forEach(ele => {
-		                	
-		                    if (item[ele] != null && item[ele] != 0) {
-		                    	
-		                        let sizeCode = ele.replace('size', '').toUpperCase();
-		                        
-		                        let gridData = storeGrid2.getData();  // 만약 getData가 배열을 반환한다면
-		                        if (Array.isArray(gridData)) {
-		                            // 배열에서 productCode에 맞는 행 찾기
-		                            let productRow = gridData.find(row => row.productCode === productCode);
-		                            
-		                            // 해당 행이 존재하면 요청 수량과 입고된 수량 가져오기
-		                            let requestQy = productRow ? productRow.requestQy || 0 : 0;  // 요청 수량
-		                            let storeQy = productRow ? productRow.totalQy || 0 : 0;     // 기존 입고된 수량
-		                            
-		                            console.log('requestQy:', requestQy);
-		                            console.log('storeQy:', storeQy);
-		                            
-		                         // 새로 변경된 입고 수량
-		                            let newStockQy = item[ele];
-
-		                            // 합계 계산
-		                            totalStock += newStockQy;  // 새로운 입고 수량을 계속 더함
-		                            let sum = totalStock + storeQy;  // 최종 입고 수량 = 기존 입고 수량 + 새로 변경된 입고 수량
-
-		                            console.log('최종 합계:', sum);
-		                            
-		                            
-		                            let objInfo = {
-				                            productCode: productCode,
-				                            sizeCode: getSizeCommonCode(sizeCode),
-				                            productQy: item[ele], // 변경된 수량
-				                            color: item.productColor,
-				                            deliveryCode: deliveryCode,
-				                            totalStock: sum,
-				                            requestQy: requestQy
-				                        };
-
-				                        // 동일한 productCode, sizeCode, color가 있으면 기존 항목을 제거하고 새 값 추가
-				                        obj = obj.filter(existingItem => 
-				                            !(existingItem.productCode === objInfo.productCode &&
-				                              existingItem.sizeCode === objInfo.sizeCode &&
-				                              existingItem.color === objInfo.color)
-				                        );
-				                        obj.push(objInfo);
-		                            
-		                        }
-		                    }
-		                    
-		                });
-		                
-		            });
-		            
-		        }
-
-		        console.log('변경된 사이즈 정보:', obj);
-		        
-		        
-		    });
-		});
-
-
-		
-	    
-	    /*
-	   	*========================================================================
-	   	* 입고 대기 제품 옵션 리스트 출력 및 그리드 END!!
-	   	*========================================================================
-	   	*/	
-	    
-	   	
-	   	
-	   	
-	   	
-	   	
-	   	const storeGrid4 = new Grid({
-			      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
-		            scrollY: true,
-			        scrollX: false,
-			      rowHeaders: ['rowNum'],
-			      columns: [ 
-			        { header: "제품 코드", name: "productCode", editor: "text"},
-			        { header: "제품명", name: "productName", editor: "text"},
-			        { header: "색상", name: "productColor", editor: "text"},
-			        { header: "사이즈", name: "size", editor: "text"},
-			        { header: "불량 수량", name: "errorQy", editor: "text"},
-			        {
-			            header: "불량 사유",
-			            name: "errorInfo",
-			            editor: {
-			                type: "select",
-			                options: [
-			                    { value: 'defect1', label: '불량 사유 1' },
-			                    { value: 'defect2', label: '불량 사유 2' },
-			                    { value: 'defect3', label: '불량 사유 3' }
-			                ],
-			                defaultValue: 'defect1'  // 기본값 지정
-			            }
-			        },
-			        { header: "사이즈코드", name: "sizeCode", hidden: true }
-			      ],
-			      data: [],
-			    });
-	   	
 	   
-	   	let info = []
+	    
 	   	
-	   	StoreDelete.addEventListener("click", function () {
-	   		/* let data = storeGrid3.getData()
-	   		
-	   		console.log('그리드3 데이터 확인 : ', data);
-	   		let filed = Object.keys(data[0]);
-	   		
-	   		console.log('필드명 확인 : ',filed);
-	   		
-			let arr = filed.filter(ele => ele.startsWith('SZ'));
-			console.log(arr[0]);
-			for(let i = 0; i <= data.length; i++){
-				for(let j = 0; j < arr.length; j++){
-					console.log('필드 데이터 확인 : ',data[i][arr[j]]);
-					if(data[i][arr[j]] != 0 && data[i][arr[j]] != null){
-						let gridSize = arr[j].replace('SZ','').toUpperCase();
-						let gridQy = data[i][arr[j]]
-						let gridColor = data[i].productColor;
-						let gridSizeCode = getSizeCommonCode(gridSize);
-						
-						let gridObj = {
-								productCode: productCode,
-					        	productName: productName,
-					        	productColor: productColor,
-					        	size: gridSize,
-					        	errorQy: gridQy,
-					        	sizeCode: gridSizeCode
-						}
-						info.push(gridObj);
-					}
-				} 
-			}
-			
-			console.log('배열확인 : ',info)
-			
-			
-			
-			console.log(data); */
-			
-			/* let obj = {
-					productCode: productCode,
-		        	productName: productName,
-		        	productColor: productColor,
-		        	size:
-		        	errorQy:
-			}
-			 */
-			//storeGrid4.resetData(data);
-	   		storeGrid4.resetData(err);
-	   	})
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    /*
-	   	*========================================================================
-	   	* 창고위치 모달 그리드
-	   	*========================================================================
-	   	*/	
-	    const storeGrid5 = new Grid({
-	    	el: document.getElementById('modalGrid'),
-	    	rowHeaders: ['rowNum'],
-	    	columns: [
-	    		 { header: "창고위치", name: "dedt" },
-			     { header: "입고가능 수량", name: "dedt" },
-			     { header: "적재된 제품 종류 수", name: "dedt" },
-	    	],
-	    	data: ""
-	    })
+	  
 	    
 	    /*
 	   	*========================================================================
@@ -791,9 +260,6 @@
 
 	    
 	    </script>
-
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#exampleModal">ModalTest2</button>
 
 </body>
 </html>

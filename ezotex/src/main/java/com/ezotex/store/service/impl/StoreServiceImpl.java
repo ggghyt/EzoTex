@@ -7,9 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.DeliverySearchDTO;
-import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.ProductInfoListDTO;
+import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -29,7 +29,37 @@ public class StoreServiceImpl implements StoreService {
 	
 	 @Autowired
 	 private HttpSession session;  // HttpSession을 클래스 멤버로 주입받음
+	 
+	// 제품 목록 리스트
+	@Override
+	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO) {
+		return mapper.productInfoList(searchDTO);
+	}
+	 
+	// 제품 목록 total 
+	@Override
+	public int productInfoTotal(ProductInfoSearchDTO searchDTO) {
+		return mapper.productInfoTotal(searchDTO);
+	}
 	
+	// 제품별 색상
+	@Override
+	public List<ProductInfoListDTO> productColor(String productColor) {
+		return mapper.productColor(productColor);
+	}
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	
+	 /**
+	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 **/
+	 
+	 
 	// 페이지 총 수(제품)
 	@Override
 	public int getCount(DeliverySearchDTO searchDTO) {
@@ -93,10 +123,12 @@ public class StoreServiceImpl implements StoreService {
 	public boolean InsertProduct(List<SizeDTO> list) {
 		
 		String name = (String) session.getAttribute("name");
-        
 		list.forEach(data -> {
-	        mapper.InsertProduct(data, name);
-	        //mapper.UpdateDeliveryDtails(data);
+			if(data.getProductQy() > 0) {
+				mapper.InsertProduct(data, name);
+			}
+			System.out.println("데이터확인 " + data);
+			mapper.UpdateDelivery(data);
 	    });
 		return true;
 	}
@@ -116,6 +148,10 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	
+
+	/**
+	 * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 * */	
 
 	
 }

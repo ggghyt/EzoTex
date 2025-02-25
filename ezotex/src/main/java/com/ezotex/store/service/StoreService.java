@@ -8,12 +8,35 @@ import org.apache.ibatis.annotations.Param;
 import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.ProductInfoListDTO;
+import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 
 public interface StoreService {
 
+	
+	// 제품 목록 리스트
+	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO);
+	
+	// 제품 목록 total
+	public int productInfoTotal(ProductInfoSearchDTO searchDTO);
+	
+	// 제품 컬러
+	public List<ProductInfoListDTO> productColor(String productColor);
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 * */
+	
 	// 페이지 총 수(제품)
 	public int getCount(DeliverySearchDTO searchDTO);
 	
@@ -43,5 +66,9 @@ public interface StoreService {
 	
 	// 자재 입고 등록
 	public boolean MtInsertProduct(List<StoreDeliveryDetailsDTO> list);
+	
+	/**
+	 * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 * */
 	
 }
