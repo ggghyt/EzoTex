@@ -19,4 +19,7 @@ public interface MaterialOrderService {
 	
 	// 발주서 등록
 	boolean insertMaterialOrder(Map<String, Object> map);
+	
+	// 발주계획서 등록
+	boolean insertMaterialOrderPlan(Map<String, Object> map);
 }

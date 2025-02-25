@@ -101,8 +101,12 @@
 		  session_user_name = data.name;
 		  session_user_email = data.email;
 		  session_user_img = data.img;
-		  document.querySelector("#Thumbnail_user_name").innerText = session_user_name
-		  document.querySelector("#Thumbnail_user_email").innerText = session_user_email
+		  document.querySelector("#Thumbnail_user_name").innerText = session_user_name;
+		  document.querySelector("#Thumbnail_user_email").innerText = session_user_email;
+		  
+		  // fetch 이후에 접근해야 할 수 있는 커스텀이벤트 생성
+		  const loginEvent = new Event('login');
+		  document.dispatchEvent(loginEvent); // 이벤트 호출
 	  })
 	  
 	  function simulateLoading() {

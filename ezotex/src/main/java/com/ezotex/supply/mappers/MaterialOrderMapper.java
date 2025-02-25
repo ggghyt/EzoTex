@@ -22,4 +22,8 @@ public interface MaterialOrderMapper {
 	// 발주서 등록
 	int insertMaterialOrder(Object dto);
 	int insertMaterialOrderDetail(Object dto);
+	
+	// 발주계획서 등록
+	int insertMaterialOrderPlan(Object dto);
+	int insertMaterialOrderPlanDetail(Object dto);
 }

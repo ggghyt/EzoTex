@@ -23,12 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	makeQuantityTag(); // 커스텀 input 생성 함수
 	
 	changeClas(lclasBox, sclasBox);
-	$('#chargerName').val(session_user_name);
+	//document.getElementById('chargerName').value = session_user_name;
 	
 	createModal({ 
 		type: 'regist',
-		confirm: insertPlan,
-		loading: false
+		confirm: insertPlan
 	});
 	$('#insertBtn').on('click', () => {
 		let supplyPlan = supplyGrid.getData();
@@ -36,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		$('#simpleModal').modal('show'); // 입력값이 있다면 등록 모달 표시
 	});
 });
+
+// 로그인정보 fetch 이후에 실행되는 커스텀 이벤트
+document.addEventListener('login', () => $('#chargerName').val(session_user_name))
 
 // 대분류 onChange 이벤트 등록 함수
 function changeClas(lclasEle, sclasEle){
@@ -109,7 +111,7 @@ class CustomCheckRender {
   }
 }
 
-/******************** Tui Grid 출력 ********************/	
+/******************** Tui Grid ********************/	
 // 제품 그리드
 const prdData = {
 	api: { readData: { url: '/supply/productList', method: 'GET' } }
@@ -179,6 +181,7 @@ const supplyGrid = new Grid({
    }
 });
 
+/******************** Tui Grid 출력 ********************/	
 // 선택한 제품의 옵션별 입력양식 출력
 function loadBlankGrid(productCode){
 	fetch(`/supply/optionPivot/${productCode}`)
@@ -488,7 +491,7 @@ function checkDate(dateStr){
 }
 
 /******************** 공급계획 일괄 등록 ********************/	
-function insertPlan(loading){
+function insertPlan(){
 	let planArr = supplyGrid.getData();
 	let detailArr = []; // 데이터 입력용 디테일
 	console.log(planArr);

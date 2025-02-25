@@ -6,12 +6,9 @@ function createModal(options){
 			content: '짧은 메세지 null 시 기본 멘트 적용',
 			confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
 			denyMsg: '취소 클릭 시 출력할 토스트 메세지',
-			loading: true or false // (기본값 true. false 시 확인 버튼 setTimeout 동작 안 함.)
 		}
 	*/
 	let simpleModal = document.getElementById('simpleModal');
-	var loadingSpinner = document.querySelector(".loading-wrap");
-	var loadingMessage = document.getElementById("loadingMessage");
 	
 	let typeNm = null;
 	let btnColor = null;
@@ -48,28 +45,10 @@ function createModal(options){
     </div>
 	`;
 	
-	// 필요 시 로딩화면을 직접 호출 가능한 함수
-	function loading(){
-		// 로딩 시작
-    loadingSpinner.style.display = "flex";
-    loadingMessage.style.color = "white";
-    // 1초 뒤에 로딩 완료
-    setTimeout(() => loadingSpinner.style.display = "none" , 600);
-	}
-	
 	// 등록 - 확인 버튼
   document.querySelector(".confirmBtn").addEventListener("click", () => {		
 		// 확인 버튼 동작
-		if(options.loading == null ? true : options.loading){
-	    // 로딩 시작
-	    loadingSpinner.style.display = "flex";
-	    loadingMessage.style.color = "white";
-	    // 1초 뒤에 로딩 완료
-	    setTimeout(function () {
-	    loadingSpinner.style.display = "none";
-        if(options.confirm != null) options.confirm(loading); // 실행할 함수를 받았다면 실행
-	    }, 600);				
-		} else options.confirm(loading);
+		if(options.confirm != null) options.confirm();
   });
 	
 	// 등록 - 취소 버튼
