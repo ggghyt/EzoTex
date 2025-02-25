@@ -2,34 +2,80 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.store.mappers.StoreMapper">
 	
+	<resultMap id="StoreDeliveryDetailsDTOResultMap" type="com.ezotex.store.dto.StoreDeliveryDetailsDTO">
+    <result property="productSize" column="product_size" />
+    <result property="productSizeInfo" column="product_size_info" />
+    <!-- 다른 필드들에 대해서도 명시적으로 매핑해줍니다 -->
+	</resultMap>
+	
+	
 	<!-- 납품 코드 기반 납품목록 -->
 	<select id="DeliveryList" resultType="StoreDeliveryDTO">
 		SELECT *
 		FROM (
-       			SELECT a.* 
+       			SELECT a.*, ROWNUM as rn
        			FROM (
-                		SELECT ROWNUM as rn,
-               				   delivery_code,
-                               order_date,
-                               dedt
-                               FROM delivery
+                		SELECT 
+               	               d.delivery_code, 
+                               d.order_date, 
+                               d.dedt, 
+                               COUNT(i.product_code) AS delivery_qy
+                        FROM delivery d 
+                        JOIN delivery_details i ON d.delivery_code = i.delivery_code
+                        WHERE d.company_se = 'CP02'
+                        AND i.delivery_qy > 0
+                        GROUP BY d.delivery_code, d.order_date, d.dedt
+                        ORDER BY d.delivery_code 
                )a
-    		WHERE a.rn <![CDATA[ <= ]]> #{endPage}) page
-		WHERE page.rn <![CDATA[ >= ]]> #{startPage}
+    		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
+		WHERE page.rn <![CDATA[ >= ]]> #{start}
 	</select>
 	
+	
+	
+	<select id="MtDeliveryList">
+		SELECT *
+		FROM (
+       			SELECT a.*, ROWNUM as rn
+       			FROM (
+                		SELECT 
+               	               d.delivery_code, 
+                               d.order_date, 
+                               d.dedt, 
+                               COUNT(i.product_code) AS delivery_qy
+                        FROM delivery d 
+                        JOIN delivery_details i ON d.delivery_code = i.delivery_code
+                        WHERE d.company_se = 'CP01'
+                        AND i.delivery_qy > 0
+                        GROUP BY d.delivery_code, d.order_date, d.dedt
+                        ORDER BY d.delivery_code 
+               )a
+    		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
+		WHERE page.rn <![CDATA[ >= ]]> #{start}
+	</select>
+	
+	
+	
 	<!-- 납품 코드 기반 납품제품 총 수량 -->
-	<select id="deliveryQy" resultType="StoreDeliveryDTO">
+	<!-- <select id="deliveryQy" resultType="StoreDeliveryDTO">
 		SELECT count(t.product_code) as deliveryQy
 		FROM delivery_details t join delivery d
 		ON t.delivery_code = d.delivery_code
-	</select>
+	</select> -->
 	
 	
-	<!-- 페이징 total -->
+	<!-- 페이징(납품입고리스트(제품)) total -->
 	<select id="getCount">
 		select count(delivery_code)
 		from delivery
+		WHERE company_se = 'CP02'
+	</select>
+	
+	<!-- 페이징(납품입고리스트(자재)) total -->
+	<select id="getMtCount">
+		select count(delivery_code)
+		from delivery
+		WHERE company_se = 'CP01'
 	</select>
 	
 	
@@ -37,17 +83,47 @@
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
 		SELECT p.product_code,
 		       p.product_name,
-		       sum(d.delivery_qy) as productQy
-		FROM delivery_details d join product_info p
-		on d.product_code = p.product_code
-		WHERE product_se = 'PT02'
-		and delivery_code = #{deliveryCode}
-		group by p.product_code,
-                 p.product_name
+		       d.request_qy,
+		       SUM(DISTINCT d.delivery_qy) AS productQy,
+		       sub.totalQy,
+		       SUM(DISTINCT e.error_qy) AS errorTotalQy
+		FROM delivery_details d
+		JOIN product_info p ON d.product_code = p.product_code
+		LEFT JOIN (
+		    SELECT delivery_code, product_code, SUM(store_qy) AS totalQy
+		    FROM inventory
+		    GROUP BY delivery_code, product_code
+		) sub ON d.delivery_code = sub.delivery_code AND d.product_code = sub.product_code
+		LEFT JOIN inventory_error e ON sub.delivery_code = e.lot
+		WHERE d.product_se = 'PT02'
+		AND d.delivery_code = #{deliveryCode}
+		GROUP BY p.product_code, p.product_name, request_qy, sub.totalQy
 	</select>
 	
+	
+	<!-- 납품코드를 기반으로 입고해야될 자재 기본정보 리스트 -->
+	<select id="findByMtDeliveryCode">
+		SELECT p.product_code,
+		       p.product_name,
+		       o.product_color,
+		       SUM(d.delivery_qy) as productQy,
+		       SUM(DISTINCT i.store_qy) as totalQy
+		FROM delivery_details d join product_info p
+		on d.product_code = p.product_code
+		left join inventory i
+		on d.delivery_code = i.delivery_code
+		left join product_option o
+		on p.product_code = o.product_code
+		WHERE d.product_se = 'PT01'
+		AND d.delivery_code = 'DEV2502220005'
+		group by p.product_code,
+		         p.product_name,
+		         o.product_color
+	</select>
+	
+	
 	<!-- 제품코드별 사이즈 -->
-	<select id="findBySize">
+	<select id="findBySizeInventory" resultMap="StoreDeliveryDetailsDTOResultMap">
 		SELECT get_comm(product_size) as product_size_info
 		FROM product_option
 		WHERE product_code = #{productCode}
@@ -59,16 +135,17 @@
 	<select id="findByProductCode">
 		with temp as
 		     (SELECT   product_color,
-		               UPPER(get_comm(product_size)) as product_size,
+		               'sz' || get_comm(product_size) as product_size,
 		               product_code,
 		               delivery_qy
 		        FROM DELIVERY_DETAILS
-		        WHERE product_code = #{productCode})
+		        WHERE product_code = #{productCode}
+		        AND delivery_code = #{deliveryCode})
 		select * from temp
 		pivot( sum(delivery_qy)
 		       for product_size in (
 		       <foreach collection="list" item="size" separator=",">
-                '${size.productSizeInfo}' AS ${size.productSizeInfo}
+                '${'sz' + size.productSizeInfo}' AS ${'sz' + size.productSizeInfo}
                </foreach>)
 		)pvt
 	</select>
@@ -85,7 +162,8 @@
                             store_charger,
                             storage_location,
                             store_date,
-                            product_se) 
+                            product_se,
+                            delivery_code) 
 		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
 		       #{list.productCode},
 		       #{list.productQy},
@@ -95,7 +173,32 @@
 		       #{name},
 		       'test',
 		       sysdate,
-		       'PT02')
+		       'PT02',
+		       #{list.deliveryCode})
+	</insert>
+	
+	<!-- 자재 등록 -->
+	<insert id="MtInsertProduct" parameterType="StoreDeliveryDetailsDTO">
+		INSERT INTO inventory(lot,
+		                      product_code,
+		                      store_qy,
+		                      inventory_qy,
+		                      product_color,
+		                      store_charger,
+		                      storage_location,
+		                      store_date,
+		                      product_se,
+		                      delivery_code)
+		VALUES(concat(TO_CHAR(sysdate,'yyyyMMdd'),LPAD(mt_lot_seq.nextval, 4, '0')),
+		       #{list.productCode},
+		       #{list.productInsertQy},
+		       #{list.productInsertQy},
+		       #{list.productColor},
+		       #{name},
+		       'test',
+		       sysdate,
+		       'PT01',
+		       #{list.deliveryCode})  
 	</insert>
 	
 	
@@ -106,6 +209,7 @@
         WHERE product_code = #{productCode}
         AND product_size = #{sizeCode}
         AND product_color = #{color}
+        AND delivery_code = #{deliveryCode}
 	</update>
 	
 	

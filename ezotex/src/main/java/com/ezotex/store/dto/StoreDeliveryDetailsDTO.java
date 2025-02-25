@@ -1,10 +1,8 @@
 package com.ezotex.store.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class StoreDeliveryDetailsDTO {
 
 	// 납품 상세조회 필드
@@ -25,21 +23,15 @@ public class StoreDeliveryDetailsDTO {
 	// 제품명
 	private String productName;
 	private int productQy;
+	private int inventoryQy;
 	
-	//사이즈 별 수량
-	private int S;
-	private int M;
-	private int L;
-	private int XL;
+	// 입고량 합계
+	private int totalQy;
+	// 불량량 합계
+	private int errorTotalQy;
 	
-	public StoreDeliveryDetailsDTO() {}
+	// 입고 수량
+	private int productInsertQy;
 	
-	public StoreDeliveryDetailsDTO(String sizeCode, String size, String color, String productCode, String deliveryCode) {
-	    this.productSize = sizeCode;
-	    this.productColor = color;
-	    this.productCode = productCode;
-	    this.deliveryCode = deliveryCode;
-	    this.productSizeInfo = size; // 입고수량
-	}
 	
 }

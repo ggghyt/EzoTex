@@ -19,4 +19,11 @@ public class DeliveryDetailsReturnsDTO {
 	private String productSe;
 	private String orderCode;
 	private int price;
+	
+	// 기준정보 제품
+	private String productName;
+	private String productType;
+	private int vl;
+	private String img;
+	private String unitName;
 }

@@ -64,6 +64,15 @@
 		<h3>|제품목록</h3>
 		<div id="deliProductGrid" style="width: 100%;"></div>
 		<script th:inline="javascript">
+			// 사이즈 정해주기
+			const sizeMap = {
+				    SI01: 'FREE', SI02: 'XS', SI03: 'S', SI04: 'M', SI05: 'L',
+				    SI06: 'XL', SI07: 'XXL', SI25: '25', SI26: '26', SI27: '27',
+				    SI28: '28', SI29: '29', SI30: '30', SI31: '31', SI32: '32',
+				    SI33: '33', SI34: '34', SI35: '35', SI36: '36', SI37: '37',
+				    SI38: '38', SI44: '44', SI55: '55', SI66: '66', SI77: '77',
+				    SI88: '88', SI90: '90'
+			};
 			// Thymeleaf에서 데이터를 JSON으로 변환해서 JavaScript로 전달
 			const deliProduct = /*[[${getDeliProduct}]]*/[];
 			// 전달된 데이터 확인 (콘솔에 출력)
@@ -81,17 +90,108 @@
 				// 컬럼 크기 조절 가능
 				},
 				rowHeaders : [ 'rowNum' ],
-				columns : [ {
+				columns : [
+				{
 					header : '납품코드',
 					name : 'deliveryCode',
 					align : 'center',
-				} ],
+				},
+				{
+					header : '제품명',
+					name : 'productName',
+					align : 'center',
+				},
+				{
+					header : '색상',
+					name : 'productColor',
+					align : 'center',
+				},
+				{
+					header : '사이즈',
+					name : 'productSize',
+					align : 'center',
+		            formatter: ({ value }) => sizeMap[value] || 'Unknown'
+				},
+				{
+					header : '수량',
+					name : 'requestQy',
+					align : 'center',
+				},
+				{
+					header : '단가',
+					name : 'unitPrice',
+					align : 'center',
+				},
+			    {
+				      header: '처리상태',
+				      name: 'status',
+				      align: 'center',
+
+			    },
+				],
 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
 					perPage : 5
 				},
 			});
 		</script>
+	</div>
+	<div class="card card-body mt-3">
+		<h4>|처리할 제품</h4>
+		<div id="selectProductGrid" style="width: 100%;"></div>
+		<script th:inline="javascript">
+			const selectProductGrid = new tui.Grid({
+				el : document.getElementById('selectProductGrid'), // 그리드를 표시할 div
+				scrollX : false, // 가로 스크롤바 비활성화
+				scrollY : false, // 세로 스크롤바 비활성화
+				data : deliProduct, // 서버에서 전달된 데이터
+				columnOptions : {
+					resizable : false
+				// 컬럼 크기 조절 가능
+				},
+				columns : [
+				{
+					header : '제품코드',
+					name : 'productCode',
+					align : 'center',
+				},
+				{
+					header : '제품명',
+					name : 'productName',
+					align : 'center',
+				},
+				{
+					header : '색상',
+					name : 'productColor',
+					align : 'center',
+				},
+				{
+					header : '사이즈',
+					name : 'productSize',
+					align : 'center',
+				},
+				{
+					header : '단가',
+					name : 'unitPrice',
+					align : 'center',
+				},
+				{
+					header : '수량',
+					name : 'requestQy',
+					align : 'center',
+				},
+				{
+					header : '총금액',
+					name : 'amount',
+					align : 'center',
+				},
+				],
+				pageOptions : {
+					useClient : true, // 페이징을 위해 필요
+					perPage : 1
+				},
+			});
+			</script>
 	</div>
 </body>
 <!-- 납품 내역 조회 모달 -->

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOAST Grid with Searchable Select</title>
+    
+    <!-- TOAST UI Grid CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css">
+    
+    <!-- choices.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #grid {
+            margin-top: 20px;
+            width: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>TOAST UI Grid - 검색 가능한 셀렉트 박스</h2>
+    <div id="grid"></div>
+
+    <!-- TOAST UI Grid JS -->
+    <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+    
+    <!-- choices.js (검색 기능 추가) -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    <script>
+        class SearchableSelectEditor {
+            constructor(props) {
+                const el = document.createElement('select');
+                el.classList.add('searchable-select');
+                this.el = el;
+
+                // 옵션 추가
+                props.columnInfo.editor.options.listItems.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.value;
+                    option.textContent = item.text;
+                    el.appendChild(option);
+                });
+
+                // choices.js 적용 (검색 가능하도록 설정)
+                setTimeout(() => {
+                    new Choices(this.el, { searchEnabled: true });
+                });
+            }
+
+            getElement() {
+                return this.el;
+            }
+
+            getValue() {
+                return this.el.value;
+            }
+
+            mounted() {
+                this.el.focus();
+            }
+        }
+
+        // TOAST UI Grid 생성
+        const grid = new tui.Grid({
+            el: document.getElementById('grid'),
+            data: [
+                { id: 1, category: 'electronics' },
+                { id: 2, category: 'clothing' }
+            ],
+            columns: [
+                { header: 'ID', name: 'id', width: 50 },
+                { 
+                    header: '카테고리', 
+                    name: 'category', 
+                    width: 600,
+                    height: 500,
+                    editor: {
+                        type: SearchableSelectEditor,
+                        options: {
+                            listItems: [
+                                { text: '전자제품', value: 'electronics' },
+                                { text: '의류', value: 'clothing' },
+                                { text: '음식', value: 'food' },
+                                { text: '가구', value: 'furniture' },
+                                { text: '스포츠', value: 'sports' }
+                            ]
+                        }
+                    }
+                }
+            ]
+        });
+    </script>
+
+</body>
+</html>

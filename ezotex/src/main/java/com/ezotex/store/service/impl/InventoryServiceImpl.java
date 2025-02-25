@@ -7,8 +7,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.storageInfoDTO;
 import com.ezotex.store.mappers.InventoryMapper;
 import com.ezotex.store.mappers.StoreMapper;
 import com.ezotex.store.service.InventoryService;
@@ -40,7 +42,7 @@ public class InventoryServiceImpl implements InventoryService {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		List<StoreDeliveryDetailsDTO> list = smapper.findBySize(productCode);
+		List<StoreDeliveryDetailsDTO> list = smapper.findBySizeInventory(productCode);
 		map.put("optionList", list);
 		map.put("pivotList", mapper.productInfoList(productCode, list));
 		
@@ -58,6 +60,23 @@ public class InventoryServiceImpl implements InventoryService {
 	public List<InventoryDTO> location() {
 		return mapper.location();
 	}
+
+	// LOT별 불량처리 등록
+	@Override
+	public boolean InsertErrorProduct(ErrorProductDTO edto) {
+		
+		String name = (String)session.getAttribute("name");
+		mapper.InsertErrorProduct(edto, name);
+		mapper.InventoryUpdate(edto);
+		return true;
+	}
+
+	@Override
+	public List<storageInfoDTO> storageInfoList() {
+		return mapper.storageInfoList();
+	}
+
+	
 
 	
 
