@@ -2,12 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.store.mappers.StoreMapper">
 	
-	<resultMap id="StoreDeliveryDetailsDTOResultMap" type="com.ezotex.store.dto.StoreDeliveryDetailsDTO">
-    <result property="productSize" column="product_size" />
-    <result property="productSizeInfo" column="product_size_info" />
-    <!-- 다른 필드들에 대해서도 명시적으로 매핑해줍니다 -->
-	</resultMap>
+	<!-- 제품 목록 -->
+	<select id="productInfoList" resultType="ProductInfoListDTO">
+		SELECT *
+		FROM (
+       			SELECT a.*, ROWNUM as rn
+       			FROM (
+						SELECT product_code,
+						       product_name,
+						       unit_price
+						FROM product_info
+						WHERE product_type = 'PT02'
+						ORDER BY product_code
+			    )a
+    		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
+		WHERE page.rn <![CDATA[ >= ]]> #{start}
+	</select>
 	
+	
+	<!-- 제품 목록 total 구하기 -->
+	<select id="productInfoTotal">
+		SELECT count(*)
+		FROM product_info
+		WHERE product_type = 'PT02'
+	</select>
+	
+	<!-- 제품 색상 -->
+	<select id="productColor">
+		SELECT product_color
+		FROM product_option
+		WHERE product_code = #{productCode}
+	</select>
+	
+	
+	
+	<!-- =================================================== 반품으로 수정해야됨 =================================================== -->
 	
 	<!-- 납품 코드 기반 납품목록 -->
 	<select id="DeliveryList" resultType="StoreDeliveryDTO">
@@ -83,10 +112,10 @@
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
 		SELECT p.product_code,
 		       p.product_name,
-		       d.request_qy,
-		       SUM(DISTINCT d.delivery_qy) AS productQy,
+		       SUM(d.request_qy) as requestQy,
+		       SUM(d.delivery_qy) - NVL(sub.totalQy,0) AS productQy,
 		       sub.totalQy,
-		       SUM(DISTINCT e.error_qy) AS errorTotalQy
+		       NVL(SUM(DISTINCT e.error_qy),0) AS errorTotalQy
 		FROM delivery_details d
 		JOIN product_info p ON d.product_code = p.product_code
 		LEFT JOIN (
@@ -115,7 +144,7 @@
 		left join product_option o
 		on p.product_code = o.product_code
 		WHERE d.product_se = 'PT01'
-		AND d.delivery_code = 'DEV2502220005'
+		AND d.delivery_code = #{deliveryCode}
 		group by p.product_code,
 		         p.product_name,
 		         o.product_color
@@ -123,7 +152,7 @@
 	
 	
 	<!-- 제품코드별 사이즈 -->
-	<select id="findBySizeInventory" resultMap="StoreDeliveryDetailsDTOResultMap">
+	<select id="findBySizeInventory" resultType="StoreDeliveryDetailsDTO">
 		SELECT get_comm(product_size) as product_size_info
 		FROM product_option
 		WHERE product_code = #{productCode}
@@ -134,13 +163,17 @@
 	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
 	<select id="findByProductCode">
 		with temp as
-		     (SELECT   product_color,
-		               'sz' || get_comm(product_size) as product_size,
-		               product_code,
-		               delivery_qy
-		        FROM DELIVERY_DETAILS
-		        WHERE product_code = #{productCode}
-		        AND delivery_code = #{deliveryCode})
+		     (SELECT   d.product_color,
+		               'sz' || get_comm(d.product_size) as product_size,
+		               d.product_code,
+		               d.delivery_qy - NVL(i.store_qy,0) as delivery_qy
+		        FROM DELIVERY_DETAILS d left join inventory i
+                on d.delivery_code = i.delivery_code
+                            and d.product_size = i.product_size
+                            and d.product_color = i.product_color
+                            and d.product_code = i.product_code
+		        WHERE d.product_code = #{productCode}
+		        AND d.delivery_code = #{deliveryCode})
 		select * from temp
 		pivot( sum(delivery_qy)
 		       for product_size in (
@@ -201,16 +234,26 @@
 		       #{list.deliveryCode})  
 	</insert>
 	
+	<!-- 입고된 수량, 불량처리 수량 , 요청수량 -->
+	<select id="storeQy">
+		SELECT NVL(sum(i.store_qy),0) + NVL(sum(e.error_qy),0) as total,
+		       sum(d.delivery_qy) as request_qy
+		FROM inventory i left join inventory_error e
+		on i.delivery_code = e.delivery_code
+		           and i.product_code = e.product_code
+		left join delivery_details d
+		on i.delivery_code = d.delivery_code
+		WHERE i.delivery_code = #{deliveryCode}
+	</select>
 	
 	<!-- 입고량에 따른 수정 -->
-	<update id="UpdateDeliveryDtails" parameterType="SizeDTO">
-		UPDATE delivery_details
-        SET delivery_qy = delivery_qy - #{productQy}
-        WHERE product_code = #{productCode}
-        AND product_size = #{sizeCode}
-        AND product_color = #{color}
-        AND delivery_code = #{deliveryCode}
+	<update id="UpdateDelivery" parameterType="SizeDTO">
+		UPDATE delivery
+		SET delivery_status = 'DS05'
+		WHERE delivery_code = #{deliveryCode}
 	</update>
+	
+	<!-- =================================================== 반품으로 수정해야됨 =================================================== -->
 	
 	
 </mapper>

@@ -15,6 +15,8 @@ import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.ProductInfoListDTO;
+import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.dto.storageInfoDTO;
@@ -34,6 +36,50 @@ public class InventoryRestController {
 
 	private final StoreService service;
 	private final InventoryService iService;
+	
+	
+	// 제품 목록 리스트
+	@GetMapping("productInfoList")
+	public Map<String, Object> productInfoList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+									@RequestParam(name = "page", defaultValue = "1") int page,
+									ProductInfoSearchDTO searchDTO
+			) throws JsonMappingException, JsonProcessingException {
+
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
+
+//		// 페이징 조건
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
+//
+//		// 페이징처리
+		paging.setTotalRecord(service.productInfoTotal(searchDTO));
+		
+		//service.deliveryQy();
+		// 페이징처리 만들어야됨
+//		paging.getPage());
+//		service.getCount(searchDTO));
+		return GridUtil.grid(paging.getPage(), service.productInfoTotal(searchDTO), service.productInfoList(searchDTO));
+	}
+	
+	
+	// 제품별 색상
+	@GetMapping("productColor")
+	public List<ProductInfoListDTO> productColor(@RequestParam(name= "productCode") String productCode){
+		return service.productColor(productCode);
+	}
+	
+	
+	
+	
+	
+	
+	 /**
+	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 **/
+	
 	
 	// 입고 예정 리스트(제품)
 	@GetMapping("deliveryList")
@@ -171,5 +217,9 @@ public class InventoryRestController {
 	}
 
 
+	 /**
+	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
+	 **/
+	
 	
 }
