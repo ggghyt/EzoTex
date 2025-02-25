@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<style>
+			.modal {
+				display: block !important; /* Bootstrap 기본 동작 우회 (모달에서 데이터 안 보이는 현상) */
+				visibility: hidden;
+			}
+			
+			.modal.show {
+				visibility: visible;
+			}
+		</style>
+	</head>
+	<body>
+	   <h3 class="fs-3 fw-bold">| 발주계획서 등록</h3>
+	   <!-- 타임리프 fragment 사용하여 html, js 통째로 복사 -->
+		<div th:replace="~{
+		  supply/materialOrder :: materialOrder(
+		    th=${ {
+		      title: '발주계획'
+	      } }
+		  )}">
+		</div>
+		<script>
+			// 타임리프로 가져온 페이지에서 스크립트까지 오버라이딩하여 재사용
+		  // * 업체 입력 필수 아님
+			// * 날짜선택 현재 + 3일뒤부터 가능
+			
+			// DatePicker options 속성에 반영
+      let dateLimit = new Date();
+      dateLimit.setDate(dateLimit.getDate() + 3); // 계획납기일은 최소 오늘+3일부터 선택 가능
+      
+      let col = insertGrid.getColumn('dueDate');
+      let value = [dateLimit, new Date('9999-12-31')];
+      col.editor.options.selectableRanges = [value]; // 2차원 배열 속성에 반영
+			
+      // 이벤트 중첩 방지
+      document.removeEventListener(); // 이벤트리스너 삭제 후 재입력
+			document.addEventListener('DOMContentLoaded', () => {  
+			  changeClas(lclasBox, sclasBox);
+			  dueDateBox.min = dateFormatter(dateLimit); // dateLimit: 타임리프 스크립트에서 선언
+			  
+			  $('#finalBtn').on('click', () => {
+			    let orderData = orderGrid.getData();
+			    if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
+			    insertOrder();
+			  });
+			});
+		  
+		  /******************** 발주계획 등록 ********************/ 
+		  
+		  
+		  createModal({ 
+		    type: 'regist',
+		    confirm: insertPlan
+		  });
+		  function insertOrder(){
+			  
+		  }
+		</script>
+	</body>
+</html>

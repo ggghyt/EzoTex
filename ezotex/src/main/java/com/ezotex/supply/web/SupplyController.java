@@ -36,5 +36,11 @@ public class SupplyController {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "supply/materialOrder";
 	}
+	
+	@GetMapping("mtrPlan")
+	public String materialOrderPlan(Model model) {
+		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
+		return "supply/materialOrderPlan";
+	}
 		
 }

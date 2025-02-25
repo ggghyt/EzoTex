@@ -106,11 +106,11 @@
 		VALUES ((SELECT COALESCE( (SELECT  CASE WHEN LENGTH('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_code), 10)) + 1), 4, 0)) = 9 THEN null
 								           ELSE 'MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_code), 10)) + 1), 4, 0)
 								           END
-								   FROM    material_order 
-					               WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
-					    ('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_code
-				 FROM DUAL), -- 현재 날짜로 번호 부여
-		         #{companyCode}, #{companyName},#{dueDate}, #{chargerCode}, #{chargerName}, #{remark})
+						 FROM    material_order 
+					   WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
+					   ('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_code
+				     FROM DUAL), -- 현재 날짜로 번호 부여
+		         #{companyCode}, #{companyName}, #{dueDate}, #{chargerCode}, #{chargerName}, #{remark})
 	</insert>
 	
 	<!-- 발주서 등록(디테일) -->
@@ -119,5 +119,27 @@
 		VALUES ((SELECT NVL(MAX(mtril_order_detail_code), 0) + 1 FROM material_order_details), -- 다음 번호 조회
 		        (SELECT MAX(mtril_order_code) FROM material_order), #{productCode}, #{orderQy}, #{amount}, #{productColor}, #{unitPrice})
 	</insert>
+	
+	
+  <!-- 발주계획 등록(헤더) -->
+  <insert id="insertMaterialOrderPlan" parameterType="MaterialOrderPlanDTO">
+    INSERT INTO material_order_plan (mtril_order_plan_code, due_date, charger_code, charger_name, remark)
+    VALUES ((SELECT COALESCE( (SELECT  CASE WHEN LENGTH('MOP' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_plan_code), 10)) + 1), 4, 0)) = 9 THEN null
+                           ELSE 'MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_plan_code), 10)) + 1), 4, 0)
+                           END
+             FROM    material_order_plan 
+             WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
+             ('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_plan_code
+             FROM DUAL), -- 현재 날짜로 번호 부여
+             #{dueDate}, #{chargerCode}, #{chargerName}, #{remark})
+  </insert>
+  
+  <!-- 발주계획 등록(디테일) -->
+  <insert id="insertMaterialOrderPlanDetail" parameterType="MaterialOrderPlanDTO">
+    INSERT INTO material_order_plan_details (mtril_order_plan_detail_code, mtril_order_plan_code, company_code, company_name, product_code, order_qy, product_color)
+    VALUES ((SELECT NVL(MAX(mtril_order_plan_detail_code), 0) + 1 FROM material_order_plan_details), -- 다음 번호 조회
+            (SELECT MAX(mtril_order_plan_code) FROM material_order_plan), 
+            #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor})
+  </insert>
 	
 </mapper>

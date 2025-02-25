@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	
 	createModal({ 
 		type: 'regist',
-		confirm: insertBom,
-		loading: false
+		confirm: insertBom
 	});	
 	$('#insertBtn').on('click', () => {
 		let selectedBom = selectedMtrGrid.getData();
@@ -113,7 +112,7 @@ class CustomSelectBox {
   }
 }
 
-/******************** Tui Grid 출력 ********************/	
+/******************** Tui Grid ********************/	
 // 제품 그리드
 const prdData = {
 	api: { readData: { url: '/supply/bomProductList', method: 'GET' } }
@@ -200,6 +199,7 @@ const selectedMtrGrid = new Grid({
      }
 });
 
+/******************** Tui Grid 출력 ********************/	
 // 자재 목록 불러오기
 let mtrData = null; // 검색 및 입력값 저장용
 let originBomData = null; // 등록 시 비교용 원본 bom
@@ -410,7 +410,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 });
 
 /******************** BOM 자재 등록 ********************/
-function insertBom(loading){
+function insertBom(){
 	let selectedBom = selectedMtrGrid.getData();
 	
 	let headerObj = {

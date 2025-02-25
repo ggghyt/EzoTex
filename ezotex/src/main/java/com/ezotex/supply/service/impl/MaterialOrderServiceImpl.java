@@ -36,20 +36,6 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 
 	@Override
 	public List<Map<String, Object>> listProductByCompany(Map<String, String> map) {
-		/*
-		// 자재 색상 조회 추가
-		List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
-		
-		List<ProductDTO> mtrList = mapper.listProductByCompany(map);
-		mtrList.forEach((mtr) -> {
-			List<ProductDTO> colorList = mapper.listColorByCompany(mtr.getProductCode(), map.get("companyCode"));
-			// 색상 조회 후 Map으로 변환하여 객체에 필드 추가
-			Map<String, Object> objMtr = (Map<String, Object>) objMapper.convertValue(mtr, HashMap.class);
-			objMtr.put("colorList", colorList);
-			results.add(objMtr);
-		});
-		
-		return results;*/
 		return mapper.listProductByCompany(map);
 	}
 
@@ -90,6 +76,16 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 			}
 			if(headerResult == 1 && dtlResult == 0) companyCnt--; // 모두 성공하면 숫자 체크
 		}
+		
+		return companyCnt == 0 ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
+	}
+	
+	@Override
+	@Transactional
+	public boolean insertMaterialOrderPlan(Map<String, Object> map) {
+		// 들어온 map = { companyArr: ['COM0001',...], COM0001: {header, details},... }
+		List<String> companyArr = (List<String>) map.get("companyArr");
+		int companyCnt = companyArr.size();
 		
 		return companyCnt == 0 ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
 	}
