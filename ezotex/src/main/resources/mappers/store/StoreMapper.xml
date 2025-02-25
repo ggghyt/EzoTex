@@ -83,19 +83,21 @@
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
 		SELECT p.product_code,
 		       p.product_name,
-		       SUM(DISTINCT d.delivery_qy) as productQy,
-               SUM(DISTINCT i.store_qy) as totalQy,
-               SUM(DISTINCT e.error_qy) as errorTotalQy
-		FROM delivery_details d join product_info p
-        on d.product_code = p.product_code
-        left join inventory i
-		on d.delivery_code = i.delivery_code
-		left join inventory_error e 
-        on i.lot = e.lot
+		       d.request_qy,
+		       SUM(DISTINCT d.delivery_qy) AS productQy,
+		       sub.totalQy,
+		       SUM(DISTINCT e.error_qy) AS errorTotalQy
+		FROM delivery_details d
+		JOIN product_info p ON d.product_code = p.product_code
+		LEFT JOIN (
+		    SELECT delivery_code, product_code, SUM(store_qy) AS totalQy
+		    FROM inventory
+		    GROUP BY delivery_code, product_code
+		) sub ON d.delivery_code = sub.delivery_code AND d.product_code = sub.product_code
+		LEFT JOIN inventory_error e ON sub.delivery_code = e.lot
 		WHERE d.product_se = 'PT02'
 		AND d.delivery_code = #{deliveryCode}
-		group by p.product_code,
-                 p.product_name
+		GROUP BY p.product_code, p.product_name, request_qy, sub.totalQy
 	</select>
 	
 	
