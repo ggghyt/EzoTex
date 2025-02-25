@@ -123,9 +123,19 @@
 					align : 'center',
 				},
 			    {
-				      header: '처리상태',
-				      name: 'status',
-				      align: 'center',
+				      header : '처리상태',
+				      name : 'status',
+				      align : 'center',
+				      editor: {
+				          type: 'select',
+				          options: {
+				              listItems: [
+				                  { text: '반품', value: 'return' },
+				                  { text: '교환', value: 'exchange' },
+				                  { text: '폐기', value: 'dispose' }
+				              ]
+				          }
+				      }
 
 			    },
 				],
