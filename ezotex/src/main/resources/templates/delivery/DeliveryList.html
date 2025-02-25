@@ -136,6 +136,9 @@
 		#deliveryDetails::-webkit-scrollbar{
 		  	display:none;
 		}
+		#deliveryStatusModal::-webkit-scrollbar{
+			display:none;
+		}
 		.read-dedt-address {
 			height: 60px;
 		}
@@ -167,6 +170,10 @@
 			height: 50px;
 			position: relative;
 			top: -17px;
+		}
+		/*이게 없으면 모달안에서 스크롤이 안됨.*/
+		.modal {
+		  overflow-y:auto;
 		}
 	</style>
 </head>
@@ -358,7 +365,7 @@
 	           </div>
 
 	            <div style="text-align: center; margin: 20px;">
-	               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+	               <button type="button" class="btn btn-outline-secondary deliveryDetailsModalClose" data-bs-dismiss="modal">닫기</button>
 	            </div>
 	         </div>
 	         </div>
@@ -370,23 +377,25 @@
 		           <div class="modal-header" style="height: 20px;">
 		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">출고 현황 조회</h5>
 		           </div>
-		           <div style="padding: 44px; padding-bottom:10px;">
-		           		<div class="p-3 mb-2 bg-secondary text-dark card delivery-status">
-		           			<div class="status-icon">
-		           				<i class="fa-solid fa-file-pen fa-4x" style="color: #8a8a8a;"></i>
-		           				<span> > </span>
-		           				<i class="fa-solid fa-box fa-4x" style="color: #8a8a8a;"></i>
-		           				<span> > </span>
-		           				<i class="fa-solid fa-user-check fa-4x" style="color: #8a8a8a;"></i>
-		           				<span> > </span>
-		           				<i class="fa-solid fa-truck fa-4x" style="color: #8a8a8a;"></i>
-		           				<span> > </span>
-		           				<i class="fa-solid fa-house fa-4x" style="color: #8a8a8a;"></i>
-		           			</div>
-		           			
-		           		</div>
-		           		<div class="delivery-status-details">
-		           		
+		           <div class="modal-body" style="padding: 44px; padding-bottom:10px;">
+		           		<div style="width: 100%">		           		
+			           		<div class="p-3 mb-2 bg-secondary text-dark card delivery-status">
+			           			<div class="status-icon">
+			           				<i class="fa-solid fa-file-pen fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-box fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-user-check fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-truck fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-house fa-4x" style="color: #8a8a8a;"></i>
+			           			</div>
+			           			
+			           		</div>
+			           		<div class="delivery-status-details">
+			           		
+			           		</div>
 		           		</div>
 		           		
 		           </div>
@@ -606,9 +615,13 @@
 					document.querySelector('.driverName').innerHTML = res.chargerInfo.driverName;
 					document.querySelector('.driveStartTime').innerHTML = res.chargerInfo.driveStartTime;
 					
+	    			//디테일 사이즈 그리드 초기화
+					productDetails.clear();
+	    			
 					//제품 리스트 그리드 초기화
 	    			productList.resetData(res.productList);
 					
+	    			
 					//모달 열기
 					deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
 					deliveryDetails.show();
@@ -679,6 +692,7 @@
 			const deliveryStatusModal = new bootstrap.Modal(document.getElementById("deliveryStatusModal"));
 			deliveryStatusModal.show();
 		})
+	
 		
 	</script>
 </body>

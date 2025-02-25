@@ -8,7 +8,8 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		        SELECT ROWNUM rn,
+		        SELECT /*+ INDEX_DESC(material_order  PK_MATERIAL_ORDER)*/
+		        	   ROWNUM rn,
 		               mtril_order_code AS mtrilOrderCode,
 		               product_summary('material_order_details', mtril_order_code) AS Summary,
 		               charger_name AS orderCharger,
@@ -17,7 +18,7 @@
 		               remark AS remark,
 		               get_comm(status) AS orderStatus
 		        FROM   material_order 
-		       	WHERE    company_code = #{searchDto.targetCompany}
+		       	WHERE  company_code = #{searchDto.targetCompany}
 	        	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
 	        		AND  mtril_order_code LIKE '%' || UPPER(#{searchDto.orderCode}) || '%'
 	        	</if>
@@ -143,7 +144,7 @@
 	</select>
 	
 	<insert id="insertDeliveryMaster">
-		INSERT INTO delivery(delivery_code, company_se, product_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
+		INSERT INTO delivery(delivery_code, company_se, mtril_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
 							,delivery_status , remark, charger_code, charger_name, rgsde, updde, time, amount, delivery_company_code)
 		VALUES (#{info.deliveryCode}, #{info.companySe}, #{info.productOrderCode}, #{info.companyCode}, #{info.companyName}, #{info.orderDate}, #{info.dedt}, #{info.storageName}, #{info.dedtAddress}
 				, #{info.deliveryStatus}, #{info.remark}, #{info.chargerCode}, #{info.chargerName}, SYSDATE, SYSDATE, #{info.time}, #{info.amount}, #{info.divyCompanyCode})

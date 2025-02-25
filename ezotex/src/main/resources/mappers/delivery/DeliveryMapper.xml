@@ -184,7 +184,8 @@
 										        AND op.product_size = dd.product_size
 				    WHERE op.product_order_code = #{orderCode}
 				      AND op.product_code = #{productCode}
-				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy)
+				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy
+				    HAVING (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0)
 			SELECT  *
 		 	FROM product_size
 			pivot( sum(request_qy)
