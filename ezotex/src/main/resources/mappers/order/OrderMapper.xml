@@ -47,6 +47,8 @@
 		'YYMMDD') || '0001')) AS product_order_code
 		FROM DUAL
 	</select>
+	
+	<!-- 주문 헤더 등록 -->
 	<insert id="insertOrder" parameterType="OrderDTO">
 		<selectKey resultType="String"
 			keyProperty="productOrderCode" order="BEFORE">
@@ -96,6 +98,8 @@
 		#{amount}
 		)
 	</insert>
+	
+	<!-- 주문 제품 등록 -->
 	<insert id="insertProductOrder" parameterType="OrderDTO">
 		INSERT INTO
 		ORDER_PRODUCT

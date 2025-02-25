@@ -53,7 +53,8 @@
 		MAX(P.VL) AS VL,
 		MAX(P.IMG) AS IMG,
 		MAX(P.UNIT_NAME) AS UNIT_NAME,
-		MAX(D.DELIVERY_PRODUCT_NO) AS DELIVERY_PRODUCT_NO,
+		MAX(D.DELIVERY_PRODUCT_NO) AS
+		DELIVERY_PRODUCT_NO,
 		MAX(D.DELIVERY_CODE) AS DELIVERY_CODE,
 		MAX(D.PRODUCT_CODE) AS PRODUCT_CODE,
 		MAX(D.PRODUCT_LOT) AS PRODUCT_LOT,
@@ -63,7 +64,8 @@
 		MAX(D.PRODUCT_SE) AS PRODUCT_SE,
 		MAX(D.ORDER_CODE) AS ORDER_CODE,
 		MAX(D.PRICE) AS PRICE
-		FROM DELIVERY_DETAILS D JOIN PRODUCT_INFO P
+		FROM
+		DELIVERY_DETAILS D JOIN PRODUCT_INFO P
 		ON
 		D.PRODUCT_CODE =
 		P.PRODUCT_CODE
@@ -73,4 +75,78 @@
 		GROUP BY
 		P.PRODUCT_NAME,D.PRODUCT_COLOR,D.PRODUCT_SIZE
 	</select>
+	
+	<!-- 반품 헤더 등록 -->
+	<insert id="insertReturn" parameterType="ReturnsDTO">
+		<selectKey resultType="String"
+			keyProperty="returnCode" order="BEFORE">
+			SELECT COALESCE(
+			(SELECT CASE
+			WHEN LENGTH('RTN' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			LPAD((TO_NUMBER(SUBSTR(MAX(RETURN_CODE), 10)) + 1), 4, 0)) = 9
+			THEN null
+			ELSE 'RTN' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			LPAD((TO_NUMBER(SUBSTR(MAX(RETURN_CODE), 10)) + 1), 4, 0)
+			END
+			FROM RETURNS
+			WHERE TO_CHAR(REQUEST_DATE, 'YY/MM/DD') = (SELECT
+			TO_CHAR(SYSDATE,
+			'YY/MM/DD') FROM DUAL)),
+			('RTN' || TO_CHAR(SYSDATE,
+			'YYMMDD') || '0001')) AS return_code
+			FROM DUAL
+		</selectKey>
+		INSERT INTO RETURNS
+		(
+			return_code,
+			delivery_code,
+			company_code,
+			company_name,
+			requestor,
+			request_date
+		)
+		VALUES(
+			#{returnCode},
+			#{deliveryCode},
+			#{companyCode},
+			#{companyName},
+			#{requestor},
+			sysdate
+		)
+	</insert>
+	
+	<!-- 반품 제품 등록 -->
+	<insert id="insertProductReturn" parameterType="ReturnsProductDTO">
+		INSERT INTO RETURN_PRODUCT
+		(
+			return_product_no,
+			return_code,
+			product_code,
+			product_name,
+			product_color,
+			product_size,
+			faulty_reason,
+			qy,
+			requestor,
+			request_date,
+			return_date,
+			processing_status,
+			unit_price
+		)
+		VALUES(
+			RETURN_PRODUCT_SEQ.NEXTVAL,
+			#{returnCode},
+			#{productCode},
+			#{productName},
+			#{productColor},
+			#{productSize},
+			#{faultyReason},
+			#{qy},
+			#{requestor},
+			#{requestDate},
+			#{returnDate},
+			#{processingStatus},
+			#{unitPrice}
+		)
+	</insert>
 </mapper>
