@@ -96,7 +96,7 @@ public class StoreServiceImpl implements StoreService {
         
 		list.forEach(data -> {
 	        mapper.InsertProduct(data, name);
-	        mapper.UpdateDeliveryDtails(data);
+	        //mapper.UpdateDeliveryDtails(data);
 	    });
 		return true;
 	}

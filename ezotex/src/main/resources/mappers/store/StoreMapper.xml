@@ -83,10 +83,10 @@
 	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
 		SELECT p.product_code,
 		       p.product_name,
-		       d.request_qy,
-		       SUM(DISTINCT d.delivery_qy) AS productQy,
+		       SUM(d.request_qy) as requestQy,
+		       SUM(d.delivery_qy) - NVL(sub.totalQy,0) AS productQy,
 		       sub.totalQy,
-		       SUM(DISTINCT e.error_qy) AS errorTotalQy
+		       NVL(SUM(DISTINCT e.error_qy),0) AS errorTotalQy
 		FROM delivery_details d
 		JOIN product_info p ON d.product_code = p.product_code
 		LEFT JOIN (
@@ -115,7 +115,7 @@
 		left join product_option o
 		on p.product_code = o.product_code
 		WHERE d.product_se = 'PT01'
-		AND d.delivery_code = 'DEV2502220005'
+		AND d.delivery_code = #{deliveryCode}
 		group by p.product_code,
 		         p.product_name,
 		         o.product_color
@@ -134,13 +134,17 @@
 	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
 	<select id="findByProductCode">
 		with temp as
-		     (SELECT   product_color,
-		               'sz' || get_comm(product_size) as product_size,
-		               product_code,
-		               delivery_qy
-		        FROM DELIVERY_DETAILS
-		        WHERE product_code = #{productCode}
-		        AND delivery_code = #{deliveryCode})
+		     (SELECT   d.product_color,
+		               'sz' || get_comm(d.product_size) as product_size,
+		               d.product_code,
+		               d.delivery_qy - NVL(i.store_qy,0) as delivery_qy
+		        FROM DELIVERY_DETAILS d left join inventory i
+                on d.delivery_code = i.delivery_code
+                            and d.product_size = i.product_size
+                            and d.product_color = i.product_color
+                            and d.product_code = i.product_code
+		        WHERE d.product_code = #{productCode}
+		        AND d.delivery_code = #{deliveryCode})
 		select * from temp
 		pivot( sum(delivery_qy)
 		       for product_size in (

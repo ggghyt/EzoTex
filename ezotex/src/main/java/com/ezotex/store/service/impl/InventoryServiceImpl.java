@@ -67,7 +67,7 @@ public class InventoryServiceImpl implements InventoryService {
 		
 		String name = (String)session.getAttribute("name");
 		mapper.InsertErrorProduct(edto, name);
-		mapper.InventoryUpdate(edto);
+		//mapper.InventoryUpdate(edto);
 		return true;
 	}
 
