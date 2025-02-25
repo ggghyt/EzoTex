@@ -33,7 +33,10 @@ public interface SupplyDeliveryMapper {
     //(제조업체에서 사용)출고 제품 등록
     public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
        	
-    //주문 상태 업데이트
+    //발주 상태 업데이트
     public void updateOrderStatus(@Param("info")OrderInsertDTO pinfo);
     
+    //발주내역 조회
+    public List<OrderProductDeliveryDTO> supplyDeliveryList(@Param("cri")DeliveryRegistSearchDTO searchDto);
+    //담당자 코드, 담당자 넣고, 납품 상세에서는 빼기
 }

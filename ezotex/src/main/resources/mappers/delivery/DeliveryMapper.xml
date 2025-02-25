@@ -291,6 +291,7 @@
 		                    de.remark AS remark,
 		                    de.storage_name AS storage_name,
 		                    de.dedt_address AS dedt_address,
+		                    de.delivery_status AS comm_status,
 		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date
 		            FROM    delivery de JOIN order_list ol
 		                                  ON de.product_order_code = ol.product_order_code

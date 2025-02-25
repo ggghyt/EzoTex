@@ -37,4 +37,5 @@ public class OrderProductDeliveryDTO {
 	private String registDate;
 	private String storageName;
 	private String dedtAddress;
+	private String commStatus;
 }

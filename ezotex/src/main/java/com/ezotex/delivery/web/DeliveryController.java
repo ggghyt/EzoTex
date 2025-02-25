@@ -55,6 +55,14 @@ public class DeliveryController {
 		return "delivery/DeliveryList";
 	}
 	
+	//납품 조회 페이지(공급업체)
+	@GetMapping("SupplyList")
+	public String SupplyList() {
+		return "delivery/SupplierDeliveryList";
+	}
+	
+	
+	
 	@GetMapping("report")
 	 public void report(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Connection conn = datasource.getConnection();

@@ -175,6 +175,29 @@
 		.modal {
 		  overflow-y:auto;
 		}
+		.fa-file-pen {
+			color: #8a8a8a;
+		}
+		.fa-box {
+			color: #8a8a8a;
+		}
+		.fa-user-check {
+			color: #8a8a8a;
+		}
+		.fa-truck {
+			color: #8a8a8a;
+		}
+		.fa-house {
+			color: #8a8a8a;
+		}
+		.status-icon div span{
+			margin-left: 45px;
+			margin-right: 45px;
+		}
+		.status-icon div span:nth-of-type(3) {
+			margin-left: 20px;
+			margin-right: 60px;
+		}
 	</style>
 </head>
 <body>
@@ -390,24 +413,31 @@
 			           				<i class="fa-solid fa-truck fa-4x" style="color: #8a8a8a;"></i>
 			           				<span> > </span>
 			           				<i class="fa-solid fa-house fa-4x" style="color: #8a8a8a;"></i>
+				           			<div>
+				           				<span>출고등록</span>
+				           				<span>포장완료</span>
+				           				<span>기사배정</span>
+				           				<span>배송출발</span>
+				           				<span>납품완료</span>
+				           			</div>
 			           			</div>
 			           			
 			           		</div>
 			           		<div class="delivery-status-details">
-			           		
+			           			<div id="map" style="width:900px;height:300px;"></div>
 			           		</div>
 		           		</div>
 		           		
 		           </div>
 	
 		            <div style="text-align: center; margin: 20px;">
-		               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
+		               <button type="button" class="btn btn-outline-warning deliveryStatusModalClose" data-bs-dismiss="modal">이전</button>
+		               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
 		            </div>
 		         </div>
 		         </div>
 		      </div>
-
-		
+	
 	<script>
 		//출고 목록
 		const dataSource = {
@@ -443,7 +473,9 @@
 				{ header: "출고등록일", name: "registDate"},
 				{ header: "비고", name: "remark", hidden: true},
 				{ header: "출고창고", name: "storageName", hidden: true},
-				{ header: "납기주소", name: "dedtAddress", hidden: true}
+				{ header: "납기주소", name: "dedtAddress", hidden: true},
+				{ header: "상태(변환전)", name: "commStatus", hidden: true},
+				
             ],
             data: dataSource,
 			showDummyRows: true	//더미로우 추가
@@ -575,6 +607,9 @@
         //출고 상세 모달
 		let deliveryDetails = null;
         
+        //출고 상태 공통코드 저장 변수
+        let commDeliveryState = '';
+        
 		deliveryListGrid.on('focusChange', ev => {
 			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -583,6 +618,8 @@
 			//선택행 데이터
 			let data = deliveryListGrid.getRow(ev.rowKey);
 			
+			//출고 상태 공통코드를 저장함.
+			commDeliveryState = data.commStatus;
 			//출고정보 인풋 박스 안에 넣기
 			document.querySelector(".read-delivery-code").value = data.deliveryCode;
 			document.querySelector(".read-order-code").value = data.productOrderCode;
@@ -621,7 +658,13 @@
 					//제품 리스트 그리드 초기화
 	    			productList.resetData(res.productList);
 					
-	    			
+					//배송상태 보여주는 아이콘 색 초기화					
+	    			document.querySelector(".fa-file-pen").style.color = "#8a8a8a";
+			  		document.querySelector(".fa-box").style.color = "#8a8a8a";
+			  		document.querySelector(".fa-user-check").style.color = "#8a8a8a";
+					document.querySelector(".fa-truck").style.color = "#8a8a8a";
+					document.querySelector(".fa-house").style.color = "#8a8a8a";
+					
 					//모달 열기
 					deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
 					deliveryDetails.show();
@@ -688,12 +731,64 @@
 			//납품 상세 모달 닫기
 			deliveryDetails.hide();
 			
+			/*
+			.fa-file-pen {
+				color: #8a8a8a;
+			}
+			.fa-box {
+				color: #8a8a8a;
+			}
+			.fa-user-check {
+				color: #8a8a8a;
+			}
+			.fa-truck {
+				color: #8a8a8a;
+			}
+			.fa-house {
+				color: #8a8a8a;
+			}
+			*/
+			let num = commDeliveryState.replace("DS0", '');
+			switch(num) {
+				case "1": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+					break;
+				case "2": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+						  document.querySelector(".fa-box").style.color = "#4285f4";
+					break;
+				case "3": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+				  		  document.querySelector(".fa-box").style.color = "#4285f4";
+						  document.querySelector(".fa-user-check").style.color = "#4285f4";
+					break;
+				case "4": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+		  		  		  document.querySelector(".fa-box").style.color = "#4285f4";
+				  		  document.querySelector(".fa-user-check").style.color = "#4285f4";
+						  document.querySelector(".fa-truck").style.color = "#4285f4";
+					break;
+				case "5": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+				  		  document.querySelector(".fa-box").style.color = "#4285f4";
+				  		  document.querySelector(".fa-user-check").style.color = "#4285f4";
+						  document.querySelector(".fa-truck").style.color = "#4285f4";
+						  document.querySelector(".fa-house").style.color = "#4285f4";
+					break;
+			}
 			//배송현황 모달 열기
 			const deliveryStatusModal = new bootstrap.Modal(document.getElementById("deliveryStatusModal"));
 			deliveryStatusModal.show();
 		})
 	
 		
+		document.querySelector(".deliveryStatusModalClose").addEventListener("click", () => {
+			deliveryDetails.show();
+		})
+		
+		var container = document.getElementById('map');
+		var options = {
+			center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+			level: 3
+		};
+
+		var map = new window.kakao.maps.Map(container, options);
+
 	</script>
 </body>
 </html>
