@@ -32,6 +32,15 @@
 		SELECT product_color
 		FROM product_option
 		WHERE product_code = #{productCode}
+		GROUP BY product_color
+	</select>
+	
+	<!-- 제품 사이즈 -->
+	<select id="productSize">
+		SELECT get_comm(product_size) as product_size
+		FROM product_option
+		WHERE product_code = #{productCode}
+		AND product_color = #{productColor}
 	</select>
 	
 	

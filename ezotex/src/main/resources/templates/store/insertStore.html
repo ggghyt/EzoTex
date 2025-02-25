@@ -141,14 +141,24 @@
 								<option value="null">전체</option>
 							</select>
 						</div>
+						<div class="d-flex justify-content-end mt-2">
+							<button type="button" id="addProduct" class="btn btn-primary registBtn" style="width:150px">제품추가</button>
+						</div>
 					</div>
-					
 					<hr style="height: 0.1px">
+						<div id="storeProduct"></div>
+						<div class="d-flex justify-content-end mt-2">
+							<button id="productInsert" type="button" class="btn btn-primary"
+								style="height: 45px; margin-top: 10px;">등록</button>
+							<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+						</div>
 				</div>
 
 			</div>
 		</div>
 
+	</div>
+	
 	</div>
 
 
@@ -192,8 +202,18 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
-		
+		let productCode = "";
+		let productColor = "";
+		let productName = "";
 	   	
+		let obj = []
+		
+		/*
+	   	*========================================================================
+	   	* 제품 목록 그리드 
+	   	*========================================================================
+	   	*/
+		
 	    const dataSource = {
 	      api: {
 	          readData: { url: 'http://localhost:80/store/productInfoList', method: 'GET' },
@@ -219,6 +239,48 @@
 	      data: dataSource,
 	    });
 	    
+	    /*
+	   	*========================================================================
+	   	* 제품 목록 그리드 END
+	   	*========================================================================
+	   	*/
+	    
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 입고 그리드 
+	   	*========================================================================
+	   	*/
+	   	const storeProduct = new Grid({
+	   		el: document.getElementById('storeProduct'),
+	   		rowHeaders: ['rowNum'],
+	   		columns: [
+	   			{ header: "제품코드", name: "productCode", align: "center" },
+	   			{ header: "제품명", name: "productName", align: "center" },
+	   			{ header: "색상", name: "color", align: "center" },
+	   			{ header: "사이즈", name: "sizeCode", align: "center" },
+	   			{ header: "수량", name: "productQy", editor: "text" },
+	   		],
+	   		data: [],
+	   	})
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품 입고 그리드 END
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	
+	    
+	    
+	    /*
+	   	*========================================================================
+	   	* 1번 그리드 클릭시 해당 제품 색상 데이터 가져오기
+	   	*========================================================================
+	   	*/
 	    
 	    storeGrid.on('click', ev => {
 
@@ -226,18 +288,206 @@
 	    	document.querySelector('#productCode').value = data.productCode;
 	    	document.querySelector('#productName').value = data.productName;
 	    	
-	    	fetch(`http://localhost:80/store/productColor?productCode=${data.productCode}`)
-	    	     .then(rep => rep.json())
-	    	     .then(data => {
-	    	    	 console.log('data: ', data);
-	    	     })
+	    	productCode = data.productCode;
+	    	productName = data.productName;
+	    	
+	    	 // 색상 옵션 가져오기
+	        fetch(`http://localhost:80/store/productColor?productCode=${data.productCode}`)
+	            .then(response => response.json())
+	            .then(colors => {
+					
+	            	productColor = colors.productColor
+	            	
+	                let colorSelect = document.querySelector('#color');
+	                colorSelect.innerHTML = '<option value="null">전체</option>'; // 기존 옵션 초기화
+
+	                colors.forEach(color => {
+	                    colorSelect.insertAdjacentHTML(
+	                        'beforeend',
+	                        `<option value="${color.productColor}">${color.productColor}</option>`
+	                    );
+	                });
+	            })
 	    	
 	    })
+	    
+	    
+	    /*
+	   	*========================================================================
+	   	* 1번 그리드 클릭시 해당 제품 색상 데이터 가져오기 END
+	   	*========================================================================
+	   	*/
+	    
 	   
+	   	
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 색상선택시 색상 사이즈 데이터 가져오기 
+	   	*========================================================================
+	   	*/
+	   	
+	    color.addEventListener('change', function () {
+	    	productColor = this.value;
+	    	productCode = document.querySelector('#productCode').value;
+	    	
+			fetch(`http://localhost:80/store/productSize?productCode=${productCode}&productColor=${productColor}`)
+			     .then(req => req.json())
+			     .then(data => {
+			    	 
+			    	let sizeSelect = document.querySelector('#size');
+			    	sizeSelect.innerHTML = '<option value="null">전체</option>';
+			    	
+			    	data.forEach(sizeItem => {
+			    		let sizeInfo = getSizeCommonCode(sizeItem.productSize)
+			    		productSize = sizeItem.productSize;
+			    		sizeSelect.insertAdjacentHTML(
+			    			'beforeend',
+			    			`<option value="${sizeInfo}">${sizeItem.productSize}</option>`
+			    		)
+			    	})
+			    	
+			    	
+			     })
+	   	});
+
+	    
+	    
+	    /*
+	   	*========================================================================
+	   	* 색상선택시 색상 사이즈 데이터 가져오기 END!! 
+	   	*========================================================================
+	   	*/
 	    
 	   	
-	  
+	   	size.addEventListener('click', function(){
+	   		productSize = this.options[this.selectedIndex].text;
+	   	})
+	   	
+	   	
+	   	
 	    
+	   	/*
+	   	*========================================================================
+	   	* 제품추가 버튼 클릭 이벤트 
+	   	*========================================================================
+	   	*/
+
+		// 제품 추가 버튼 클릭 시
+		addProduct.addEventListener('click', function () {
+		    console.log('클릭');
+		    productCode = document.querySelector('#productCode').value;
+		    if (productCode == null || productCode == "") {
+		        console.log('제품을 선택하세요');
+		    } else {
+		        // 이미 3번 그리드에 있는지 확인
+		        let isProductExist = false;
+		
+		        // storeProduct의 데이터를 순회하여 이미 추가된 제품이 있는지 확인
+		        storeProduct.getData().forEach(item => {
+		            if (item.productCode === productCode && item.productColor === productColor && item.productSize === productSize) {
+		                isProductExist = true; // 이미 있는 제품
+		            }
+		        });
+		
+		        if (isProductExist) {
+		            console.log('이미 등록된 제품입니다.');
+		            alert('이미 등록된 제품입니다.');
+		        } else {
+		            // 새로운 제품 추가
+		            let objInfo = {
+		                productCode: productCode,
+		                productName: productName,
+		                color: productColor,
+		                sizeCode: productSize,
+		                productQy: "" // 초기 수량은 빈 문자열로 설정
+		            };
+		
+		            // 기존 데이터에 추가
+		            let currentData = storeProduct.getData();  // 현재 데이터 가져오기
+		            currentData.push(objInfo);  // 새로운 제품을 추가
+		
+		            // storeProduct의 데이터를 갱신 (기존 데이터 + 새 데이터)
+		            storeProduct.resetData(currentData);
+		
+		            console.log('제품이 추가되었습니다.');
+		        }
+		    }
+		});
+
+
+
+
+
+
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품추가 버튼 클릭 이벤트 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품등록 처리
+	   	*========================================================================
+	   	*/
+	   	
+	   	productInsert.addEventListener('click', function(){
+	   		
+	   		let check = storeProduct.getData();
+	   		
+	   		if(check.length == 0){
+	   			alert('선택된 제품이 없습니다. 제품을 추가해주세요.');
+	   			return ;
+	   		}
+	   		
+	   		for (let i = 0; i < check.length; i++) {
+	   	        if (!check[i].productQy || check[i].productQy.trim() === "") {
+	   	            alert(`제품 ${check[i].productName} 의 수량을 입력해주세요.`);
+	   	            return; 
+	   	        }
+	   	    }
+	   		
+	   		// 데이터에서 사이즈 값 변환
+	   	    let transformedData = check.map(item => {
+	   	        // 사이즈 값 변환
+	   	        item.productSize = getSizeCommonCode(item.productSize);
+	   	        return item;
+	   	    });
+	   		
+	   		console.log(transformedData);
+	   		
+	   		fetch(`http://localhost:80/store/InsertTest`,{
+	   			method: 'POST',
+	   			headers: {...headers, 'Content-Type': 'application/json'},
+	    		body: JSON.stringify(transformedData)
+	   		}).then(rep => rep.json())
+	   		  .then(result => {
+	   			  console.log(result);
+	   		  })
+	   		
+	   	})
+	   	
+	   	
+	    
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품등록 처리 END!!
+	   	*========================================================================
+	   	*/
+	   	
+	   	
+	   	
+	   	
+	   	
 	    /*
 	   	*========================================================================
 	   	* 창고위치 모달 그리드 END!!

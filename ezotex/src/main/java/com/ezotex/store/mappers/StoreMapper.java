@@ -21,7 +21,10 @@ public interface StoreMapper {
 	public int productInfoTotal(ProductInfoSearchDTO searchDTO);
 	
 	// 제품 컬러
-	public List<ProductInfoListDTO> productColor(String productColor);
+	public List<ProductInfoListDTO> productColor(String productCode);
+	
+	// 제품 사이즈
+	public List<ProductInfoListDTO> productSize(@Param("productCode")String productCode ,@Param("productColor")String productColor);
 	
 	
 	/**

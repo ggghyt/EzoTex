@@ -71,6 +71,13 @@ public class InventoryRestController {
 		return service.productColor(productCode);
 	}
 	
+	// 제품별 사이즈
+	@GetMapping("productSize")
+	public List<ProductInfoListDTO> productSize(@RequestParam(name= "productCode") String productCode,
+												@RequestParam(name= "productColor") String productColor){
+		return service.productSize(productCode, productColor);
+	}
+	
 	
 	
 	
