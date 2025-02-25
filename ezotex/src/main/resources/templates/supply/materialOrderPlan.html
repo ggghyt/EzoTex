@@ -27,15 +27,15 @@
 			// * 날짜선택 현재 + 3일뒤부터 가능
 			
 			// DatePicker options 속성에 반영
-      let dateLimit = new Date();
-      dateLimit.setDate(dateLimit.getDate() + 3); // 계획납기일은 최소 오늘+3일부터 선택 가능
-      
-      let col = insertGrid.getColumn('dueDate');
-      let value = [dateLimit, new Date('9999-12-31')];
-      col.editor.options.selectableRanges = [value]; // 2차원 배열 속성에 반영
+			let dateLimit = new Date();
+			dateLimit.setDate(dateLimit.getDate() + 3); // 계획납기일은 최소 오늘+3일부터 선택 가능
 			
-      // 이벤트 중첩 방지
-      document.removeEventListener(); // 이벤트리스너 삭제 후 재입력
+			let col = insertGrid.getColumn('dueDate');
+			let value = [dateLimit, new Date('9999-12-31')];
+			col.editor.options.selectableRanges = [value]; // 2차원 배열 속성에 반영
+			
+			// 이벤트 중첩 방지
+			document.removeEventListener(); // 이벤트리스너 삭제 후 재입력
 			document.addEventListener('DOMContentLoaded', () => {  
 			  changeClas(lclasBox, sclasBox);
 			  dueDateBox.min = dateFormatter(dateLimit); // dateLimit: 타임리프 스크립트에서 선언
