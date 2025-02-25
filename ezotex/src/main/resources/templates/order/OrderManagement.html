@@ -321,6 +321,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 		// 수량을 저장하는 함수
 		function saveProductData() {
+			
+			newData2 = [];
 
 		    const selectedProductCode = document.getElementById('selectProductCode').value;  // 선택된 제품 코드
 		    const selectedUnitPrice= document.getElementById('selectUnitPrice').value;  // 선택된 제품 단가
@@ -422,6 +424,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        XL: "SI06",
 			        XXL: "SI07"
 			    };
+		    
+		    newData = [];
 		    for (let i = 0; i < savedProductData.length; i++) {
 		    	
 		        newData.push(savedProductData[i]);
@@ -554,12 +558,14 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    };
 
 			    	console.log("savedProductData",savedProductData.length);
+			    	newData = [];
+			    	newData2 = [];
 			    for (let i = 0; i < savedProductData.length; i++) {
 			        newData.push(savedProductData[i]);
 			    
 			        console.log("savedProductData",savedProductData);  
 
-			        console.log(i+1, "번째 데이터", newData[i].quantities);  
+			        console.log(i, "번째 데이터", newData[i].quantities);  
 					
 			        newData[i].quantities.forEach(item => {
 			            if (item) {
@@ -574,7 +580,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 			                const sizeEntries = filteredEntries
 			                    .filter(([key]) => key.startsWith("size_"))
 			                    .map(([key, value]) => [sizeMap[key.replace("size_", "")], value]) // 사이즈 코드 변환
-
+			                    
+			                
 			                // 사이즈 정보가 존재하는 경우에만 push
 			                if (sizeEntries.length > 0 && productColorEntry) {
 			                    sizeEntries.forEach(([sizeCode, value]) => {
@@ -588,7 +595,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			                            });
 			                        }
 			                    });
-			                }
+			                }	
 			            }
 			        });
 			       
@@ -625,10 +632,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    })
 				    .then(rep => rep.json())
 				    .then(data => {
-				        if (data && data.success) { // 성공했을 때만 리로드
+				        if (data === true) { // 성공했을 때만 리로드
 				            console.log("주문 등록 성공:", data);
-				            window.location.reload();
 				        } else {
+				        	console.log(data);
 				            throw new Error("주문 등록 실패");
 				        }
 				    })
@@ -739,6 +746,15 @@ grid2.on('click', function(ev) {
 // 제품 목록에 데이터를 추가하는 함수
 function addProductToOrderList(product) {
     const currentData = grid.getData();  // 기존의 제품 목록 데이터
+    
+    // 제품이 이미 목록에 있는지 확인 (중복 체크)
+    const isDuplicate = currentData.some(item => item.productCode === product.productCode);
+
+    if (isDuplicate) {
+        alert('이 제품은 이미 목록에 있습니다.');
+        return;  // 중복된 제품은 추가하지 않음
+    }
+    
     // 새로운 데이터를 추가
     currentData.push({
         no: currentData.length + 1,  // NO (자동 증가)
