@@ -3,7 +3,6 @@ package com.ezotex.standard.mappers;
 import java.util.List;
 import java.util.Map;
 
-import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.standard.dto.AddressListDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
@@ -14,6 +13,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
+import com.ezotex.standard.dto.StorageDTO;
 
 public interface StandardMapper {
 	// id 중복 확인
@@ -57,7 +57,7 @@ public interface StandardMapper {
 	List<ProductCategoryDTO> categoryLclas();
 	List<ProductCategoryDTO> categorySclas(String lclas);
 	
-	public int getCount(ProductListInfoDTO productListInfoDTO);
+	int getCount(ProductListInfoDTO productListInfoDTO);
 	
 	// 제품 단위 리스트
 	List<ProductListInfoDTO> unitNameList();
@@ -83,4 +83,18 @@ public interface StandardMapper {
 	
 	// 단일 제품 옵션 리스트
 	List<ProductOptionDTO> productOption(String productCode);
+	
+	// 같은 옵션 존재하는 카운트
+	int countOption(ProductOptionDTO productOptionDTO);
+	
+	// 옵션 update
+	int updateOption(ProductOptionDTO productOptionDTO);
+	
+	// 옵션 insert
+	int insertOption(ProductOptionDTO productOptionDTO);
+	
+	// 창고 리스트
+	List<StorageDTO> storageList();
+	
+	List<StorageDTO> storageInfoList(String storageCode);
 }

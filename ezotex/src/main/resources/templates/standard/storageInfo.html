@@ -1,0 +1,218 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style type="text/css">
+</style>
+<style>
+.modal {
+	display: block !important;
+	visibility: hidden;
+}
+
+.modal.show {
+	visibility: visible;
+}
+</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 창고 조회</h3>
+	<div class="row me-2" style="padding: 10px">
+		<div class="col-9 col-lg-9 d-flex mb-2">
+			<div id="storageGrid" style="width: 100%">
+			</div>
+		</div>
+		<div class="col-3 col-lg-3 d-flex mb-2" style="justify-content: center; text-align: center;">
+			<div class="row me-2" style="text-align: center;">
+				<h4 class="fs-4 fw-bold">창고 변경</h4>
+				<div style="text-align: center;">
+					<select class="form-control" id="storageSelect" name="storageSelect" onchange="storageSelect()" style="margin: 15px; width : 50%; display: inline-block;">
+					</select>
+				</div>
+				<hr>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">신규 이름</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="">
+				</div>
+				<div style="text-align: center;">
+					<button type="button" class="btn btn-primary" onclick="" style="margin: 15px">추가</button>
+					<button type="button" class="btn btn-warning" onclick="" style="margin: 15px">취소</button>
+				</div>
+				<hr>
+				<h4 class="fs-4 fw-bold">1행 A렬</h4>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">칸 이름</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="">
+				</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">총 용량</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="">
+				</div>
+				<div style="text-align: center;">
+					<button type="button" class="btn btn-primary" onclick="" style="margin: 15px">등록</button>
+					<button type="button" class="btn btn-warning" onclick="" style="margin: 15px">수정</button>
+				</div>
+				<hr>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">총 용량</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="" readonly>
+				</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">적재 용량</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="" readonly>
+				</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">남은 용량</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="" readonly>
+				</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">가용률</div>
+				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
+					<input type="text" class="form-control" id="" name="" value="" readonly>
+				</div>
+				<div style="text-align: center;">
+				<button type="button" class="btn btn-primary" onclick="">상세정보 보기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+	let storageGrid = null
+	let storage_data = []
+	let storage_columns = null
+	fetch('http://localhost:80/standard/storageList')
+	.then((response) => response.json())
+	.then((data) => {
+		let select_unit = document.querySelector("#storageSelect");
+		for (let i = 0 ; i < data.length ; i++) {
+			let o = document.createElement('option');
+			o.setAttribute("value", data[i].storageCode);
+			o.innerText = data[i].storageName
+			select_unit.appendChild(o);
+		}
+		
+		console.log(data[0].maxCol)
+		console.log(data[0].maxRow)
+		storage_columns = [{ header: '*', name: 'storage_row', align: 'center' }]
+		for (let i = 0 ; i < data[0].maxCol ; i++) {
+			storage_columns = [...storage_columns, {header : String.fromCharCode(i + 65), name : i + 1, align: 'center'}]
+		}
+		console.log(storage_columns)
+		
+		for (let i = 0 ; i < data[0].maxRow ; i++) {
+			storage_data.push({"storage_row" : i + 1})
+		}
+		console.log(storage_data)
+		
+		fetch('http://localhost:80/standard/storageInfoList?storageCode=' + document.querySelector("#storageSelect").value)
+		.then((response) => response.json())
+		.then((data) => {
+			for (let i = 0 ; i < data.length ; i++) {
+				storage_data[data[i].selectRow - 1][data[i].selectCol] = data[i].storageInfoName
+			}
+			
+			
+			storageGrid = new Grid({
+				el: document.getElementById('storageGrid'), // 해당 위치에 그리드 출력
+	    		data: storage_data,
+	    		columns: storage_columns,
+	    		minRowHeight: 75, 
+	  			scrollX: false, // 가로 스크롤
+	  			scrollY: false // 세로 스크롤
+			})
+		})
+		
+		
+		/*
+		fetch('http://localhost:80/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
+		.then((response) => response.json())
+		.then((data) => {
+			option_columns = [{ header: '*', name: 'col', align: 'center' }]
+			let option_size = []
+			let push
+			for (let i = 0 ; i < data.length ; i++) {
+				push = 1
+				for (let j = 0 ; j < option_size.length ; j++) {
+					if (data[i].productSize == option_size[j][1]) {
+						push = 0
+					}
+				}
+				if (push == 1) {
+					option_size.push([data[i].sizeName, data[i].productSize])
+				}
+			}
+			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
+			for (let i = 0 ; i < option_size.length ; i++) {
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text' })
+			}
+			
+			let option_color = []
+			for (let i = 0 ; i < data.length ; i++) {
+				push = 1
+				for (let j = 0 ; j < option_color.length ; j++) {
+					if (data[i].productColor == option_color[j]) {
+						push = 0
+					}
+				}
+				if (push == 1) {
+					option_color.push(data[i].productColor)
+				}
+			}
+			
+			option_data = []
+			for (let i = 0 ; i < option_color.length ; i++) {
+				option_data.push({"color" : option_color[i]})
+			}
+			
+			for (i = 0 ; i < data.length ; i++) {
+				for (j = 0 ; j < option_data.length ; j++) {
+					if (option_data[j].color == data[i].productColor) {
+						if (data[i].discontinued == "YN01") {
+							option_data[j][data[i].productSize] = "단종"
+						} else {
+							option_data[j][data[i].productSize] = data[i].unitPrice
+						}
+					}
+				} 
+			}
+			
+			document.getElementById('optionGrid').replaceChildren()
+			optionGrid = new Grid({
+				el: document.getElementById('optionGrid'), // 해당 위치에 그리드 출력
+		    	data: option_data,
+		    	columns: option_columns,
+		  	scrollX: false, // 가로 스크롤
+		  	scrollY: false // 세로 스크롤
+			})
+		})
+		*/
+		
+		
+	})
+	</script>
+</body>
+</html>

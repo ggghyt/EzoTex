@@ -662,7 +662,11 @@ visibility: visible;
 			for (i = 0 ; i < data.length ; i++) {
 				for (j = 0 ; j < option_data.length ; j++) {
 					if (option_data[j].color == data[i].productColor) {
-						option_data[j][data[i].productSize] = data[i].unitPrice
+						if (data[i].discontinued == "YN01") {
+							option_data[j][data[i].productSize] = "단종"
+						} else {
+							option_data[j][data[i].productSize] = data[i].unitPrice
+						}
 					}
 				} 
 			}
@@ -736,20 +740,32 @@ visibility: visible;
 	}
 	
 	function optionSubmit() {
-		console.log(optionGrid.getData()[0])
+		let result = null;
+		let insert_option = [];
+		for (let i = 0 ; i < optionGrid.getData().length ; i++) {
+			for (let j = 1 ; j < Object.entries(optionGrid.getData()[i]).length - 2 ; j++) {
+				result = Object.entries(optionGrid.getData()[i]);
+				if (result[j][1] != null) {
+					insert_option.push({"productCode" : document.querySelector("#optionModalProductCode").value, 
+						                "productColor" : result[0][1], 
+						                "productSize" : result[j][0], 
+						                "unitPrice" : result[j][1] == "단종" ? -1 : result[j][1]})
+				}
+			}
+		}
 		
 		if (option_columns.length < 2 || optionGrid.getData().length == 0) {
 			failOptionModalToast("저장할 옵션이 없습니다");
 		} else {
-			fetch('http://localhost:80/standard/optionSubmit?productCode=' + document.querySelector("#optionModalProductCode").value, {
+			fetch('http://localhost:80/standard/optionSubmit', {
 				method : 'POST', 
 				headers : {
 					...headers, 'Content-Type': 'application/json'
 				}, 
-				body: JSON.stringify(optionGrid.getData())
+				body: JSON.stringify(insert_option)
 			})
 		
-			$('#categoryModal').modal('hide');
+			$('#optionModal').modal('hide');
 			successToast("저장되었습니다")
 			
 		}

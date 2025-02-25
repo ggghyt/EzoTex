@@ -1,7 +1,6 @@
 package com.ezotex.standard.web;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,7 +24,9 @@ import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
+import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
+import com.ezotex.store.dto.storageInfoDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -159,8 +160,25 @@ public class StandardController {
 	// 옵션 저장하기
 	@ResponseBody
 	@PostMapping("/optionSubmit")
-	public void optionSubmit(@RequestParam(name="productCode") String productCode, @RequestBody Object optionList) {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@ : " + productCode);
-		System.out.println(optionList);
+	public void optionSubmit(@RequestBody List<ProductOptionDTO> productOptionDTO) {
+		service.UpdateOption(productOptionDTO);
+	}
+	
+	// 창고 조회 페이지
+	@GetMapping("/storageInfo")
+	public String storageInfo() {
+		return "/standard/storageInfo";
+	}
+	
+	@ResponseBody
+	@GetMapping("/storageList")
+	public List<StorageDTO> storageList() {
+		return service.storageList();
+	}
+	
+	@ResponseBody
+	@GetMapping("/storageInfoList")
+	public List<StorageDTO> storageInfoList(@RequestParam(name="storageCode") String storageCode) {
+		return service.storageInfoList(storageCode);
 	}
 }
