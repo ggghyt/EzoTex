@@ -273,5 +273,43 @@ on product_option.product_size = common_code_details.comm_detail_code
 where product_code = #{productCode}
 </select>
 
+<select id="countOption" parameterType="ProductOptionDTO">
+select count(*)
+from product_option
+where product_code = #{productCode}
+and product_color = #{productColor}
+and product_size = #{productSize}
+</select>
+
+<update id="updateOption" parameterType="ProductOptionDTO">
+update product_option
+set unit_price = #{unitPrice}, 
+    discontinued = #{discontinued}
+where product_code = #{productCode}
+and product_color = #{productColor}
+and product_size = #{productSize}
+</update>
+
+<insert id="insertOption" parameterType="ProductOptionDTO">
+insert into product_option
+values(PRODUCT_OPTION_SEQ.nextval, 
+       #{productCode}, 
+       #{productColor}, 
+       #{productSize}, 
+       #{unitPrice}, 
+       #{discontinued}
+)
+</insert>
+
+<select id="storageList" resultType="StorageDTO">
+select *
+from storage
+</select>
+
+<select id="storageInfoList" resultType="StorageDTO">
+select *
+from storage_info
+where storage_code = #{storageCode}
+</select>
 
 </mapper>

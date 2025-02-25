@@ -21,21 +21,22 @@ public class WebSecurityConfig {
 			.authorizeHttpRequests((requests) -> requests
 				
 				.requestMatchers("/loginProc", "/css/**", "/fonts/**", "/images/**", "/js/**", "/pages/**", "/partials/**", "/scss/**", "/vendors/**", "/login/**", "/img/**").permitAll()
-				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY")
+				//                로그인 페이지 지름 지정란거, 이 외의 항목들은 css너 js같은 실행하는데 사용되는 필수 파일들
+				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY") // 역할(ROLE)을 부여하는 곳
 				.requestMatchers("/*").hasRole("SUPPLY")
 				.anyRequest().authenticated()
 			)
 			.formLogin((form) -> form
-				.loginPage("/login/main")
-				.loginProcessingUrl("/loginProc")
+				.loginPage("/login/main") // 로그인 페이지
+				.loginProcessingUrl("/loginProc") // 로그인 페이지 이름 지정
 				.usernameParameter("id")
-				.successHandler(authenticationSuccessHandler())
-				.failureHandler(authenticationFailureHandler())
+				.successHandler(authenticationSuccessHandler()) // 성공시 실행하는 핸들러
+				.failureHandler(authenticationFailureHandler()) // 실패시 실행하는 핸들러
 				.permitAll()
 			)
-			.rememberMe(r -> r.tokenValiditySeconds(86400).key("uniqueAndSecret")
+			.rememberMe(r -> r.tokenValiditySeconds(86400).key("uniqueAndSecret") // 세션 저장 (86400초 = 1일)
 			)
-			.logout((logout) -> logout.permitAll().deleteCookies("remember-me", "JSESSIONID"))
+			.logout((logout) -> logout.permitAll().deleteCookies("remember-me", "JSESSIONID")) // 로그이웃시 저장했던 세션 삭제
 			//.csrf(csrf -> csrf.disable())
 			;
 		

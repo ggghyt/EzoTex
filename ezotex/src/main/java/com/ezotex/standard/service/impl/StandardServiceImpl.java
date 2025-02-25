@@ -17,6 +17,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
+import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.mappers.StandardMapper;
 import com.ezotex.standard.service.StandardService;
 
@@ -154,5 +155,35 @@ public class StandardServiceImpl implements StandardService {
 	public List<ProductOptionDTO> productOption(String productCode) {
 		return mapper.productOption(productCode);
 	}
+
+	@Override
+	public int UpdateOption(List<ProductOptionDTO> productOptionDTO) {
+		for (int i = 0 ; i < productOptionDTO.size() ; i++) {
+			if (productOptionDTO.get(i).getUnitPrice() < 0) {
+				productOptionDTO.get(i).setDiscontinued("YN01");
+			} else {
+				productOptionDTO.get(i).setDiscontinued("YN02");
+			}
+			
+			if (mapper.countOption(productOptionDTO.get(i)) == 1) {
+				mapper.updateOption(productOptionDTO.get(i));
+			} else {
+				mapper.insertOption(productOptionDTO.get(i));
+			}
+			System.out.println(productOptionDTO.get(i));
+		}
+		return 0;
+	}
+
+	@Override
+	public List<StorageDTO> storageList() {
+		return mapper.storageList();
+	}
+
+	@Override
+	public List<StorageDTO> storageInfoList(String storageCode) {
+		return mapper.storageInfoList(storageCode);
+	}
+
 	
 }
