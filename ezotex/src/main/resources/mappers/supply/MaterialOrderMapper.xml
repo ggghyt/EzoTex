@@ -102,9 +102,15 @@
 	
 	<!-- 발주서 등록(헤더) -->
 	<insert id="insertMaterialOrder" parameterType="MaterialOrderDTO">
-		INSERT INTO material_order (mtril_order_code, company_code, due_date, charger_code, charger_name, remark, status)
-		VALUES ((SELECT 'MOD' || LPAD(NVL(SUBSTR(MAX(mtril_order_code), -4), 0) + 1, 4, 0) FROM material_order),
-		         #{companyCode}, #{dueDate}, #{chargerCode}, #{chargerName}, #{remark}, #{status})
+		INSERT INTO material_order (mtril_order_code, company_code, company_name, due_date, charger_code, charger_name, remark)
+		VALUES ((SELECT COALESCE( (SELECT  CASE WHEN LENGTH('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_code), 10)) + 1), 4, 0)) = 9 THEN null
+								           ELSE 'MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || LPAD((TO_NUMBER(SUBSTR(MAX(mtril_order_code), 10)) + 1), 4, 0)
+								           END
+								   FROM    material_order 
+					               WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
+					    ('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_code
+				 FROM DUAL), -- 현재 날짜로 번호 부여
+		         #{companyCode}, #{companyName},#{dueDate}, #{chargerCode}, #{chargerName}, #{remark})
 	</insert>
 	
 	<!-- 발주서 등록(디테일) -->
