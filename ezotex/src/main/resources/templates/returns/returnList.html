@@ -1,0 +1,123 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
+		<div id="returnGrid"></div>
+		<div id="returnProductGrid"></div>
+	<script th:inline="javascript">
+		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const returnList = /*[[${getReturnList}]]*/[];
+
+		const returnGrid = new tui.Grid({
+			el : document.getElementById("returnGrid"),
+			data : returnList,
+			scrollX : false, // 가로 스크롤바 비활성화
+			scrollY : false, // 세로 스크롤바 비활성화
+			rowHeight : 'auto',
+			columns : [ 
+				{
+					header : "반품코드",
+					name : "returnCode",
+					align : 'center',
+				},
+				{
+					header : "납품코드",
+					name : "deliveryCode",
+					align : 'center',
+				},
+				{
+					header : "업체코드",
+					name : "companyCode",
+					align : 'center',
+				},
+				{
+					header : "업체명",
+					name : "companyName",
+					align : 'center',
+				},
+				{
+					header : "요청자",
+					name : "requestor",
+					align : 'center',
+				},
+				{
+					header : "요청일",
+					name : "requestDate",
+					align : 'center',
+				},
+			],
+		    pageOptions: {
+		        useClient: true, // 페이징을 위해 필요
+		        perPage: 5
+	      	},
+		})
+		
+		const returnProductList = /*[[${getReturnProductList}]]*/[];
+		
+		const returnProductGrid = new tui.Grid({
+			el : document.getElementById("returnProductGrid"),
+			data : returnProductList,
+			scrollX : false, // 가로 스크롤바 비활성화
+			scrollY : false, // 세로 스크롤바 비활성화
+			rowHeight : 'auto',
+			columns : [ 
+		 		{
+					header : "반품일",
+					name : "returnDate",
+					align : 'center',
+				},
+				{
+					header : "제품코드",
+					name : "productCode",
+					align : 'center',
+				},
+				{
+					header : "제품명",
+					name : "productName",
+					align : 'center',
+				},
+				{
+					header : "색상",
+					name : "productColor",
+					align : 'center',
+				},
+				{
+					header : "사이즈",
+					name : "productSize",
+					align : 'center',
+				},
+				{
+					header : "수량",
+					name : "qy",
+					align : 'center',
+				},
+				{
+					header : "단가",
+					name : "unitPrice",
+					align : 'center',
+				},
+				{
+					header : "처리상태",
+					name : "processingStatus",
+					align : 'center',
+				},
+
+			],
+		    pageOptions: {
+		        useClient: true, // 페이징을 위해 필요
+		        perPage: 5
+	      	},
+		})
+		
+	</script>
+</body>
+</html>

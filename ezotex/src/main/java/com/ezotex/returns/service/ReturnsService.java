@@ -6,6 +6,7 @@ import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.changeDTO;
 
 public interface ReturnsService {
 	// 납품 내역 조회
@@ -18,5 +19,12 @@ public interface ReturnsService {
 	ReturnsDTO insertReturn(ReturnsDTO returnData);
 	
 	// 반품 제품 등록
-	List<ReturnsProductDTO> insertProductReturn(List<ReturnsProductDTO> returnProductData);
+	boolean insertProductReturn(List<ReturnsProductDTO> returnProductData);
+	
+	// 교환 조회
+	List<changeDTO> getChangeList();
+	List<changeDTO> getChangeProductList(String returnCode);
+	// 반품 전체 조회
+	List<ReturnsDTO> getReturnList();
+	List<ReturnsProductDTO> getReturnProductList();
 }

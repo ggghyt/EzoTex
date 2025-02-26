@@ -7,10 +7,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
+import com.ezotex.returns.dto.ReturnsDTO;
+import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.changeDTO;
 import com.ezotex.returns.service.impl.ReturnsServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,12 +27,45 @@ public class ReturnsController {
 
 	final ReturnsServiceImpl service;
 	final HttpSession session;
-
+	
+	// 납품 내역 조회
 	@GetMapping("/returnsManagement")
 	public void DeliveryList(Model model) {
 		List<DeliveryReturnsDTO> deliveryList = service.getDeliveryList();
 		model.addAttribute("getDeliveryList", deliveryList);
 		String name = (String) session.getAttribute("name");
 		model.addAttribute("name",name);
-	}	
+	}
+	
+	// 반품 등록된것중 상태가 교환인것만 조회
+	@GetMapping("/changeManagement")
+	public void changeList(Model model) {
+		List<changeDTO> changeList = service.getChangeList();
+		model.addAttribute("getChangeList",changeList);
+		String name = (String) session.getAttribute("name");
+		model.addAttribute("name",name);
+		String code = (String) session.getAttribute("code");
+		model.addAttribute("code",code);
+	}
+	
+	// 반품 내역 전체조회
+	@GetMapping("/returnList")
+	public void returnList(Model model) {
+		List<ReturnsDTO> returnList = service.getReturnList();
+		model.addAttribute("getReturnList",returnList);
+		List<ReturnsProductDTO> returnProductList = service.getReturnProductList();
+		model.addAttribute("getReturnProductList",returnProductList);
+	}
+	
+	// 손실액 조회
+	/*
+	 * @GetMapping("/lossAmountList") public void lossAmountList(Model model) {
+	 * List<ReturnsDTO> returnList = service.getReturnList();
+	 * model.addAttribute("getReturnList",returnList); List<ReturnsDTO>
+	 * returnProductList = service.getReturnProductList();
+	 * model.addAttribute("getReturnProductList",returnProductList); }
+	 */
+	
+	
+	
 }
