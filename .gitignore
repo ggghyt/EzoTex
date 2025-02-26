@@ -7,6 +7,7 @@ workspace/
 .project
 bin/
 application.properties
+application-prod.properties
 
 # js
 node_modules/
