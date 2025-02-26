@@ -48,7 +48,10 @@ public class StoreServiceImpl implements StoreService {
 		return mapper.productColor(productColor);
 	}
 	 
-	 
+	@Override
+	public List<ProductInfoListDTO> productSize(String productCode, String productColor) {
+		return mapper.productSize(productCode, productColor);
+	}
 	 
 	 
 	 
@@ -127,8 +130,6 @@ public class StoreServiceImpl implements StoreService {
 			if(data.getProductQy() > 0) {
 				mapper.InsertProduct(data, name);
 			}
-			System.out.println("데이터확인 " + data);
-			mapper.UpdateDelivery(data);
 	    });
 		return true;
 	}

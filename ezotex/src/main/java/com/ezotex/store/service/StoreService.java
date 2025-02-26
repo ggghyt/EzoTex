@@ -26,7 +26,8 @@ public interface StoreService {
 	// 제품 컬러
 	public List<ProductInfoListDTO> productColor(String productColor);
 	
-	
+	// 제품 사이즈
+	public List<ProductInfoListDTO> productSize(String productCode ,String productColor);
 	
 	
 	
