@@ -1,4 +1,16 @@
 <template>
-    <p>배송기사 로그인</p>
-    <button type="button" class="btn btn-primary">버튼</button>
+    <p>로그인</p>
+    <button @click="testFunc">테스트</button>
 </template>
+
+<script setup>
+    import axios from 'axios';
+    import { ajaxUrl } from '@/utils/commons.js';
+
+    const testFunc = async () => {
+        let result = await axios.get(`${ajaxUrl}/delivery/mtrilDelivery`)
+        .catch(err=>console.log(err));
+
+        console.log(result);
+    }
+</script>

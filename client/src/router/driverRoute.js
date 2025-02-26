@@ -1,4 +1,5 @@
 import driverLogin from "@/views/driver/driverLogin.vue";
+import driverMenu from "@/views/driver/driverMenu.vue";
 
 const driverRoutes = [
     {
@@ -6,9 +7,14 @@ const driverRoutes = [
         redirect: { name : 'login' }
     },
     {
-        path: 'login',
+        path: '/login',
         name: 'login',
         component: driverLogin
+    },
+    {
+        path: '/deliveryList',
+        name: 'deliveryList',
+        component: driverMenu
     }
 ];
 
