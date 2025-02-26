@@ -374,7 +374,7 @@
            			</div>
            			<div class="deliveryProductDetails">
            				<div class="mb-2 more-info-group">						
-							<button type="button" class="btn btn-primary btn-rounded">납품카드</button>
+							<button type="button" class="btn btn-primary btn-rounded showDeliveryCard">납품카드</button>
 							<button type="button" class="btn btn-primary btn-rounded openStatusModalBtn">배송현황</button>
 						</div>
 						<!-- 출고 제품 목록 -->
@@ -493,9 +493,10 @@
   	      	},
             columns: [
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
-				{ header: "제품코드", name: "productCode"},
-				{ header: "제품명", name: "productName"},
-				{ header: "출고량합계", name: "qySum"},
+				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 69},
+				{ header: "제품명", name: "productName", width: "auto", minWidth: 311},
+				{ header: "잔여량", name: "reqQy", align: 'right', formatter:(row)=>numberFormatter(row.value) },
+				{ header: "출고량합계", name: "qySum", align: 'right', formatter:(row)=>numberFormatter(row.value)},
             ],
 			showDummyRows: true	//더미로우 추가
         });
@@ -709,7 +710,7 @@
 		                minWidth: 150
 		             })
 		             
-		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "center", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
 	            }
 	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
 	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
@@ -730,24 +731,6 @@
 		document.querySelector(".openStatusModalBtn").addEventListener("click", () => {
 			//납품 상세 모달 닫기
 			deliveryDetails.hide();
-			
-			/*
-			.fa-file-pen {
-				color: #8a8a8a;
-			}
-			.fa-box {
-				color: #8a8a8a;
-			}
-			.fa-user-check {
-				color: #8a8a8a;
-			}
-			.fa-truck {
-				color: #8a8a8a;
-			}
-			.fa-house {
-				color: #8a8a8a;
-			}
-			*/
 			let num = commDeliveryState.replace("DS0", '');
 			switch(num) {
 				case "1": document.querySelector(".fa-file-pen").style.color = "#4285f4";
@@ -781,14 +764,10 @@
 			deliveryDetails.show();
 		})
 		
-		var container = document.getElementById('map');
-		var options = {
-			center: new window.kakao.maps.LatLng(33.450701, 126.570667),
-			level: 3
-		};
-
-		var map = new window.kakao.maps.Map(container, options);
-
+		document.querySelector(".showDeliveryCard").addEventListener("click", () => {
+			let divyCode = document.querySelector(".read-delivery-code").value;
+			window.open(`/delivery/pdfView?deliveryCode=${divyCode}`);
+		})
 	</script>
 </body>
 </html>

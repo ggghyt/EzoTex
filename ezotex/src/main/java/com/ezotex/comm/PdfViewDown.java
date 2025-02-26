@@ -32,6 +32,7 @@ public class PdfViewDown extends AbstractView {
 		Connection conn = datasource.getConnection();
 		String reportFile = (String) model.get("filename");
 		HashMap<String, Object> map = (HashMap<String, Object>) model.get("param");
+		
 		InputStream jasperStream = getClass().getResourceAsStream(reportFile);
 		JasperReport jasperReport = (JasperReport) JRLoader.loadObject(jasperStream);
 		JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, conn);
