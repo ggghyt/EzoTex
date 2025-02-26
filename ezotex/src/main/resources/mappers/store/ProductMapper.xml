@@ -52,28 +52,36 @@
 	
 	<!-- 위치별 제품 상세 리스트(재고조정) -->
 	<select id="location" resultType="InventoryDTO">
-		SELECT MAX(i.product_code) AS product_code,
-		       p.product_name,
-		       i.product_color,
-		       get_comm(i.product_size) AS product_size,
-		       i.lot,
-		       i.storage_location,
-		       i.inventory_qy,
-		       i.store_date
-		FROM inventory i JOIN product_info p 
-		ON i.product_code = p.product_code
-		WHERE product_se = 'PT02'
-		AND i.inventory_qy > 0
-		GROUP BY i.lot,
-		         p.product_name,
-		         i.product_color,
-		         get_comm(i.product_size),
-		         i.storage_location,
-		         i.inventory_qy,
-		         i.product_code,
-		         i.store_date
-		ORDER BY lot desc
+		SELECT *
+		FROM (
+		       SELECT a.*, ROWNUM as rn
+		       FROM ( SELECT MAX(i.product_code) AS product_code,
+		                       p.product_name,
+		                       i.product_color,
+		                       get_comm(i.product_size) AS product_size,
+		                       i.lot,
+		                       i.storage_location,
+		                       i.inventory_qy,
+		                       i.store_date
+		                FROM inventory i JOIN product_info p 
+		                ON i.product_code = p.product_code
+		                WHERE product_se = 'PT02'
+		                AND i.inventory_qy > 0
+		                GROUP BY i.lot, p.product_name, i.product_color, get_comm(i.product_size), i.storage_location, i.inventory_qy, i.product_code, i.store_date
+		                ORDER BY lot desc
+		            ) a
+		        WHERE ROWNUM <![CDATA[ <= ]]> #{end} ) page
+		    WHERE page.rn <![CDATA[ >= ]]> #{start}
 	</select>
+	
+	<!-- 재고조정 LOT 카운터 -->
+	<select id="getCountProduct">
+		SELECT COUNT(*)
+		FROM inventory
+		WHERE product_se = 'PT02'
+		AND inventory_qy > 0
+	</select>
+	
 	
 	
 	<!-- LOT별 불량처리 등록 -->

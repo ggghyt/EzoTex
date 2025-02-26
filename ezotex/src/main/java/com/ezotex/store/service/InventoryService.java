@@ -3,6 +3,7 @@ package com.ezotex.store.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.storageInfoDTO;
@@ -19,7 +20,10 @@ public interface InventoryService {
 	public List<InventoryDTO> inventoryList(String productCode, String color, String sizeCode);
 	
 	// 위치별 재고 상세 리스트(재고조정)
-	public List<InventoryDTO> location();
+	public List<InventoryDTO> location(DeliverySearchDTO searchDTO);
+	
+	// 재고조정 LOT 카운터
+	public int getCountProduct(DeliverySearchDTO searchDTO);
 	
 	// LOT별 불량처리 등록
 	public boolean InsertErrorProduct(ErrorProductDTO edto);
