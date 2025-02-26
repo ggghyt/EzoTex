@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.supply.dto.MaterialOrderDTO;
+import com.ezotex.supply.dto.MaterialOrderPlanDTO;
 import com.ezotex.supply.mappers.MaterialOrderMapper;
 import com.ezotex.supply.service.MaterialOrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,11 +84,34 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	@Override
 	@Transactional
 	public boolean insertMaterialOrderPlan(Map<String, Object> map) {
-		// 들어온 map = { companyArr: ['COM0001',...], COM0001: {header, details},... }
-		List<String> companyArr = (List<String>) map.get("companyArr");
-		int companyCnt = companyArr.size();
+		// Object의 String타입을 Integer나 Date로 변환할 수 없으므로 DTO로 변환 필요
+		MaterialOrderPlanDTO header = objMapper.convertValue(map.get("headerObj"), MaterialOrderPlanDTO.class); // DTO로 변환
+		int headerResult = mapper.insertMaterialOrderPlan(header);
 		
-		return companyCnt == 0 ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
+		List<Object> detailList = (List<Object>) map.get("detailArr");
+		
+		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
+		for(Object detail : detailList) {
+			MaterialOrderPlanDTO dto = objMapper.convertValue(detail, MaterialOrderPlanDTO.class); // DTO로 변환
+			mapper.insertMaterialOrderPlanDetail(dto);
+			dtlResult--;
+		}
+		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
+	}
+
+	@Override
+	public List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map) {
+		return mapper.listOrderPlan(map);
+	}
+
+	@Override
+	public int countOrderPlan(Map<String, Object> map) {
+		return mapper.countOrderPlan(map);
+	}
+
+	@Override
+	public List<MaterialOrderPlanDTO> infoOrderPlan(String mtrilOrderPlanCode) {
+		return mapper.infoOrderPlan(mtrilOrderPlanCode);
 	}
 
 }

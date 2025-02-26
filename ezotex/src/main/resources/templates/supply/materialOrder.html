@@ -35,7 +35,7 @@
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
 							<input type="text" class="form-control" id="companyName" readonly>
 						</div>
-						<label for="duration" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">예상소요일</label>
+						<label for="duration" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">평균소요일</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
 							<input type="text" class="form-control" id="duration" readonly>
 						</div>
@@ -93,7 +93,7 @@
 				<div class="card card-body mt-4">
 					<div class="mb-3 d-flex align-items-center">
 						<p class="fs-5 fw-bolder mt-2 me-4">[[${th == null ? '발주 목록' : '발주계획 목록'}]]</p>
-					  <button th:style="${th == null ? '' : 'display: none'}" type="button" id="loadPlan" class="btn btn-dark btn-sm">발주계획서 불러오기</button>
+					  <button th:style="${th == null ? '' : 'display: none'}" type="button" id="loadPlanBtn" class="btn btn-dark btn-sm">발주계획서 불러오기</button>
 					</div>
 					<div id="orderGrid"></div>
 				</div>
@@ -136,40 +136,79 @@
 				     <div class="modal-dialog modal-xl">
 				         <div class="modal-content">
 				           <div class="modal-header" style="height: 20px;">
-					            <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">자재 선택</h5>
+					            <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">제목</h5>
 					            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				           </div>
 				           <div class="modal-body p-3 pt-4">
-				           
+				              
 				           		<form id="materialList" style="display: none">
+				           		  <!-- 자재 선택 모달 -->
 				           			<div th:replace="supply/bomManagement :: productList"></div>
 				           		</form>
 				           		
 				           		<form id="companyList" style="display: none">
-				           			<div class="row ps-2">
-												<label for="scCompanyCode" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
-												<div class="col-8 col-lg-3 d-flex mb-2">
-													<input type="text" class="form-control pointer" id="scCompanyCode">
-												</div>
-												<label for="scCompanyName" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
-												<div class="col-8 col-lg-3 d-flex mb-2">
-													<input type="text" class="form-control" id="scCompanyName">
-												</div>
-												<label for="address" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
-												<div class="col-8 col-lg-3 d-flex mb-2">
-													<input type="text" class="form-control" id="address">
-												</div>
-												</div>
-												<div class="d-flex justify-content-center mt-2 mb-4">
-													<button type="button" id="ComSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-													<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				           		  <!-- 업체 선택 모달 -->
+				           			<div class="row ps-2 mb-3">
+													<label for="scCompanyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+														<input type="text" class="form-control pointer" id="scCompanyCode">
+													</div>
+													<label for="scCompanyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+														<input type="text" class="form-control" id="scCompanyName">
+													</div>
+													<label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+														<input type="text" class="form-control" id="address">
+													</div>
+													<div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
+														<button type="button" id="comSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+														<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+													</div>
 												</div>
 												<div id="companyGrid"></div>
 				           		</form>
 				           		
+				           		<form id="planList" style="display: none">
+                        <!-- 발주계획서 불러오기 모달 -->
+                        <div class="row ps-2 mb-3 ms-1">
+                          <div class="row">
+	                          <label for="mtrilOrderPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">발주계획코드</label>
+	                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="text" class="form-control pointer" id="mtrilOrderPlanCode">
+	                          </div>
+	                          <label for="scChargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+	                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="text" class="form-control" id="scChargerName">
+	                          </div>
+	                          <label for="dueMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납기일</label>
+	                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="date" class="form-control" id="dueMin">
+	                          </div>
+	                          <label for="dueMax" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak"> - </label>
+                            <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+                              <input type="date" class="form-control" id="dueMax">
+                            </div>
+                          </div>
+                          <div class="row d-flex">
+                            <div class="col d-flex align-items-center">
+	                            <p class="fs-6 me-5 ms-2 mb-0">상태</p>
+	                            <label for="MO01">미발주<input type="checkbox" value="MO01" id="MO01" name="status" class="ms-1" checked></label>
+	                            <label for="MO02" class="ms-4">발주완료<input type="checkbox" value="MO02" id="MO02" name="status" class="ms-1" checked></label>
+                            </div>
+	                          <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-end">
+	                            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+	                            <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+	                          </div>
+                          </div>
+                        </div>
+                        <div id="planGrid"></div>
+                      </form>
+				           		
 				           		<div id="insertList" style="display: none" class="text-center">
+				           		  <!-- 등록 확인 모달 -->
 				           			<img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
-				           			<p class="fs-5 fw-bolder m-3">발주서 등록</p>
+				           			<p class="fs-5 fw-bolder m-3 mb-4">알림</p>
 				           			<div id="insertGrid"></div>
 				           			<p class="fs-6 mt-3 mb-0">총 <span id="insertCnt">0</span>건의 발주서를 등록하시겠습니까?</p>
 				           		</div>
