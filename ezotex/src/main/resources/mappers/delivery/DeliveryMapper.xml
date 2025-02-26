@@ -184,7 +184,8 @@
 										        AND op.product_size = dd.product_size
 				    WHERE op.product_order_code = #{orderCode}
 				      AND op.product_code = #{productCode}
-				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy)
+				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy
+				    HAVING (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0)
 			SELECT  *
 		 	FROM product_size
 			pivot( sum(request_qy)
@@ -290,6 +291,7 @@
 		                    de.remark AS remark,
 		                    de.storage_name AS storage_name,
 		                    de.dedt_address AS dedt_address,
+		                    de.delivery_status AS comm_status,
 		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date
 		            FROM    delivery de JOIN order_list ol
 		                                  ON de.product_order_code = ol.product_order_code
@@ -420,11 +422,12 @@
 		SELECT dd.delivery_code AS delivery_code,
 			   dd.product_code AS product_code,
 		       pi.product_name AS product_name,
-		       SUM(dd.delivery_qy) AS qy_sum
+		       SUM(dd.delivery_qy) AS qy_sum,
+               dd.request_qy AS req_qy
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
-		GROUP BY dd.delivery_code, dd.product_code, pi.product_name
+		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, dd.request_qy
 	</select>
 	
 	<select id="deliveryProductDetails">	

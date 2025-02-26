@@ -8,7 +8,8 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		        SELECT ROWNUM rn,
+		        SELECT /*+ INDEX_DESC(material_order  PK_MATERIAL_ORDER)*/
+		        	   ROWNUM rn,
 		               mtril_order_code AS mtrilOrderCode,
 		               product_summary('material_order_details', mtril_order_code) AS Summary,
 		               charger_name AS orderCharger,
@@ -17,7 +18,7 @@
 		               remark AS remark,
 		               get_comm(status) AS orderStatus
 		        FROM   material_order 
-		       	WHERE    company_code = #{searchDto.targetCompany}
+		       	WHERE  company_code = #{searchDto.targetCompany}
 	        	<if test='searchDto.orderCode != null and searchDto.orderCode != ""'>	--주문코드
 	        		AND  mtril_order_code LIKE '%' || UPPER(#{searchDto.orderCode}) || '%'
 	        	</if>
@@ -50,8 +51,8 @@
 	                  </otherwise>
 	            </choose> 
 		        ) info
-		    WHERE info.rn <![CDATA[ <= ]]> 10) page
-		WHERE page.rn <![CDATA[ >= ]]> 1
+		    WHERE info.rn <![CDATA[ <= ]]> #{searchDto.end}) page
+		WHERE page.rn <![CDATA[ >= ]]> #{searchDto.start}
 	</select>
 	
 	<!-- 검색결과 카운트 -->
@@ -143,7 +144,7 @@
 	</select>
 	
 	<insert id="insertDeliveryMaster">
-		INSERT INTO delivery(delivery_code, company_se, product_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
+		INSERT INTO delivery(delivery_code, company_se, mtril_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
 							,delivery_status , remark, charger_code, charger_name, rgsde, updde, time, amount, delivery_company_code)
 		VALUES (#{info.deliveryCode}, #{info.companySe}, #{info.productOrderCode}, #{info.companyCode}, #{info.companyName}, #{info.orderDate}, #{info.dedt}, #{info.storageName}, #{info.dedtAddress}
 				, #{info.deliveryStatus}, #{info.remark}, #{info.chargerCode}, #{info.chargerName}, SYSDATE, SYSDATE, #{info.time}, #{info.amount}, #{info.divyCompanyCode})
@@ -155,4 +156,69 @@
 		VALUES (delivery_details_seq.NEXTVAL, #{pinfo.deliveryCode}, #{pinfo.productCode}, #{pinfo.productSize}, #{pinfo.productColor}, ' ',
 				#{pinfo.reqQy}, #{pinfo.deliveryQy}, 'PT01', #{pinfo.productOrderCode}, #{pinfo.unitPrice}, #{pinfo.price})
 	</insert>
+	
+	<select id="supplyDeliveryList">
+		SELECT *
+		FROM (
+			    SELECT *
+			    FROM (
+					SELECT de.delivery_code,
+					        de.mtril_order_code,
+					        de.order_date,
+					        de.dedt,
+					        de.product_summary('delivery_details', delivery_code),
+					        de.time,
+					        de.get_comm(delivery_status),
+					        de.rgsde
+					FROM   delivery de
+					WHERE  de.delivery_company_code = #{cri.targetCompany}
+					<where>	               	
+			            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
+			                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
+			            </if>
+			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
+			                AND de.mtril_order_code LIKE '%' || UPPER(#{cri.orderCode}) || '%'    --주문코드
+			            </if>
+			            <if test="cri.productName != null and cri.productName != null">		    
+			                AND  de.delivery_code IN (SELECT dd.delivery_code 
+                                 						   FROM delivery_details dd JOIN product_info pi 
+                                                         						   ON (dd.product_code = pi.product_code)
+                                 						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
+			            </if>
+			            <if test="cri.productCode != null and cri.productCode != null">		    
+			                AND de.delivery_code IN (SELECT  delivery_code 
+                                 					 FROM 	  delivery_details
+                                 					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
+			            </if>
+			            <if test='cri.companyName != null and cri.companyName != ""'>
+			                AND de.company_name LIKE '%' || #{cri.companyName} || '%'                          --업체명
+			            </if>
+			            <if test='cri.companyCode != null and cri.companyCode != ""'>
+			                AND de.company_code LIKE '%' || UPPER(#{cri.companyCode}) || '%'                --업체코드
+			            </if>
+			            <if test='cri.deliveryChargerCode != null and cri.deliveryChargerCode != ""'>		    
+			                AND de.charger_code LIKE '%' || #{cri.deliveryChargerCode} || '%'                          --주문 담당자
+			            </if>
+			            <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>		    
+			                AND de.charger_name LIKE '%' || #{cri.deliveryCharger} || '%'                          --주문 담당자
+			            </if>
+			            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+			                AND de.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+			            </if>
+			            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+			                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+			            </if>
+			            <choose>
+			                  <when test="cri.deliveryStatus != null and cri.deliveryStatus != ''"> 
+			                            AND delivery_status = #{cri.deliveryStatus}
+			                  </when>
+			                  <otherwise> 
+			                           AND delivery_status IN ('DS01', 'DS05')
+			                  </otherwise>
+			            </choose>
+	               	</where>      
+				        ) info
+		    WHERE info.rn <![CDATA[ <= ]]> 10) page
+		WHERE page.rn <![CDATA[ >= ]]> 1
+	</select>
 </mapper>

@@ -115,11 +115,20 @@
 		</dependency>
 		
 		<!-- 리포팅 툴: 제스퍼 리포트-->
+		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->
 		<dependency>
-			 <groupId>net.sf.jasperreports</groupId>
-			 <artifactId>jasperreports</artifactId>
-			 <version>6.4.0</version>
+		    <groupId>net.sf.jasperreports</groupId>
+		    <artifactId>jasperreports</artifactId>
+		    <version>6.21.4</version>
 		</dependency>
+
+		<!-- 제스퍼 리포트 리포트 파일 컴파일 오류로 인해 라이노 라이브러리 추가 org.mozilla.javascript.EvaluatorException -->
+		<dependency>
+		    <groupId>org.mozilla</groupId>
+		    <artifactId>rhino</artifactId>
+		    <version>1.7.14</version>
+		</dependency> 
+
 
 	</dependencies>
 

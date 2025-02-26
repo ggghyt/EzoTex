@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,6 +56,14 @@ public class DeliveryController {
 		return "delivery/DeliveryList";
 	}
 	
+	//납품 조회 페이지(공급업체)
+	@GetMapping("SupplyList")
+	public String SupplyList() {
+		return "delivery/SupplierDeliveryList";
+	}
+	
+	
+	
 	@GetMapping("report")
 	 public void report(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Connection conn = datasource.getConnection();
@@ -71,25 +80,42 @@ public class DeliveryController {
 	    JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
 	 }
 	
+	//제조업체 pdf뷰
 	@GetMapping(value="pdfView")
-	public ModelAndView pdfview() throws Exception {
-		//pdfView라는 뷰에 등록된 컴포넌트를 찾아감
-		//filename이라는 키, "/reports/test.jasper"라는 값을 가진 맵을 생성
-		//return new ModelAndView("pdfView", "filename", "/reports/test.jasper");
-		String deliveryCode = "DEV2502240001";	//파라미터 받아왔다고 가정
+	public ModelAndView pdfview(@RequestParam(name = "deliveryCode")String deliveryCode) throws Exception {
+		//pdfView라는 뷰에 등록된 컴포넌트를 찾아감;
 		
-		 // 사용자 입력 값을 포함하는 맵 생성
+		// 사용자 입력 값을 포함하는 맵 생성
 	    Map<String, Object> param = new HashMap<>();
-	    param.put("deliveryCode", deliveryCode);
+	    param.put("P_DELIVERY_CODE", deliveryCode);
 		param.put(JRParameter.REPORT_LOCALE, Locale.KOREA);
 		param.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.FALSE);
 		
 	    // ModelAndView 생성
 	    ModelAndView mav = new ModelAndView("pdfView");
-	    mav.addObject("filename", "/reports/test.jasper"); // 리포트 파일 경로
+	    mav.addObject("filename", "/reports/delivery/deliveryCard.jasper"); // 리포트 파일 경로
 	    mav.addObject("param", param); // 파라미터 추가
 	
 	    return mav;
+	}
+	
+	//공급업체 pdf뷰
+	@GetMapping(value="supplyPdfview")
+	public ModelAndView supplyPdfview(@RequestParam(name = "deliveryCode")String deliveryCode) throws Exception {
+		//pdfView라는 뷰에 등록된 컴포넌트를 찾아감;
+		
+		// 사용자 입력 값을 포함하는 맵 생성
+		Map<String, Object> param = new HashMap<>();
+		param.put("P_DELIVERY_CODE", deliveryCode);
+		param.put(JRParameter.REPORT_LOCALE, Locale.KOREA);
+		param.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.FALSE);
+		
+		// ModelAndView 생성
+		ModelAndView mav = new ModelAndView("pdfView");
+		mav.addObject("filename", "/reports/delivery/supplyDeliveryCard.jasper"); // 리포트 파일 경로
+		mav.addObject("param", param); // 파라미터 추가
+		
+		return mav;
 	}
 	
 	@GetMapping(value="pdfViewDown")

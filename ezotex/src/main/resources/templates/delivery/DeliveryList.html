@@ -136,11 +136,67 @@
 		#deliveryDetails::-webkit-scrollbar{
 		  	display:none;
 		}
+		#deliveryStatusModal::-webkit-scrollbar{
+			display:none;
+		}
 		.read-dedt-address {
 			height: 60px;
 		}
 		.chargerInfo td{
 			padding: 10px;
+		}
+		.delivery-status {
+			width: 100%;
+			height: 160px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+		}
+		.delivery-status-details{
+			height: 500px;
+			padding: 20px;
+			border-radius: 20px;
+			border: 3px solid #e5e5e5;
+			width: 100%;
+		}
+		.status-icon {
+			width: 100%;
+			display: inline;
+			text-align: center;
+		}
+		.status-icon i {
+			margin: 30px;
+		}
+		.status-icon span {
+			display: inline-block;
+			height: 50px;
+			position: relative;
+			top: -17px;
+		}
+		/*이게 없으면 모달안에서 스크롤이 안됨.*/
+		.modal {
+		  overflow-y:auto;
+		}
+		.fa-file-pen {
+			color: #8a8a8a;
+		}
+		.fa-box {
+			color: #8a8a8a;
+		}
+		.fa-user-check {
+			color: #8a8a8a;
+		}
+		.fa-truck {
+			color: #8a8a8a;
+		}
+		.fa-house {
+			color: #8a8a8a;
+		}
+		.status-icon div span{
+			margin-left: 45px;
+			margin-right: 45px;
+		}
+		.status-icon div span:nth-of-type(3) {
+			margin-left: 20px;
+			margin-right: 60px;
 		}
 	</style>
 </head>
@@ -318,8 +374,8 @@
            			</div>
            			<div class="deliveryProductDetails">
            				<div class="mb-2 more-info-group">						
-							<button type="button" class="btn btn-primary btn-rounded">납품카드</button>
-							<button type="button" class="btn btn-primary btn-rounded">배송현황</button>
+							<button type="button" class="btn btn-primary btn-rounded showDeliveryCard">납품카드</button>
+							<button type="button" class="btn btn-primary btn-rounded openStatusModalBtn">배송현황</button>
 						</div>
 						<!-- 출고 제품 목록 -->
 						<b>출고 제품 목록</b>
@@ -332,14 +388,56 @@
 	           </div>
 
 	            <div style="text-align: center; margin: 20px;">
-	               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
+	               <button type="button" class="btn btn-outline-secondary deliveryDetailsModalClose" data-bs-dismiss="modal">닫기</button>
 	            </div>
 	         </div>
 	         </div>
 	      </div>
-		
-
-		
+			<!-- 배송현황 출고 모달 -->
+			<div class="modal fade" id="deliveryStatusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		      <div class="modal-dialog modal-xl" >
+		         <div class="modal-content">
+		           <div class="modal-header" style="height: 20px;">
+		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">출고 현황 조회</h5>
+		           </div>
+		           <div class="modal-body" style="padding: 44px; padding-bottom:10px;">
+		           		<div style="width: 100%">		           		
+			           		<div class="p-3 mb-2 bg-secondary text-dark card delivery-status">
+			           			<div class="status-icon">
+			           				<i class="fa-solid fa-file-pen fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-box fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-user-check fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-truck fa-4x" style="color: #8a8a8a;"></i>
+			           				<span> > </span>
+			           				<i class="fa-solid fa-house fa-4x" style="color: #8a8a8a;"></i>
+				           			<div>
+				           				<span>출고등록</span>
+				           				<span>포장완료</span>
+				           				<span>기사배정</span>
+				           				<span>배송출발</span>
+				           				<span>납품완료</span>
+				           			</div>
+			           			</div>
+			           			
+			           		</div>
+			           		<div class="delivery-status-details">
+			           			<div id="map" style="width:900px;height:300px;"></div>
+			           		</div>
+		           		</div>
+		           		
+		           </div>
+	
+		            <div style="text-align: center; margin: 20px;">
+		               <button type="button" class="btn btn-outline-warning deliveryStatusModalClose" data-bs-dismiss="modal">이전</button>
+		               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+		            </div>
+		         </div>
+		         </div>
+		      </div>
+	
 	<script>
 		//출고 목록
 		const dataSource = {
@@ -375,7 +473,9 @@
 				{ header: "출고등록일", name: "registDate"},
 				{ header: "비고", name: "remark", hidden: true},
 				{ header: "출고창고", name: "storageName", hidden: true},
-				{ header: "납기주소", name: "dedtAddress", hidden: true}
+				{ header: "납기주소", name: "dedtAddress", hidden: true},
+				{ header: "상태(변환전)", name: "commStatus", hidden: true},
+				
             ],
             data: dataSource,
 			showDummyRows: true	//더미로우 추가
@@ -393,9 +493,10 @@
   	      	},
             columns: [
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
-				{ header: "제품코드", name: "productCode"},
-				{ header: "제품명", name: "productName"},
-				{ header: "출고량합계", name: "qySum"},
+				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 69},
+				{ header: "제품명", name: "productName", width: "auto", minWidth: 311},
+				{ header: "잔여량", name: "reqQy", align: 'right', formatter:(row)=>numberFormatter(row.value) },
+				{ header: "출고량합계", name: "qySum", align: 'right', formatter:(row)=>numberFormatter(row.value)},
             ],
 			showDummyRows: true	//더미로우 추가
         });
@@ -504,6 +605,12 @@
         //출고건 선택 저장 변수
 		let lastClicked = null;
 		
+        //출고 상세 모달
+		let deliveryDetails = null;
+        
+        //출고 상태 공통코드 저장 변수
+        let commDeliveryState = '';
+        
 		deliveryListGrid.on('focusChange', ev => {
 			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -512,6 +619,8 @@
 			//선택행 데이터
 			let data = deliveryListGrid.getRow(ev.rowKey);
 			
+			//출고 상태 공통코드를 저장함.
+			commDeliveryState = data.commStatus;
 			//출고정보 인풋 박스 안에 넣기
 			document.querySelector(".read-delivery-code").value = data.deliveryCode;
 			document.querySelector(".read-order-code").value = data.productOrderCode;
@@ -544,11 +653,21 @@
 					document.querySelector('.driverName').innerHTML = res.chargerInfo.driverName;
 					document.querySelector('.driveStartTime').innerHTML = res.chargerInfo.driveStartTime;
 					
+	    			//디테일 사이즈 그리드 초기화
+					productDetails.clear();
+	    			
 					//제품 리스트 그리드 초기화
 	    			productList.resetData(res.productList);
 					
+					//배송상태 보여주는 아이콘 색 초기화					
+	    			document.querySelector(".fa-file-pen").style.color = "#8a8a8a";
+			  		document.querySelector(".fa-box").style.color = "#8a8a8a";
+			  		document.querySelector(".fa-user-check").style.color = "#8a8a8a";
+					document.querySelector(".fa-truck").style.color = "#8a8a8a";
+					document.querySelector(".fa-house").style.color = "#8a8a8a";
+					
 					//모달 열기
-					const deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
+					deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
 					deliveryDetails.show();
 					
 	    		})
@@ -591,7 +710,7 @@
 		                minWidth: 150
 		             })
 		             
-		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "center", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
 	            }
 	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
 	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
@@ -607,6 +726,47 @@
 				productDetails.resetData(products);
 		    	
     		})
+		})
+		
+		document.querySelector(".openStatusModalBtn").addEventListener("click", () => {
+			//납품 상세 모달 닫기
+			deliveryDetails.hide();
+			let num = commDeliveryState.replace("DS0", '');
+			switch(num) {
+				case "1": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+					break;
+				case "2": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+						  document.querySelector(".fa-box").style.color = "#4285f4";
+					break;
+				case "3": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+				  		  document.querySelector(".fa-box").style.color = "#4285f4";
+						  document.querySelector(".fa-user-check").style.color = "#4285f4";
+					break;
+				case "4": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+		  		  		  document.querySelector(".fa-box").style.color = "#4285f4";
+				  		  document.querySelector(".fa-user-check").style.color = "#4285f4";
+						  document.querySelector(".fa-truck").style.color = "#4285f4";
+					break;
+				case "5": document.querySelector(".fa-file-pen").style.color = "#4285f4";
+				  		  document.querySelector(".fa-box").style.color = "#4285f4";
+				  		  document.querySelector(".fa-user-check").style.color = "#4285f4";
+						  document.querySelector(".fa-truck").style.color = "#4285f4";
+						  document.querySelector(".fa-house").style.color = "#4285f4";
+					break;
+			}
+			//배송현황 모달 열기
+			const deliveryStatusModal = new bootstrap.Modal(document.getElementById("deliveryStatusModal"));
+			deliveryStatusModal.show();
+		})
+	
+		
+		document.querySelector(".deliveryStatusModalClose").addEventListener("click", () => {
+			deliveryDetails.show();
+		})
+		
+		document.querySelector(".showDeliveryCard").addEventListener("click", () => {
+			let divyCode = document.querySelector(".read-delivery-code").value;
+			window.open(`/delivery/pdfView?deliveryCode=${divyCode}`);
 		})
 	</script>
 </body>
