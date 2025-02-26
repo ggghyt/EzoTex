@@ -351,6 +351,7 @@
 			} else if (id_check == 1) {
 				failToast("중복인 아이디가 존재합니다");
 			} else {
+				simulateLoading()
 				return true;
 			}
 			return false;

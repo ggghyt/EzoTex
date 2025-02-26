@@ -14,6 +14,7 @@ import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.dto.StorageDTO;
+import com.ezotex.standard.dto.StorageProductDTO;
 
 public interface StandardMapper {
 	// id 중복 확인
@@ -97,4 +98,22 @@ public interface StandardMapper {
 	List<StorageDTO> storageList();
 	
 	List<StorageDTO> storageInfoList(String storageCode);
+	
+	// 개별 창고 적재된 부피
+	int storageVl(String storageInfoCode);
+	
+	// 창고 목록 관리
+	int insertStorage(String storageName);
+	
+	int updateStorage(StorageDTO storageDTO);
+	
+	// 창고 항목 관리
+	int insertStorageInfo(StorageDTO storageDTO);
+	
+	int updateStorageInfo(StorageDTO storageDTO);
+	
+	// 창고 항목 상세 리스트
+	List<StorageProductDTO> StorageProductList(int storageInfoCode);
+	
+	int findStorageInfoCode(StorageDTO storageDTO);
 }

@@ -40,10 +40,16 @@
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 창고 조회</h3>
+	<h3 id="storage_title" class="fs-3 fw-bold">| 창고 조회</h3>
 	<div class="row me-2" style="padding: 10px">
 		<div class="col-9 col-lg-9 d-flex mb-2">
-			<div id="storageGrid" style="width: 100%">
+			<div class="row" style="width: 100%">
+				<div id="storageGrid" style="width: 100%">
+				</div>
+				<div style="text-align: right">
+					<button type="button" class="btn btn-primary" style="margin: 15px" onclick="addRow()">↓ 행 추가</button>
+					<button type="button" class="btn btn-primary" style="margin: 15px" onclick="addCol()">열 추가 →</button>
+				</div>
 			</div>
 		</div>
 		<div class="col-3 col-lg-3 d-flex mb-2" style="justify-content: center; text-align: center;">
@@ -53,49 +59,111 @@
 					<select class="form-control" id="storageSelect" name="storageSelect" onchange="storageSelect()" style="margin: 15px; width : 50%; display: inline-block;">
 					</select>
 				</div>
-				<hr>
-				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">신규 이름</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">창고 추가</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="">
+					<input type="text" class="form-control" id="storageNameInput" name="storageNameInput" value="" placeholder="이름">
 				</div>
 				<div style="text-align: center;">
-					<button type="button" class="btn btn-primary" onclick="" style="margin: 15px">추가</button>
-					<button type="button" class="btn btn-warning" onclick="" style="margin: 15px">취소</button>
+					<button type="button" class="btn btn-primary" onclick="insertStorageBtn()" style="margin: 15px">추가</button>
+					<button type="button" class="btn btn-warning" onclick="cancelStorageBtn()" style="margin: 15px">취소</button>
 				</div>
 				<hr>
-				<h4 class="fs-4 fw-bold">1행 A렬</h4>
+				<h4 id="selectColRowName" class="fs-4 fw-bold">□행 □열</h4>
 				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">칸 이름</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="">
+					<input type="text" class="form-control" id="selectedName" name="selectedName" value="">
 				</div>
 				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">총 용량</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="">
+					<input type="text" class="form-control" id="selectedVl" name="selectedVl" value="">
 				</div>
-				<div style="text-align: center;">
-					<button type="button" class="btn btn-primary" onclick="" style="margin: 15px">등록</button>
-					<button type="button" class="btn btn-warning" onclick="" style="margin: 15px">수정</button>
+				<div>
+					<button type="button" class="btn btn-primary" id="insertStorageInfoBtn" onclick="insertStorageInfoBtn()" style="margin: 15px auto; display: block">등록</button>
+				</div>
+				<div>
+					<button type="button" class="btn btn-warning" id="updateStorageInfoBtn" onclick="updateStorageInfoBtn()" style="margin: 15px auto; display: none">수정</button>
 				</div>
 				<hr>
 				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">총 용량</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="" readonly>
+					<input type="text" class="form-control" id="selectedInfoVl" name="selectedInfoVl" value="" readonly>
 				</div>
 				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">적재 용량</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="" readonly>
+					<input type="text" class="form-control" id="seledtedNowVL" name="seledtedNowVL" value="" readonly>
 				</div>
 				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">남은 용량</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="" readonly>
+					<input type="text" class="form-control" id="seledtedRestVL" name="seledtedRestVL" value="" readonly>
 				</div>
-				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">가용률</div>
+				<div class="col-4 col-lg-4 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">사용률</div>
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
-					<input type="text" class="form-control" id="" name="" value="" readonly>
+					<input type="text" class="form-control" id="seledtedRestPercentVL" name="seledtedRestPercentVL" value="" readonly>
 				</div>
 				<div style="text-align: center;">
-				<button type="button" class="btn btn-primary" onclick="">상세정보 보기</button>
+				<button type="button" class="btn btn-primary" id="storageInfoModalBtn" onclick="storageInfoModal()" style="margin: 15px auto; display: none">상세정보 보기</button>
 				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="modal fade" id="storageInfoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="productCodeModalLabel">카테고리 관리</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					</button>
+				</div> 
+				<div class="card">
+					<div class="card-body">
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">코드</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductCode" name="productCode" value="" readonly>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">이름</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<input type="text" class="form-control" id="categoryModalProductName" name="productName" value="" readonly>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						
+						<div class="row me-2">
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-1 col-lg-1 d-flex mb-2">대분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalLclas" name="modalLclas" onchange="modal_lclas_change()">
+								</select>
+							</div>
+							<div class="col-1 col-lg-1 d-flex mb-2">소분류</div>
+							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
+								<select class="form-control" id="modalSclas" name="modalSclas">
+									<option value="" selected disabled>선택</option>
+								</select>
+							</div>
+							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+						</div>
+						<div style="text-align: center;">
+							<button id="insertBtn" class="btn btn-primary" onclick="categoryModalRowAdd()">행 추가</button>
+							<button id="editBtn" class="btn btn-danger" onclick="categoryModalRowDel()">행 삭제</button>
+						</div>
+						<div style="margin: 0px auto; width: 60%">
+							<div id="categoryGrid">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw" onclick="categorySubmit()">저장</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+		<div style="margin: 0px auto; width: 300px">
+			<div id="categoryToast" style="width: 300px; text-align: center;">
 			</div>
 		</div>
 	</div>
@@ -104,115 +172,179 @@
 	let storageGrid = null
 	let storage_data = []
 	let storage_columns = null
-	fetch('http://localhost:80/standard/storageList')
-	.then((response) => response.json())
-	.then((data) => {
-		let select_unit = document.querySelector("#storageSelect");
-		for (let i = 0 ; i < data.length ; i++) {
+	let maxRow = 0
+	let maxCol = 0
+	let select_row = 0
+	let select_col = 0
+	
+	storage_option()
+	storageSelect()
+	function storageSelect() {
+		document.getElementById('storageGrid').replaceChildren()
+		storage_data = []
+		storage_columns = null
+		fetch('http://localhost:80/standard/storageList')
+		.then((response) => response.json())
+		.then((data) => {
+			document.querySelector('#storage_title').innerText = "| 창고 조회 (" +  $("#storageSelect option:selected").text() + ")"
+			for (let i = 0 ; i < data.length ; i++) {
+				if (data[i].storageCode == document.querySelector("#storageSelect").value) {
+					maxRow = data[i].maxRow
+					maxCol = data[i].maxCol
+				}
+			}
+			storage_columns = [{ header: '*', name: 'storage_row', align: 'center' }]
+			for (let i = 0 ; i < maxCol ; i++) {
+				storage_columns = [...storage_columns, {header : String.fromCharCode(i + 65), name : i + 1, align: 'center'}]
+			}
+		
+			for (let i = 0 ; i < maxRow ; i++) {
+				storage_data.push({"storage_row" : i + 1})
+			}
+		
+			fetch('http://localhost:80/standard/storageInfoList?storageCode=' + document.querySelector("#storageSelect").value)
+			.then((response) => response.json())
+			.then((data) => {
+				for (let i = 0 ; i < data.length ; i++) {
+					storage_data[data[i].selectRow - 1][data[i].selectCol] = data[i].storageInfoName
+				}
+			
+			
+				storageGrid = new Grid({
+					el: document.getElementById('storageGrid'), // 해당 위치에 그리드 출력
+	    			data: storage_data,
+	    			columns: storage_columns,
+	    			minRowHeight: 75, 
+	  				scrollX: false, // 가로 스크롤
+	  				scrollY: false // 세로 스크롤
+				})
+			
+				storageGrid.on('focusChange', ev => {
+					select_row = ev.rowKey + 1
+					select_col = ev.columnName
+					document.querySelector('#selectColRowName').innerText = (ev.rowKey + 1) + "행 " + String.fromCharCode(ev.columnName + 64) + "열"
+					if (storageGrid.getData()[ev.rowKey][ev.columnName] != null) {
+						
+						document.querySelector("#insertStorageInfoBtn").style.display = "none"
+						document.querySelector("#updateStorageInfoBtn").style.display = "block"
+						document.querySelector("#storageInfoModalBtn").style.display = "block"
+						
+						document.querySelector('#selectedName').value = storageGrid.getData()[ev.rowKey][ev.columnName]
+						for (let i = 0 ; i < data.length ; i++) {
+							if (data[i].storageInfoName == storageGrid.getData()[ev.rowKey][ev.columnName]) {
+								document.querySelector('#selectedVl').value = data[i].vl
+								document.querySelector('#selectedInfoVl').value = data[i].vl
+							
+								fetch('http://localhost:80/standard/storageVl?storageInfoCode=' + data[i].storageInfoCode)
+								.then((response) => response.json())
+								.then((total_vl) => {
+									if (typeof(total_vl) != "number") {
+										document.querySelector('#seledtedNowVL').value = 0
+										document.querySelector('#seledtedRestVL').value = data[i].vl
+										document.querySelector('#seledtedRestPercentVL').value = "0%"
+									} else {
+										document.querySelector('#seledtedNowVL').value = total_vl
+										document.querySelector('#seledtedRestVL').value = data[i].vl - total_vl
+										document.querySelector('#seledtedRestPercentVL').value = total_vl / data[i].vl * 100 + "%"
+									} 
+								})
+							}
+						}
+					} else {
+						document.querySelector("#insertStorageInfoBtn").style.display = "block"
+						document.querySelector("#updateStorageInfoBtn").style.display = "none"
+						document.querySelector("#storageInfoModalBtn").style.display = "none"
+						
+						document.querySelector('#selectedName').value = ""
+						document.querySelector('#selectedVl').value = ""
+						document.querySelector('#selectedInfoVl').value = ""
+						document.querySelector('#seledtedNowVL').value = ""
+						document.querySelector('#seledtedRestVL').value = ""
+						document.querySelector('#seledtedRestPercentVL').value = ""
+					}
+				})
+			})	
+		})
+	}
+	
+	function storage_option() {
+		fetch('http://localhost:80/standard/storageList')
+		.then((response) => response.json())
+		.then((data) => {
+			let select_unit = document.querySelector("#storageSelect");
+			select_unit.replaceChildren()
+			for (let i = 0 ; i < data.length ; i++) {
 			let o = document.createElement('option');
 			o.setAttribute("value", data[i].storageCode);
 			o.innerText = data[i].storageName
 			select_unit.appendChild(o);
-		}
-		
-		console.log(data[0].maxCol)
-		console.log(data[0].maxRow)
-		storage_columns = [{ header: '*', name: 'storage_row', align: 'center' }]
-		for (let i = 0 ; i < data[0].maxCol ; i++) {
-			storage_columns = [...storage_columns, {header : String.fromCharCode(i + 65), name : i + 1, align: 'center'}]
-		}
-		console.log(storage_columns)
-		
-		for (let i = 0 ; i < data[0].maxRow ; i++) {
-			storage_data.push({"storage_row" : i + 1})
-		}
-		console.log(storage_data)
-		
-		fetch('http://localhost:80/standard/storageInfoList?storageCode=' + document.querySelector("#storageSelect").value)
-		.then((response) => response.json())
-		.then((data) => {
-			for (let i = 0 ; i < data.length ; i++) {
-				storage_data[data[i].selectRow - 1][data[i].selectCol] = data[i].storageInfoName
 			}
-			
-			
-			storageGrid = new Grid({
-				el: document.getElementById('storageGrid'), // 해당 위치에 그리드 출력
-	    		data: storage_data,
-	    		columns: storage_columns,
-	    		minRowHeight: 75, 
-	  			scrollX: false, // 가로 스크롤
-	  			scrollY: false // 세로 스크롤
-			})
 		})
-		
-		
-		/*
-		fetch('http://localhost:80/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
-		.then((response) => response.json())
-		.then((data) => {
-			option_columns = [{ header: '*', name: 'col', align: 'center' }]
-			let option_size = []
-			let push
-			for (let i = 0 ; i < data.length ; i++) {
-				push = 1
-				for (let j = 0 ; j < option_size.length ; j++) {
-					if (data[i].productSize == option_size[j][1]) {
-						push = 0
-					}
-				}
-				if (push == 1) {
-					option_size.push([data[i].sizeName, data[i].productSize])
-				}
-			}
-			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
-			for (let i = 0 ; i < option_size.length ; i++) {
-				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text' })
-			}
-			
-			let option_color = []
-			for (let i = 0 ; i < data.length ; i++) {
-				push = 1
-				for (let j = 0 ; j < option_color.length ; j++) {
-					if (data[i].productColor == option_color[j]) {
-						push = 0
-					}
-				}
-				if (push == 1) {
-					option_color.push(data[i].productColor)
-				}
-			}
-			
-			option_data = []
-			for (let i = 0 ; i < option_color.length ; i++) {
-				option_data.push({"color" : option_color[i]})
-			}
-			
-			for (i = 0 ; i < data.length ; i++) {
-				for (j = 0 ; j < option_data.length ; j++) {
-					if (option_data[j].color == data[i].productColor) {
-						if (data[i].discontinued == "YN01") {
-							option_data[j][data[i].productSize] = "단종"
-						} else {
-							option_data[j][data[i].productSize] = data[i].unitPrice
-						}
-					}
-				} 
-			}
-			
-			document.getElementById('optionGrid').replaceChildren()
-			optionGrid = new Grid({
-				el: document.getElementById('optionGrid'), // 해당 위치에 그리드 출력
-		    	data: option_data,
-		    	columns: option_columns,
-		  	scrollX: false, // 가로 스크롤
-		  	scrollY: false // 세로 스크롤
-			})
+	}
+	
+	function cancelStorageBtn() {
+		document.querySelector("#storageNameInput").value = "";
+	}
+	
+	function insertStorageBtn() {
+		fetch('http://localhost:80/standard/insertStorage?storageName=' + document.querySelector("#storageNameInput").value)
+		.then(() => {
+			storage_option()
 		})
-		*/
-		
-		
-	})
+	}
+	
+	function addRow() {
+		storageGrid.appendRow({"storage_row" : maxRow + 1})
+		maxRow = maxRow + 1
+		updateStorage(document.querySelector("#storageSelect").value, $("#storageSelect option:selected").text(), maxRow, maxCol)
+	}
+	
+	function addCol() {
+		storage_columns = [...storage_columns, {header : String.fromCharCode(maxCol + 65), name : maxCol + 1, align: 'center'}]
+		storageGrid.setColumns(storage_columns)
+		maxCol = maxCol + 1
+		updateStorage(document.querySelector("#storageSelect").value, $("#storageSelect option:selected").text(), maxRow, maxCol)
+	}
+	
+	function updateStorage(updateStorageCode, updateStorageName, updateMaxRow, updateMaxCol) {
+		fetch('http://localhost:80/standard/updateStorage?storageCode=' + updateStorageCode + 
+				                                        '&storageName=' + updateStorageName + 
+				                                        '&maxRow=' + updateMaxRow + 
+				                                        '&maxCol=' + updateMaxCol)
+	}
+	
+	function insertStorageInfoBtn() {
+		fetch('http://localhost:80/standard/insertStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
+                                                            '&selectRow=' + select_row + 
+                                                            '&selectCol=' + select_col + 
+                                                            '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                            '&vl=' + document.querySelector("#selectedVl").value)
+        .then(()=> {
+        	storageSelect()
+        })
+	}
+	
+	function updateStorageInfoBtn() {
+		fetch('http://localhost:80/standard/updateStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
+                                                            '&selectRow=' + select_row + 
+                                                            '&selectCol=' + select_col + 
+                                                            '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                            '&vl=' + document.querySelector("#selectedVl").value)
+        .then(()=> {
+            storageSelect()
+        })
+	}
+	
+	function storageInfoModal() {
+		fetch('http://localhost:80/standard/StorageProductList?storageCode=' + document.querySelector("#storageSelect").value + 
+                                                             '&selectRow=' + select_row + 
+                                                             '&selectCol=' + select_col + 
+                                                             '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                             '&vl=' + document.querySelector("#selectedVl").value)
+        .then(()=> {
+        	$('#storageInfoModal').modal('show');
+        })
+	}
 	</script>
 </body>
 </html>
