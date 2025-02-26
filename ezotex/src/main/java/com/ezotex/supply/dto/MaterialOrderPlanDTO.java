@@ -31,4 +31,5 @@ public class MaterialOrderPlanDTO {
 	private String summary; // 함수로 임의 생성한 값
 	private String unitName;
 	private Integer unitPrice;
+	private String productName;
 }
