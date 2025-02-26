@@ -40,7 +40,8 @@ const createOptions = function(ele, uri){
 		ele.innerHTML = '<option value="null">전체</option>';
 		sizeBox.innerHTML = '<option value="null">전체</option>';
 		
-		for(let value of data){			
+		for(let value of data){	
+            if(value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
 			
 			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우

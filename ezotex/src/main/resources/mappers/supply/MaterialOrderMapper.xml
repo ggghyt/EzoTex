@@ -77,6 +77,29 @@
 		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 	</select>
 	
+    <!-- 해당 업체/자재 옵션 조회 -->
+    <select id="listColorByCompany" resultType="map" parameterType="String">
+        SELECT DISTINCT(o.product_color),
+               o.unit_price,
+               NVL(( SELECT SUM(i.inventory_qy) -- 현재고량
+                       FROM inventory i
+                      WHERE i.product_code = o.product_code
+                        AND i.product_color = o.product_color ), 0) inventory_qy,
+               NVL(( SELECT SUM(mod.order_qy) -- 아직 처리되지 않은 기발주량 합계
+                       FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
+                      WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
+                        AND mod.product_code = o.product_code
+                        AND mod.product_color = o.product_color ), 0) storing_qy
+        FROM   product_option o JOIN material_of_company m ON o.option_code = m.option_code
+        WHERE  o.product_code = #{productCode}
+          AND  o.discontinued = 'YN02'
+        <if test='companyCode != null and companyCode != ""'> 
+          AND  m.company_code = #{companyCode} 
+          AND  m.discontinued = 'YN02'        
+        </if>
+        ORDER  BY product_color
+    </select>
+	
 	<!-- 발주계획서(헤더) 조회 -->
 	<select id="listOrderPlan" resultType="MaterialOrderPlanDTO" parameterType="map">
 		SELECT * FROM
@@ -99,54 +122,54 @@
 		<where> 
 		  <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
 		  <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
-      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
-      
-      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
-      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
-      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
-      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
-      
-      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
-      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
-		</where>
-		ORDER  BY mtril_order_plan_code DESC
-  </select>
+	      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
+	      
+	      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
+	      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
+	      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
+	      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
+	      
+	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+			</where>
+			ORDER  BY mtril_order_plan_code DESC
+	  </select>
+	  
+	  <!-- 발주계획서(헤더) 개수 -->
+	  <select id="countOrderPlan" parameterType="map">
+	    SELECT COUNT(*) FROM
+	        (SELECT DISTINCT(p.mtril_order_plan_code),
+	                p.due_date,
+	                (SELECT SUM(order_qy) 
+	                 FROM   material_order_plan_details
+	                 WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
+	                p.remark,
+	                p.charger_name,
+	                NVL(p.update_date, p.rgsde) update_date
+	         FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
+	        <where>
+	          <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
+	          <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
+	          <if test='productName != null and productName != ""'> AND d.product_name LIKE '%' || #{productName} || '%' </if>
+	        </where> ) -- 바깥에서 추가조건 검색하여 alias 이용 가능
+	    <where> 
+	      <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
+	      <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
+	      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
+	      
+	      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
+	      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
+	      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
+	      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
+	      
+	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+	    </where>
+    </select>
   
-  <!-- 발주계획서(헤더) 개수 -->
-  <select id="countOrderPlan" parameterType="map">
-    SELECT COUNT(*) FROM
-        (SELECT DISTINCT(p.mtril_order_plan_code),
-                p.due_date,
-                (SELECT SUM(order_qy) 
-                 FROM   material_order_plan_details
-                 WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
-                p.remark,
-                p.charger_name,
-                NVL(p.update_date, p.rgsde) update_date
-         FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
-        <where>
-          <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
-          <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-          <if test='productName != null and productName != ""'> AND d.product_name LIKE '%' || #{productName} || '%' </if>
-        </where> ) -- 바깥에서 추가조건 검색하여 alias 이용 가능
-    <where> 
-      <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
-      <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
-      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
-      
-      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
-      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
-      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
-      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
-      
-      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
-      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
-    </where>
-  </select>
-  
-  <!-- 발주계획서(디테일) 조회 -->
-  <select id="infoOrderPlan" resultType="MaterialOrderPlanDTO" parameterType="String">
-    SELECT d.mtril_order_plan_code,
+    <!-- 발주계획서(디테일) 조회 -->
+    <select id="infoOrderPlan" resultType="MaterialOrderPlanDTO" parameterType="String">
+        SELECT d.mtril_order_plan_code,
 		       d.company_code,
 		       d.company_name,
 		       d.product_code,
@@ -159,30 +182,7 @@
 		                                LEFT JOIN product_option o ON d.product_code = o.product_code
 		                                                          AND d.product_color = o.product_color
 		WHERE  d.mtril_order_plan_code = #{mtrilOrderPlanCode}
-  </select>
-	
-	<!-- 해당 업체/자재 옵션 조회 -->
-	<select id="listColorByCompany" resultType="map" parameterType="String">
-		SELECT DISTINCT(o.product_color),
-		       o.unit_price,
-		       NVL(( SELECT SUM(i.inventory_qy) -- 현재고량
-		               FROM inventory i
-		              WHERE i.product_code = o.product_code
-		                AND i.product_color = o.product_color ), 0) inventory_qy,
-		       NVL(( SELECT SUM(mod.order_qy) -- 아직 처리되지 않은 기발주량 합계
-		               FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
-		              WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
-		                AND mod.product_code = o.product_code
-		                AND mod.product_color = o.product_color ), 0) storing_qy
-		FROM   product_option o JOIN material_of_company m ON o.option_code = m.option_code
-		WHERE  o.product_code = #{productCode}
-		  AND  o.discontinued = 'YN02'
-		<if test='companyCode != null and companyCode != ""'> 
-		  AND  m.company_code = #{companyCode} 
-		  AND  m.discontinued = 'YN02'		  
-		</if>
-		ORDER  BY product_color
-	</select>
+    </select>
 	
 	<!-- 발주서 등록(헤더) -->
 	<insert id="insertMaterialOrder" parameterType="MaterialOrderDTO">
@@ -213,7 +213,7 @@
                            END
              FROM    material_order_plan 
              WHERE   TO_CHAR(rgsde, 'YY/MM/DD') = (SELECT TO_CHAR(SYSDATE, 'YY/MM/DD') FROM DUAL)), 
-             ('MOD' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_plan_code
+             ('MOP' || TO_CHAR(SYSDATE, 'YYMMDD') || '0001')) AS mtril_order_plan_code
              FROM DUAL), -- 현재 날짜로 번호 부여
              #{dueDate}, #{chargerCode}, #{chargerName}, #{remark})
   </insert>

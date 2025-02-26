@@ -23,7 +23,7 @@ const orderDomEventHandler = function (){
   $('#finalBtn').on('click', () => {
     let orderData = orderGrid.getData();
     if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 미실행
-    else if(orderData.filter(data => data.companyCode != null) != orderGrid.getRowCount()){
+    else if(orderData.filter(data => data.companyCode != null).length != orderGrid.getRowCount()){
       // 발주계획에서 불러온 데이터의 경우 업체코드가 필수값이 아니므로, 발주서에서는 모두 입력되어야 함.
       failToast('업체코드가 모두 선택되지 않았습니다.');
       return;
@@ -139,11 +139,11 @@ class CustomBtnRender {
 			compCodeBox.value = selectedComp.companyCode;
 			compNameBox.value = selectedComp.companyName;
 		} else {
-      let selectedPlan = planGrid.getRow(props.rowKey);
-      loadPlanData(selectedPlan.mtrilOrderPlanCode);
-    }
+            let selectedPlan = planGrid.getRow(props.rowKey);
+            loadPlanData(selectedPlan.mtrilOrderPlanCode);
+        }
     
-		if(type != 'plan')loadOptionPrice(); 
+		if(type != 'plan') loadColorPriceInfo(); 
 		closeAll();
 		$('#myModal').modal('hide');
 	});
@@ -332,7 +332,7 @@ let insertListDiv = document.getElementById('insertList');
 
 // 모달의 선택 목록 출력 (업체/자재/발주계획서 선택)
 function loadModalGrid(type, obj){ // type: 'material' or 'company' or 'orderPlan'
-	let {status, ...others} = obj;
+  let {status, ...others} = obj;
   let query = new URLSearchParams(others);
   
   // 배열값이 있는 경우 쿼리스트링을 직접 만들어야 정상 출력
@@ -410,9 +410,9 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   loadModalGrid('orderPlan', dto);
 });
 	
-let colorInfo = []; // 옵션 정보 저장
-// 자재/업체 선택 시 옵션 생성 및 재고+단가 불러오기
-function loadOptionPrice(){
+let colorInfo = []; // 옵션별 정보 저장
+// 자재/업체 선택 시 색상옵션 생성 및 재고+단가 불러오기
+async function loadColorPriceInfo(row){
 	if(mtrCodeBox.value == '') return; // 필수값
 	let valueObj = {
 		productCode: mtrCodeBox.value, 
@@ -420,15 +420,16 @@ function loadOptionPrice(){
 	};
 	let query = new URLSearchParams(valueObj);
 	
-	fetch(`/supply/optionPriceList?${query}`)
+	await fetch(`/supply/optionPriceList?${query}`)
 		.then(response => response.json())
 		.then(result => {
 			console.log(result);
 			
-			// 옵션 태그 생성 및 기존 선택 반영
-			let prdColorArr = result.map(obj => obj.PRODUCT_COLOR);
-			let colorIdx = prdColorArr.findIndex(val => val == colorBox.value); // 선택했던 인덱스 저장
+			colorInfo = result; // 색상 선택에따라 내용을 변경하기 위해 저장
 			
+			// 옵션 태그 생성 및 기존 선택 반영
+			let currentColor = colorBox.value == '' ? row.productColor : colorBox.value;
+			let prdColorArr = result.map(obj => obj.PRODUCT_COLOR);
 			colorBox.innerHTML = '<option value="null">미선택</option>';
 			
 			for(let color of prdColorArr){			
@@ -437,32 +438,25 @@ function loadOptionPrice(){
 				opt.innerText = color;
 				colorBox.append(opt);
 			}
-			if(colorIdx != -1){
-				colorBox.value = prdColorArr[colorIdx]; // 선택값 다시 표시
-			  unitPriceBox.value = numberFormatter(result[colorIdx].UNIT_PRICE);
-			} 
-			colorInfo = result; // 색상 선택에따라 내용을 변경하기 위해 저장
-      if(selectedMtr != null){
-  			selectedMtr.PRODUCT_COLOR = 'null';
-  			colorInfo.push(selectedMtr); // 자재 기본정보(null옵션) 맨끝에 추가        
-      }
-			changeByColor(colorBox.value);
+			if(selectedMtr == null) selectedMtr = row; // 자재모달에서 직접 선택하지 않은 경우 selectedMtr null
+            selectedMtr.PRODUCT_COLOR = 'null';
+            colorInfo.push(selectedMtr); // 자재 기본정보(null옵션값) 맨끝에 추가
+            
+			colorBox.value = currentColor; // 선택값 다시 표시
+			changeByColorInfo(colorBox.value);
 	});	
 }
 
 colorBox.addEventListener('change', e => {
-	changeByColor(e.target.value);
+	changeByColorInfo(e.target.value);
 });
 
 // 색상 선택 시 단가 및 정보 재반영
-function changeByColor(val){
-	let idx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == val);
-  if(idx != -1){
-  	unitPriceBox.value = numberFormatter(colorInfo[idx].UNIT_PRICE);
-  	inventoryQyBox.value = numberFormatter(colorInfo[idx].INVENTORY_QY);
-  	let storingQy = colorInfo[idx].STORING_QY;
-  	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	    
-  }
+function changeByColorInfo(val){
+  let idx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == val);
+  unitPriceBox.value = colorInfo[idx].UNIT_PRICE ? numberFormatter(colorInfo[idx].UNIT_PRICE) : colorInfo[idx].unitPrice;
+  inventoryQyBox.value = colorInfo[idx].INVENTORY_QY ? numberFormatter(colorInfo[idx].INVENTORY_QY) : 0;
+  storingQyBox.value = colorInfo[idx].STORING_QY ? numberFormatter(colorInfo[idx].STORING_QY) : 0;
 }
 
 /******************** 발주목록 추가 ********************/	
@@ -473,22 +467,22 @@ function insertRow(rowKey){
 		failToast('업체와 자재를 선택해주세요.');
 		return;
 	} else if(mtrCodeBox.value == ''){ // 타임리프 페이지(발주계획)에서는 업체 선택 필수 아님.
-    failToast('자재를 선택해주세요.');
-    return;
-  }
+        failToast('자재를 선택해주세요.');
+        return;
+    }
 	if(orderQy == ''){
 		failToast('수량을 입력해주세요.');
-    orderQyBox.focus();
+        orderQyBox.focus();
 		return;
 	}
 	// 입력값에 대해 유효성검사
 	if(isNaN(orderQy)){ // 숫자가 아닌 경우
 		failToast('수량에 문자가 들어갈 수 없습니다.');
-    orderQyBox.focus();
+        orderQyBox.focus();
 		return;
 	} else if (orderQy < 0){ // 음수인 경우
 		failToast('수량은 음수가 될 수 없습니다.');
-    orderQyBox.focus();
+        orderQyBox.focus();
 		return;
 	}
 	
@@ -508,27 +502,23 @@ function insertRow(rowKey){
 	if(rowKey != null) orderGrid.setRow(rowKey, insertObj);
 	else orderGrid.appendRow(insertObj);
 	getSum();
-  orderQyBox.value = '';
-  orderQyBox.focus();
+    orderQyBox.value = '';
+    if(isModifying) modifyMode(false);
+    else orderQyBox.focus();
 }
 
-document.getElementById('insertBtn').addEventListener('click', () => {
-	insertRow();
-});
+document.getElementById('insertBtn').addEventListener('click', () => insertRow());
 
 orderQyBox.addEventListener('keyup', e => {
   if(e.key == 'Enter'){
     if(!isModifying) insertRow();
-    else {
-      insertRow(modifyRowKey);
-      modifyMode(false);
-    }
+    else insertRow(modifyRowKey);
   }
 });
 
 let modifyRowKey;
 // 발주목록에 넣은 데이터 수정하기
-orderGrid.on('focusChange', ev => {
+orderGrid.on('focusChange', async ev => {
 	orderGrid.removeRowClassName(ev.prevRowKey, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	orderGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 	
@@ -536,6 +526,7 @@ orderGrid.on('focusChange', ev => {
 	
 	// 입력정보 재표시
 	let row = orderGrid.getRow(ev.rowKey);
+	
 	compCodeBox.value = row.companyCode;
 	compNameBox.value = row.companyName;
 	mtrCodeBox.value = row.productCode;
@@ -543,33 +534,26 @@ orderGrid.on('focusChange', ev => {
 	orderQyBox.value = row.orderQy;
 	unitNameBox.value = row.unitName;
 	
-	colorInfo = row.colorInfo; // 저장해둔 색상 배열 가져오기
-  if(colorInfo != null){
-  	let colorIdx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == row.productColor);
-  	let lastIdx = colorInfo.length - 1;
-  	colorBox.innerHTML = '<option value="null">미선택</option>';
-  				
-  	for(let i = 0; i < lastIdx; i++){ // 마지막 null옵션 제외하고 태그 생성			
-  		let opt = document.createElement('option');
-  		opt.value = colorInfo[i].PRODUCT_COLOR;
-  		opt.innerText = colorInfo[i].PRODUCT_COLOR;
-  		colorBox.append(opt);
-  	}
-  	inventoryQyBox.value = colorInfo[colorIdx].INVENTORY_QY; // 저장된 정보로 재고 등 표시
-  	let storingQy = colorInfo[colorIdx].STORING_QY;
-  	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	
-  	unitPriceBox.value = numberFormatter(colorInfo[colorIdx].UNIT_PRICE);    
-  } else {
-    loadOptionPrice();
-  }
-	colorBox.value = row.productColor;
+    if(row.colorInfo == null) await loadColorPriceInfo(row);
+	else colorInfo = row.colorInfo; // 저장해둔 값이 있으면 가져오기
+	
+    colorBox.innerHTML = '<option value="null">미선택</option>';
+    	
+    for(let i = 0; i < colorInfo.length - 1; i++){ // 마지막 null옵션 제외하고 태그 생성			
+      let opt = document.createElement('option');
+      opt.value = colorInfo[i].PRODUCT_COLOR;
+      opt.innerText = colorInfo[i].PRODUCT_COLOR;
+      colorBox.append(opt);
+    }
+    
+    changeByColorInfo(row.productColor);     
+    colorBox.value = row.productColor;
 	
 	modifyMode(true); // 수정모드로 전환
 });
 
 document.getElementById('modifyBtn').addEventListener('click', () => {
 	insertRow(modifyRowKey);
-	modifyMode(false); // 수정모드 종료
 });
 
 document.getElementById('modifyCancelBtn').addEventListener('click', () => {
@@ -641,7 +625,7 @@ function insertOrder(){
 	
 	// 업체별 발주서 비고/납기일 조정 모달 표시
 	insertGrid.resetData(modalData);
-  document.getElementById('insertCnt').innerText = modalData.length;
+    document.getElementById('insertCnt').innerText = modalData.length;
 	modalTitle.innerText = '등록 확인';
   
 	insertListDiv.style.display = '';
@@ -684,13 +668,15 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
-  planListDiv.style.display = 'none';
+    planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
 }
 
 /******************** 발주계획 불러오기 ********************/ 
 function loadPlanData(planCode){  
+  if(isModifying) modifyMode(false);
+  
   fetch(`/supply/orderPlan/${planCode}`) // 단건조회한 결과를 발주목록에 그대로 추가함.
   .then(response => response.json())
   .then(result => {
