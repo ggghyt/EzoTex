@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.standard.dto.CompanyDTO;
+import com.ezotex.supply.dto.MaterialOrderPlanDTO;
 
 public interface MaterialOrderMapper {
 	// 발주할 업체 조회
@@ -26,4 +27,11 @@ public interface MaterialOrderMapper {
 	// 발주계획서 등록
 	int insertMaterialOrderPlan(Object dto);
 	int insertMaterialOrderPlanDetail(Object dto);
+	
+	// 발주계획서 조회
+	List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map);
+	int countOrderPlan(Map<String, Object> map);
+	
+	// 발주계획서 조회(단건)
+	List<MaterialOrderPlanDTO> infoOrderPlan(String mtrilOrderPlanCode);
 }

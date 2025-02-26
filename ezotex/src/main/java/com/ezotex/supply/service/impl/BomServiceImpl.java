@@ -67,7 +67,6 @@ public class BomServiceImpl implements BomService {
 	@Override
 	@Transactional
 	public boolean insertBom(Map<String, Object> boms) {
-		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
 		int bomResult = mapper.insertBom(boms.get("headerObj"));
 		
 		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요

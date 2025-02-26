@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.standard.dto.ProductDTO;
+import com.ezotex.supply.dto.MaterialOrderPlanDTO;
 import com.ezotex.supply.service.impl.BomServiceImpl;
 import com.ezotex.supply.service.impl.MaterialOrderServiceImpl;
 import com.ezotex.supply.service.impl.SupplyServiceImpl;
@@ -135,11 +136,36 @@ public class SupplyRestController {
 		return list;
 	}
 	
-	// 공급계획서 등록
+	// 발주서 등록
 	@PostMapping("mtrOrder")
 	public Boolean insertMaterialOrder(@RequestBody Map<String, Object> orderList) {
 		log.info("orderList::: " + orderList.toString());
 		return orderService.insertMaterialOrder(orderList); // true/false 반환
 	}
 	
+	// 발주계획서 등록
+	@PostMapping("mtrOrderPlan")
+	public Boolean insertMaterialOrderPlan(@RequestBody Map<String, Object> orderPlanList) {
+		log.info("orderPlanList::: " + orderPlanList.toString());
+		return orderService.insertMaterialOrderPlan(orderPlanList); // true/false 반환
+	}
+	
+	// 발주계획서 목록 
+	@GetMapping("orderPlanList")
+	public Map<String, Object> orderPlanList(@RequestParam Map<String, Object> params, // 검색 조건 파라미터
+										@RequestParam(value="status", required=false) String[] status) { // List타입은 2개 이상 값이 필수라 배열로 받음.
+		params.put("status", status);
+		int totalCnt = orderService.countOrderPlan(params);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, orderService.listOrderPlan(params));
+		log.info(map.toString());
+		return map;
+	}
+	
+	// 발주계획서 단건조회
+	@GetMapping("orderPlan/{code}")
+	public List<MaterialOrderPlanDTO> orderPlan(@PathVariable String code) {
+		List<MaterialOrderPlanDTO> result = orderService.infoOrderPlan(code);
+		log.info(result.toString());
+		return result;
+	}
 }

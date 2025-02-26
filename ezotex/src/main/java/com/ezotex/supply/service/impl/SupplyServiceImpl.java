@@ -49,7 +49,6 @@ public class SupplyServiceImpl implements SupplyService {
 	@Override
 	@Transactional
 	public boolean insertSupplyPlan(Map<String, Object> supplies) {
-		// 트랜잭션 커밋/롤백 여부가 정상적으로 반환되는지 확인 필요.
 		// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
 		SupplyDTO header = objMapper.convertValue(supplies.get("headerObj"), SupplyDTO.class); // DTO로 변환
 		int headerResult = mapper.insertSupplyPlan(header);

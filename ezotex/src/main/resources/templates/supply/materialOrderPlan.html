@@ -19,44 +19,77 @@
 	<body>
 	   <h3 class="fs-3 fw-bold">| 발주계획서 등록</h3>
 	   <!-- 타임리프 fragment 사용하여 html, js 통째로 복사 -->
+	   <script>
+	     
+	   </script>
 		<div th:replace="~{supply/materialOrder :: materialOrder(th)}">
 		</div>
 		<script>
 			// 타임리프로 가져온 페이지에서 스크립트까지 오버라이딩하여 재사용
-		  	// * 업체 입력 필수 아님
+			// * 업체 입력 필수 아님
 			// * 날짜선택 현재 + 3일뒤부터 가능
-			
-			// DatePicker options 속성에 반영
 			let dateLimit = new Date();
-			dateLimit.setDate(dateLimit.getDate() + 3); // 계획납기일은 최소 오늘+3일부터 선택 가능
+      dateLimit.setDate(dateLimit.getDate() + 3);
 			
-			let col = insertGrid.getColumn('dueDate');
-			let value = [dateLimit, new Date('9999-12-31')];
-			col.editor.options.selectableRanges = [value]; // 2차원 배열 속성에 반영
+		  // 이벤트리스너 제거 (인자가 완전히 동일해야 함)
+			document.removeEventListener('DOMContentLoaded', orderDomEventHandler);
+			// 이벤트리스너 재등록
+			const planDomEventHandler = function (){
+        changeClas(lclasBox, sclasBox);
+        dueDateBox.min = dateFormatter(dateLimit);
+        
+        createModal({ 
+          type: 'regist',
+          content: '발주계획서를 등록하시겠습니까?',
+          confirm: insertOrderPlan
+        });
+        $('#finalBtn').on('click', () => {
+          let orderData = orderGrid.getData();
+          if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
+          else if(dueDateBox.value == ''){
+            failToast('납기일을 입력해주세요.');
+            return;
+          }
+          $('#simpleModal').modal('show');
+        });
+      }
+			document.addEventListener('DOMContentLoaded', planDomEventHandler);
 			
-			// 이벤트 중첩 방지
-			document.removeEventListener(); // 이벤트리스너 삭제 후 재입력
-			document.addEventListener('DOMContentLoaded', () => {  
-			  changeClas(lclasBox, sclasBox);
-			  dueDateBox.min = dateFormatter(dateLimit); // dateLimit: 타임리프 스크립트에서 선언
-			  
-			  $('#finalBtn').on('click', () => {
-			    let orderData = orderGrid.getData();
-			    if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
-			    insertOrder();
-			  });
-			});
 		  
 		  /******************** 발주계획 등록 ********************/ 
-		  
-		  
-		  createModal({ 
-		    type: 'regist',
-		    confirm: insertPlan
-		  });
-		  function insertOrder(){
+		  function insertOrderPlan(){
+			  let planData = orderGrid.getData();
+			  console.log(planData);
 			  
-		  }
+			  // 헤더 정보 #{dueDate}, #{chargerCode}, #{chargerName}, #{remark}
+			  let headerObj = {
+				  dueDate: dueDateBox.value,
+			    chargerCode: session_user_code,
+			    chargerName: session_user_name,
+			    remark: document.getElementById('remark').value
+			  };
+			  console.log('헤더:: ', headerObj);
+			  
+			  // 디테일 정보 #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor}
+			  // => orderGrid에 있는 데이터들이라 통째로 전송
+			  
+			  loading();
+			  fetch('/supply/mtrOrderPlan', {
+			    method: 'POST',
+			    headers: {...headers, 'Content-Type': 'application/json'},
+			    body: JSON.stringify({headerObj, detailArr: planData})
+			  })
+			  .then(response => response.json())
+			  .then(result => {
+			    console.log(result);
+			    if(result == true){
+			      successToast('발주계획서가 등록되었습니다.');
+			      orderGrid.resetData([]);
+			      getSum(); // 합계 초기화
+			      closeAll();
+			    } else failToast('알 수 없는 오류로 실패했습니다.');
+			  });
+			}
 		</script>
 	</body>
 </html>

@@ -13,22 +13,30 @@ let inventoryQyBox = document.getElementById('inventoryQy');
 let storingQyBox = document.getElementById('storingQy');
 let orderQyBox = document.getElementById('qy');
 let dueDateBox = document.getElementById('dueDate');
+////////////////////// 평균소요일, 안전재고량 쿼리+코드에 반영해야 함.
 
-document.addEventListener('DOMContentLoaded', () => {	
-	changeClas(lclasBox, sclasBox);
-	//document.getElementById('chargerName').value = session_user_name;
-	dueDateBox.min = dateFormatter(); // 오늘 이전 날짜 선택 방지
+const orderDomEventHandler = function (){ 
+  changeClas(lclasBox, sclasBox);
+  //document.getElementById('chargerName').value = session_user_name;
+  dueDateBox.min = dateFormatter(); // 오늘 이전 날짜 선택 방지
   
-	$('#finalBtn').on('click', () => {
-		let orderData = orderGrid.getData();
-		if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
-		else if(dueDateBox.value == '' && th == null){ // th: 타임리프로 받은 변수
-			failToast('납기일을 입력해주세요.');
-			return;
-		}
-		insertOrder();
-	});
-});
+  $('#finalBtn').on('click', () => {
+    let orderData = orderGrid.getData();
+    if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 미실행
+    else if(orderData.filter(data => data.companyCode != null) != orderGrid.getRowCount()){
+      // 발주계획에서 불러온 데이터의 경우 업체코드가 필수값이 아니므로, 발주서에서는 모두 입력되어야 함.
+      failToast('업체코드가 모두 선택되지 않았습니다.');
+      return;
+    }
+    else if(dueDateBox.value == ''){
+      failToast('납기일을 입력해주세요.');
+      return;
+    }
+    insertOrder();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', orderDomEventHandler);
 
 // 로그인정보 fetch 이후에 실행되는 커스텀 이벤트
 document.addEventListener('login', () => $('#chargerName').val(session_user_name))
@@ -71,9 +79,13 @@ compCodeBox.onclick = () => { // 업체코드 input 클릭 시 현재 값으로 
 	};
 	loadModalGrid('company', valueObj);
 };
+
 mtrCodeBox.onclick = () => { // 자재코드 input 클릭 시 현재 값으로 모달 호출
 	loadModalGrid('material', { companyCode: compCodeBox.value });
 };
+
+// 발주계획서 불러오기
+document.getElementById('loadPlanBtn').addEventListener('click', () => loadModalGrid('orderPlan', {}));
 
 /******************** Tui Grid Custom Renderer ********************/	
 // 행 삭제버튼 커스텀 렌더링
@@ -104,7 +116,7 @@ class CustomDelBtnRender {
   }
 }
 
-let selectedMtr = {};
+let selectedMtr = null;
 // 선택버튼 커스텀 렌더링
 class CustomBtnRender {
   constructor(props) {
@@ -122,12 +134,16 @@ class CustomBtnRender {
 			unitNameBox.value = selectedMtr.UNIT_NAME;
 			unitPriceBox.value = numberFormatter(selectedMtr.UNIT_PRICE); // 기본단가
 			inventoryQyBox.value = numberFormatter(selectedMtr.INVENTORY_QY);
-		} else {
+		} else if(type == 'comp') {
 			let selectedComp = companyGrid.getRow(props.rowKey);
 			compCodeBox.value = selectedComp.companyCode;
 			compNameBox.value = selectedComp.companyName;
-		}
-		loadOptionPrice(); 
+		} else {
+      let selectedPlan = planGrid.getRow(props.rowKey);
+      loadPlanData(selectedPlan.mtrilOrderPlanCode);
+    }
+    
+		if(type != 'plan')loadOptionPrice(); 
 		closeAll();
 		$('#myModal').modal('hide');
 	});
@@ -195,14 +211,14 @@ const companyGrid = new Grid({
   	scrollY: false, // 세로 스크롤
   	summary: {
   		 height: 30,
-		 position: 'bottom', // or 'top'
-		 columnContent: {
-		 		companyCode: { // 컬럼명
-		         template: (valueMap) => {
-		             return `총 ${valueMap.cnt}건`
-		         }
-		     }
-		 }
+  		 position: 'bottom', // or 'top'
+  		 columnContent: {
+  		 		companyCode: { // 컬럼명
+  		         template: (valueMap) => {
+  		             return `총 ${valueMap.cnt}건`
+  		         }
+  		     }
+  		 }
      }
 });
 
@@ -213,8 +229,8 @@ const orderGrid = new Grid({
     columns: [
 			  { header: '업체코드', name: 'companyCode', sortable: true },
 		    { header: '업체명', name: 'companyName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
-		    { header: '제품코드', name: 'productCode', sortable: true },
-		    { header: '제품명', name: 'productName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
+		    { header: '자재코드', name: 'productCode', sortable: true },
+		    { header: '자재명', name: 'productName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
 			  { header: '색상', name: 'productColor', sortable: true, formatter: row => row.value == 'null' ? null : row.value},
 	    	{ header: '수량', name: 'orderQy', sortable: true, align: 'right',
 			  		formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
@@ -269,6 +285,41 @@ const insertGrid = new Grid({
   	bodyHeight: 200
 });
 
+// 발주계획서 불러오기 그리드
+const planGrid = new Grid({
+    el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
+    columns: [
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode' },
+        { header: '납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
+        { header: '요약', name: 'summary', width: 150 },
+        { header: '발주계획량', name: 'orderQy', align: 'right',
+            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
+        { header: '비고', name: 'remark', whiteSpace: 'pre-line', width: 150 },
+        { header: '담당자', name: 'chargerName' },
+        { header: '최종수정일', name: 'updateDate', formatter: (row) => dateFormatter(row.value) },
+        { header: '', name: '', className: 'plan', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
+    ],
+    rowHeaders: ['rowNum'],
+    pageOptions: {
+        useClient: true, // 페이징을 위해 필요
+        perPage: 5
+    },
+    scrollX: false, // 가로 스크롤
+    scrollY: false, // 세로 스크롤
+    bodyHeight: 200,
+    summary: {
+       height: 30,
+       position: 'bottom', // or 'top'
+       columnContent: {
+          mtrilOrderPlanCode: { // 컬럼명
+               template: (valueMap) => {
+                   return `총 ${valueMap.cnt}건`
+               }
+           }
+       }
+   }
+});
+
 /******************** Tui Grid 출력 ********************/
 // 모달 El
 let modalTitle = document.getElementById('modalTitle');
@@ -276,31 +327,47 @@ let confirmBtn = document.getElementById('confirmBtn');
 let closeBtn = document.getElementById('closeBtn');
 let mtrListDiv = document.getElementById('materialList');
 let compListDiv = document.getElementById('companyList');
+let planListDiv = document.getElementById('planList');
 let insertListDiv = document.getElementById('insertList');
 
-// 모달의 자재/업체 목록 출력
-function loadModalGrid(type, obj){ // type: 'material' or 'company'
-	let query = new URLSearchParams(obj);
+// 모달의 선택 목록 출력 (업체/자재/발주계획서 선택)
+function loadModalGrid(type, obj){ // type: 'material' or 'company' or 'orderPlan'
+	let {status, ...others} = obj;
+  let query = new URLSearchParams(others);
+  
+  // 배열값이 있는 경우 쿼리스트링을 직접 만들어야 정상 출력
+  if(status) status.forEach(code => query += `&status=${code}` );
 	
 	fetch(`/supply/${type}List?${query}`)
 	.then(response => response.json())
 	.then(result => {
-		let data = result.data.contents;
-		console.log(data);
-		// 데이터 입력
+    let data = result.data.contents;
+    console.log(data);
+    
+    let gridArr = [
+      {grid: prdGrid, div: mtrListDiv},
+      {grid: companyGrid, div: compListDiv},
+      {grid: planGrid, div: planListDiv}
+    ];
+    let gridArrIdx;
 		if(type == 'material'){
 			modalTitle.innerText = '자재 선택';
-			prdGrid.resetData(data);
-			mtrListDiv.style.display = '';
-		} else {
+      gridArrIdx = 0;
+		} else if(type == 'company'){
 			modalTitle.innerText = '업체 선택';
-			companyGrid.resetData(data);
-			compListDiv.style.display = '';
-		}
+      gridArrIdx = 1;
+		} else {
+      modalTitle.innerText = '발주계획서 목록';
+      gridArrIdx = 2;
+    }
+    // 데이터 입력 
+    gridArr[gridArrIdx].grid.resetData(data);
+    gridArr[gridArrIdx].div.style.display = '';
 		// 모달 표시
 		$('#myModal').modal('show');
-		prdGrid.refreshLayout();
-		companyGrid.refreshLayout();
+		if(gridArrIdx == 0) prdGrid.refreshLayout();
+		else if(gridArrIdx == 1) companyGrid.refreshLayout();
+    else planGrid.refreshLayout();
 	});
 }
 
@@ -317,7 +384,7 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 });
 
 // 업체 목록 검색 적용
-document.getElementById('ComSearchBtn').addEventListener('click', () => {
+document.getElementById('comSearchBtn').addEventListener('click', () => {
 	let dto = {
 		companyCode: document.getElementById('scCompanyCode').value,
 		companyName: document.getElementById('scCompanyName').value,
@@ -326,6 +393,21 @@ document.getElementById('ComSearchBtn').addEventListener('click', () => {
 		productColor: colorBox.value
 	};
 	loadModalGrid('company', dto);
+});
+
+// 발주계획 목록 검색 적용 
+document.getElementById('planSearchBtn').addEventListener('click', () => {
+  let checkedValues = document.querySelectorAll('input[name="status"]:checked');
+  checkedValues = Array.from(checkedValues).map(ele => ele.value); // 가상의 노드들을 얕은 복사하여 배열처리
+  
+  let dto = {
+    mtrilOrderPlanCode: document.getElementById('mtrilOrderPlanCode').value,
+    chargerName: document.getElementById('scChargerName').value,
+    dueMin: document.getElementById('dueMin').value,
+    dueMax: document.getElementById('dueMax').value,
+    status: checkedValues
+  };
+  loadModalGrid('orderPlan', dto);
 });
 	
 let colorInfo = []; // 옵션 정보 저장
@@ -360,8 +442,10 @@ function loadOptionPrice(){
 			  unitPriceBox.value = numberFormatter(result[colorIdx].UNIT_PRICE);
 			} 
 			colorInfo = result; // 색상 선택에따라 내용을 변경하기 위해 저장
-			selectedMtr.PRODUCT_COLOR = 'null';
-			colorInfo.push(selectedMtr); // 자재 기본정보(null옵션) 맨끝에 추가
+      if(selectedMtr != null){
+  			selectedMtr.PRODUCT_COLOR = 'null';
+  			colorInfo.push(selectedMtr); // 자재 기본정보(null옵션) 맨끝에 추가        
+      }
 			changeByColor(colorBox.value);
 	});	
 }
@@ -373,10 +457,12 @@ colorBox.addEventListener('change', e => {
 // 색상 선택 시 단가 및 정보 재반영
 function changeByColor(val){
 	let idx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == val);
-	unitPriceBox.value = numberFormatter(colorInfo[idx].UNIT_PRICE);
-	inventoryQyBox.value = numberFormatter(colorInfo[idx].INVENTORY_QY);
-	let storingQy = colorInfo[idx].STORING_QY;
-	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	
+  if(idx != -1){
+  	unitPriceBox.value = numberFormatter(colorInfo[idx].UNIT_PRICE);
+  	inventoryQyBox.value = numberFormatter(colorInfo[idx].INVENTORY_QY);
+  	let storingQy = colorInfo[idx].STORING_QY;
+  	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	    
+  }
 }
 
 /******************** 발주목록 추가 ********************/	
@@ -458,21 +544,25 @@ orderGrid.on('focusChange', ev => {
 	unitNameBox.value = row.unitName;
 	
 	colorInfo = row.colorInfo; // 저장해둔 색상 배열 가져오기
-	let colorIdx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == row.productColor);
-	let lastIdx = colorInfo.length - 1;
-	colorBox.innerHTML = '<option value="null">미선택</option>';
-				
-	for(let i = 0; i < lastIdx; i++){ // 마지막 null옵션 제외하고 태그 생성			
-		let opt = document.createElement('option');
-		opt.value = colorInfo[i].PRODUCT_COLOR;
-		opt.innerText = colorInfo[i].PRODUCT_COLOR;
-		colorBox.append(opt);
-	}
+  if(colorInfo != null){
+  	let colorIdx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == row.productColor);
+  	let lastIdx = colorInfo.length - 1;
+  	colorBox.innerHTML = '<option value="null">미선택</option>';
+  				
+  	for(let i = 0; i < lastIdx; i++){ // 마지막 null옵션 제외하고 태그 생성			
+  		let opt = document.createElement('option');
+  		opt.value = colorInfo[i].PRODUCT_COLOR;
+  		opt.innerText = colorInfo[i].PRODUCT_COLOR;
+  		colorBox.append(opt);
+  	}
+  	inventoryQyBox.value = colorInfo[colorIdx].INVENTORY_QY; // 저장된 정보로 재고 등 표시
+  	let storingQy = colorInfo[colorIdx].STORING_QY;
+  	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	
+  	unitPriceBox.value = numberFormatter(colorInfo[colorIdx].UNIT_PRICE);    
+  } else {
+    loadOptionPrice();
+  }
 	colorBox.value = row.productColor;
-	inventoryQyBox.value = colorInfo[colorIdx].INVENTORY_QY;
-	let storingQy = colorInfo[colorIdx].STORING_QY;
-	storingQyBox.value = typeof(storingQy) == 'undefined' ? '' : numberFormatter(storingQy);	
-	unitPriceBox.value = numberFormatter(colorInfo[colorIdx].UNIT_PRICE);
 	
 	modifyMode(true); // 수정모드로 전환
 });
@@ -518,10 +608,10 @@ function getSum(){
 /******************** 발주서 등록 ********************/	
 let insertObj;
 function insertOrder(){
-	let defaultRemark = document.getElementById('remark').value;
 	let orderData = orderGrid.getData();
+  let defaultRemark = document.getElementById('remark').value;
 	
-	let companyArr = new Set( orderData.map(data => data.companyCode) );
+  let companyArr = new Set( orderData.map(data => data.companyCode) );
 	companyArr = [...companyArr]; // 중복값 제거하여 다시 배열로 변환
 	
 	let modalData = [];
@@ -594,6 +684,21 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
+  planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
+}
+
+/******************** 발주계획 불러오기 ********************/ 
+function loadPlanData(planCode){  
+  fetch(`/supply/orderPlan/${planCode}`) // 단건조회한 결과를 발주목록에 그대로 추가함.
+  .then(response => response.json())
+  .then(result => {
+    console.log(result);
+    result.forEach(data => {
+      data.amount = data.unitPrice * data.orderQy; // 총 금액 계산
+    });
+    orderGrid.resetData(result);
+    getSum();
+  });
 }
