@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -136,6 +137,9 @@ public class CommonController {
 		return "redirect:/login/main";
 	}
 	
+	@Value("${file_img}")
+	String file_img;
+	
 	// company 회원 가입
 	@PostMapping("/company_submit")
 	public String company_submit(CompanyDTO companyDTO, RedirectAttributes attr) throws Exception {
@@ -143,7 +147,7 @@ public class CommonController {
 		UUID uuid = UUID.randomUUID();
 		
 		String uuidFileName = uuid + "_" + file.getOriginalFilename();
-		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		file.transferTo(new File(file_img + uuidFileName));
 		companyDTO.setCompanyImg(uuidFileName);
 		
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);

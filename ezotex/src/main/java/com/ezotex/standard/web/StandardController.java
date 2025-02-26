@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.StorageDTO;
+import com.ezotex.standard.dto.StorageProductDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
 import com.ezotex.store.dto.storageInfoDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -108,13 +110,16 @@ public class StandardController {
 		return service.unitNameList();
 	}
 	
+	@Value("${file_img}")
+	String file_img;
+	
 	// 제품 등록, 업데이트
 	@PostMapping("/productInsert")
 	public String productInsert(ProductListInfoDTO productListInfoDTO, RedirectAttributes attr) throws Exception {
 		MultipartFile file = productListInfoDTO.getImgFile();
 		UUID uuid = UUID.randomUUID();
 		String uuidFileName = uuid + "_" + file.getOriginalFilename();
-		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		file.transferTo(new File(file_img + uuidFileName));
 		productListInfoDTO.setImg(uuidFileName);
 		
 		
@@ -180,5 +185,80 @@ public class StandardController {
 	@GetMapping("/storageInfoList")
 	public List<StorageDTO> storageInfoList(@RequestParam(name="storageCode") String storageCode) {
 		return service.storageInfoList(storageCode);
+	}
+	
+	@ResponseBody
+	@GetMapping("/storageVl")
+	public int storageVl(@RequestParam(name="storageInfoCode") String storageInfoCode) {
+		return service.storageVl(storageInfoCode);
+	}
+	
+	@ResponseBody
+	@GetMapping("/insertStorage")
+	public void insertStorage(@RequestParam(name="storageName") String storageName) {
+		service.insertStorage(storageName);
+	}
+	
+	@ResponseBody
+	@GetMapping("/updateStorage")
+	public void updateStorage(@RequestParam(name="storageCode") String storageCode, 
+			                  @RequestParam(name="storageName") String storageName, 
+						      @RequestParam(name="maxRow") int maxRow, 
+			                  @RequestParam(name="maxCol") int maxCol) {
+		StorageDTO storageDTO = new StorageDTO();
+		storageDTO.setStorageCode(storageCode);
+		storageDTO.setStorageName(storageName);
+		storageDTO.setMaxRow(maxRow);
+		storageDTO.setMaxCol(maxCol);
+		service.updateStorage(storageDTO);
+	}
+	
+	@ResponseBody
+	@GetMapping("/insertStorageInfo")
+	public void insertStorageInfo(@RequestParam(name="storageCode") String storageCode, 
+                                  @RequestParam(name="selectRow") int selectRow, 
+		                          @RequestParam(name="selectCol") int selectCol, 
+                                  @RequestParam(name="storageInfoName") String storageInfoName, 
+                                  @RequestParam(name="vl") String vl) {
+		StorageDTO storageDTO = new StorageDTO();
+		storageDTO.setStorageCode(storageCode);
+		storageDTO.setSelectRow(selectRow);
+		storageDTO.setSelectCol(selectCol);
+		storageDTO.setStorageInfoName(storageInfoName);
+		storageDTO.setVl(vl);
+		service.insertStorageInfo(storageDTO);
+	}
+	
+	@ResponseBody
+	@GetMapping("/updateStorageInfo")
+	public void updateStorageInfo(@RequestParam(name="storageCode") String storageCode, 
+                                  @RequestParam(name="selectRow") int selectRow, 
+		                          @RequestParam(name="selectCol") int selectCol, 
+                                  @RequestParam(name="storageInfoName") String storageInfoName, 
+                                  @RequestParam(name="vl") String vl) {
+		StorageDTO storageDTO = new StorageDTO();
+		storageDTO.setStorageCode(storageCode);
+		storageDTO.setSelectRow(selectRow);
+		storageDTO.setSelectCol(selectCol);
+		storageDTO.setStorageInfoName(storageInfoName);
+		storageDTO.setVl(vl);
+		service.updateStorageInfo(storageDTO);
+	}
+	
+	@ResponseBody
+	@GetMapping("/StorageProductList")
+	public List<StorageProductDTO> StorageProductList(@RequestParam(name="storageCode") String storageCode, 
+                                                      @RequestParam(name="selectRow") int selectRow, 
+                                                      @RequestParam(name="selectCol") int selectCol, 
+                                                      @RequestParam(name="storageInfoName") String storageInfoName, 
+                                                      @RequestParam(name="vl") String vl) {
+		StorageDTO storageDTO = new StorageDTO();
+		storageDTO.setStorageCode(storageCode);
+		storageDTO.setSelectRow(selectRow);
+		storageDTO.setSelectCol(selectCol);
+		storageDTO.setStorageInfoName(storageInfoName);
+		storageDTO.setVl(vl);
+		service.StorageProductList(storageDTO);
+		return null;
 	}
 }

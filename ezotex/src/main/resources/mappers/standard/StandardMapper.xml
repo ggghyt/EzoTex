@@ -283,8 +283,8 @@ and product_size = #{productSize}
 
 <update id="updateOption" parameterType="ProductOptionDTO">
 update product_option
-set unit_price = #{unitPrice}, 
-    discontinued = #{discontinued}
+set discontinued = #{discontinued}
+    <if test='unitPrice > 0'> , unit_price = #{unitPrice} </if>
 where product_code = #{productCode}
 and product_color = #{productColor}
 and product_size = #{productSize}
@@ -312,4 +312,62 @@ from storage_info
 where storage_code = #{storageCode}
 </select>
 
+<select id="storageVl">
+select NVL(sum(storage_product.qy * product_info.vl), 0) as total
+from storage_product
+join product_info
+on storage_product.product_code = product_info.product_code
+where storage_info_code = #{storageInfoCode}
+</select>
+
+<insert id="insertStorage">
+insert into storage
+values(concat('STO', LPAD(STORAGE_SEQ.nextval, 4, 0)), 
+       #{storageName}, 
+       5, 
+       5
+)
+</insert>
+
+<update id="updateStorage" parameterType="StorageDTO">
+update storage
+set storage_code = #{storageCode}, 
+    max_row = #{maxRow}, 
+    max_col = #{maxCol}
+where storage_code = #{storageCode}
+</update>
+
+<insert id="insertStorageInfo" parameterType="StorageDTO">
+insert into storage_info
+values(STORAGE_INFO_SEQ.nextval, 
+       #{storageCode}, 
+       #{selectRow}, 
+       #{selectCol}, 
+       #{storageInfoName}, 
+       #{vl}
+)
+</insert>
+
+<update id="updateStorageInfo" parameterType="StorageDTO">
+update storage_info
+set storage_info_name = #{storageInfoName},
+    vl = #{vl}
+where storage_code = #{storageCode}
+and select_row = #{selectRow}
+and select_col = #{selectCol}
+</update>
+
+<select id="StorageProductList" resultType="StorageProductDTO">
+select *
+from storage_product
+where storage_info_code = #{storageInfoCode}
+</select>
+
+<select id="findStorageInfoCode" parameterType="StorageDTO">
+select storage_info_code
+from storage_info
+where storage_code = #{storageCode}
+and select_row = #{selectRow}
+and select_col = #{selectCol}
+</select>
 </mapper>

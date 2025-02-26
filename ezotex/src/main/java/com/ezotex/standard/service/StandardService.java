@@ -13,6 +13,7 @@ import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.dto.StorageDTO;
+import com.ezotex.standard.dto.StorageProductDTO;
 
 public interface StandardService {
 	int searchId(String id);
@@ -37,4 +38,10 @@ public interface StandardService {
 	int UpdateOption(List<ProductOptionDTO> productOptionDTO);
 	List<StorageDTO> storageList();
 	List<StorageDTO> storageInfoList(String storageCode);
+	int storageVl(String storageInfoCode);
+	int insertStorage(String storageName);
+	int updateStorage(StorageDTO storageDTO);
+	int insertStorageInfo(StorageDTO storageDTO);
+	int updateStorageInfo(StorageDTO storageDTO);
+	List<StorageProductDTO> StorageProductList(StorageDTO storageDTO);
 }

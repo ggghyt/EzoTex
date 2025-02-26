@@ -18,6 +18,7 @@ import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.dto.StorageDTO;
+import com.ezotex.standard.dto.StorageProductDTO;
 import com.ezotex.standard.mappers.StandardMapper;
 import com.ezotex.standard.service.StandardService;
 
@@ -114,14 +115,10 @@ public class StandardServiceImpl implements StandardService {
 
 	@Override
 	public int ProductInfoInsert(ProductListInfoDTO productListInfoDTO) {
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		System.out.println(productListInfoDTO.toString());
-		System.out.println(productListInfoDTO.getProductCode() == "");
 		if (productListInfoDTO.getProductCode().length() < 1) {
-			System.out.println("##########################################");
 			return mapper.ProductInfoInsert(productListInfoDTO);
 		} else {
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			System.out.println(productListInfoDTO.toString());
 			return mapper.ProductInfoUpdate(productListInfoDTO);
 		}
 	}
@@ -183,6 +180,36 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<StorageDTO> storageInfoList(String storageCode) {
 		return mapper.storageInfoList(storageCode);
+	}
+
+	@Override
+	public int storageVl(String storageInfoCode) {
+		return mapper.storageVl(storageInfoCode);
+	}
+
+	@Override
+	public int insertStorage(String storageName) {
+		return mapper.insertStorage(storageName);
+	}
+
+	@Override
+	public int updateStorage(StorageDTO storageDTO) {
+		return mapper.updateStorage(storageDTO);
+	}
+
+	@Override
+	public int insertStorageInfo(StorageDTO storageDTO) {
+		return mapper.insertStorageInfo(storageDTO);
+	}
+
+	@Override
+	public int updateStorageInfo(StorageDTO storageDTO) {
+		return mapper.updateStorageInfo(storageDTO);
+	}
+
+	@Override
+	public List<StorageProductDTO> StorageProductList(StorageDTO storageDTO) {
+		return mapper.StorageProductList(mapper.findStorageInfoCode(storageDTO));
 	}
 
 	
