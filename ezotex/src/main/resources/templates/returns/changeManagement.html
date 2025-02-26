@@ -1,0 +1,129 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 교환 관리</h3>
+	<br>
+	<div id="changeGrid"></div>
+	<div id="changeProductGrid"></div>
+	<div>
+		<button type="button" class="btn btn-primary">교환등록</button>
+	</div>
+	<script th:inline="javascript">
+		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const changeList = /*[[${getChangeList}]]*/[];
+
+		const changeGrid = new tui.Grid({
+			el : document.getElementById("changeGrid"),
+			data : changeList,
+			scrollX : false, // 가로 스크롤바 비활성화
+			scrollY : false, // 세로 스크롤바 비활성화
+			bodyHeight : 200,
+			rowHeight : 'auto',
+			columns : [ {
+				header : "반품코드",
+				name : "returnCode",
+				align : 'center',
+			}, {
+				header : "납품코드",
+				name : "deliveryCode",
+				align : 'center',
+			}, {
+				header : "업체코드",
+				name : "companyCode",
+				align : 'center',
+			}, {
+				header : "업체명",
+				name : "companyName",
+				align : 'center',
+			}, {
+				header : "업체담당자",
+				name : "companyCharger",
+				align : 'center',
+			}, {
+				header : "업체 전화번호",
+				name : "companyPhone",
+				align : "center",
+			}, {
+				header : "요청자",
+				name : "requestor",
+				align : 'center',
+			}, {
+				header : "요청일",
+				name : "requestDate",
+				align : 'center',
+			}, ],
+			pageOptions : {
+				useClient : true, // 페이징을 위해 필요
+				perPage : 5
+			},
+		})
+		// 행 클릭 이벤트 , returnCode 받기위해
+		changeGrid.on('click', (ev) => {
+		    const rowData = changeGrid.getRow(ev.rowKey);
+		    let returnCode = "";
+		    if (rowData) {
+		        returnCode = rowData.returnCode; // 선택한 행의 returnCode 가져오기
+		        console.log(returnCode);
+		    }
+		    fetch(`http://localhost:80/returns/changeProductList?returnCode=${returnCode}`)
+		    	.then(response => response.json())
+		    	.then(data => {
+		    		console.log("returnCode 출력" , returnCode , data);
+					changeProductGrid.resetData(data)
+		    	})
+		});
+		
+		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
+		const changeProductList = /*[[${getChangeProductList}]]*/[];
+
+		const changeProductGrid = new tui.Grid({
+			el : document.getElementById("changeProductGrid"),
+			data : changeProductList,
+			scrollX : false, // 가로 스크롤바 비활성화
+			scrollY : false, // 세로 스크롤바 비활성화
+			bodyHeight : 200,
+			rowHeight : 'auto',
+			columns : [
+				{
+					header : '제품코드',
+					name : 'productCode',
+					align : 'center',
+				},
+				{
+					header : '색상',
+					name : 'productColor',
+					align : 'center',
+				},
+				{
+					header : '사이즈',
+					name : 'productSize',
+					align : 'center',
+				},
+				{
+					header : '수량',
+					name : 'qy',
+					align : 'center',
+				},
+				{
+					header : '단가',
+					name : 'unitPrice',
+					align : 'center',
+				},
+			],
+			pageOptions : {
+				useClient : true, // 페이징을 위해 필요
+				perPage : 5
+			},
+		})
+	</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.changeDTO;
 import com.ezotex.returns.service.impl.ReturnsServiceImpl;
 
 import lombok.AllArgsConstructor;
@@ -39,8 +40,15 @@ public class ReturnsRestController {
 	
 	// 반품 제품 등록
 	@PostMapping("/insertProductReturn")
-	public List<ReturnsProductDTO> insertProductReturn(@RequestBody List<ReturnsProductDTO> returnProductData) {
+	public boolean insertProductReturn(@RequestBody List<ReturnsProductDTO> returnProductData) {
 		System.out.println("returnProductData 데이터 확인"+returnProductData);
 		return service.insertProductReturn(returnProductData);
+	}
+	
+	// 교환 제품 조회
+	@GetMapping("/changeProductList")
+	public List<changeDTO> returnCode(@RequestParam(name = "returnCode") String returnCode){
+		return service.getChangeProductList(returnCode);
+		
 	}
 }

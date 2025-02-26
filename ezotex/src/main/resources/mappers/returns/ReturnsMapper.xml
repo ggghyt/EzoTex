@@ -149,4 +149,61 @@
 			#{unitPrice}
 		)
 	</insert>
+	
+	<!-- 교환 조회 -->
+	<select id="getChangeList">
+		SELECT 
+		    r.RETURN_CODE,
+		    r.DELIVERY_CODE,
+		    r.COMPANY_CODE,
+		    r.COMPANY_NAME,
+		    c.COMPANY_CHARGER,
+		    c.COMPANY_PHONE,
+		    r.REQUESTOR,
+		    r.REQUEST_DATE
+		FROM RETURNS r
+		JOIN RETURN_PRODUCT rp ON r.RETURN_CODE = rp.RETURN_CODE
+		JOIN COMPANY c ON r.COMPANY_CODE = c.COMPANY_CODE
+		WHERE rp.PROCESSING_STATUS = 'ER02'
+		GROUP BY r.RETURN_CODE, r.DELIVERY_CODE, r.COMPANY_CODE, r.COMPANY_NAME, 
+		         c.COMPANY_CHARGER, c.COMPANY_PHONE, r.REQUESTOR, r.REQUEST_DATE
+	</select>
+	<select id="getChangeProductList">
+		SELECT 
+		    rp.RETURN_PRODUCT_NO,
+		    rp.RETURN_CODE,
+		    rp.PRODUCT_CODE,
+		    rp.PRODUCT_NAME,
+		    rp.PRODUCT_COLOR,
+		    rp.PRODUCT_SIZE,
+		    rp.FAULTY_REASON,
+		    rp.QY,
+		    rp.REQUESTOR,
+		    rp.REQUEST_DATE,
+		    rp.RETURN_DATE,
+		    rp.PROCESSING_STATUS,
+		    rp.UNIT_PRICE
+		FROM RETURN_PRODUCT rp
+		JOIN RETURNS r ON rp.RETURN_CODE = r.RETURN_CODE
+		WHERE r.RETURN_CODE = #{returnCode}
+		AND rp.PROCESSING_STATUS = 'ER02'
+	</select>
+	
+	<!-- 반품 전체 조회 -->
+	<select id="getReturnList">
+		select *
+		from returns
+	</select>
+	<select id="getReturnProductList">
+		select *
+		from return_product	
+	</select>
+	<!--  -->
+	
+	<!--  -->
+	
+	<!--  -->
+	
+	<!--  -->
+	
 </mapper>

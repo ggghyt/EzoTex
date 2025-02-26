@@ -9,6 +9,7 @@ import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.changeDTO;
 import com.ezotex.returns.mappers.ReturnsMapper;
 import com.ezotex.returns.service.ReturnsService;
 
@@ -37,10 +38,35 @@ public class ReturnsServiceImpl implements ReturnsService {
 	}
 	
 	@Override
-	public List<ReturnsProductDTO> insertProductReturn(List<ReturnsProductDTO> returnProductData) {
-		System.out.println("대체 왜 등록이 안되냐"+returnProductData);
-		mapper.insertProductReturn(returnProductData);
-		return returnProductData;
+	public boolean insertProductReturn(List<ReturnsProductDTO> returnProductData) {
+		
+		returnProductData.forEach(data -> {
+			mapper.insertProductReturn(data);
+		});
+		
+		
+		return true;
+	}
+	
+	// 교환 조회
+	@Override
+	public List<changeDTO> getChangeList() {
+		return mapper.getChangeList();
+	}
+	
+	// 반품 전체 조회
+	@Override
+	public List<ReturnsDTO> getReturnList() {
+		return mapper.getReturnList();
+	}
+
+	@Override
+	public List<ReturnsProductDTO> getReturnProductList() {
+		return mapper.getReturnProductList();
+	}
+
+	public List<changeDTO> getChangeProductList(String returnCode) {
+		return mapper.getChangeProductList(returnCode);
 	}
 
 }
