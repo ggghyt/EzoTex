@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.store.dto.DeliverySearchDTO;
+import com.ezotex.store.dto.DomListDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
@@ -29,9 +30,11 @@ public interface StoreService {
 	// 제품 사이즈
 	public List<ProductInfoListDTO> productSize(String productCode ,String productColor);
 	
+	// 공급계획 리스트
+	public List<DomListDTO> domList(DeliverySearchDTO searchDTO);
 	
-	
-	
+	// 공급계획 리스트 카운터
+	public int domListCount(DeliverySearchDTO searchDTO);
 	
 	
 	/**

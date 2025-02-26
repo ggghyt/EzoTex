@@ -77,27 +77,50 @@
 		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
 		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
-	<div class="card card-body mt-3">
-		<div class="col-12 card card-body m-2">
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">납품코드</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
-				</div>
-			</div>
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">검색조건2</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
+	<div class="row">
+			<div class="col-5 card card-body m-2"
+				style="background-color: #d3d3d3;">
+				<p class="fs-5 fw-bolder">주문 정보</p>
+				<table class="table mt-3">
+					<tbody>
+						<!-- 첫 번째 줄 -->
+						<tr>
+							<!-- 							<td class="col-auto"><label class="col-form-label">주문코드</label>
+								<input type="text" id="productOrderCode" class="form-control"
+								readonly></td> -->
+							<td class="col-auto"><label class="col-form-label">제품코드</label>
+							 <input type="text" id="charger" class="form-control"></td>
+							<td class="col-auto"><label class="col-form-label">제품명</label>
+								<input type="text" id="empCode" class="form-control" readonly></td>
+							<td class="col-4"><label class="col-form-label">제품이미지</label></td>
+						</tr>
+						<!-- 두 번째 줄 -->
+						<tr>
+							<td class="col-auto"><label class="col-form-label">대분류</label>
+							<select class="form-control">
+								<option value="null">전체</option>
+							</select></td>
+							<td class="col-auto"><label class="col-form-label">소분류</label>
+							<select class="form-control">
+								<option value="null">전체</option>
+							</select></td>
+							<td class="col-4">
+								<img alt="" src=""></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="d-flex justify-content-center gap-2">
+					<button class="btn btn-secondary mag-glass-btn btn-sm"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
+					<button class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
 				</div>
 			</div>
 		</div>
-
-
+		
+		
+		
+		
+		
+		
 		<div class="row">
 			<div class="col-5 card card-body m-2">
 				<p class="fs-5 fw-bolder mt-2">제품 목록</p>
@@ -387,7 +410,7 @@
 		
 		        // storeProduct의 데이터를 순회하여 이미 추가된 제품이 있는지 확인
 		        storeProduct.getData().forEach(item => {
-		            if (item.productCode === productCode && item.productColor === productColor && item.productSize === productSize) {
+		            if (item.productCode === productCode && item.color === productColor && item.sizeCode === productSize) {
 		                isProductExist = true; // 이미 있는 제품
 		            }
 		        });
@@ -456,13 +479,15 @@
 	   	    }
 	   		
 	   		// 데이터에서 사이즈 값 변환
-	   	    let transformedData = check.map(item => {
+	   	   let transformedData = check.map(item => {
 	   	        // 사이즈 값 변환
-	   	        item.productSize = getSizeCommonCode(item.productSize);
+	   	        item.sizeCode = getSizeCommonCode(item.sizeCode);
+	   	        
+	   	     console.log(item.sizeCode);
+	   	        
 	   	        return item;
 	   	    });
 	   		
-	   		console.log(transformedData);
 	   		
 	   		fetch(`http://localhost:80/store/InsertTest`,{
 	   			method: 'POST',

@@ -44,6 +44,32 @@
 	</select>
 	
 	
+	<!-- 공급계획 리스트 -->
+	<select id="domList">
+		SELECT *
+		FROM (
+		      SELECT a.*, ROWNUM as rn
+		      FROM (
+		            SELECT supply_plan_detail_code,
+		                   supply_plan_code,
+		                   product_code,
+		                   product_color,
+		                   product_size,
+		                   supply_qy,
+		                   supply_date
+		            FROM SUPPLY_PLAN_DETAILS
+		            ) a
+		        WHERE ROWNUM <![CDATA[ <= ]]>  #{end} ) page
+		    WHERE page.rn <![CDATA[ >= ]]> #{start} 
+	</select>
+	
+	<select id="domListCount">
+		SELECT count(*)
+		FROM SUPPLY_PLAN_DETAILS
+	</select>
+	
+	
+	
 	
 	<!-- =================================================== 반품으로 수정해야됨 =================================================== -->
 	

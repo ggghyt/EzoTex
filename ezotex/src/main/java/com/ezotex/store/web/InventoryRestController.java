@@ -192,16 +192,33 @@ public class InventoryRestController {
 	// 재고조회 제품별 수량 LOT리스트
 	@GetMapping("inventoryList")
 	public List<InventoryDTO> inventoryList(@RequestParam(name= "productCode") String productCode,
-								@RequestParam(name= "color") String color,
-								@RequestParam(name= "sizeCode") String sizeCode) {
+								            @RequestParam(name= "color") String color,
+								            @RequestParam(name= "sizeCode") String sizeCode) {
 		return iService.inventoryList(productCode, color, sizeCode);
 	}
 	
 	// 위치별 재고 상세 리스트(재고조정)
 	@GetMapping("Management")
-	public Map<String, Object> loction(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
-			) throws JsonMappingException, JsonProcessingException {
-		return GridUtil.grid(1, 100, iService.location());
+	public Map<String, Object> loction(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+			                           @RequestParam(name = "page", defaultValue = "1") int page,
+			                           DeliverySearchDTO searchDTO
+			                           ) throws JsonMappingException, JsonProcessingException {
+		
+		
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
+
+        // 페이징 조건
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
+		
+		// 페이징처리
+		paging.setTotalRecord(iService.getCountProduct(searchDTO));
+		
+		
+		return GridUtil.grid(paging.getPage(), iService.getCountProduct(searchDTO), iService.location(searchDTO));
 	}
 	
 	// LOT별 불량처리 등록
@@ -223,7 +240,31 @@ public class InventoryRestController {
 		return service.MtInsertProduct(idto);
 	}
 
+    
+	//공급 계획 리스트
+	@GetMapping("DomList")
+	public Map<String, Object> DomList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+			                           @RequestParam(name = "page", defaultValue = "1") int page,
+			                           DeliverySearchDTO searchDTO
+			                           ) throws JsonMappingException, JsonProcessingException {
+		
+		
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
 
+        // 페이징 조건
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
+		
+		// 페이징처리
+		paging.setTotalRecord(service.domListCount(searchDTO));
+		
+		
+		return GridUtil.grid(paging.getPage(), service.domListCount(searchDTO), service.domList(searchDTO));
+	}
+	
 	 /**
 	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
 	 **/

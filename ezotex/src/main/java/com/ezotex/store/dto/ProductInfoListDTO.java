@@ -15,7 +15,8 @@ public class ProductInfoListDTO {
 	
 	// 색상
 	private String productColor;
-	// 사이즈
+	// 사이즈 
 	private String productSize;
+	
 	
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -57,8 +58,13 @@ public class InventoryServiceImpl implements InventoryService {
 
 	// 위치별 재고 상세 리스트(재고조정)
 	@Override
-	public List<InventoryDTO> location() {
-		return mapper.location();
+	public List<InventoryDTO> location(DeliverySearchDTO searchDTO) {
+		return mapper.location(searchDTO);
+	}
+	
+	@Override
+	public int getCountProduct(DeliverySearchDTO searchDTO) {
+		return mapper.getCountProduct(searchDTO);
 	}
 
 	// LOT별 불량처리 등록

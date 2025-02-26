@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
@@ -22,7 +23,10 @@ public interface InventoryMapper {
 	public List<InventoryDTO> inventoryList(@Param("productCode")String productCode, @Param("color")String color, @Param("sizeCode")String sizeCode);
 	
 	// 위치별 재고 상세 리스트(재고조정)
-	public List<InventoryDTO> location();
+	public List<InventoryDTO> location(DeliverySearchDTO searchDTO);
+	
+	// 재고조정 LOT 카운터
+	public int getCountProduct(DeliverySearchDTO searchDTO);
 	
 	// LOT별 불량처리 등록
 	public int InsertErrorProduct(@Param("edto")ErrorProductDTO edto, @Param("name")String name);

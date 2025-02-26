@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.DeliverySearchDTO;
+import com.ezotex.store.dto.DomListDTO;
 import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
@@ -48,14 +49,24 @@ public class StoreServiceImpl implements StoreService {
 		return mapper.productColor(productColor);
 	}
 	 
+	// 제품 사이즈
 	@Override
 	public List<ProductInfoListDTO> productSize(String productCode, String productColor) {
 		return mapper.productSize(productCode, productColor);
 	}
 	 
 	 
-	 
-	 
+	// 공급계획 리스트
+	@Override
+	public List<DomListDTO> domList(DeliverySearchDTO searchDTO) {
+		return mapper.domList(searchDTO);
+	}
+	
+	// 공급계획 카운터
+	@Override
+	public int domListCount(DeliverySearchDTO searchDTO) {
+		return mapper.domListCount(searchDTO);
+	}
 	 
 	
 	 /**
