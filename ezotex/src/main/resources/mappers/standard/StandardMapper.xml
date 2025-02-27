@@ -98,7 +98,7 @@ from(
 where rownum = 1
 </select>
 
-<select id="idApproval" resultType="int">
+<select id="idApproval" resultType="String">
 select approval
 from (
 select emp_id as id,
@@ -358,8 +358,18 @@ and select_col = #{selectCol}
 </update>
 
 <select id="StorageProductList" resultType="StorageProductDTO">
-select *
+select lot, 
+       product_name, 
+       product_color, 
+       code_name as product_size, 
+       qy, 
+       store_date, 
+       store_charger_name
 from storage_product
+join product_option
+on storage_product.option_code = product_option.option_code
+join common_code_details
+on product_option.product_size = common_code_details.comm_detail_code
 where storage_info_code = #{storageInfoCode}
 </select>
 
@@ -370,4 +380,18 @@ where storage_code = #{storageCode}
 and select_row = #{selectRow}
 and select_col = #{selectCol}
 </select>
+
+<select id="SafetyStockList" parameterType="SafetyStockDTO">
+select *
+from safety_stock
+where product_code = #{productCode}
+order by 1 desc
+</select>
+
+<update id="updateSafety" parameterType="SafetyStockDTO">
+update safety_stock
+set qy = #{qy}
+where safety_stock_month = #{safetyStockMonth}
+and product_code = #{productCode}
+</update>
 </mapper>

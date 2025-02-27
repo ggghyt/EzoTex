@@ -13,6 +13,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
+import com.ezotex.standard.dto.SafetyStockDTO;
 import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.dto.StorageProductDTO;
 
@@ -42,7 +43,7 @@ public interface StandardMapper {
 	String findAddressSeq();
 	
 	// 인증 여부 확인
-	int idApproval(String id);
+	String idApproval(String id);
 	
 	// 비밀번호 찾기에 사용되는 이름, 이메일 서치
 	ResetPasswordDTO findNameEmail(String id);
@@ -116,4 +117,8 @@ public interface StandardMapper {
 	List<StorageProductDTO> StorageProductList(int storageInfoCode);
 	
 	int findStorageInfoCode(StorageDTO storageDTO);
+	
+	List<SafetyStockDTO> SafetyStockList(String productCode);
+	
+	int updateSafety(SafetyStockDTO safetyStockDTO);
 }
