@@ -1,98 +1,128 @@
 <template>
-  <div class="col card card-body">
-    <tui-grid 
-      ref="GridTable"
-      :data="data"
-      :columns="columns"
-      :rowHeight="10"
-    >
-    </tui-grid>
+  <div class="container">
+    <div class="col card card-body">
+      <div id="deliveryList"></div>
+    </div>
   </div>
 
 </template>
 
 <script setup>
-//import { TuiGridElement } from "vue3-tui-grid"
-//import { OptColumn, OptRow } from 'tui-grid/types/options';
-import { onMounted, ref } from 'vue';
-const data = ref([
-  {
-    id: '10012',
-    city: 'Seoul',
-    country: 'South Korea'
-  },
-  {
-    id: '10013',
-    city: 'Tokyo',
-    country: 'Japan'    
-  },
-  {
-    id: '10014',
-    city: 'London',
-    country: 'England'
-  },
-  {
-    id: '10015',
-    city: 'Ljubljana',
-    country: 'Slovenia'
-  },
-  {
-    id: '10016',
-    city: 'Reykjavik',
-    country: 'Iceland'
-  }
-]);
-const columns = ref([
-  {
-    header: 'ID',
-    name: 'id'
-  },
-  {
-    header: 'CITY',
-    name: 'city',
-    editor: 'text'
-  },
-  {
-    header: 'COUNTRY',
-    name: 'country'
-  }
-]);
-const GridTable = ref();
+import 'tui-grid/dist/tui-grid.css';
+import Grid from 'tui-grid';
+import { ref, onBeforeUnmount, onMounted } from 'vue';
+//import axios from 'axios';
+import { ajaxUrl } from '@/utils/commons.js';
 
-onMounted(()=>{
-  const grid = GridTable.value;
-  grid.applyTheme("striped");
-  grid.setLanguage("ko");
-  const instance = grid.gridInstance;
-  instance.setWidth(250);
-  grid.invoke("setWidth", 250);
+let gridInstance = ref();
+
+
+//let rowData = ref([]);
+
+
+/*
+const deliveryList = async () => {
+
+  let result = await axios.get(`${ajaxUrl}/driver/list`)
+                          .catch(err=> console.log(err));
+
+  rowData.value = result.data.contents; 
+  console.log(result);
+  //gridInstance.value.resetData(rowData.value);
+}
+  */
+
+
+
+// Toast UI Grid 초기화
+onMounted(() => {
+  if (gridInstance.value) {
+    gridInstance.value.destroy(); // 기존 Grid 제거
+  }
+
+  gridInstance.value = new Grid({
+    el: document.getElementById('deliveryList'),
+    scrollX: false,
+    scrollY: false,
+    bodyHeight: 400,
+    pageOptions: {
+      useClient: false, // 서버 페이징 사용
+      perPage: 10
+    },
+    columns: [
+      { header: '상호명', name: 'companyName' },
+      { header: '납기주소', name: 'dedtAddress' },
+      { header: '상태', name: 'deliveryStatus', minWidth: 30, width: 'auto' },
+    ],
+    data: {
+      api: {
+        readData: { url: `${ajaxUrl}/driver/list`, method: 'GET' },
+      },
+      contentType: 'application/json',
+    },
+    showDummyRows: true
+  });
+
+  Grid.applyTheme('striped');
+})
+
+/*
+  // Grid 초기 데이터 로드
+  loadData();
+});
+
+// 데이터를 다시 불러오는 함수
+const loadData = () => {
+  if (gridInstance.value) {
+    gridInstance.value.readData(1, {}, true);
+  }
+};
+
+// 필요할 때 버튼 클릭으로 데이터 갱신
+const refreshData = () => {
+  loadData();
+};
+*/
+// 페이지 이동 시 Grid 제거하여 중복 방지
+onBeforeUnmount(() => {
+  if (gridInstance.value) {
+    gridInstance.value.destroy();
+    gridInstance.value = null;
+  }
 });
 </script>
 
-
-
 <style>
+.container {
+  width: 350px;
+}
 .tui-grid-container {
     width: 100%;
     position: relative;
     border-width: 0;
     clear: both;
-    font-size: 9px !important;
+    font-size: 11px !important;
     font-family: Arial, '\B3CB\C6C0', Dotum, sans-serif;
 }
 .card {
   margin: 0 auto;
-  width: 280px;
+  width: 350px;
   height: 650px !important;
 }
 .card-body {
-    margin-top: 30%;
+    margin-top: 15%;
 }
-.tui-grid-row {
-  height: 10px !important; /* 모든 행 높이를 60px로 설정 */
+/*
+.tui-grid-row-odd {
+  height: 15px !important;
 }
-
-.tui-grid-cell {
-  line-height: 10px !important; /* 셀 내부 텍스트 수직 정렬 */
+.tui-grid-row-even {
+  height: 15px !important;
 }
+.tui-grid-header-area {
+  height: 20px !important;
+}
+#deliveryList tr {
+  height: 20px !important;
+}*/
 </style>
