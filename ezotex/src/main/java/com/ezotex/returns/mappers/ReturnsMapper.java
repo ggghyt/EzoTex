@@ -2,6 +2,7 @@ package com.ezotex.returns.mappers;
 
 import java.util.List;
 
+import com.ezotex.returns.dto.ChangeOrderDTO;
 import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
@@ -29,6 +30,10 @@ public interface ReturnsMapper {
 	List<ReturnsDTO> getReturnList();
 	List<ReturnsProductDTO> getReturnProductList();
 	
+	// 교환 주문 등록
+	int insertOrder(ChangeOrderDTO order);
+	// 교환 주문 제품 등록
+	int insertProductOrder(ChangeOrderDTO productOrderList);
 	
-	//
+	List<changeDTO> showChange(List<changeDTO> no);
 }

@@ -42,10 +42,6 @@ public class ReturnsController {
 	public void changeList(Model model) {
 		List<changeDTO> changeList = service.getChangeList();
 		model.addAttribute("getChangeList",changeList);
-		String name = (String) session.getAttribute("name");
-		model.addAttribute("name",name);
-		String code = (String) session.getAttribute("code");
-		model.addAttribute("code",code);
 	}
 	
 	// 반품 내역 전체조회
