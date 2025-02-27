@@ -11,8 +11,8 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
-		<div id="returnGrid"></div>
-		<div id="returnProductGrid"></div>
+	<div id="returnGrid"></div>
+	<div id="returnProductGrid"></div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
 		const returnList = /*[[${getReturnList}]]*/[];
@@ -61,13 +61,39 @@
 	      	},
 		})
 		
-		const returnProductList = /*[[${getReturnProductList}]]*/[];
+		// returnGrid 클릭 이벤트 추가
+		returnGrid.on('click', function(ev) {
+		    const clickedRow = ev.rowKey; // 클릭된 행 인덱스
+		    const clickedData = returnGrid.getData()[clickedRow];
+		    const returnCode = clickedData.returnCode;
+		    
+		    console.log("클릭된 행 데이터:", clickedData);
+		    console.log("클릭된 반품코드:", returnCode);
+		    
+		    fetch(`http://localhost:80/returns/selectReturn?returnCode=${returnCode}`)
+			    .then(response => response.json())
+			    .then(data => {
+			    	console.log("조회 할 returnCode" , returnCode);
+			    	console.log("가져온 데이터",data);
+			    	returnProductGrid.resetData(data);
+			    });
+		});
+		
+		
+		// 사이즈 매핑
+		const sizeMap = {
+		    "SI01": "FREE", "SI02": "XS", "SI03": "S", "SI04": "M", "SI05": "L", "SI06": "XL", "SI07": "XXL",
+		    "SI25": "25", "SI26": "26", "SI27": "27", "SI28": "28", "SI29": "29", "SI30": "30", "SI31": "31", "SI32": "32",
+		    "SI33": "33", "SI34": "34", "SI35": "35", "SI36": "36", "SI37": "37", "SI38": "38",
+		    "SI44": "44", "SI55": "55", "SI66": "66", "SI77": "77", "SI88": "88", "SI90": "90"
+		};
 		
 		const returnProductGrid = new tui.Grid({
 			el : document.getElementById("returnProductGrid"),
-			data : returnProductList,
+			data : [],
 			scrollX : false, // 가로 스크롤바 비활성화
 			scrollY : false, // 세로 스크롤바 비활성화
+			bodyHeight : 200,
 			rowHeight : 'auto',
 			columns : [ 
 		 		{
@@ -94,6 +120,10 @@
 					header : "사이즈",
 					name : "productSize",
 					align : 'center',
+					formatter: (value) => {
+						const size = value && value.value ? value.value : value;
+						return sizeMap[size] || size;
+					},
 				},
 				{
 					header : "수량",
@@ -109,6 +139,16 @@
 					header : "처리상태",
 					name : "processingStatus",
 					align : 'center',
+					formatter: (value) => {
+
+						const status = value && value.value ? value.value : value;
+
+						if (status === 'ER03') return '반품';
+						if (status === 'ER02') return '교환';
+						if (status === 'ER01') return '폐기';
+						
+						return status;
+					},
 				},
 
 			],
