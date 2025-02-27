@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- 공급계획서 상세조회 모달 -->
+  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+       <div class="modal-dialog modal-xl">
+           <div class="modal-content">
+             <div class="modal-header" style="height: 20px;">
+                <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">공급계획서 상세조회</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+             </div>
+             <div class="modal-body p-3 pt-4">
+                
+                <!-- 모달 내용 -->
+                <div class="card card-body mb-3">
+	                <div class="row ps-2 mb-3">
+	                  <label for="scCompanyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+	                  <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                    <input type="text" class="form-control pointer" id="scCompanyCode">
+	                  </div>
+	                  <label for="scCompanyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+	                  <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                    <input type="text" class="form-control" id="scCompanyName">
+	                  </div>
+	                  <label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+	                  <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                    <input type="text" class="form-control" id="address">
+	                  </div>
+	                  <label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+	                  <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                    <input type="text" class="form-control" id="address">
+	                  </div>
+	                </div>
+                </div>
+                
+                <!-- 제품 목록 -->
+                <div class="d-flex justify-content-between">
+                  <p class="fs-5 fw-bolder mb-3 me-3">공급제품 목록</p>
+                  <button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+                </div>
+                <div id="pivotGrid"></div>
+                
+                <hr>
+			          <!-- 제품 상세 정보 -->
+	              <p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
+	              <div class="row">
+			            <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+			            <div class="col-8 col-lg-4 d-flex mb-2">
+			              <input type="search" class="form-control" id="selectedPrdCode" readonly>
+			            </div>
+			            <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+			            <div class="col-8 col-lg-4 d-flex mb-2">
+			              <input type="search" class="form-control" id="selectedPrdName" readonly>
+			            </div>
+                 </div>
+                <div id="pivotGrid"></div>
+                
+                <!-- 합계, 헤더 정보 -->
+				        <div class="card card-body mt-4">
+				          <div class="row ps-2">
+				          
+				            <label for="totalQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak text-center">공급계획량 합계</label>
+				            <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+				              <input type="text" class="form-control text-end" id="totalQy" readonly>
+				            </div>
+				            <label for="remark" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+				            <div class="col-8 col-sm-4 col-lg-8 d-flex align-items-center mb-2">
+				              <input type="text" class="form-control" id="remark" readonly>
+				            </div>
+				            
+				          </div>
+				        </div>
+                
+             </div>
+              <div class="modal-footer">
+                <button type="button" id="confirmBtn" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+              </div>
+           </div>
+        </div>
+   </div>
+   
+   <script th:inline="javascript">
+      let thObj = /*[[${map}]]*/{};
+      console.log('thObj::', thObj);
+   </script>
+</body>
+</html>
