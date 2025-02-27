@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ezotex.delivery.mappers.DriverMapper">
+	
+	<!-- 배송기사 배송지 리스트 조회 -->
+	<select id="deliveryList">
+		SELECT *
+		FROM(
+		    SELECT *
+		    FROM (
+		        SELECT  ROWNUM AS rn,
+		                get_address(de.company_code) AS dedt_address,
+		                de.company_name AS company_name,
+		                CASE WHEN de.delivery_status = 'DS05' THEN '완료'
+		                ELSE '미완료'
+		                END AS delivery_status
+		        FROM   delivery de
+		        WHERE  delivery_status != 'DS06'
+		        <if test='search.dedtAddress != null and search.dedtAddress != ""'>
+					AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
+					</if>
+					<if test='search.companyName != null and search.companyName != ""'>
+					AND    de.company_name LIKE '%' || #{search.companyName} || '%'
+					</if>
+					<choose>
+			              <when test="search.deliveryStatus != null and search.deliveryStatus != ''"> 
+			                        AND de.delivery_status = #{search.deliveryStatus}
+			              </when>
+			              <otherwise> 
+			                       AND de.delivery_status IN ('DS01', 'DS02', 'DS03', 'DS04', 'DS05')
+			              </otherwise>
+			        </choose>
+		        )info
+		    WHERE  info.rn <![CDATA[ <= ]]>#{search.end})page
+		WHERE  page.rn <![CDATA[ >= ]]>#{search.start}
+	</select>
+	
+	<!-- 배송기사 배송지 리스트 조회 전체 레코드 수-->
+	<select id="getDeliveryListCount">
+		SELECT  COUNT(*)
+        FROM    delivery de
+        WHERE   delivery_status != 'DS06'
+        <if test='search.dedtAddress != null and search.dedtAddress != ""'>
+			AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
+			</if>
+			<if test='search.companyName != null and search.companyName != ""'>
+			AND    de.company_name LIKE '%' || #{search.companyName} || '%'
+			</if>
+			<choose>
+	              <when test="search.deliveryStatus != null and search.deliveryStatus != ''"> 
+	                        AND de.delivery_status = #{search.deliveryStatus}
+	              </when>
+	              <otherwise> 
+	                       AND de.delivery_status IN ('DS01', 'DS02', 'DS03', 'DS04', 'DS05')
+	              </otherwise>
+	        </choose>
+	</select>
+	
+</mapper>

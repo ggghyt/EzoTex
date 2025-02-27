@@ -170,6 +170,7 @@ public class CommonController {
 	@ResponseBody
 	@GetMapping("/idApproval")
 	public String idApproval(@RequestParam(name="id") String id) {
+		
 		return "{\"approval\" : \"" + service.idApproval(id) + "\"}";
 	}
 	
