@@ -98,6 +98,16 @@ public class SupplyRestController {
 		return map;
 	}
 	
+	// 공급계획서 목록
+	@GetMapping("supplyPlanList")
+	public Map<String, Object> supplyPlanList(@RequestParam Map<String, Object> params, // 검색 조건 파라미터
+										@RequestParam(value="season", required=false) String[] season) { // List타입은 2개 이상 값이 필수라 배열로 받음.
+		params.put("season", season); // checkbox 선택값 배열
+		int totalCnt = service.countSupplyPlan(params);
+		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listSupplyPlan(params));
+		return map;
+	}
+	
 	// 공급계획서 등록
 	@PostMapping("plan")
 	public Boolean insertSupplyPlan(@RequestBody Map<String, Object> supplyList) {

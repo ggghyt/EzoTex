@@ -402,17 +402,20 @@ seasonBox.addEventListener('change', () => {
 	let endMonth = Number(getNextSeasonMonth()) - 1;
 	let supplyData = supplyGrid.getData();
 	
-	supplyData.forEach(data => {
-		let dataMonth = data.supplyDate.substr(5,2);
-		
-		if(data.supplyDate != '' && (dataMonth < seasonMonth || dataMonth > endMonth) && seasonBox.value != 'null'){
-			let date = data.supplyDate.substr(-2);
-			data.supplyDate = `${yearBox.value}-${seasonMonth}-${date}`;
-			data.supplyDate = checkDate(data.supplyDate);
-		}
-	});
-	supplyGrid.resetData(supplyData); // 변경한 월로 일괄 반영
-	limitDatePicker();
+  if(seasonBox.value != 'SE00'){ // 상시공급이 아닌 경우 날짜 변환
+    supplyGrid.enableColumn('supplyDate');
+    supplyData.forEach(data => {
+  		let dataMonth = data.supplyDate.substr(5,2);
+  		
+  		if(data.supplyDate != '' && (dataMonth < seasonMonth || dataMonth > endMonth) && seasonBox.value != 'SE00'){
+  			let date = data.supplyDate.substr(-2);
+  			data.supplyDate = `${yearBox.value}-${seasonMonth}-${date}`;
+  			data.supplyDate = checkDate(data.supplyDate);
+  		}
+  	});
+  	supplyGrid.resetData(supplyData); // 변경한 월로 일괄 반영
+	  limitDatePicker();
+  } else supplyGrid.disableColumn('supplyDate'); // 상시공급인 경우 날짜 선택 비활성화
 });
 
 // 시즌별 월 기본값 계산 함수
@@ -444,7 +447,7 @@ function limitDatePicker(){
 	let startDate = new Date(`${yearBox.value}-${getSeasonMonth()}-01`);
 	let nextSeasonMonth = getNextSeasonMonth();	
 	let endYear = Number(yearBox.value);
-	if(seasonBox.value == 'null' || seasonBox.value == 'SE04'){
+	if(seasonBox.value == 'SE00' || seasonBox.value == 'SE04'){
 		endYear = endYear + 1;
 	}
 	let endDate = new Date(`${endYear}-${nextSeasonMonth}-01`);
@@ -531,7 +534,7 @@ function insertPlan(){
 				let dtlObj = {
 					productCode: plan.productCode,
 					supplyQy: data.qy,
-					supplyDate: plan.supplyDate
+					supplyDate: seasonBox.value == 'SE00' ? null : plan.supplyDate // 상시공급인 경우 날짜를 넣지 않음.
 				};
 				if(optType == 'sizeOpt'){ // 사이즈만 있는 데이터
 					dtlObj.productSize = data.productSize;

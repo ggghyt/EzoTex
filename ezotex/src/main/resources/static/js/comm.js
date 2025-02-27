@@ -2,11 +2,17 @@
 const dateFormatter = function(value){
 	let date = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
     
-    let year = date.getFullYear();
-    let month = ('0' + (date.getMonth() + 1)).slice(-2);
-    let day = ('0' + (date.getDate())).slice(-2);
+  let year = date.getFullYear();
+  let month = ('0' + (date.getMonth() + 1)).slice(-2);
+  let day = ('0' + (date.getDate())).slice(-2);
 
-    return year + '-' + month + '-' + day;
+  return year + '-' + month + '-' + day;
+}
+
+// 날짜 포맷 함수 (null 그대로 리턴하는 버전)
+const dateFormatterNull = function(value){
+  if(value == null) return value;
+  else return dateFormatter(value);
 }
 
 // 천 단위 콤마 숫자 포맷 함수 (9,999,999)

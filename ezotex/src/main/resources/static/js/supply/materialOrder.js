@@ -502,9 +502,9 @@ function insertRow(rowKey){
 	if(rowKey != null) orderGrid.setRow(rowKey, insertObj);
 	else orderGrid.appendRow(insertObj);
 	getSum();
-    orderQyBox.value = '';
-    if(isModifying) modifyMode(false);
-    else orderQyBox.focus();
+  orderQyBox.value = '';
+  if(isModifying) modifyMode(false);
+  else orderQyBox.focus();
 }
 
 document.getElementById('insertBtn').addEventListener('click', () => insertRow());

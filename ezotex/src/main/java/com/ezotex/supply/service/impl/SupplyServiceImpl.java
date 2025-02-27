@@ -33,17 +33,27 @@ public class SupplyServiceImpl implements SupplyService {
 		return mapper.findOptions(productCode);
 	}
 
-	@Override
-	public List<Map<String, Object>> pivotProductSupply(SupplyDTO dto) {
-		List<ProductDTO> sizeList = mapper.findSize(dto.getProductCode());
-		return mapper.pivotProductSupply(dto, sizeList);
-	}
-
 	@Override // 옵션에 따른 빈 양식 반환
 	public List<Map<String, Object>> pivotProductOption(String productCode) {
 		List<ProductDTO> sizeList = mapper.findSize(productCode);
 		return mapper.pivotProductOption(productCode, sizeList);
 	}	
+	
+	@Override
+	public List<Map<String, Object>> pivotProductSupply(SupplyDTO dto) {
+		List<ProductDTO> sizeList = mapper.findSize(dto.getProductCode());
+		return mapper.pivotProductSupply(dto, sizeList);
+	}
+	
+	@Override
+	public List<SupplyDTO> listSupplyPlan(Map<String, Object> map) {
+		return mapper.listSupplyPlan(map);
+	}
+
+	@Override
+	public int countSupplyPlan(Map<String, Object> map) {
+		return mapper.countSupplyPlan(map);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

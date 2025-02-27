@@ -117,8 +117,8 @@
 		    <where>
 		      <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
 		      <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-		      <if test='productName != null and productName != ""'> AND d.product_name LIKE '%' || #{productName} || '%' </if>
-		    </where> ) -- 바깥에서 추가조건 검색하여 alias 이용 가능
+		      <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if>
+		    </where> ) -- 서브쿼리 형태로 alias 사용 가능
 		<where> 
 		  <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
 		  <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
