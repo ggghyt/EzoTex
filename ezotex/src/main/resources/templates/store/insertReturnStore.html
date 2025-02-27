@@ -4,28 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <title>이조텍스SCM</title>
-<!-- timePicker -->
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
-<script
-	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
-
-<!-- datePicker -->
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
-<script
-	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
-
-<!-- paging -->
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
-<script
-	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
-
-<!-- toast grid -->
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
 #modalGrid {
 	width: 100%;
@@ -432,120 +410,131 @@
 	    
 	    // 제품 상세보기 그리드 클릭 이벤트
 	    
-	   
+	   function handleStoreGrid2Click(ev) {
+	    let data = storeGrid2.getRow(ev.rowKey);
+	    //productName = data.productName;
+	    
+	     console.log("Clicked rowKey:", ev.rowKey);
+         console.log("Data location:", data.location);
+	    
+	    if (!data) {
+        console.log("선택된 데이터가 없습니다.");
+        return; // 데이터가 없다면 함수 종료
+    	}
+	    
+	    // 창고 위치 컬럼 클릭 시 모달 출력
+	    if (ev.columnName === 'location') {
+	        let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+	        modal.show();
+	
+	        fetch(`http://localhost:80/store/storageInfoList`)
+	            .then(rep => rep.json())
+	            .then(data => {
+	                modalGrid.resetData(data);
+	                // 이 부분에서 storageLocation을 할당할 때, 각 행에 대해 올바르게 설정되도록 해야함
+	                // storageLocation을 modalGrid의 클릭 이벤트에서 처리하도록 할 수 있습니다.
+	            });
+	
+	    } else {
+	        if (data.location == null) {
+	            return;
+	        }
+	
+	        // 선택한 제품코드 저장
+	        productCode = data.productCode;
+	        // 서버에서 해당 제품 코드에 대한 옵션 목록을 받아오기
+	        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
+	            .then(rep => rep.json())
+	            .then(data => {
+	                let size = [];
+	                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
+	                console.log(data);
+	
+	                // 옵션 리스트에 대해 컬럼 동적 생성
+	                data.optionList.forEach(option => {
+	                    size.push({
+	                        header: option.productSizeInfo,
+	                        name: 'sz' + option.productSizeInfo + 'test',
+	                        childNames: ['size' + option.productSizeInfo, 'SZ' + option.productSizeInfo.toLowerCase()]
+	                    });
+	                    color.push({
+	                        header: "입고할수량", name: "size" + option.productSizeInfo, align: "center", editor: "text"
+	                    }, {
+	                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: "center"
+	                    }, {
+	                        header: "제품코드", name: "productCode", hidden: true
+	                    }, {
+	                        header: "납품코드", name: deliveryCode, hidden: true
+	                    });
+	                });
+	
+	                // 그리드3에 동적 컬럼 설정
+	                storeGrid3.setHeader({ complexColumns: size });
+	                storeGrid3.setColumns(color);
+	
+	                // 피벗 데이터 생성
+	                let rowData = [];
+	                data.qyList.forEach(pivotData => {
+	                    let row = { productColor: pivotData.PRODUCT_COLOR };
+	
+	                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
+	                    data.optionList.forEach(option => {
+	                        let sizeKey = option.productSizeInfo.toLowerCase();
+	                        row['SZ' + sizeKey] = pivotData['SZ' + sizeKey.toUpperCase()] || "0";
+	                    });
+	
+	                    rowData.push(row);
+	                });
+	
+	                // 기존에 변경된 값이 있으면 반영
+	                if (productChanges[productCode]) {
+	                    rowData = rowData.map(row => {
+	                        const updatedData = productChanges[productCode].find(item => item.productColor === row.productColor);
+	                        if (updatedData) {
+	                            return { ...row, ...updatedData }; // 기존에 수정된 데이터를 덮어쓰지 않고 병합
+	                        }
+	                        return row;
+	                    });
+	                }
+	
+	                // 그리드3에 데이터 설정
+	                storeGrid3.resetData(rowData);
+	
+	                // 변경된 데이터를 productChanges 객체에 저장
+	                productChanges[productCode] = rowData;
+	
+	                let filed = Object.keys(rowData);
+	                let arr = filed.filter(ele => ele.startsWith('size'));
+	
+	                for (let i = 0; i < arr.length; i++) {
+	                    if (rowData[arr[i]] != null && rowData[arr[i]] != 0) {
+	                        let sizeCode = arr[i].replace('size', '').toUpperCase();
+	                        let objInfo = {
+	                            productCode: productCode,
+	                            sizeCode: getSizeCommonCode(sizeCode),
+	                            productQy: newValue,
+	                            color: rowData.productColor,
+	                            deliveryCode: deliveryCode,
+	                            storageLocation: storageLocation // 여기서 storageLocation을 올바르게 설정하도록 해야함
+	                        };
+	
+	                        // 여기서 storageLocation 값이 다르게 들어가게 할 수 있도록 처리
+	                        const existingObj = obj.find(item => item.productCode === productCode && item.storageLocation === storageLocation);
+	                        if (!existingObj) {
+	                            obj.push(objInfo);  // obj에 추가
+	                        }
+	                    }
+	                    console.log(obj);
+	                }
+	            });
+	    }
+	}
 		
 		// 제품 상세보기 그리드 클릭 이벤트
 		storeGrid2.on('click', ev => {
-		    let data = storeGrid2.getRow(ev.rowKey);
-		    productName = data.productName;
-		    console.log('제품 이름:', productName);
-		    
-		    storageLocation = data.storageInfoCode;
-		    
-		
-		    // 창고 위치 컬럼 클릭 시 모달 출력
-		    if (ev.columnName === 'location') {
-		        let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-		        modal.show();
-		        
-		        fetch(`http://localhost:80/store/storageInfoList`)
-   			    .then(rep => rep.json())
-   			    .then(data => {
-   			    	modalGrid.resetData(data);
-   			    	storageLocation = data.storageInfoCode;
-   			    })
-		        
-		    } else {
-		        // 선택한 제품코드 저장
-		        productCode = data.productCode;
-		        console.log('선택한 제품코드:', productCode);
-		        console.log('배송 코드:', returnCode);
-		        storageLocation = data.storageLocation;
-		        // 서버에서 해당 제품 코드에 대한 옵션 목록을 받아오기
-		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
-		            .then(rep => rep.json())
-		            .then(data => {
-		                let size = [];
-		                let color = [{ header: "색상/사이즈", name: "productColor", align: "center" }];
-		                console.log(data);
-		                
-		                // 옵션 리스트에 대해 컬럼 동적 생성
-		                data.optionList.forEach(option => {
-		                    size.push({
-		                        header: option.productSizeInfo,
-		                        name: 'sz' + option.productSizeInfo + 'test',
-		                        childNames: ['size' + option.productSizeInfo, 'SZ' + option.productSizeInfo.toLowerCase()]
-		                    });
-		                    color.push({
-		                        header: "입고할수량", name: "size" + option.productSizeInfo, align: "center", editor: "text"
-		                    }, {
-		                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: "center"
-		                    }, {
-		                        header: "제품코드", name: "productCode", hidden: true
-		                    }, {
-		                        header: "납품코드", name: deliveryCode, hidden: true
-		                    });
-		                });
-		
-		                // 그리드3에 동적 컬럼 설정
-		                storeGrid3.setHeader({complexColumns: size});
-		                storeGrid3.setColumns(color);
-		
-		                // 피벗 데이터 생성
-		                let rowData = [];
-		                data.qyList.forEach(pivotData => {
-		                    let row = { productColor: pivotData.PRODUCT_COLOR };
-		
-		                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
-		                    data.optionList.forEach(option => {
-		                        let sizeKey = option.productSizeInfo.toLowerCase();
-		                        row['SZ' + sizeKey] = pivotData['SZ' + sizeKey.toUpperCase()] || "0";
-		                    });
-		
-		                    rowData.push(row);
-		                });
-		
-		                // 기존에 변경된 값이 있으면 반영
-		                if (productChanges[productCode]) {
-		                    rowData = rowData.map(row => {
-		                        const updatedData = productChanges[productCode].find(item => item.productColor === row.productColor);
-		                        if (updatedData) {
-		                            return { ...row, ...updatedData }; // 기존에 수정된 데이터를 덮어쓰지 않고 병합
-		                        }
-		                        return row;
-		                    });
-		                }
-		
-		                // 그리드3에 데이터 설정
-		                storeGrid3.resetData(rowData);
-		
-		                // 변경된 데이터를 productChanges 객체에 저장
-		                productChanges[productCode] = rowData;
-		                
-		                
-		                let filed = Object.keys(rowData);
-						let arr = filed.filter(ele => ele.startsWith('size'));
-						
-					
-							
-						for(let i = 0; i < arr.length; i++){
-							if(rowData[arr[i]] != null && rowData[arr[i]] != 0){
-								let sizeCode = arr[i].replace('size','').toUpperCase();
-								let objInfo = {
-										productCode: productCode,
-										sizeCode: getSizeCommonCode(sizeCode),
-										productQy: newValue,
-										color: rowData.productColor,
-										deliveryCode: deliveryCode,
-								}
-								obj.push(objInfo);
-							}
-						}
-		            });
-		    }
+			 handleStoreGrid2Click(ev); // 분리한 함수를 호출
 		});
 		
-	    let errorInfo = 0;
 	    
 		// 제품 옵션 그리드 체인지 이벤트
 		storeGrid3.on('afterChange', ev => {
@@ -561,49 +550,7 @@
 		        let columnQy = 'SZ' + size.toLowerCase();
 		        let sizeCode = getSizeCommonCode(size);
 		        console.log(rowData[columnName], sizeCode, rowData[columnQy]);
-		        
 		 
-		        let errorQy = rowData[columnQy] - rowData[columnName]; 
-		         
-		        
-		        errorInfo = errorQy
-		        console.log('errorQy : ', errorQy);
-		        
-		     // 오류 처리: 입고 수량보다 요청 수량이 많을 경우
-		        if (rowData[columnName] <= rowData[columnQy]) {
-		            // 기존에 같은 productCode, size, color가 있는지 확인
-		            let existingIndex = err.findIndex(e => 
-		                e.deliveryCode === deliveryCode &&
-		                e.productCode === productCode &&
-		                e.size === size &&
-		                e.productColor === rowData.productColor
-		            );
-
-		            if (existingIndex !== -1) {
-		                // 기존 오류 객체가 있으면 errorQy를 업데이트 (덮어쓰기)
-		                err[existingIndex].errorQy = errorQy;  
-		                console.log('기존 오류 수량 덮어쓰기:', err[existingIndex]);
-		                errorInfo = err[existingIndex]
-		            } else {
-		                // 새로운 오류 객체 추가
-		                let errObj = {
-		                    deliveryCode: deliveryCode,
-		                    productCode: productCode,
-		                    productName: productName,
-		                    errorQy: errorQy,
-		                    size: size,
-		                    productSize: sizeCode,
-		                    productColor: rowData.productColor,
-		                };
-		                err.push(errObj);
-		                console.log('새 오류 객체 추가:', errObj);
-		            }
-		        } else {
-		            console.log('수량확인 모달');
-		        }
-
-
-		
 		        // 해당 productCode의 변경된 데이터를 저장
 		        if (!productChanges[productCode]) {
 		            productChanges[productCode] = [];
@@ -645,7 +592,7 @@
 		                            let productRow = gridData.find(row => row.productCode === productCode);
 		                            
 		                            // 해당 행이 존재하면 요청 수량과 입고된 수량 가져오기
-		                            let requestQy = productRow ? productRow.requestQy || 0 : 0;  // 요청 수량
+		                            let requestQy = productRow ? productRow.qy || 0 : 0;  // 요청 수량
 		                            let storeQy = productRow ? productRow.totalQy || 0 : 0;     // 기존 입고된 수량
 		                            let errorQyInfo = productRow ? productRow.errorQy || 0 : 0
 		                            
@@ -653,7 +600,8 @@
 		                            console.log('storeQy:', storeQy);
 		                            console.log('errorQyInfo', errorQyInfo);
 		                            
-		                         // 새로 변경된 입고 수량
+		                            
+		                            // 새로 변경된 입고 수량
 		                            let newStockQy = item[ele];
 
 		                            // 합계 계산
@@ -691,10 +639,7 @@
 		            });
 		            
 		        }
-				console.log('4번그리드 데이터 확인 : ',storeGrid4.getData());
 		        console.log('변경된 사이즈 정보:', obj);
-		        
-		        
 		    });
 		});
 
@@ -782,28 +727,29 @@
 	    })
 	   	
 	   	
-	   	
+	 // modalGrid 클릭 이벤트 - 창고 위치 선택 후 모달 닫기
 	   	modalGrid.on('click', ev => {
-	   		
-	   	    let data = modalGrid.getRow(ev.rowKey);
-	   	    
-	   	    // 창고코드 넣는곳
-	   	    storageLocation = data.storageInfoCode;
-	   	    
-	   	    let selectedRowKey = storeGrid2.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
-	   	    
-	   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
-	   	    	storeGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode); // location 값 업데이트
-	   	    }
+		    let modalData = modalGrid.getRow(ev.rowKey); // 모달에서 클릭한 행의 데이터
+		    let storageLocation = modalData.storageInfoCode; // 창고위치 값 추출
+		
+		    // storeGrid2에서 현재 선택된 행(rowKey)을 가져옴
+		    let selectedRowKey = storeGrid2.getFocusedCell()?.rowKey;
+		
+		    if (selectedRowKey !== null && selectedRowKey !== undefined) {
+		        // storeGrid2에서 선택된 행에 창고 위치 값 넣기
+		        storeGrid2.setValue(selectedRowKey, 'location', storageLocation);
+		
+		        // 모달 닫기
+		        let modalElement = document.getElementById('exampleModal');
+		        let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
+		        if (modalInstance) {
+		            modalInstance.hide(); // 모달 닫기
+		        }
+		
+		    }
+		});
 
-	   	    // 기존 모달 인스턴스 가져와서 닫기
-	   	    let modalElement = document.getElementById('exampleModal');
-	   	    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
 
-	   	    if (modalInstance) {
-	   	        modalInstance.hide(); // 모달 닫기
-	   	    }
-	   	});
 	    
 	    /*
 	   	*========================================================================

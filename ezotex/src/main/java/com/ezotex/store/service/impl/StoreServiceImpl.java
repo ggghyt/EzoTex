@@ -143,6 +143,9 @@ public class StoreServiceImpl implements StoreService {
 			if(data.getProductQy() > 0) {
 				//mapper.InsertProduct(data, name);
 			}
+			if(data.getProductQy() == data.getTotalQy()) {
+				System.out.println("상태변환 업데이트 해야됨");
+			}
 	    });
 		return true;
 	}
