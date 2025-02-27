@@ -73,30 +73,30 @@
 	
 	<!-- =================================================== 반품으로 수정해야됨 =================================================== -->
 	
-	<!-- 납품 코드 기반 납품목록 -->
-	<select id="DeliveryList" resultType="StoreDeliveryDTO">
+	<!-- 반품 코드 기반 납품목록 -->
+	<select id="DeliveryList" resultType="StoreReturnDTO">
 		SELECT *
 		FROM (
-       			SELECT a.*, ROWNUM as rn
-       			FROM (
-                		SELECT 
-               	               d.delivery_code, 
-                               d.order_date, 
-                               d.dedt, 
-                               COUNT(i.product_code) AS delivery_qy
-                        FROM delivery d 
-                        JOIN delivery_details i ON d.delivery_code = i.delivery_code
-                        WHERE d.company_se = 'CP02'
-                        AND i.delivery_qy > 0
-                        GROUP BY d.delivery_code, d.order_date, d.dedt
-                        ORDER BY d.delivery_code 
-               )a
-    		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
+		       SELECT a.*, ROWNUM as rn
+		       FROM (SELECT r.return_code,
+		                    r.delivery_code,
+		                    r.company_code,
+		                    r.company_name,
+		                    r.requestor,
+		                    r.request_date,
+		                    count(p.product_code) as count
+		            FROM returns r JOIN return_product p
+		            ON r.return_code = p.return_code
+		            WHERE p.processing_status = 'ER03'
+		            GROUP BY r.return_code, r.delivery_code, r.company_code, r.company_name, r.requestor, r.request_date
+		            ORDER BY r.request_date
+		        ) a
+		    WHERE ROWNUM <![CDATA[ <= ]]> #{end} )page
 		WHERE page.rn <![CDATA[ >= ]]> #{start}
 	</select>
 	
 	
-	
+	<!-- 납품목록 리스트 (자재) -->
 	<select id="MtDeliveryList">
 		SELECT *
 		FROM (
@@ -130,9 +130,10 @@
 	
 	<!-- 페이징(납품입고리스트(제품)) total -->
 	<select id="getCount">
-		select count(delivery_code)
-		from delivery
-		WHERE company_se = 'CP02'
+		SELECT count(*)
+		FROM returns r join return_product p
+		on r.return_code = p.return_code
+		WHERE p.processing_status = 'ER03'
 	</select>
 	
 	<!-- 페이징(납품입고리스트(자재)) total -->
@@ -143,25 +144,20 @@
 	</select>
 	
 	
-	<!-- 납품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
-	<select id="findByDeliveryCode" resultType="StoreDeliveryDetailsDTO">
-		SELECT p.product_code,
-		       p.product_name,
-		       SUM(d.request_qy) as requestQy,
-		       SUM(d.delivery_qy) - NVL(sub.totalQy,0) AS productQy,
-		       sub.totalQy,
-		       NVL(SUM(DISTINCT e.error_qy),0) AS errorTotalQy
-		FROM delivery_details d
-		JOIN product_info p ON d.product_code = p.product_code
-		LEFT JOIN (
-		    SELECT delivery_code, product_code, SUM(store_qy) AS totalQy
-		    FROM inventory
-		    GROUP BY delivery_code, product_code
-		) sub ON d.delivery_code = sub.delivery_code AND d.product_code = sub.product_code
-		LEFT JOIN inventory_error e ON sub.delivery_code = e.lot
-		WHERE d.product_se = 'PT02'
-		AND d.delivery_code = #{deliveryCode}
-		GROUP BY p.product_code, p.product_name, request_qy, sub.totalQy
+	<!-- 반품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
+	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
+		SELECT r.product_code,
+		       r.product_name,
+		       SUM(r.qy) as qy,
+		       SUM(r.qy - NVL(i.store_qy, 0)) as not_store_qy,
+		       NVL(sum(i.store_qy),0) as store_qy
+		FROM return_product r left join inventory i
+		on r.return_code = i.return_code
+		           AND r.product_code = i.product_code
+		WHERE r.return_code = #{returnCode}
+		GROUP BY r.product_code,
+		         r.product_name,
+		         i.store_qy
 	</select>
 	
 	
@@ -198,20 +194,20 @@
 	<!-- 제품 코드 기반 옵션,요청 수량 리스트 -->
 	<select id="findByProductCode">
 		with temp as
-		     (SELECT   d.product_color,
-		               'sz' || get_comm(d.product_size) as product_size,
-		               d.product_code,
-		               d.delivery_qy - NVL(i.store_qy,0) as delivery_qy
-		        FROM DELIVERY_DETAILS d left join inventory i
-                on d.delivery_code = i.delivery_code
-                            and d.product_size = i.product_size
-                            and d.product_color = i.product_color
-                            and d.product_code = i.product_code
-		        WHERE d.product_code = #{productCode}
-		        AND d.delivery_code = #{deliveryCode})
+		     (SELECT r.product_color,
+	                 'sz' || get_comm(r.product_size) as product_size_info,
+	                 r.product_code,
+	                 r.qy - NVL(i.store_qy,0) as store_qy
+	         FROM return_product r LEFT JOIN inventory i
+	         on r.return_code = i.return_code
+	                       AND r.product_size = i.product_size
+	                       AND r.product_code = i.product_code
+	                       AND r.product_color = i.product_color
+	         WHERE r.product_code = #{productCode}
+	         AND r.return_code = #{returnCode})
 		select * from temp
-		pivot( sum(delivery_qy)
-		       for product_size in (
+		pivot( sum(store_qy)
+		       for product_size_info in (
 		       <foreach collection="list" item="size" separator=",">
                 '${'sz' + size.productSizeInfo}' AS ${'sz' + size.productSizeInfo}
                </foreach>)
@@ -231,7 +227,8 @@
                             storage_location,
                             store_date,
                             product_se,
-                            delivery_code) 
+                            delivery_code,
+                            return_code) 
 		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
 		       #{list.productCode},
 		       #{list.productQy},
@@ -239,10 +236,11 @@
 		       #{list.color},
 		       #{list.sizeCode},
 		       #{name},
-		       'test',
+		       #{list.storageLocation},
 		       sysdate,
 		       'PT02',
-		       #{list.deliveryCode})
+		       #{list.deliveryCode},
+		       #{list.returnCode})
 	</insert>
 	
 	<!-- 자재 등록 -->
@@ -263,7 +261,7 @@
 		       #{list.productInsertQy},
 		       #{list.productColor},
 		       #{name},
-		       'test',
+		       #{list.location},
 		       sysdate,
 		       'PT01',
 		       #{list.deliveryCode})  

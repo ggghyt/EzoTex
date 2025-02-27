@@ -30,12 +30,13 @@
 #modalGrid {
 	width: 100%;
 	height: 400px; /* 또는 원하는 높이 설정 */
+	overflow-y: scroll;
 }
 </style>
 </head>
 <body>
 
-	<!-- Modal1 -->
+	<!-- 창고모달 -->
 	<div class="modal fade" id="exampleModal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl">
@@ -175,6 +176,8 @@
 	   
 	    //const Grid = tui.Grid;
 	    
+	    // 반품코드 저장 변수
+	    let returnCode = "";
 	    // 납품코드 저장 변수
 	    let deliveryCode = "";
 	    // 불량 수량 저장 변수
@@ -193,7 +196,7 @@
 	    
 	    let err = [];
 	    
-	    
+	    let storageLocation = "";
 	    // 각 제품에 대한 변경된 값을 저장할 객체
 		let productChanges = {};
 	    let productChangeError = {};
@@ -222,10 +225,10 @@
 	          perPage: 10
 	        },
 	      columns: [ 
-	        { header: "납품 코드", name: "deliveryCode", align: "center"},
-	        { header: "제품 종류 수", name: "deliveryQy", align: "center"},
-	        { header: "납품 요청일", name: "orderDate", align: "center"},
-	        { header: "입고 예정일", name: "dedt", align: "center"},
+	        { header: "반품 코드", name: "returnCode", align: "center"},
+	        { header: "제품 종류 수", name: "count", align: "center"},
+	        { header: "납품 요청일", name: "requestDate", align: "center"},
+	        { header: "반품담당자", name: "requestor", align: "center"},
 	      ],
 	      data: dataSource,
 	    });
@@ -255,12 +258,12 @@
 		      columns: [ 
 			        { header: "제품 코드", name: "productCode", align: "center"},
 			        { header: "제품명", name: "productName", align: "center"},
-			        { header: "요청 수량", name: "requestQy", align: "center"},
-			        { header: "납품 수량", name: "productQy", align: "center"},
-			        { header: "입고량 합계", name: "totalQy", align: "center"},
+			        { header: "반품 요청 수량", name: "qy", align: "center"},
+			        { header: "미처리 수량", name: "notStoreQy", align: "center"},
+			        { header: "입고량 합계", name: "storeQy", align: "center"},
 			        { header: "불량 합계", name: "errorTotalQy", align: "center"},
 			        { header: "추천 위치", name: "dedt", align: "center"},
-			        { header: "창고위치", name: "창고위치", align: "center"},
+			        { header: "창고위치", name: "location", align: "center"},
 			  ],
 			  data: []
 		    });
@@ -270,6 +273,7 @@
 	    	
 	    	let data = storeGrid.getRow(ev.rowKey);
 	    	// 납품코드 재정의
+	    	returnCode = data.returnCode;
 	    	deliveryCode = data.deliveryCode;
 	    	
 	    	productChanges = {};  // 변경된 제품 정보 초기화
@@ -277,8 +281,8 @@
 		    err = [];
 	    	
 	    	console.log(productName);
-	    	console.log(deliveryCode);
-	    	fetch(`http://localhost:80/store/deliveryDetailsList?deliveryCode=${data.deliveryCode}`)
+	    	console.log(returnCode);
+	    	fetch(`http://localhost:80/store/deliveryDetailsList?returnCode=${data.returnCode}`)
 	    		.then(rep => rep.json())
 	    		.then(data => {
 	    				storeGrid2.resetData(data);
@@ -353,7 +357,7 @@
 	    	
 	    	//storeGrid3.blur();
 	    	//storeGrid3.request('modifyData');
-	    	
+	    	console.log('데이터확인', obj);
 	    	// 변경 데이터 등록 처리
 	    	fetch(`http://localhost:80/store/InsertTest`,{
 	    		method: 'POST',
@@ -381,7 +385,8 @@
 						             color.push({ header: "입고할수량", name: "size"+ data.productSizeInfo, align: "center", editor: "text"},
 						 		                { header: "요청수량", name: "SZ"+data.productSizeInfo.toLowerCase() , align: "center" },
 						 		                { header: "제품코드", name: "productCode" , hidden: true },
-						 		                { header: "납품코드", name: deliveryCode , hidden: true })
+						 		                { header: "납품코드", name: deliveryCode , hidden: true },
+						 		               { header: "창고위치코드", name: storageLocation , hidden: true })
 			    				})
 				    			storeGrid3.setHeader({complexColumns:size});
 				    			storeGrid3.setColumns(color);
@@ -435,21 +440,29 @@
 		    productName = data.productName;
 		    console.log('제품 이름:', productName);
 		    
-		    
+		    storageLocation = data.storageInfoCode;
 		    
 		
 		    // 창고 위치 컬럼 클릭 시 모달 출력
-		    if (ev.columnName === '창고위치') {
+		    if (ev.columnName === 'location') {
 		        let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
+		        
+		        fetch(`http://localhost:80/store/storageInfoList`)
+   			    .then(rep => rep.json())
+   			    .then(data => {
+   			    	modalGrid.resetData(data);
+   			    	storageLocation = data.storageInfoCode;
+   			    })
+		        
 		    } else {
 		        // 선택한 제품코드 저장
 		        productCode = data.productCode;
 		        console.log('선택한 제품코드:', productCode);
-		        console.log('배송 코드:', deliveryCode);
-		
+		        console.log('배송 코드:', returnCode);
+		        storageLocation = data.storageLocation;
 		        // 서버에서 해당 제품 코드에 대한 옵션 목록을 받아오기
-		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&deliveryCode=${deliveryCode}`)
+		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
 		            .then(rep => rep.json())
 		            .then(data => {
 		                let size = [];
@@ -523,7 +536,7 @@
 										sizeCode: getSizeCommonCode(sizeCode),
 										productQy: newValue,
 										color: rowData.productColor,
-										deliveryCode: deliveryCode
+										deliveryCode: deliveryCode,
 								}
 								obj.push(objInfo);
 							}
@@ -580,7 +593,7 @@
 		                    errorQy: errorQy,
 		                    size: size,
 		                    productSize: sizeCode,
-		                    productColor: rowData.productColor
+		                    productColor: rowData.productColor,
 		                };
 		                err.push(errObj);
 		                console.log('새 오류 객체 추가:', errObj);
@@ -650,6 +663,7 @@
 		                            console.log('최종 합계:', sum);
 		                            
 		                            let objInfo = {
+		                            		returnCode: returnCode,
 				                            productCode: productCode,
 				                            sizeCode: getSizeCommonCode(sizeCode),
 				                            productQy: item[ele], // 변경된 수량
@@ -657,7 +671,8 @@
 				                            deliveryCode: deliveryCode,
 				                            totalQy: sum,
 				                            requestQy: requestQy,
-				                            errorQy: errorQyInfo
+				                            errorQy: errorQyInfo,
+				                            storageLocation: storageLocation
 				                        };
 
 				                        // 동일한 productCode, sizeCode, color가 있으면 기존 항목을 제거하고 새 값 추가
@@ -732,52 +747,7 @@
 	   	let info = []
 	   	
 	   	StoreDelete.addEventListener("click", function () {
-	   		/* let data = storeGrid3.getData()
 	   		
-	   		console.log('그리드3 데이터 확인 : ', data);
-	   		let filed = Object.keys(data[0]);
-	   		
-	   		console.log('필드명 확인 : ',filed);
-	   		
-			let arr = filed.filter(ele => ele.startsWith('SZ'));
-			console.log(arr[0]);
-			for(let i = 0; i <= data.length; i++){
-				for(let j = 0; j < arr.length; j++){
-					console.log('필드 데이터 확인 : ',data[i][arr[j]]);
-					if(data[i][arr[j]] != 0 && data[i][arr[j]] != null){
-						let gridSize = arr[j].replace('SZ','').toUpperCase();
-						let gridQy = data[i][arr[j]]
-						let gridColor = data[i].productColor;
-						let gridSizeCode = getSizeCommonCode(gridSize);
-						
-						let gridObj = {
-								productCode: productCode,
-					        	productName: productName,
-					        	productColor: productColor,
-					        	size: gridSize,
-					        	errorQy: gridQy,
-					        	sizeCode: gridSizeCode
-						}
-						info.push(gridObj);
-					}
-				} 
-			}
-			
-			console.log('배열확인 : ',info)
-			
-			
-			
-			console.log(data); */
-			
-			/* let obj = {
-					productCode: productCode,
-		        	productName: productName,
-		        	productColor: productColor,
-		        	size:
-		        	errorQy:
-			}
-			 */
-			//storeGrid4.resetData(data);
 	   		storeGrid4.resetData(err);
 	   		obj.push(err);
 	   		console.log('obj데이터 확인 : ', obj)
@@ -800,16 +770,40 @@
 	   	* 창고위치 모달 그리드
 	   	*========================================================================
 	   	*/	
-	    const storeGrid5 = new Grid({
+	    const modalGrid = new Grid({
 	    	el: document.getElementById('modalGrid'),
 	    	rowHeaders: ['rowNum'],
 	    	columns: [
-	    		 { header: "창고위치", name: "dedt" },
-			     { header: "입고가능 수량", name: "dedt" },
-			     { header: "적재된 제품 종류 수", name: "dedt" },
+	    		 { header: "창고코드", name: "storageCode" },
+			     { header: "창고상세코드", name: "storageInfoCode" },
+			     { header: "창고이름", name: "storageInfoName" },
 	    	],
 	    	data: ""
 	    })
+	   	
+	   	
+	   	
+	   	modalGrid.on('click', ev => {
+	   		
+	   	    let data = modalGrid.getRow(ev.rowKey);
+	   	    
+	   	    // 창고코드 넣는곳
+	   	    storageLocation = data.storageInfoCode;
+	   	    
+	   	    let selectedRowKey = storeGrid2.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
+	   	    
+	   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
+	   	    	storeGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode); // location 값 업데이트
+	   	    }
+
+	   	    // 기존 모달 인스턴스 가져와서 닫기
+	   	    let modalElement = document.getElementById('exampleModal');
+	   	    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
+
+	   	    if (modalInstance) {
+	   	        modalInstance.hide(); // 모달 닫기
+	   	    }
+	   	});
 	    
 	    /*
 	   	*========================================================================
@@ -826,9 +820,9 @@
 		});
 		
 		modalElement.addEventListener('shown.bs.modal', function () {
-		    storeGrid5.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+			modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
 		    modalElement.style.opacity = '1'; // 투명도 복원
-		});
+		}); 
 
 
 	    

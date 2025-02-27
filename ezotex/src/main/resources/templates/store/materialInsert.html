@@ -1,11 +1,18 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      layout:fragment="content">
-	<head>
-		<meta charset="UTF-8">
-		<title>이조텍스SCM</title>
-	</head>
+     xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+     layout:decorate="~{layouts/layout}"
+     layout:fragment="content">
+<head>
+	<meta charset="UTF-8">
+	<title>이조텍스SCM</title>
+<style type="text/css">
+#modalGrid {
+	width: 100%;
+	height: 400px; /* 또는 원하는 높이 설정 */
+	overflow-y: scroll;
+}
+</style>
+</head>
 	<body>
 		<h3 class="fs-3 fw-bold">| 자재 입고 등록</h3>
 		<div class="card card-body mt-3" style="background-color: #d3d3d3;">
@@ -53,7 +60,44 @@
 		</div>
 		
 		
-		<!-- 등록 모달 -->
+		
+	<!-- 창고모달 -->
+	<div class="modal fade" id="exampleModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header"></div>
+				<div class="card">
+					<div class="card-body">
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
+
+						<div id="modalGrid"></div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>	
+		
+		
+	<!-- 등록 모달 -->
 	<div class="modal fade" id="registModal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
@@ -92,93 +136,151 @@
 		
 		<script>
 		
-			//납품코드
-			let deliveryCode = '';
-		
-		
-		
-			const mtDataSource = {
-					api: {
-						readData: { url: 'http://localhost:80/store/mtDeliveryList', method: 'GET' }
-					},
-					contentType: 'application/json',
-			};
-			
-			const mtGrid = new Grid({
-				el: document.getElementById('grid'),
-				rowHeaders: ['rowNum'],
-				pageOptions:{
-					useClient: false,
-					perPage: 10
+		//납품코드
+		let deliveryCode = '';
+	
+	
+	
+		const mtDataSource = {
+				api: {
+					readData: { url: 'http://localhost:80/store/mtDeliveryList', method: 'GET' }
 				},
-				columns: [
-					{ header: "납품코드", name: "deliveryCode", align: "center" },
-					{ header: "제품 종류 수", name: "deliveryQy", align: "center" },
-					{ header: "납품 요청일", name: "orderDate", align: "center" },
-					{ header: "입고 예정일", name: "dedt", align: "center" },
-				],
-				data: mtDataSource,
+				contentType: 'application/json',
+		};
+		
+		const mtGrid = new Grid({
+			el: document.getElementById('grid'),
+			rowHeaders: ['rowNum'],
+			pageOptions:{
+				useClient: false,
+				perPage: 10
+			},
+			columns: [
+				{ header: "납품코드", name: "deliveryCode", align: "center" },
+				{ header: "제품 종류 수", name: "deliveryQy", align: "center" },
+				{ header: "납품 요청일", name: "orderDate", align: "center" },
+				{ header: "입고 예정일", name: "dedt", align: "center" },
+			],
+			data: mtDataSource,
+		})
+		
+		
+		mtGrid.on('click', ev => {
+			
+			let data = mtGrid.getRow(ev.rowKey);
+			deliveryCode = data.deliveryCode;
+			console.log(deliveryCode);
+			fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+			     .then(rep => rep.json())
+			     .then(data => {
+			    	 data.forEach(item => item.deliveryCode = deliveryCode); 
+			    	 mtGrid2.resetData(data);
+			     })
+		})
+		
+		
+		const mtGrid2 = new Grid({
+			el: document.getElementById('mtGrid2'),
+			rowHeaders: ['rowNum','checkbox'],
+			scrollY: true,
+			height: 500,
+			columns: [
+				{ header: "제품코드", name: "productCode", align: "center" },
+				{ header: "제품명", name: "productName", align: "center" },
+				{ header: "색상", name: "productColor", align: "center" },
+				{ header: "납품수량", name: "productQy", align: "center" },
+				{ header: "입고수량", name: "productInsertQy", editor: "text" },
+				{ header: "창고위치", name: "location"  },
+				{ header: "납품코드", name: "deliveryCode", hidden: true },
+			],
+			data: []
+		})
+		
+			
+		const modalGrid = new Grid({
+	    	el: document.getElementById('modalGrid'),
+	    	rowHeaders: ['rowNum'],
+	    	columns: [
+	    		{ header: "창고코드", name: "storageCode" },
+	    		{ header: "창고상세코드", name: "storageInfoCode" },
+	    		{ header: "창고이름", name: "storageInfoName" },
+	    	],
+	    	data: [],
+	    })
+			
+			
+		let insertData = []
+		
+		mtGrid2.on('afterChange', ev => {
+			if (!ev || !ev.changes) return;
+			ev.changes.forEach(change => {
+				let data = mtGrid2.getRow(change.rowKey);
+				if(data.productQy < data.productInsertQy){
+					console.log('수량확인');
+				}else{
+					insertData.push(data);
+					console.log(insertData);
+				}
+				console.log('채인지 데이터', insertData.getData());
 			})
+		})
+			
+		mtGrid2.on('click', ev => {
+			if(ev.columnName == "location"){
+				let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+		        modal.show();
+		        
+		        fetch(`http://localhost:80/store/storageInfoList`)
+   			    .then(rep => rep.json())
+   			    .then(data => {
+   			    	modalGrid.resetData(data);
+   			    })
+   			 console.log('클릭시 데이터', insertData.getData());
+			}
+		})
+			
+		productMtInsert.addEventListener('click', function(){
+			fetch(`http://localhost:80/store/productMtInsert`, {
+				method: 'POST',
+				headers: {...headers, 'Content-Type': 'application/json'},
+				body: JSON.stringify(insertData)
+			}).then(rep => rep.json())
+			  .then(result => {
+				  console.log(result);
+			  })
+		})
+			
+		modalGrid.on('click', ev => {
+	   	    let data = modalGrid.getRow(ev.rowKey);
+	   	    console.log("선택한 창고 데이터:", data);
+	   	    
+	   	    let selectedRowKey = mtGrid2.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
+	   	    
+	   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
+	   	    	mtGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode); // location 값 업데이트
+	   	    }
+
+	   	    // 기존 모달 인스턴스 가져와서 닫기
+	   	    let modalElement = document.getElementById('exampleModal');
+	   	    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
+
+	   	    if (modalInstance) {
+	   	        modalInstance.hide(); // 모달 닫기
+	   	    }
+	   	});	
 			
 			
-			mtGrid.on('click', ev => {
-				
-				let data = mtGrid.getRow(ev.rowKey);
-				deliveryCode = data.deliveryCode;
-				console.log(deliveryCode);
-				fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
-				     .then(rep => rep.json())
-				     .then(data => {
-				    	 data.forEach(item => item.deliveryCode = deliveryCode); 
-				    	 mtGrid2.resetData(data);
-				     })
-			})
-			
-			
-			const mtGrid2 = new Grid({
-				el: document.getElementById('mtGrid2'),
-				rowHeaders: ['rowNum','checkbox'],
-				scrollY: true,
-				height: 500,
-				columns: [
-					{ header: "제품코드", name: "productCode", align: "center" },
-					{ header: "제품명", name: "productName", align: "center" },
-					{ header: "색상", name: "productColor", align: "center" },
-					{ header: "납품수량", name: "productQy", align: "center" },
-					{ header: "입고수량", name: "productInsertQy", editor: "text" },
-					{ header: "납품코드", name: "deliveryCode", hidden: true },
-				],
-				data: []
-			}) 
-			
-			let insertData = []
-			
-			mtGrid2.on('afterChange', ev => {
-				if (!ev || !ev.changes) return;
-				
-				ev.changes.forEach(change => {
-					let data = mtGrid2.getRow(change.rowKey);
-					if(data.productQy < data.productInsertQy){
-						console.log('수량확인');
-					}else{
-						insertData.push(data);
-						console.log(insertData);
-					}
-				})
-			})
-			
-			productMtInsert.addEventListener('click', function(){
-				fetch(`http://localhost:80/store/productMtInsert`, {
-					method: 'POST',
-					headers: {...headers, 'Content-Type': 'application/json'},
-					body: JSON.stringify(insertData)
-				}).then(rep => rep.json())
-				  .then(result => {
-					  console.log(result);
-				  })
-			})
-			
-			
+		const modalElement = document.getElementById('exampleModal');
+
+		modalElement.addEventListener('show.bs.modal', function () {
+		    modalElement.style.display = 'block'; // 모달을 블록으로 변경
+		    modalElement.style.opacity = '0'; // 투명하게 숨김
+		});
+		
+		modalElement.addEventListener('shown.bs.modal', function () {
+			modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+		    modalElement.style.opacity = '1'; // 투명도 복원
+		}); 
 			
 		</script>
 		
