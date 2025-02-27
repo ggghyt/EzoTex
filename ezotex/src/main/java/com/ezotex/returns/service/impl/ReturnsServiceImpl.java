@@ -13,6 +13,7 @@ import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
 import com.ezotex.returns.dto.changeDTO;
+import com.ezotex.returns.dto.showDTO;
 import com.ezotex.returns.mappers.ReturnsMapper;
 import com.ezotex.returns.service.ReturnsService;
 
@@ -100,8 +101,16 @@ public class ReturnsServiceImpl implements ReturnsService {
 	}
 
 	@Override
-	public List<changeDTO> showChange(List<changeDTO> no) {
-		return mapper.showChange(no);
+	public boolean showChange(List<showDTO> newReturnData) {
+		newReturnData.forEach(data -> {
+			mapper.showChange(data);
+		});
+		return true;
+	}
+	
+	// 반품 제품 조회
+	public List<ReturnsProductDTO> selectReturnProductList(String returnCode) {
+		return mapper.selectReturnProductList(returnCode);
 	}
 
 }

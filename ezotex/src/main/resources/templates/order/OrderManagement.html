@@ -632,7 +632,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    })
 				    .then(rep => rep.json())
 				    .then(data => {
-				        if (data === true) { // 성공했을 때만 리로드
+				        if (data === true) {
 				            console.log("주문 등록 성공:", data);
 				        } else {
 				        	console.log(data);

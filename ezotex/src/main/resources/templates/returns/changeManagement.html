@@ -215,10 +215,10 @@
 		const returnProductNo = selectedProducts.map(product => product.returnProductNo); // 선택된 제품들의 returnProductNo 배열 생성
 		let newReturnData = [];
 		for (let i = 0 ; i < returnProductNo.length ; i++) {
-			newReturnData.push({"newReturnData" : returnProductNo[i]});
+			newReturnData.push({"returnProductNo" : returnProductNo[i]});
 			console.log(returnProductNo[i]);
 		}
-		console.log(newReturnData)
+		console.log("newReturnData",newReturnData)
 		console.log("교환 등록 버튼 클릭됨")
 		console.log("filteredData",filteredData);
 		console.log("selectedProducts",selectedProducts);
@@ -265,7 +265,12 @@
 						body : JSON.stringify(newReturnData),
 						})
 					.then(rep => rep.json())
-					.then(result)
+					.then(result =>{
+						if(result === true){
+							console.log("show 변경 성공");
+							location.reload();
+						}
+					})
 					console.log(result);
 				} else {
 					console.log(data);
