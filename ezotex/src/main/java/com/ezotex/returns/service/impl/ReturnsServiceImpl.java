@@ -1,10 +1,13 @@
 package com.ezotex.returns.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ezotex.returns.dto.ChangeOrderDTO;
 import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
@@ -67,6 +70,38 @@ public class ReturnsServiceImpl implements ReturnsService {
 
 	public List<changeDTO> getChangeProductList(String returnCode) {
 		return mapper.getChangeProductList(returnCode);
+	}
+	
+	// 교환 주문 등록
+	@Override
+	public ChangeOrderDTO insertOrder(ChangeOrderDTO order) {
+			System.out.println(order);
+			mapper.insertOrder(order);
+		return order;
+	}
+	
+	// 교환 주문 제품 등록
+	@Transactional
+	@Override
+	public boolean insertProductOrder(Map<String, Object> product) {
+
+		String productOrderCode = (String) product.get("productOrderCode");
+
+		List<ChangeOrderDTO> odto = (List<ChangeOrderDTO>) product.get("option");
+		System.out.println("sdsd"+productOrderCode);
+		System.out.println("dsds"+odto);
+		odto.forEach(data -> {
+			data.setProductOrderCode(productOrderCode);
+			System.out.println("반복 확인"+data);
+			mapper.insertProductOrder(data);
+		});
+		
+		return true;
+	}
+
+	@Override
+	public List<changeDTO> showChange(List<changeDTO> no) {
+		return mapper.showChange(no);
 	}
 
 }
