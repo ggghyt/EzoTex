@@ -25,6 +25,7 @@ import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
+import com.ezotex.standard.dto.SafetyStockDTO;
 import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.dto.StorageProductDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
@@ -258,7 +259,29 @@ public class StandardController {
 		storageDTO.setSelectCol(selectCol);
 		storageDTO.setStorageInfoName(storageInfoName);
 		storageDTO.setVl(vl);
-		service.StorageProductList(storageDTO);
-		return null;
+		return service.StorageProductList(storageDTO);
+	}
+	
+	@GetMapping("/safetyStock")
+	public String safetyStock() {
+		return "/standard/safetyStock";
+	}
+	
+	@ResponseBody
+	@GetMapping("/safetyStockList")
+	public List<SafetyStockDTO> safetyStockList(@RequestParam(name="productCode") String productCode) {
+		return service.SafetyStockList(productCode);
+	}
+	
+	@ResponseBody
+	@GetMapping("/updateSafety")
+	public void updateSafety(@RequestParam(name="safetyStockMonth") String safetyStockMonth, 
+			                 @RequestParam(name="productCode") String productCode, 
+			                 @RequestParam(name="qy") int qy) {
+		SafetyStockDTO safetyStockDTO = new SafetyStockDTO();
+		safetyStockDTO.setSafetyStockMonth(safetyStockMonth);
+		safetyStockDTO.setProductCode(productCode);
+		safetyStockDTO.setQy(qy);
+		service.updateSafety(safetyStockDTO);
 	}
 }

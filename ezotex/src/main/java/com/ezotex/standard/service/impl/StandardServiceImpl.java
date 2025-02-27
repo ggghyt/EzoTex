@@ -17,6 +17,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
+import com.ezotex.standard.dto.SafetyStockDTO;
 import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.dto.StorageProductDTO;
 import com.ezotex.standard.mappers.StandardMapper;
@@ -54,7 +55,7 @@ public class StandardServiceImpl implements StandardService {
 	}
 
 	@Override
-	public int idApproval(String id) {
+	public String idApproval(String id) {
 		return mapper.idApproval(id);
 	}
 
@@ -210,6 +211,16 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<StorageProductDTO> StorageProductList(StorageDTO storageDTO) {
 		return mapper.StorageProductList(mapper.findStorageInfoCode(storageDTO));
+	}
+
+	@Override
+	public List<SafetyStockDTO> SafetyStockList(String productCode) {
+		return mapper.SafetyStockList(productCode);
+	}
+
+	@Override
+	public int updateSafety(SafetyStockDTO safetyStockDTO) {
+		return mapper.updateSafety(safetyStockDTO);
 	}
 
 	

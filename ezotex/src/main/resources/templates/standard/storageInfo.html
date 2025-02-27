@@ -112,52 +112,19 @@
 		<div class="modal-dialog modal-xl">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="productCodeModalLabel">카테고리 관리</h5>
+					<h5 class="modal-title" id="optionCodeModalLabel"></h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 					</button>
 				</div> 
 				<div class="card">
 					<div class="card-body">
-						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">코드</div>
-							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="categoryModalProductCode" name="productCode" value="" readonly>
-							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">이름</div>
-							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="categoryModalProductName" name="productName" value="" readonly>
-							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-						</div>
-						
-						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">대분류</div>
-							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<select class="form-control" id="modalLclas" name="modalLclas" onchange="modal_lclas_change()">
-								</select>
-							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">소분류</div>
-							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<select class="form-control" id="modalSclas" name="modalSclas">
-									<option value="" selected disabled>선택</option>
-								</select>
-							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-						</div>
-						<div style="text-align: center;">
-							<button id="insertBtn" class="btn btn-primary" onclick="categoryModalRowAdd()">행 추가</button>
-							<button id="editBtn" class="btn btn-danger" onclick="categoryModalRowDel()">행 삭제</button>
-						</div>
-						<div style="margin: 0px auto; width: 60%">
-							<div id="categoryGrid">
+						<div style="margin: 0px auto; width: 90%">
+							<div id="storageInfoModalGrid">
 							</div>
 						</div>
 					</div>
 				</div>
 				<div style="text-align: center; margin: 20px;">
-					<button type="button" class="btn btn-outline-primary btn-fw" onclick="categorySubmit()">저장</button>
 					<button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
@@ -341,8 +308,25 @@
                                                              '&selectCol=' + select_col + 
                                                              '&storageInfoName=' + document.querySelector("#selectedName").value + 
                                                              '&vl=' + document.querySelector("#selectedVl").value)
-        .then(()=> {
+        .then((response) => response.json())
+		.then((data) => {
         	$('#storageInfoModal').modal('show');
+        	document.querySelector('#optionCodeModalLabel').innerText = document.querySelector('#selectColRowName').innerText + " 상세보기"
+        	let storageModalGrid = new Grid({
+				el: document.getElementById('storageInfoModalGrid'), // 해당 위치에 그리드 출력
+		    	data: data,
+		    	columns: [
+		        	{ header: 'Lot', name: 'lot', sortable: true, align: 'center' }, 
+		        	{ header: '제품 이름', name: 'productName', sortable: true, align: 'center' }, 
+		        	{ header: '색상', name: 'productColor', sortable: true, align: 'center' }, 
+		        	{ header: '사이즈', name: 'productSize', sortable: true, align: 'center' }, 
+		        	{ header: '수량', name: 'qy', sortable: true, align: 'center' }, 
+		        	{ header: '입고 날짜', name: 'storeDate', sortable: true, align: 'center' }, 
+		        	{ header: '입고자', name: 'storeChargerName', sortable: true, align: 'center' }
+		    	],
+		  	scrollX: false, // 가로 스크롤
+		  	scrollY: false // 세로 스크롤
+			})
         })
 	}
 	</script>

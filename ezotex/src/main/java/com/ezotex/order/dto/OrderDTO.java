@@ -66,12 +66,6 @@ public class OrderDTO {
 	private String optionCode;
 	private String discontinued;
 	
-	
-	
-	
-	
-	
-	
 	private String sizeCode;
 	private int quantity;
 }

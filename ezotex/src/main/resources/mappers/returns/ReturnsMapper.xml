@@ -165,6 +165,7 @@
 		JOIN RETURN_PRODUCT rp ON r.RETURN_CODE = rp.RETURN_CODE
 		JOIN COMPANY c ON r.COMPANY_CODE = c.COMPANY_CODE
 		WHERE rp.PROCESSING_STATUS = 'ER02'
+		AND rp.SHOW = 'on'
 		GROUP BY r.RETURN_CODE, r.DELIVERY_CODE, r.COMPANY_CODE, r.COMPANY_NAME, 
 		         c.COMPANY_CHARGER, c.COMPANY_PHONE, r.REQUESTOR, r.REQUEST_DATE
 	</select>
@@ -187,6 +188,7 @@
 		JOIN RETURNS r ON rp.RETURN_CODE = r.RETURN_CODE
 		WHERE r.RETURN_CODE = #{returnCode}
 		AND rp.PROCESSING_STATUS = 'ER02'
+		AND rp.SHOW = 'on'
 	</select>
 	
 	<!-- 반품 전체 조회 -->
@@ -198,9 +200,88 @@
 		select *
 		from return_product	
 	</select>
-	<!--  -->
+	<!-- 교환 주문 헤더 등록 -->
+	<insert id="insertOrder" parameterType="OrderDTO">
+		<selectKey resultType="String"
+			keyProperty="productOrderCode" order="BEFORE">
+			SELECT COALESCE(
+			(SELECT CASE
+			WHEN LENGTH('POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)) = 9
+			THEN null
+			ELSE 'POD' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			LPAD((TO_NUMBER(SUBSTR(MAX(PRODUCT_ORDER_CODE), 10)) + 1), 4, 0)
+			END
+			FROM ORDER_LIST
+			WHERE TO_CHAR(ORDER_DATE, 'YY/MM/DD') = (SELECT
+			TO_CHAR(SYSDATE,
+			'YY/MM/DD') FROM DUAL)),
+			('POD' || TO_CHAR(SYSDATE,
+			'YYMMDD') || '0001')) AS product_order_code
+			FROM DUAL
+		</selectKey>
+		INSERT INTO ORDER_LIST
+		(
+		product_order_code,
+		company,
+		company_representative,
+		company_tel,
+		charger,
+		delivery_request_deadline,
+		order_status,
+		company_code,
+		order_date,
+		emp_code,
+		remarks,
+		amount
+		)
+		VALUES(
+		#{productOrderCode},
+		#{companyName},
+		#{companyCharger},
+		#{companyPhone},
+		#{charger},
+		sysdate+7,
+		'OR01',
+		#{companyCode},
+		sysdate,
+		#{empCode},
+		'교환',
+		#{amount}
+		)
+	</insert>
 	
-	<!--  -->
+	<!-- 교환 주문 제품 등록 -->
+	<insert id="insertProductOrder" parameterType="OrderDTO">
+		INSERT INTO
+		ORDER_PRODUCT
+		(
+		order_detail_code,
+		product_order_code,
+		product_code,
+		product_color,
+		product_size,
+		qy,
+		unit_price
+		)
+		VALUES
+		(
+		ORDER_DETAIL_SEQ.NEXTVAL,
+		#{productOrderCode},
+		#{productCode},
+		#{productColor},
+		#{productSize},
+		#{qy},
+		#{unitPrice}
+		)
+	</insert>
+	
+	<!-- 교환 제품 show값 변경 -->
+	<update id="showChange" parameterType="changeDTO">
+        UPDATE RETURN_PRODUCT
+        SET SHOW = 'off'
+        WHERE return_product_no IN #{no}
+	</update>
 	
 	<!--  -->
 	

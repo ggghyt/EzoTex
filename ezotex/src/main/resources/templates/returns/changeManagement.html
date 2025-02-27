@@ -15,7 +15,7 @@
 	<div id="changeGrid"></div>
 	<div id="changeProductGrid"></div>
 	<div>
-		<button type="button" class="btn btn-primary">교환등록</button>
+		<button type="button" class="btn btn-primary" id="changeResiBtn">교환등록</button>
 	</div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
@@ -66,25 +66,70 @@
 				perPage : 5
 			},
 		})
+		
+		let lastClickedRowKey = null; // 마지막 클릭된 행의 rowKey 저장
+		let filteredData = {}; 
 		// 행 클릭 이벤트 , returnCode 받기위해
 		changeGrid.on('click', (ev) => {
 		    const rowData = changeGrid.getRow(ev.rowKey);
+		    console.log(rowData);
+					    
 		    let returnCode = "";
-		    if (rowData) {
-		        returnCode = rowData.returnCode; // 선택한 행의 returnCode 가져오기
-		        console.log(returnCode);
+		    
+    	    if (rowData) {
+		        // rowData 내에서 null 또는 undefined 값을 찾아 필터링
+		        filteredData = Object.fromEntries(
+			            Object.entries(rowData).filter(([key, value]) => key !== "requestor" && value !== null && value !== undefined && value !== 0)
+		        );
+		        // charger와 emp_code 컬럼 추가
+		        filteredData.charger = session_user_name; // 로그인된 사원 이름
+		        filteredData.empCode = session_user_code; // 로그인된 사원 코드
+			
+		        console.log("필터링된 rowData:", filteredData);
+		
+		        // returnCode가 존재하는 경우 출력
+		        if (filteredData.returnCode) {
+		            console.log("returnCode:", filteredData.returnCode);
+		            
+			        returnCode = filteredData.returnCode; // 선택한 행의 returnCode 가져오기
+			        console.log(returnCode);
+			        
+		            // 이전 클릭된 행과 비교 (rowKey 기준으로 비교)
+		            if (lastClickedRowKey === ev.rowKey) {
+		                console.log("이미 클릭된 행입니다. 서버 통신을 건너뜁니다.");
+		            }else{
+					    // 서버 통신
+					    fetch(`http://localhost:80/returns/changeProductList?returnCode=${returnCode}`)
+					    	.then(response => response.json())
+					    	.then(data => {
+					    		console.log("returnCode 출력" , returnCode);
+								changeProductGrid.resetData(data)
+				    	});
+					    
+		                // 마지막 클릭된 행의 rowKey 저장
+		                lastClickedRowKey = ev.rowKey;
+		                console.log("마지막 클릭된 행의 rowKey:", lastClickedRowKey);
+		            }
+		        } else {
+		            console.log("returnCode가 존재하지 않음");
+		        }
+		    } else {
+		        console.log("유효하지 않은 행 선택");
 		    }
-		    fetch(`http://localhost:80/returns/changeProductList?returnCode=${returnCode}`)
-		    	.then(response => response.json())
-		    	.then(data => {
-		    		console.log("returnCode 출력" , returnCode , data);
-					changeProductGrid.resetData(data)
-		    	})
 		});
 		
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
 		const changeProductList = /*[[${getChangeProductList}]]*/[];
-
+		
+		// 사이즈 매핑
+		const sizeMapping = {
+			    "SI01": "FREE", "SI02": "XS", "SI03": "S", "SI04": "M", "SI05": "L", "SI06": "XL", "SI07": "XXL",
+			    "SI25": "25", "SI26": "26", "SI27": "27", "SI28": "28", "SI29": "29", "SI30": "30", "SI31": "31", "SI32": "32",
+			    "SI33": "33", "SI34": "34", "SI35": "35", "SI36": "36", "SI37": "37", "SI38": "38",
+			    "SI44": "44", "SI55": "55", "SI66": "66", "SI77": "77", "SI88": "88", "SI90": "90"
+		};
+		
+		
 		const changeProductGrid = new tui.Grid({
 			el : document.getElementById("changeProductGrid"),
 			data : changeProductList,
@@ -92,7 +137,13 @@
 			scrollY : false, // 세로 스크롤바 비활성화
 			bodyHeight : 200,
 			rowHeight : 'auto',
+			rowHeaders: ["checkbox"],
 			columns : [
+				{
+					header : '반품제품번호',
+					name : 'returnProductNo',
+					align : 'center',
+				},
 				{
 					header : '제품코드',
 					name : 'productCode',
@@ -107,6 +158,8 @@
 					header : '사이즈',
 					name : 'productSize',
 					align : 'center',
+					formatter: ({ value }) => sizeMapping[value] || value // 매핑 적용
+					
 				},
 				{
 					header : '수량',
@@ -124,6 +177,110 @@
 				perPage : 5
 			},
 		})
+			let selectedProducts = []; // 체크된 데이터 저장 배열
+			let totalUnitPrice = 0; // 수량 * 단가  합산 변수
+	
+			changeProductGrid.on('check', updateSelectedProducts);  // 체크될 때 실행
+			changeProductGrid.on('uncheck', updateSelectedProducts); // 체크 해제될 때 실행
+			changeProductGrid.on('checkAll', updateSelectedProducts); // 전체 선택될 때 실행
+			changeProductGrid.on('uncheckAll', updateSelectedProducts); // 전체 해제될 때 실행
+			
+			function updateSelectedProducts() {
+			    selectedProducts = changeProductGrid.getCheckedRows().map(row => ({
+			    	returnProductNo : row.returnProductNo,
+			        productCode: row.productCode,
+			        productColor: row.productColor,
+			        productSize: row.productSize,
+			        qy: row.qy,
+			        unitPrice : row.unitPrice
+			    }));
+			    
+			    // 수량 * 단가 합산 (null 또는 undefined 방지)
+			    totalPrice = selectedProducts.reduce((sum, product) => 
+			        sum + ((product.qy || 0) * (product.unitPrice || 0)), 0
+			    );
+			    
+			    // filteredData.amount를 업데이트
+			    if (filteredData) {
+			        filteredData.amount = totalPrice;
+			    }
+	
+			    console.log("선택된 제품 목록:", selectedProducts);
+			    console.log("총 금액 (수량 * 단가):", totalPrice);
+			    console.log("filteredData", filteredData);
+			}
+			
+			
+	document.getElementById("changeResiBtn").addEventListener("click", function() {
+		const returnProductNo = selectedProducts.map(product => product.returnProductNo); // 선택된 제품들의 returnProductNo 배열 생성
+		let newReturnData = [];
+		for (let i = 0 ; i < returnProductNo.length ; i++) {
+			newReturnData.push({"newReturnData" : returnProductNo[i]});
+			console.log(returnProductNo[i]);
+		}
+		console.log(newReturnData)
+		console.log("교환 등록 버튼 클릭됨")
+		console.log("filteredData",filteredData);
+		console.log("selectedProducts",selectedProducts);
+		registerData = filteredData;
+		registerProductData = selectedProducts;
+		console.log("registerData",registerData);
+		console.log("registerProductData",registerProductData);
+		// 등록 연결
+		fetch(`http://localhost:80/returns/insertOrder`, {
+			method: 'POST',
+			headers: {
+				...headers,
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(registerData),
+		})
+		.then(rep => rep.json())
+		.then(result => {
+		    const requestBody = {
+		            productOrderCode: result.productOrderCode,
+		            option: registerProductData // 기존 선택된 제품 목록을 option 배열로 설정
+		        };
+			/* registerProductData.productOrderCode = result.productOrderCode; */
+			fetch(`http://localhost:80/returns/insertProductOrder`, {
+				method : 'POST',
+				headers : {
+					...headers,
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(requestBody)
+			})
+			.then(rep => rep.json())
+			.then(data => {
+				if(data === true) {
+					console.log("주문 등록 성공:", data);
+						console.log("returnProductNoreturnProductNoreturnProductNo",returnProductNo);
+					
+					fetch(`http://localhost:80/returns/showChange`, {
+						method : 'POST',
+						headers : {
+							...headers,
+							"Content-Type": "application/json"
+						},
+						body : JSON.stringify(newReturnData),
+						})
+					.then(rep => rep.json())
+					.then(result)
+					console.log(result);
+				} else {
+					console.log(data);
+					throw new Error("주문 등록 실패");
+				}
+			})
+		})
+		.catch(error => {
+			console.error("주문 등록 오류:", error);
+			alert("주문 등록 중 오류가 발생했습니다.");
+		})
+		
+		
+		
+	})
 	</script>
 </body>
 </html>

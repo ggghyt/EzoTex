@@ -1,7 +1,9 @@
 package com.ezotex.returns.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.ezotex.returns.dto.ChangeOrderDTO;
 import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
@@ -27,4 +29,11 @@ public interface ReturnsService {
 	// 반품 전체 조회
 	List<ReturnsDTO> getReturnList();
 	List<ReturnsProductDTO> getReturnProductList();
+	
+	// 교환 주문 등록
+	ChangeOrderDTO insertOrder(ChangeOrderDTO order);
+	// 교환 주문 제품 등록
+	boolean insertProductOrder(Map<String, Object> product);
+	// 교환 제품 show 변경
+	List<changeDTO> showChange(List<changeDTO> no);
 }
