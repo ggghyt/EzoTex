@@ -1,0 +1,328 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>이조텍스SCM</title>
+<!-- timePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.js"></script>
+
+<!-- datePicker -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script
+	src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+
+<!-- paging -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.css" />
+<script
+	src="https://uicdn.toast.com/tui.pagination/latest/tui-pagination.js"></script>
+
+<!-- toast grid -->
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style type="text/css">
+</style>
+</head>
+<body>
+	<h3 id="storage_title" class="fs-3 fw-bold">| 안전재고 관리</h3>
+	<div class="col" style="padding: 10px">
+		<div class="row">
+			<!-- 제품 검색 조건 -->
+			<div class="row me-2">
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">코드</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="productCode" name="productCode" value="">
+				</div>
+
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">이름</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="productName" name="productName" value="">
+				</div>
+				
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">유형</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="productType" name="productType">
+						<option value="">전체</option>
+						<option value="PT01">자재</option>
+						<option value="PT02">제품</option>
+					</select>
+				</div>
+				<div class="col-3 col-lg-3 d-flex mb-2"></div>
+			</div>
+
+			<div class="row me-2">
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">대분류</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="lclas" name="lclas" onchange="lclas_change()">
+						<option value="">전체</option>
+					</select>
+				</div>
+
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소분류</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="sclas" name="sclas">
+						<option value="">전체</option>
+					</select>
+				</div>
+				
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="이상" value="">
+				</div>
+
+				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak"> ~ </label>
+				<div class="col-2 col-lg-2 d-flex mb-2">
+					<input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="이하" value="">
+				</div>
+			</div>
+
+			<div class="d-flex justify-content-center mt-2 mb-4">
+				<button type="button" id="searchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchBtn()">
+					<i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i>
+				</button>
+				<button type="reset" class="btn btn-warning mag-glass-btn" onclick="resetBtn()">
+					<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+				</button>
+			</div>
+			
+			<div id="searchGrid" style="height: 525px">
+			</div>
+			<div class="col me-2">
+			<div class="row me-2">
+				<label class="col-8 col-lg-8 d-flex mb-2 align-items-center justify-content-center wbreak">이번달 안전재고</label>
+				<div class="col-4 col-lg-4 d-flex mb-2">
+					<input type="number" class="form-control" id="nowSafetyStock" name="nowSafetyStock" value="">
+				</div>
+			</div>
+			<div class="row me-2">
+				<label class="col-8 col-lg-8 d-flex mb-2 align-items-center justify-content-center wbreak">다음달 예상 안전재고</label>
+				<div class="col-4 col-lg-4 d-flex mb-2">
+					<input type="number" class="form-control" id="nextSafetyStock" name="nextSafetyStock" value="" readonly>
+				</div>
+			</div>
+			</div>
+			<div class="col me-2">
+				<button id="updateSafetyBtn" class="btn btn-primary" onclick="updateSafety()">저장</button>
+			</div>
+			
+			<div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">안전재고 변동</h4>
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+		</div>
+	</div>
+	
+	<script>
+	fetch('http://localhost:80/standard/categoryLclas')
+	.then((response) => response.json())
+	.then((data) => {
+			let select_lclas = document.querySelector("#lclas");
+			for (let i = 0 ; i < data.length ; i++) {
+				let o = document.createElement('option');
+				o.setAttribute("value", data[i].lclas);
+				o.innerText = data[i].lclas
+				select_lclas.appendChild(o);
+			}
+		})
+
+	function lclas_change() {
+		let select_lclas = document.querySelector("#lclas");
+		let select_sclas = document.querySelector("#sclas");
+		if (select_lclas.value == "") {
+			select_sclas.innerHTML = ""
+			let o = document.createElement('option');
+			o.setAttribute("value", "");
+			o.innerText = "전체"
+			select_sclas.appendChild(o);
+		} else {
+			fetch('http://localhost:80/standard/categorySclas?lclas=' + select_lclas.value)
+			.then((response) => response.json())
+			.then((data) => {
+				select_sclas.innerHTML = ""
+				let o = document.createElement('option');
+				o.setAttribute("value", "");
+				o.innerText = "전체"
+				select_sclas.appendChild(o);
+				for (let i = 0 ; i < data.length ; i++) {
+					let o = document.createElement('option');
+					o.setAttribute("value", data[i].sclas);
+					o.innerText = data[i].sclas
+					select_sclas.appendChild(o);
+				}
+			})
+		}
+	}
+	
+	document.getElementById('searchGrid').replaceChildren()
+	let gridData = {
+		api: {
+			readData: { url: '/standard/productListAll', method: 'GET' }
+		},
+		contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+	}
+	let searchListGrid = new Grid({
+		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
+	    data: gridData,
+	    columns: [
+	        { header: '코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' }, 
+	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
+	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 150, sortable: true, align: 'center' }, 
+	        { header: '대분류', name: 'LCLAS', width: 150, sortable: true, align: 'center' }, 
+	        { header: '소분류', name: 'SCLAS', width: 150, sortable: true, align: 'center' }, 
+	        { header: '단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }
+	    ],
+	    pageOptions: {
+	        useClient: true, // 페이징을 위해 필요
+	        perPage: 10
+	  	},
+	  	scrollX: false, // 가로 스크롤
+	  	scrollY: false // 세로 스크롤
+	})
+	
+	function searchBtn() {
+		fetch('/standard/productListSearch?productCode=' + document.querySelector("#productCode").value
+				 + '&productName=' + document.querySelector("#productName").value
+				 + '&productType=' + document.querySelector("#productType").value
+				 + '&lclas=' + document.querySelector("#lclas").value
+				 + '&sclas=' + document.querySelector("#sclas").value
+				 + '&minPrice=' + document.querySelector("#minPrice").value
+				 + '&maxPrice=' + document.querySelector("#maxPrice").value)
+		.then(response => response.json())
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
+	}
+	
+	function resetBtn() {
+		fetch('/standard/productListAll')
+		.then(response => response.json())
+	    .then(data => {
+	    	searchListGrid.resetData(data.data.contents)
+	    })
+		document.querySelector("#productCode").value = ""
+		document.querySelector("#productName").value = ""
+		document.querySelector("#productType").value = ""
+		document.querySelector("#lclas").value = ""
+		document.querySelector("#sclas").value = ""
+		document.querySelector("#minPrice").value = ""
+		document.querySelector("#maxPrice").value = ""
+	}
+	let chart_data = null
+	let lastClicked = null
+	searchListGrid.on('focusChange', ev => {
+		searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+		searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+		lastClicked = ev.rowKey; 
+		
+		selectedRow = searchListGrid.getRow(ev.rowKey);
+		
+		fetch('/standard/safetyStockList?productCode=' + selectedRow.PRODUCT_CODE)
+		.then(response => response.json())
+	    .then(data => {
+	    	console.log(data)
+	    	chart_data = data
+	    	
+	    	if (data.length > 0) {
+	    		document.querySelector("#nowSafetyStock").value = data[0].qy
+	    	} else {
+	    		document.querySelector("#nowSafetyStock").value = 0
+	    	}
+	    	
+	    	if (data.length > 11) {
+	    		document.querySelector("#nextSafetyStock").value = parseInt((data[11].qy + data[0].qy)/2)
+	    	} else if (data.length > 0) {
+	    		document.querySelector("#nextSafetyStock").value = data[1].qy
+	    	} else {
+	    		document.querySelector("#nextSafetyStock").value = 0
+	    	}
+	    	
+	    	
+	    	
+	    	let safety_labels = []
+	    	let today = new Date();
+	    	let yyyy = today.getFullYear()
+    		let mm = today.getMonth() + 1
+	    	for (let i = 11 ; i >= 0 ; i--) {
+	    		if (mm - i > 0) {
+	    			safety_labels.push(yyyy + "/" + ((mm - i) < 10 ? "0" : "") + (mm - i))
+	    		} else {
+	    			safety_labels.push((yyyy - 1) + "/" + ((mm - i + 12) < 10 ? "0" : "") + (mm - i + 12))
+	    		}
+	    	}
+	    	
+	    	let safety_data = []
+	    	for (let i = 11 ; i >= 0 ; i--) {
+	    		if (data.length > i) {
+	    			safety_data.push(data[i].qy)
+	    		} else {
+	    			safety_data.push(0)
+	    		}
+	    	}
+	    	
+	    	
+	    	
+	    	
+	    	let chartData = {
+				labels: safety_labels,
+				datasets: [{
+				    label: '# of Votes',
+				    data: safety_data,
+				    backgroundColor: [
+				        'rgba(255, 99, 132, 0.2)'
+				    ],
+				    borderColor: [
+				        'rgba(255,99,132,1)'
+				    ],
+				    borderWidth: 1,
+				    fill: false
+				}]
+			}
+			
+			let chartOptions = {
+			    scales: {
+			        yAxes: [{
+			            ticks: {
+			                beginAtZero: true
+			            }
+			        }]
+			    },
+			    legend: {
+			        display: false
+			    },
+			    elements: {
+			        point: {
+			            radius: 0
+			        }
+			    }
+
+			};
+			
+			let lineChartCanvas = $("#lineChart").get(0).getContext("2d");
+		    let lineChart = new Chart(lineChartCanvas, {
+		      type: 'line',
+		      data: chartData,
+		      options: chartOptions
+		    });
+	    })
+	});
+	
+	function updateSafety() {
+		let today = new Date();
+    	let yyyy = today.getFullYear()
+		let mm = today.getMonth() + 1
+		fetch('/standard/updateSafety?safetyStockMonth=' + chart_data[0].safetyStockMonth
+				                  + '&productCode='	+ chart_data[0].productCode
+				                  + '&qy=' + document.querySelector("#nowSafetyStock").value
+		)
+	}
+	</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
 import com.ezotex.standard.dto.ResetPasswordDTO;
+import com.ezotex.standard.dto.SafetyStockDTO;
 import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.dto.StorageProductDTO;
 
@@ -20,7 +21,7 @@ public interface StandardService {
 	List<DeptDTO> deptList();
 	List<PositionDTO> positionList();
 	int insertEmp(EmpDTO empDTO, AddressListDTO addDTO);
-	int idApproval(String id);
+	String idApproval(String id);
 	int insertCompany(CompanyDTO companyDTO, AddressListDTO addDTO);
 	ResetPasswordDTO findNameEmail(String id);
 	int passwordUpdate(String id, String password);
@@ -44,4 +45,6 @@ public interface StandardService {
 	int insertStorageInfo(StorageDTO storageDTO);
 	int updateStorageInfo(StorageDTO storageDTO);
 	List<StorageProductDTO> StorageProductList(StorageDTO storageDTO);
+	List<SafetyStockDTO> SafetyStockList(String productCode);
+	int updateSafety(SafetyStockDTO safetyStockDTO);
 }

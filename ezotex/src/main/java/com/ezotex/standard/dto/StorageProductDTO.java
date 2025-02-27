@@ -15,4 +15,6 @@ public class StorageProductDTO {
 	private String storeChargerName;
 	private String storeChargerCode;
 	private String qy;
+	private String productColor;
+	private String productSize;
 }

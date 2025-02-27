@@ -395,12 +395,12 @@ visibility: visible;
 		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
 	    data: gridData,
 	    columns: [
-	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true }, 
+	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true, align: 'center' }, 
 	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
 	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
 	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
 	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
-	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formater: row => numberFormmater(row.value) }
+	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }
 	    ],
 	    pageOptions: {
 	        useClient: true, // 페이징을 위해 필요
