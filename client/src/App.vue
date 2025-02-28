@@ -11,4 +11,9 @@
  #app {
     background-color: #4285f4;
   }
+  .bg-blue {
+    background-color: #dceffa !important;
+  }
+
+  
 </style>
