@@ -141,9 +141,18 @@ public class StoreServiceImpl implements StoreService {
 		System.out.println(list);
 		list.forEach(data -> {
 			if(data.getProductQy() > 0) {
-				mapper.InsertProduct(data, name);
+				//mapper.InsertProduct(data, name);
 			}
 	    });
+		
+		String returnCode = list.get(0).getReturnCode();
+		
+		int check = mapper.deliveryPrCheck(returnCode);
+		
+		if(check == 0) {
+			System.out.println("업데이트 처리");
+		}
+		
 		return true;
 	}
 

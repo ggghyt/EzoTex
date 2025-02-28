@@ -179,6 +179,8 @@
 		let productChanges = {};
 	    let productChangeError = {};
 	    
+	    
+	    
 	   
 	   	/*
 	   	*========================================================================
@@ -418,8 +420,8 @@
          console.log("Data location:", data.location);
 	    
 	    if (!data) {
-        console.log("선택된 데이터가 없습니다.");
-        return; // 데이터가 없다면 함수 종료
+        	console.log("선택된 데이터가 없습니다.");
+        	return; // 데이터가 없다면 함수 종료
     	}
 	    
 	    // 창고 위치 컬럼 클릭 시 모달 출력
@@ -513,7 +515,7 @@
 	                            productQy: newValue,
 	                            color: rowData.productColor,
 	                            deliveryCode: deliveryCode,
-	                            storageLocation: storageLocation // 여기서 storageLocation을 올바르게 설정하도록 해야함
+	                            storageLocation: storageLocation 
 	                        };
 	
 	                        // 여기서 storageLocation 값이 다르게 들어가게 할 수 있도록 처리
@@ -522,7 +524,7 @@
 	                            obj.push(objInfo);  // obj에 추가
 	                        }
 	                    }
-	                    console.log(obj);
+	                    console.log("2번그리드 클릭시 obj : ",obj);
 	                }
 	            });
 	    }
@@ -721,7 +723,7 @@
 			     { header: "창고상세코드", name: "storageInfoCode" },
 			     { header: "창고이름", name: "storageInfoName" },
 	    	],
-	    	data: ""
+	    	data: []
 	    })
 	   	
 	   	
@@ -729,10 +731,12 @@
 	   	modalGrid.on('click', ev => {
 		    let modalData = modalGrid.getRow(ev.rowKey); // 모달에서 클릭한 행의 데이터
 		    let storageLocation = modalData.storageInfoCode; // 창고위치 값 추출
-		
+			
+		    
 		    // storeGrid2에서 현재 선택된 행(rowKey)을 가져옴
 		    let selectedRowKey = storeGrid2.getFocusedCell()?.rowKey;
 		
+		    
 		    if (selectedRowKey !== null && selectedRowKey !== undefined) {
 		        // storeGrid2에서 선택된 행에 창고 위치 값 넣기
 		        storeGrid2.setValue(selectedRowKey, 'location', storageLocation);

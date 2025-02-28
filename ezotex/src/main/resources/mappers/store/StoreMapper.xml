@@ -88,6 +88,7 @@
 		            FROM returns r JOIN return_product p
 		            ON r.return_code = p.return_code
 		            WHERE p.processing_status = 'ER03'
+		                  AND p.show = 'on'
 		            GROUP BY r.return_code, r.delivery_code, r.company_code, r.company_name, r.requestor, r.request_date
 		            ORDER BY r.request_date
 		        ) a
@@ -241,6 +242,14 @@
 		       #{list.deliveryCode},
 		       #{list.returnCode})
 	</insert>
+	
+	<!-- 반품 처리상태를 위한 제품입고량 -->
+	<select id="deliveryPrCheck">
+		SELECT SUM(r.qy) - sum(NVL(i.store_qy, 0)) as checkQy
+		FROM return_product r left join inventory i
+		on r.return_code = i.return_code
+		WHERE r.return_code = #{returnCode}	
+	</select>
 	
 	<!-- 자재 등록 -->
 	<insert id="MtInsertProduct" parameterType="StoreDeliveryDetailsDTO">

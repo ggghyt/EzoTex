@@ -69,6 +69,9 @@ public interface StoreMapper {
 	// 제품 입고 등록
 	public int InsertProduct(@Param("list")SizeDTO SDto, @Param("name")String name);
 	
+	// 반품코드기반 남은 제품량
+	public int deliveryPrCheck(String returnCode);
+	
 	// 자재 입고 등록
 	public int MtInsertProduct(@Param("list")StoreDeliveryDetailsDTO sdto, @Param("name") String name);
 	
