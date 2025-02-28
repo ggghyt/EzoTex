@@ -162,7 +162,7 @@
 			}
 			storage_columns = [{ header: '*', name: 'storage_row', align: 'center' }]
 			for (let i = 0 ; i < maxCol ; i++) {
-				storage_columns = [...storage_columns, {header : String.fromCharCode(i + 65), name : i + 1, align: 'center'}]
+				storage_columns = [...storage_columns, {header : String.fromCharCode(i + 65), name : i + 1, align: 'center', }]
 			}
 		
 			for (let i = 0 ; i < maxRow ; i++) {
@@ -176,7 +176,9 @@
 					storage_data[data[i].selectRow - 1][data[i].selectCol] = data[i].storageInfoName
 				}
 			
-			
+				console.log(storage_data)
+				console.log(storage_columns)
+				
 				storageGrid = new Grid({
 					el: document.getElementById('storageGrid'), // 해당 위치에 그리드 출력
 	    			data: storage_data,
@@ -185,7 +187,8 @@
 	  				scrollX: false, // 가로 스크롤
 	  				scrollY: false // 세로 스크롤
 				})
-			
+				
+				
 				storageGrid.on('focusChange', ev => {
 					select_row = ev.rowKey + 1
 					select_col = ev.columnName

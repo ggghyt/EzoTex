@@ -215,8 +215,11 @@
 		document.querySelector("#minPrice").value = ""
 		document.querySelector("#maxPrice").value = ""
 	}
+	
 	let chart_data = null
 	let lastClicked = null
+	let safety_labels = []
+	let safety_data = []
 	searchListGrid.on('focusChange', ev => {
 		searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 		searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -246,7 +249,7 @@
 	    	
 	    	
 	    	
-	    	let safety_labels = []
+	    	safety_labels = []
 	    	let today = new Date();
 	    	let yyyy = today.getFullYear()
     		let mm = today.getMonth() + 1
@@ -258,7 +261,7 @@
 	    		}
 	    	}
 	    	
-	    	let safety_data = []
+	    	safety_data = []
 	    	for (let i = 11 ; i >= 0 ; i--) {
 	    		if (data.length > i) {
 	    			safety_data.push(data[i].qy)
@@ -267,14 +270,46 @@
 	    		}
 	    	}
 	    	
-	    	
-	    	
-	    	
-	    	let chartData = {
-				labels: safety_labels,
+	    	make_chart(safety_labels, safety_data)
+	    })
+	});
+	
+	function updateSafety() {
+		let today = new Date();
+    	let yyyy = today.getFullYear()
+		let mm = today.getMonth() + 1
+		fetch('/standard/updateSafety?safetyStockMonth=' + chart_data[0].safetyStockMonth
+				                  + '&productCode='	+ chart_data[0].productCode
+				                  + '&qy=' + document.querySelector("#nowSafetyStock").value
+		)
+    	.then(() => {
+    		let nextSafetyStock = 0;
+    		if (chart_data.length > 11) {
+    			nextSafetyStock = parseInt((chart_data[11].qy + parseInt(document.querySelector("#nowSafetyStock").value))/2)
+    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
+    		} else if (data.length > 0) {
+    			nextSafetyStock = chart_data[1].qy
+    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
+    		} else {
+    			nextSafetyStock = 0
+    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
+    		}
+    		
+    		safety_data[11] = nextSafetyStock
+    		
+    		make_chart(safety_labels, safety_data)
+    	})
+    	
+	}
+	
+	function make_chart(labels, data) {
+		console.log(labels)
+		console.log(data)
+		let chartData = {
+				labels: labels,
 				datasets: [{
 				    label: '# of Votes',
-				    data: safety_data,
+				    data: data,
 				    backgroundColor: [
 				        'rgba(255, 99, 132, 0.2)'
 				    ],
@@ -311,17 +346,6 @@
 		      data: chartData,
 		      options: chartOptions
 		    });
-	    })
-	});
-	
-	function updateSafety() {
-		let today = new Date();
-    	let yyyy = today.getFullYear()
-		let mm = today.getMonth() + 1
-		fetch('/standard/updateSafety?safetyStockMonth=' + chart_data[0].safetyStockMonth
-				                  + '&productCode='	+ chart_data[0].productCode
-				                  + '&qy=' + document.querySelector("#nowSafetyStock").value
-		)
 	}
 	</script>
 </body>
