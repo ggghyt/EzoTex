@@ -11,6 +11,42 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
+
+	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+		<table class="table mt-3">
+			<tbody>
+				<!-- 첫 번째 줄 -->
+				<tr>
+					<td class="col-auto"><label class="col-form-label">반품코드</label></td>
+					<td class="col-auto"><input type="text" id="returnCode"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">납품코드</label></td>
+					<td class="col-auto"><input type="text" id="deliveryCode"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">업체명</label></td>
+					<td class="col-auto"><input type="text" id="companyName"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">요청일</label></td>
+					<td class="col-auto"><input type="date" id="startRequestDate"
+						class="form-control"></td>
+					<td class="col-auto"><input type="date" id="endRequestDate"
+						class="form-control"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="text-center mt-3">
+			<button class="btn btn-warning mag-glass-btn"
+				onclick="searchReturnList()">
+				<i class="fa-solid fa-magnifying-glass icon-left"
+					style="color: #ffffff;"></i>
+			</button>
+			<button class="btn btn-secondary mag-glass-btn"
+				onclick="resetCondition()">
+				<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+			</button>
+		</div>
+	</div>
+	<br>
 	<div id="returnGrid"></div>
 	<div id="returnProductGrid"></div>
 	<script th:inline="javascript">
@@ -38,6 +74,7 @@
 					header : "업체코드",
 					name : "companyCode",
 					align : 'center',
+					hidden : true ,
 				},
 				{
 					header : "업체명",
@@ -60,6 +97,43 @@
 		        perPage: 5
 	      	},
 		})
+		
+		// 검색 함수
+		function searchReturnList() {
+	        const returnCode = document.querySelector('#returnCode').value;
+	        const deliveryCode = document.querySelector('#deliveryCode').value;
+	        const companyName = document.querySelector('#companyName').value;
+	        const startRequestDate = document.querySelector('#startRequestDate').value;
+	        const endRequestDate = document.querySelector('#endRequestDate').value;
+	        
+	        const filteredData = returnList.filter(item => {
+	            return (!returnCode || item.returnCode.includes(returnCode)) &&
+	                   (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
+	                   (!companyName || item.companyName.includes(companyName)) &&
+	                   (!startRequestDate || item.requestDate >= startRequestDate) &&
+	                   (!endRequestDate || item.requestDate <= endRequestDate);
+	        });
+	
+		    // 필터링된 데이터를 다시 설정
+		    returnGrid.resetData(filteredData);
+		}
+
+		// 검색 엔터 이벤트 추가
+		document.querySelectorAll(".card-body input").forEach((ele) => {
+		    ele.addEventListener('keydown', (event) => {				
+		        if (event.keyCode === 13) {
+		        	searchReturnList();
+		        }
+		    });
+		});
+
+		// 검색 조건 초기화 함수
+		function resetCondition() {
+		    document.querySelectorAll('.card-body input').forEach((e) => {
+		        e.value = null;
+		    });
+		    searchReturnList();
+		}
 		
 		// returnGrid 클릭 이벤트 추가
 		returnGrid.on('click', function(ev) {

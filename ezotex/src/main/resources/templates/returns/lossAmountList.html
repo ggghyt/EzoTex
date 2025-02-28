@@ -11,5 +11,200 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 손실액 조회</h3>
+	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+		<table class="table mt-3">
+			<tbody>
+				<!-- 첫 번째 줄 -->
+				<tr>
+					<td class="col-auto"><label class="col-form-label">제품코드</label></td>
+					<td class="col-auto"><input type="text" id="productCode"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">제품명</label></td>
+					<td class="col-auto"><input type="text" id="productName"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">요청일</label></td>
+					<td class="col-auto"><input type="date" id="startRequestDate"
+						class="form-control"></td>
+					<td class="col-auto"><input type="date" id="endRequestDate"
+						class="form-control"></td>
+				</tr>
+				<!-- 두 번째 줄 -->
+				<tr>
+					<td class="col-auto"><label class="col-form-label">수량</label></td>
+					<td class="col-auto"><input type="text" id="qy"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">처리상태</label></td>
+					<td class="col-auto"><input type="text" id="processingStatus"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">반품일</label></td>
+					<td class="col-auto"><input type="date" id="startReturnDate"
+						class="form-control"></td>
+					<td class="col-auto"><input type="date" id="endReturnDate"
+						class="form-control"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="text-center mt-3">
+			<button class="btn btn-warning mag-glass-btn"
+				onclick="searchLossAmount()">
+				<i class="fa-solid fa-magnifying-glass icon-left"
+					style="color: #ffffff;"></i>
+			</button>
+			<button class="btn btn-secondary mag-glass-btn"
+				onclick="resetCondition()">
+				<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+			</button>
+		</div>
+
+	</div>
+
+	<!-- 제품 손실액 조회할 그리드 -->
+	<div class="card card-body mt-3">
+		<div id="lossAmountGrid"></div>
+	</div>
+
+
+	<script th:inline="javascript">
+	<!-- 그리드에 넣어줄 데이터 -->
+	const returnProductList = /*[[${getReturnProductList}]]*/[];	
+	// 토스트 그리드 사용
+	// 반품 제품 그리드 설정
+	const returnProductGrid = new tui.Grid(
+		{
+			el : document.getElementById('lossAmountGrid'), // 그리드 표시할 div ID
+			scrollX : false,
+			scrollY : false,
+			data : returnProductList,
+			columnOptions : {
+				resizable : true // 컬럼 크기 조절
+			},
+			columns : [
+				{
+					header : '제품코드',
+					name : 'productCode',
+					align : 'center',
+				},
+				{
+					header : '제품명',
+					name : 'productName',
+					align : 'center',
+				},
+				{
+					header : '요청일',
+					name : 'requestDate',
+					align : 'center',
+					hidden:true,
+				},
+				{
+					header : '수량',
+					name : 'qy',
+					align : 'center',
+				},
+				{
+					header : '단가',
+					name : 'unitPrice',
+					align : 'center',
+				},
+				{
+					header : '처리상태',
+					name : 'processingStatus',
+					align : 'center',
+					formatter : function(value) {
+						const status = value.value;
+						switch (status) {
+						case 'ER03':
+							return '반품';
+						case 'ER02':
+							return '교환';
+						case 'ER01':
+							return '폐기';
+						default : 
+							return status;
+						}
+					},
+				},
+				{
+					header : '반품일',
+					name : 'returnDate',
+					align : 'center',
+					hidden:true,
+				},
+				{
+					header : '손실액',
+					name : 'lossAmount',
+					align : 'center',
+		            formatter: ({ row }) => {
+		                const unitPrice = parseFloat(row.unitPrice) || 0;
+		                const quantity = parseInt(row.qy) || 0;
+		                return (unitPrice * quantity).toLocaleString() + "￦";
+		            }
+				},
+				{
+					header : '요청일',
+					name : 'requestDate',
+					align : 'center',
+				},
+				{
+					header : '반품일',
+					name : 'returnDate',
+					align : 'center',
+				},
+				
+			],
+		    pageOptions: {
+		        useClient: true, // 페이징을 위해 필요
+		        perPage: 10
+	      	},
+		}
+	
+	
+	)
+	
+	// 손실액 검색 함수
+	function searchLossAmount() {
+        const productCode = document.querySelector('#productCode').value;
+        const productName = document.querySelector('#productName').value;
+        const startRequestDate = document.querySelector('#startRequestDate').value;
+        const endRequestDate = document.querySelector('#endRequestDate').value;
+        const qy = document.querySelector('#qy').value;
+        const processingStatus = document.querySelector('#processingStatus').value;
+        const startReturnDate = document.querySelector('#startReturnDate').value;
+        const endReturnDate = document.querySelector('#endReturnDate').value;
+        
+        const filteredData = returnProductList.filter(item => {
+            return (!productCode || item.productCode.includes(productCode)) &&
+                   (!productName || item.productName.includes(productName)) &&
+                   (!startRequestDate || item.requestDate >= startRequestDate) &&
+                   (!endRequestDate || item.requestDate <= endRequestDate) &&
+                   (!qy || item.qy == qy) &&
+                   (!processingStatus || item.processingStatus.includes(processingStatus)) &&
+                   (!startReturnDate || item.returnDate >= startReturnDate) &&
+                   (!endReturnDate || item.returnDate <= endReturnDate);
+        });
+
+    // 필터링된 데이터를 다시 설정
+    returnProductGrid.resetData(filteredData);
+}
+
+	// 검색 엔터 이벤트 추가
+	document.querySelectorAll(".card-body input").forEach((ele) => {
+	    ele.addEventListener('keydown', (event) => {				
+	        if (event.keyCode === 13) {
+	            searchLossAmount();
+	        }
+	    });
+	});
+
+	// 검색 조건 초기화 함수
+	function resetCondition() {
+	    document.querySelectorAll('.card-body input').forEach((e) => {
+	        e.value = null;
+	    });
+	    searchLossAmount();
+	}
+	
+	</script>
 </body>
+<style>
+</style>
 </html>

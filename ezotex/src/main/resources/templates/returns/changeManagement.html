@@ -12,6 +12,39 @@
 <body>
 	<h3 class="fs-3 fw-bold">| 교환 관리</h3>
 	<br>
+	<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="resiBtn" class="btn btn-outline-primary checkBtn"
+						data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div id="changeGrid"></div>
 	<div id="changeProductGrid"></div>
 	<div>
@@ -210,8 +243,20 @@
 			    console.log("filteredData", filteredData);
 			}
 			
+		
 			
+			
+	// 교환 등록 이벤트		
 	document.getElementById("changeResiBtn").addEventListener("click", function() {
+		let resiModal = new bootstrap.Modal(document.getElementById('registModal'));
+		resiModal.show();
+	    // 등록 버튼 클릭 시, true가 반환되면 실행될 코드
+
+	})
+	
+	// 모달 등록 버튼 이벤트
+	resiBtn.addEventListener("click" , function () {
+		
 		const returnProductNo = selectedProducts.map(product => product.returnProductNo); // 선택된 제품들의 returnProductNo 배열 생성
 		let newReturnData = [];
 		for (let i = 0 ; i < returnProductNo.length ; i++) {
@@ -265,10 +310,10 @@
 						body : JSON.stringify(newReturnData),
 						})
 					.then(rep => rep.json())
-					.then(result =>{
+					.then(result => {
 						if(result === true){
 							console.log("show 변경 성공");
-							location.reload();
+ 							location.reload();
 						}
 					})
 					console.log(result);
@@ -282,10 +327,10 @@
 			console.error("주문 등록 오류:", error);
 			alert("주문 등록 중 오류가 발생했습니다.");
 		})
-		
-		
-		
 	})
+	
+	
+	
 	</script>
 </body>
 </html>
