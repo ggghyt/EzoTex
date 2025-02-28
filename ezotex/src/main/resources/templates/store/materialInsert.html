@@ -181,7 +181,7 @@
 		
 		const mtGrid2 = new Grid({
 			el: document.getElementById('mtGrid2'),
-			rowHeaders: ['rowNum','checkbox'],
+			rowHeaders: ['rowNum'],
 			scrollY: true,
 			height: 500,
 			columns: [
@@ -189,6 +189,7 @@
 				{ header: "제품명", name: "productName", align: "center" },
 				{ header: "색상", name: "productColor", align: "center" },
 				{ header: "납품수량", name: "productQy", align: "center" },
+				{ header: "미처리수량", name: "qy", align: "center" },
 				{ header: "입고수량", name: "productInsertQy", editor: "text" },
 				{ header: "창고위치", name: "location"  },
 				{ header: "납품코드", name: "deliveryCode", hidden: true },

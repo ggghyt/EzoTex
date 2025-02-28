@@ -163,22 +163,21 @@
 	
 	<!-- 납품코드를 기반으로 입고해야될 자재 기본정보 리스트 -->
 	<select id="findByMtDeliveryCode">
-		SELECT p.product_code,
+		SELECT d.product_code,
 		       p.product_name,
-		       o.product_color,
-		       SUM(d.delivery_qy) as productQy,
-		       SUM(DISTINCT i.store_qy) as totalQy
-		FROM delivery_details d join product_info p
-		on d.product_code = p.product_code
-		left join inventory i
+		       d.product_color,
+		       SUM(DISTINCT d.delivery_qy) as productQy,
+		       sum(distinct d.delivery_qy) - sum(nvl(i.store_qy,0)) as qy,
+		       SUM(i.store_qy) as totalQy
+		FROM delivery_details d LEFT join inventory i
 		on d.delivery_code = i.delivery_code
-		left join product_option o
-		on p.product_code = o.product_code
+		left join product_info p
+		on d.product_code = p.product_code
 		WHERE d.product_se = 'PT01'
 		AND d.delivery_code = #{deliveryCode}
-		group by p.product_code,
+		group by d.product_code,
 		         p.product_name,
-		         o.product_color
+		         d.product_color
 	</select>
 	
 	
@@ -261,11 +260,21 @@
 		       #{list.productInsertQy},
 		       #{list.productColor},
 		       #{name},
-		       #{list.location},
+		       'test',
 		       sysdate,
 		       'PT01',
 		       #{list.deliveryCode})  
 	</insert>
+	
+	
+	<!-- 납품상태 업데이트를 위한 자재입고량  -->
+	<select id="deliveryMtCheck">
+		SELECT sum(DISTINCT d.delivery_qy) - sum(nvl(i.store_qy,0)) as checkQy
+		from delivery_details d left join inventory i
+		on d.delivery_code = i.delivery_code
+		WHERE d.product_se = 'PT01'
+		AND i.delivery_code = #{delivery_code}	
+	</select>
 	
 	<!-- 입고된 수량, 불량처리 수량 , 요청수량 -->
 	<select id="storeQy">

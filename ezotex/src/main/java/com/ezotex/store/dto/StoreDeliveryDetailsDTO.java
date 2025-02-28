@@ -36,5 +36,8 @@ public class StoreDeliveryDetailsDTO {
 	// 창고 위치
 	private String location;
 	
+	// 자재 남은입고수량
+	private int qy;
+	
 	
 }

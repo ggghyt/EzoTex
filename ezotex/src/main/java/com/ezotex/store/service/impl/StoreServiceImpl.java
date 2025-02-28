@@ -141,10 +141,7 @@ public class StoreServiceImpl implements StoreService {
 		System.out.println(list);
 		list.forEach(data -> {
 			if(data.getProductQy() > 0) {
-				//mapper.InsertProduct(data, name);
-			}
-			if(data.getProductQy() == data.getTotalQy()) {
-				System.out.println("상태변환 업데이트 해야됨");
+				mapper.InsertProduct(data, name);
 			}
 	    });
 		return true;
@@ -157,10 +154,20 @@ public class StoreServiceImpl implements StoreService {
 		
 		String name = (String) session.getAttribute("name");
 		
+		System.out.println(list);
+		
 		list.forEach(data -> {
 			System.out.println(data);
 			mapper.MtInsertProduct(data, name);
 		});
+		
+		 String deliveryCode = list.get(0).getDeliveryCode();
+		  
+		 int check = mapper.deliveryMtCheck(deliveryCode);
+		 
+		 if(check == 0) {
+			 System.out.println("상태변환 업데이트 진행");
+		 }
 		
 		return false;
 	}

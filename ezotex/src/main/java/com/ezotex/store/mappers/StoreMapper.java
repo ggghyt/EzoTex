@@ -72,6 +72,9 @@ public interface StoreMapper {
 	// 자재 입고 등록
 	public int MtInsertProduct(@Param("list")StoreDeliveryDetailsDTO sdto, @Param("name") String name);
 	
+	// 납품코드기반 남은 자재량
+	public int deliveryMtCheck(String deliveryCode);
+	
 	// 납품코드 제품 전체 등록 완료 후 상태변환
 	public int UpdateDelivery(SizeDTO sizedto);
 	
