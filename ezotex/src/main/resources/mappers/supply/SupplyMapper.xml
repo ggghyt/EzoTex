@@ -10,8 +10,8 @@
 			     c.sclas
 		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
 		WHERE  p.product_type = 'PT02' 
-		<if test='productCode != null and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%'	</if> 
+		<if test='productCode != null and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
 		ORDER  BY product_code DESC
@@ -60,34 +60,6 @@
 		ORDER BY product_color
 	</select>
 	
-	<!-- 제품 코드 기반 집계 목록 -->
-	<select id="pivotProductSupply" resultType="map">
-		WITH temp AS( -- 임시 테이블 지정
-		SELECT d.product_code,
-		       d.product_color, -- o로 변경 필요
-		       d.product_size,
-		       d.supply_qy
-		FROM   supply_plan s JOIN supply_plan_details d
-		                       ON s.supply_plan_code = d.supply_plan_code
-		                     LEFT JOIN product_option o
-		                       ON d.product_code = o.product_code
-		                      AND d.product_size = o.product_size
-		                      AND d.product_color = o.product_color
-		WHERE  d.product_code = #{dto.productCode}
-		  <if test='dto.supplyPlanCode != null and dto.supplyPlanCode != ""'>AND  s.supply_plan_code = #{dto.supplyPlanCode}</if>
-		)
-		SELECT  *
-		FROM temp
-		PIVOT( SUM(supply_qy) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
-		    FOR product_size IN ( -- '값' alias, ...
-		       <foreach collection="sizeList" item="size" separator=",">
-		       	  '${size.productSize}' as "${size.sizeName}"
-		       </foreach>
-		    )
-		)pvt
-		ORDER BY product_color
-	</select>
-	
 	<!-- 공급계획서 조회 -->
   <select id="listSupplyPlan" resultType="SupplyDTO" parameterType="map">
     SELECT * FROM (
@@ -107,20 +79,20 @@
       <where>
          <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
          <if test='seasonNull != null'> OR p.season IS NULL </if>
-         <if test='productCode != null and productCode != ""'> AND d.product_code LIKE '%' || #{productCode} || '%' </if> 
-         <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if> 
+         <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+         <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if> 
          
          <if test='supplyDateMin != null and supplyDateMin != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') >= #{supplyDateMin} </if> 
          <if test='supplyDateMax != null and supplyDateMax != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') <![CDATA[<= #{supplyDateMax}]]> </if> 
       </where>
     ) -- 서브쿼리 형태로 alias 사용 가능
     <where>
-      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND supply_plan_code LIKE '%' || #{supplyPlanCode} || '%' </if>
+      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND UPPER(supply_plan_code) LIKE '%' || UPPER(#{supplyPlanCode}) || '%' </if>
       <if test='supplyYear != null and supplyYear != ""'> AND supply_year = #{supplyYear} </if>
       <if test='supplyQyMin != null and supplyQyMin != ""'> AND supply_qy >= #{supplyQyMin} </if>
       <if test='supplyQyMax != null and supplyQyMax != ""'> AND supply_qy <![CDATA[<= #{supplyQyMax}]]> </if>
-      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if>
-      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if>
+      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if>
+      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if>
       
       <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
       <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
@@ -144,24 +116,73 @@
       FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code 
       <where>
          <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
-         <if test='productCode != null and productCode != ""'> AND d.product_code LIKE '%' || #{productCode} || '%' </if> 
-         <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if> 
+         <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+         <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if> 
          
          <if test='supplyDateMin != null and supplyDateMin != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') >= #{supplyDateMin} </if> 
          <if test='supplyDateMax != null and supplyDateMax != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') <![CDATA[<= #{supplyDateMax}]]> </if> 
       </where>
     ) -- 서브쿼리 형태로 alias 사용 가능
     <where>
-      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND supply_plan_code LIKE '%' || #{supplyPlanCode} || '%' </if>
+      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND UPPER(supply_plan_code) LIKE '%' || UPPER(#{supplyPlanCode}) || '%' </if>
       <if test='supplyYear != null and supplyYear != ""'> AND supply_year = #{supplyYear} </if>
       <if test='supplyQyMin != null and supplyQyMin != ""'> AND supply_qy >= #{supplyQyMin} </if>
       <if test='supplyQyMax != null and supplyQyMax != ""'> AND supply_qy <![CDATA[<= #{supplyQyMax}]]> </if>
-      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if>
-      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if>
+      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if>
+      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if>
       
       <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
       <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
     </where>
+  </select>
+  
+  <!-- 공급계획서 상세조회 -->
+  <select id="infoSupplyPlan">
+    SELECT product_code,
+		       get_prd_name(product_code) product_name,
+		       SUM(supply_qy) supply_qy,
+		       supply_date
+		FROM   supply_plan_details
+		WHERE  supply_plan_code = #{supplyPlanCode}
+		GROUP  BY product_code, supply_date
+		ORDER  BY product_code DESC
+  </select>
+  
+  <!-- 제품 코드 기반 집계 목록 (사이즈별) -->
+  <select id="pivotProductSupply" resultType="map">
+    WITH temp AS( -- 임시 테이블 지정
+    SELECT d.product_color, -- o로 변경 필요
+           d.product_size,
+           d.supply_qy
+    FROM   supply_plan s JOIN supply_plan_details d ON s.supply_plan_code = d.supply_plan_code
+                         LEFT JOIN product_option o ON d.product_code = o.product_code
+                                                   AND d.product_size = o.product_size
+                                                   AND d.product_color = o.product_color
+    WHERE  d.product_code = #{dto.productCode}
+      <if test='dto.supplyPlanCode != null and dto.supplyPlanCode != ""'>AND  s.supply_plan_code = #{dto.supplyPlanCode}</if>
+    )
+    SELECT  *
+    FROM temp
+    PIVOT( SUM(supply_qy) -- 열과 행을 바꿔 선택한 컬럼으로 그룹함수 실행
+        FOR product_size IN ( -- '값' alias, ...
+           <foreach collection="sizeList" item="size" separator=",">
+              '${size.productSize}' as "${size.sizeName}"
+           </foreach>
+        )
+    )pvt
+    ORDER BY product_color
+  </select>
+  
+  <!-- 제품 코드 기반 집계 목록 (색상만 있는 경우) -->
+  <select id="listProductSupply" resultType="map">
+    SELECT o.product_color,
+           o.product_size,
+		       d.supply_qy
+		FROM   product_option o LEFT JOIN supply_plan_details d ON d.product_code = o.product_code
+		                                                       AND d.supply_plan_code = #{supplyPlanCode}
+		                                                       AND (d.product_color = o.product_color
+                                                            OR d.product_size = o.product_size)
+		WHERE  o.product_code = #{productCode}
   </select>
 	
 	<!-- 공급계획 등록(헤더) -->

@@ -15,8 +15,8 @@
 		               LEFT JOIN product_option o ON o.option_code = m.option_code
 		WHERE c.section = 'CP01'
 		  AND  m.discontinued = 'YN02'
-		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
-		<if test='companyName != null and companyName != "null" and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND UPPER(c.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if> 
+		<if test='companyName != null and companyName != "null" and companyName != ""'> AND UPPER(c.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if> 
 		<if test='address != null and address != "null" and address != ""'> 
 			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
 		</if> 
@@ -33,8 +33,8 @@
 		               LEFT JOIN product_option o ON o.option_code = m.option_code
 		WHERE c.section = 'CP01'
 		  AND  m.discontinued = 'YN02'
-		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND c.company_code LIKE '%' || #{companyCode} || '%' </if> 
-		<if test='companyName != null and companyName != "null" and companyName != ""'> AND c.company_name LIKE '%' || #{companyName} || '%' </if> 
+		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND UPPER(c.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if> 
+		<if test='companyName != null and companyName != "null" and companyName != ""'> AND UPPER(c.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if> 
 		<if test='address != null and address != "null" and address != ""'> 
 			AND '(' || a.address_number || ')' ||  a.address_main || ' ' || a.address_info || a.address_reference LIKE '%' || #{address} || '%'
 		</if> 
@@ -57,8 +57,8 @@
 		  AND  m.discontinued = 'YN02'
 		<if test='lclas != null and lclas != "null" and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null" and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		<if test='productCode != null and productCode != "null" and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != "null" and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+		<if test='productName != null and productName != "null" and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if> 
 		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 		ORDER  BY product_code DESC
 	</select>
@@ -72,8 +72,8 @@
 		  AND  m.discontinued = 'YN02'
 		<if test='lclas != null and lclas != "null" and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null" and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		<if test='productCode != null and productCode != "null" and productCode != ""'> AND p.product_code LIKE '%' || #{productCode} || '%' </if> 
-		<if test='productName != null and productName != "null" and productName != ""'> AND p.product_name LIKE '%' || #{productName} || '%' </if> 
+		<if test='productCode != null and productCode != "null" and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+		<if test='productName != null and productName != "null" and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if> 
 		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 	</select>
 	
@@ -117,17 +117,17 @@
 		    <where>
 		      <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
 		      <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-		      <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if>
+		      <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if>
 		    </where> ) -- 서브쿼리 형태로 alias 사용 가능
 		<where> 
-		  <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
+		  <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND UPPER(mtril_order_plan_code) LIKE '%' || UPPER(#{mtrilOrderPlanCode}) || '%' </if>
 		  <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
 	      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
 	      
 	      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
 	      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
-	      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
-	      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
+	      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if> 
+	      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if> 
 	      
 	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
 	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
@@ -150,17 +150,17 @@
 	        <where>
 	          <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
 	          <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-	          <if test='productName != null and productName != ""'> AND d.product_name LIKE '%' || #{productName} || '%' </if>
+	          <if test='productName != null and productName != ""'> AND UPPER(d.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if>
 	        </where> ) -- 바깥에서 추가조건 검색하여 alias 이용 가능
 	    <where> 
-	      <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND mtril_order_plan_code LIKE '%' || #{mtrilOrderPlanCode} || '%' </if>
+	      <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND UPPER(mtril_order_plan_code) LIKE '%' || UPPER(#{mtrilOrderPlanCode}) || '%' </if>
 	      <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
 	      <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
 	      
 	      <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
 	      <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
-	      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if> 
-	      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if> 
+	      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if> 
+	      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if> 
 	      
 	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
 	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
