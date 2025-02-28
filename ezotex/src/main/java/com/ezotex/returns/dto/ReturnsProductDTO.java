@@ -30,4 +30,5 @@ public class ReturnsProductDTO {
 	private Date returnDate;
 	private String processingStatus;
 	private int unitPrice;
+	private String show;
 }
