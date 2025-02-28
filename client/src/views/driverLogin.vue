@@ -1,7 +1,7 @@
 <template>
     <p>로그인</p>
     <button class="btn btn-primary" @click="testFunc">테스트</button>
-    <form class="pt-3" action="$http://localhost:80/loginProc" method="post">
+    <form class="pt-3" action="http://localhost:80/driverLogin" method="post">
                 <div class="form-group">
                   <input type="text" class="form-control form-control-lg" name="id" placeholder="아이디" id="id">
                 </div>
