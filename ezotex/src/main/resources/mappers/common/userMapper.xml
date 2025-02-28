@@ -31,7 +31,12 @@ where id = #{id}
 
 <select id="getRole" resultType="RoleDto">
 select id, 
-       case when length(role) = 4 then 'ROLE_SUPPLY' else 'ROLE_EMP' end as role
+       case when length(role) = 4 then 'ROLE_SUPPLY' 
+       else 
+            case when role = '6' then 'ROLE_DRIVER'
+                else 'ROLE_EMP'
+            end
+       end as role
 from
 (select emp_id as id,
        dept_code as role
