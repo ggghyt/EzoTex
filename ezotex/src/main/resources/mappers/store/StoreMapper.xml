@@ -111,7 +111,8 @@
                         FROM delivery d 
                         JOIN delivery_details i ON d.delivery_code = i.delivery_code
                         WHERE d.company_se = 'CP01'
-                        AND i.delivery_qy > 0
+                           AND i.delivery_qy > 0
+                           AND delivery_status = 'DS01'
                         GROUP BY d.delivery_code, d.order_date, d.dedt
                         ORDER BY d.delivery_code 
                )a
@@ -149,8 +150,8 @@
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
 		SELECT r.product_code,
 		       r.product_name,
-		       SUM(r.qy) as qy,
-		       SUM(r.qy - NVL(i.store_qy, 0)) as not_store_qy,
+		       SUM(distinct r.qy) as qy,
+		       SUM(distinct r.qy) -  SUM(NVL(i.store_qy, 0)) as not_store_qy,
 		       NVL(sum(i.store_qy),0) as store_qy
 		FROM return_product r left join inventory i
 		on r.return_code = i.return_code
@@ -197,14 +198,15 @@
 		     (SELECT r.product_color,
 	                 'sz' || get_comm(r.product_size) as product_size_info,
 	                 r.product_code,
-	                 r.qy - NVL(i.store_qy,0) as store_qy
+	                 r.qy - SUM(NVL(i.store_qy,0)) as store_qy
 	         FROM return_product r LEFT JOIN inventory i
 	         on r.return_code = i.return_code
 	                       AND r.product_size = i.product_size
 	                       AND r.product_code = i.product_code
 	                       AND r.product_color = i.product_color
 	         WHERE r.product_code = #{productCode}
-	         AND r.return_code = #{returnCode})
+	         AND r.return_code = #{returnCode}
+	         GROUP BY r.product_color, r.product_code, r.product_size,r.qy, i.store_qy)
 		select * from temp
 		pivot( sum(store_qy)
 		       for product_size_info in (
@@ -251,6 +253,14 @@
 		WHERE r.return_code = #{returnCode}	
 	</select>
 	
+	<!-- 반품 처리상태 변경 -->
+	<update id="returnProcessing">
+		UPDATE return_product
+  		SET show = 'off'
+		WHERE return_code = #{returnCode}
+	</update>
+	
+	
 	<!-- 자재 등록 -->
 	<insert id="MtInsertProduct" parameterType="StoreDeliveryDetailsDTO">
 		INSERT INTO inventory(lot,
@@ -284,6 +294,14 @@
 		WHERE d.product_se = 'PT01'
 		AND i.delivery_code = #{delivery_code}	
 	</select>
+	
+	<!-- 납품상태 상태변환 -->
+	<update id="deliveryProcessing">
+		UPDATE delivery
+		  SET  delivery_status = 'DS05'
+		WHERE delivery_code = #{deliveryCode}
+	</update>
+	
 	
 	<!-- 입고된 수량, 불량처리 수량 , 요청수량 -->
 	<select id="storeQy">

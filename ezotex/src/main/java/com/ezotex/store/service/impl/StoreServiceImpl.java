@@ -133,24 +133,22 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	
-	// 제품 옵션별 등록 및 업데이트
+	// 반품제품 옵션별 등록 및 업데이트
 	@Override
 	public boolean InsertProduct(List<SizeDTO> list) {
 		
 		String name = (String) session.getAttribute("name");
-		System.out.println(list);
 		list.forEach(data -> {
 			if(data.getProductQy() > 0) {
-				//mapper.InsertProduct(data, name);
+				mapper.InsertProduct(data, name);
 			}
 	    });
 		
 		String returnCode = list.get(0).getReturnCode();
 		
 		int check = mapper.deliveryPrCheck(returnCode);
-		
 		if(check == 0) {
-			System.out.println("업데이트 처리");
+			mapper.returnProcessing(returnCode);
 		}
 		
 		return true;
@@ -175,6 +173,7 @@ public class StoreServiceImpl implements StoreService {
 		 int check = mapper.deliveryMtCheck(deliveryCode);
 		 
 		 if(check == 0) {
+			 mapper.deliveryProcessing(deliveryCode);
 			 System.out.println("상태변환 업데이트 진행");
 		 }
 		

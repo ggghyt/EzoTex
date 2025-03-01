@@ -72,11 +72,17 @@ public interface StoreMapper {
 	// 반품코드기반 남은 제품량
 	public int deliveryPrCheck(String returnCode);
 	
+	// 반환처리완료 상태변환
+	public int returnProcessing(String returnCode);
+	
 	// 자재 입고 등록
 	public int MtInsertProduct(@Param("list")StoreDeliveryDetailsDTO sdto, @Param("name") String name);
 	
 	// 납품코드기반 남은 자재량
 	public int deliveryMtCheck(String deliveryCode);
+	
+	// 납품처리완료 상태변환
+	public int deliveryProcessing(String deliveryCode);
 	
 	// 납품코드 제품 전체 등록 완료 후 상태변환
 	public int UpdateDelivery(SizeDTO sizedto);

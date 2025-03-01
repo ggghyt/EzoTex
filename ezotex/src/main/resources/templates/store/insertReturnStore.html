@@ -532,6 +532,8 @@
 		
 		// 제품 상세보기 그리드 클릭 이벤트
 		storeGrid2.on('click', ev => {
+			let data = storeGrid2.getRow(ev.rowKey);
+			storageLocation = data.location; // 창고 위치 값 가져오기
 			 handleStoreGrid2Click(ev); // 분리한 함수를 호출
 		});
 		
@@ -586,7 +588,7 @@
 		                    	
 		                        let sizeCode = ele.replace('size', '').toUpperCase();
 		                        
-		                        let gridData = storeGrid2.getData();  // 만약 getData가 배열을 반환한다면
+		                        let gridData = storeGrid2.getData();
 		                        if (Array.isArray(gridData)) {
 		                            // 배열에서 productCode에 맞는 행 찾기
 		                            let productRow = gridData.find(row => row.productCode === productCode);
@@ -600,9 +602,16 @@
 		                            console.log('storeQy:', storeQy);
 		                            console.log('errorQyInfo', errorQyInfo);
 		                            
-		                            
 		                            // 새로 변경된 입고 수량
 		                            let newStockQy = item[ele];
+		                            let check = productRow ? productRow[columnQy] || 0 : 0;
+		                            
+		                            if (newStockQy > check) {
+		                            	console.log('수량확인해라 시발아')
+		                                newStockQy = check;  // 요청 수량으로 변경
+		                            }
+		                            
+		                            
 
 		                            // 합계 계산
 		                            totalStock += newStockQy;  // 새로운 입고 수량을 계속 더함
@@ -727,7 +736,7 @@
 	    })
 	   	
 	   	
-	 // modalGrid 클릭 이벤트 - 창고 위치 선택 후 모달 닫기
+	 // modalGrid 클릭 이벤트
 	   	modalGrid.on('click', ev => {
 		    let modalData = modalGrid.getRow(ev.rowKey); // 모달에서 클릭한 행의 데이터
 		    let storageLocation = modalData.storageInfoCode; // 창고위치 값 추출

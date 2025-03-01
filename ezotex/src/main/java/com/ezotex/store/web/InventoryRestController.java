@@ -139,7 +139,7 @@ public class InventoryRestController {
 		// 페이징처리 만들어야됨
 //			paging.getPage());
 //			service.getCount(searchDTO));
-		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.MtDeliveryList(searchDTO));
+		return GridUtil.grid(paging.getPage(), service.getMtCount(searchDTO), service.MtDeliveryList(searchDTO));
 	}
 	
 	

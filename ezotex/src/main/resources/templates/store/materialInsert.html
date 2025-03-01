@@ -40,7 +40,9 @@
 		<div class="row">
 			<div class="col-5 card card-body m-2">
 				<p class="fs-5 fw-bolder mt-2">납품 목록</p>
-				<div id="grid"></div>
+				<div id="grid">
+					<div id="pagination" class="tui-pagination"></div>
+				</div>
 			</div>
 			
 			
@@ -216,13 +218,20 @@
 			if (!ev || !ev.changes) return;
 			ev.changes.forEach(change => {
 				let data = mtGrid2.getRow(change.rowKey);
-				if(data.productQy < data.productInsertQy){
+				if(data.qy < data.productInsertQy){
 					console.log('수량확인');
+					 mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
 				}else{
+					
+					let exists = insertData.some(item => {
+						item.productCode === data.productCode &&
+						item.sizeCode === data.sizeCode &&
+						item.productName === data.productName
+					}) 
+					
 					insertData.push(data);
 					console.log(insertData);
 				}
-				console.log('채인지 데이터', insertData.getData());
 			})
 		})
 			
@@ -236,7 +245,6 @@
    			    .then(data => {
    			    	modalGrid.resetData(data);
    			    })
-   			 console.log('클릭시 데이터', insertData.getData());
 			}
 		})
 			
@@ -252,36 +260,39 @@
 		})
 			
 		modalGrid.on('click', ev => {
-	   	    let data = modalGrid.getRow(ev.rowKey);
-	   	    console.log("선택한 창고 데이터:", data);
-	   	    
-	   	    let selectedRowKey = mtGrid2.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
-	   	    
-	   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
-	   	    	mtGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode); // location 값 업데이트
-	   	    }
-
-	   	    // 기존 모달 인스턴스 가져와서 닫기
-	   	    let modalElement = document.getElementById('exampleModal');
-	   	    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
-
-	   	    if (modalInstance) {
-	   	        modalInstance.hide(); // 모달 닫기
-	   	    }
-	   	});	
+		    let data = modalGrid.getRow(ev.rowKey);
+		    console.log("선택한 창고 데이터:", data);
 			
-			
+		    let selectedRowKey = mtGrid2.getFocusedCell()?.rowKey; // 현재 선택된 mtGrid2 행 가져오기
+		
+		    if (selectedRowKey !== null && selectedRowKey !== undefined) {
+		        // 창고 정보로 location 값 업데이트
+		        mtGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode);
+		    }
+		
+		    // 모달 인스턴스 가져오기
+		    let modalElement = document.getElementById('exampleModal');
+		    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 인스턴스 가져오기
+		
+		    if (modalInstance) {
+		        modalInstance.hide(); // 모달 닫기
+		    }
+		});
+
+		// 모달 열기와 닫기 처리 시 스타일 및 레이아웃 조정
 		const modalElement = document.getElementById('exampleModal');
-
+		
+		// 모달이 열리기 전에 실행
 		modalElement.addEventListener('show.bs.modal', function () {
 		    modalElement.style.display = 'block'; // 모달을 블록으로 변경
 		    modalElement.style.opacity = '0'; // 투명하게 숨김
 		});
 		
+		// 모달이 완전히 열린 후 실행
 		modalElement.addEventListener('shown.bs.modal', function () {
-			modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+		    modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 그리드 레이아웃 새로고침
 		    modalElement.style.opacity = '1'; // 투명도 복원
-		}); 
+		});
 			
 		</script>
 		
