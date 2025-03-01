@@ -193,8 +193,10 @@
 	
 	<!-- 반품 전체 조회 -->
 	<select id="getReturnList">
-		select *
-		from returns
+		SELECT DISTINCT r.return_code, r.*
+		from returns r
+		join return_product rp on rp.return_code = r.return_code
+		where rp.show = 'on'
 	</select>
 	<select id="getReturnProductList">
 		select *
@@ -277,13 +279,18 @@
 	</insert>
 	
 	<!-- 교환 제품 show값 변경 -->
-	<update id="showChange" parameterType="changeDTO">
+	<update id="showChange" parameterType="showDTO">
         UPDATE RETURN_PRODUCT
         SET SHOW = 'off'
-        WHERE return_product_no IN #{no}
+        WHERE return_product_no IN #{returnProductNo}
 	</update>
 	
-	<!--  -->
+	<!-- 반품 제품 조회 -->
+	<select id="selectReturnProductList">
+		SELECT *
+		FROM RETURN_PRODUCT
+		WHERE return_code = #{returnCode}
+	</select>
 	
 	<!--  -->
 	

@@ -27,41 +27,39 @@ public class ReturnsController {
 
 	final ReturnsServiceImpl service;
 	final HttpSession session;
-	
+
 	// 납품 내역 조회
 	@GetMapping("/returnsManagement")
 	public void DeliveryList(Model model) {
 		List<DeliveryReturnsDTO> deliveryList = service.getDeliveryList();
 		model.addAttribute("getDeliveryList", deliveryList);
 		String name = (String) session.getAttribute("name");
-		model.addAttribute("name",name);
+		model.addAttribute("name", name);
 	}
-	
+
 	// 반품 등록된것중 상태가 교환인것만 조회
 	@GetMapping("/changeManagement")
 	public void changeList(Model model) {
 		List<changeDTO> changeList = service.getChangeList();
-		model.addAttribute("getChangeList",changeList);
+		model.addAttribute("getChangeList", changeList);
 	}
-	
+
 	// 반품 내역 전체조회
 	@GetMapping("/returnList")
 	public void returnList(Model model) {
 		List<ReturnsDTO> returnList = service.getReturnList();
-		model.addAttribute("getReturnList",returnList);
+		model.addAttribute("getReturnList", returnList);
 		List<ReturnsProductDTO> returnProductList = service.getReturnProductList();
-		model.addAttribute("getReturnProductList",returnProductList);
+		model.addAttribute("getReturnProductList", returnProductList);
 	}
-	
+
 	// 손실액 조회
-	/*
-	 * @GetMapping("/lossAmountList") public void lossAmountList(Model model) {
-	 * List<ReturnsDTO> returnList = service.getReturnList();
-	 * model.addAttribute("getReturnList",returnList); List<ReturnsDTO>
-	 * returnProductList = service.getReturnProductList();
-	 * model.addAttribute("getReturnProductList",returnProductList); }
-	 */
-	
-	
-	
+	@GetMapping("/lossAmountList")
+	public void lossAmountList(Model model) {
+		List<ReturnsDTO> returnList = service.getReturnList();
+		model.addAttribute("getReturnList", returnList);
+		List<ReturnsProductDTO> returnProductList = service.getReturnProductList();
+		model.addAttribute("getReturnProductList", returnProductList);
+	}
+
 }

@@ -16,6 +16,7 @@ import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
 import com.ezotex.returns.dto.changeDTO;
+import com.ezotex.returns.dto.showDTO;
 import com.ezotex.returns.service.impl.ReturnsServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,8 +81,13 @@ public class ReturnsRestController {
 	}
 	
 	@PostMapping("/showChange")
-	public List<changeDTO> showChange(@RequestBody List<changeDTO> no){
-		System.out.println("받을번호출력"+no);
-		return service.showChange(no);
+	public boolean showChange(@RequestBody List<showDTO> newReturnData){
+		System.out.println("받을번호출력"+newReturnData);
+		return service.showChange(newReturnData);
+	}
+	
+	@GetMapping("/selectReturn")
+	public List<ReturnsProductDTO> rtCode(@RequestParam(name = "returnCode")String returnCode){
+		return service.selectReturnProductList(returnCode);
 	}
 }

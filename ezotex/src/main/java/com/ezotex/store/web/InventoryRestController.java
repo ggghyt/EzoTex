@@ -19,6 +19,7 @@ import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.StoreReturnDTO;
 import com.ezotex.store.dto.storageInfoDTO;
 import com.ezotex.store.service.InventoryService;
 import com.ezotex.store.service.StoreService;
@@ -138,14 +139,14 @@ public class InventoryRestController {
 		// 페이징처리 만들어야됨
 //			paging.getPage());
 //			service.getCount(searchDTO));
-		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.MtDeliveryList(searchDTO));
+		return GridUtil.grid(paging.getPage(), service.getMtCount(searchDTO), service.MtDeliveryList(searchDTO));
 	}
 	
 	
-	// 납품리스트 기반 입고 제품 상세 조회
+	// 반품리스트 기반 입고 반품 상세 조회
 	@GetMapping("deliveryDetailsList")
-	public List<StoreDeliveryDetailsDTO> findByDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
-		return service.findByDeliveryCode(deliveryCode);
+	public List<StoreReturnDTO> findByDelivertCode(@RequestParam(name= "returnCode") String returnCode){
+		return service.findByDeliveryCode(returnCode);
 	}
 	
 	// 납품리스트 기반 입고 자재 상세 조회
@@ -158,7 +159,7 @@ public class InventoryRestController {
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
 	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode,
-			                                     @RequestParam(name= "deliveryCode")String deliveryCode){
+			                                     @RequestParam(name= "returnCode")String deliveryCode){
 		return service.findByProductCode(productCode,deliveryCode);
 	}
 	

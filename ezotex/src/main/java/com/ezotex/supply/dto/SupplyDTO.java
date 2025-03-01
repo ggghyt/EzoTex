@@ -28,4 +28,5 @@ public class SupplyDTO {
 	private Date supplyDate;
 	
 	private String summary; // 조회용
-}
+	private String productName;
+
