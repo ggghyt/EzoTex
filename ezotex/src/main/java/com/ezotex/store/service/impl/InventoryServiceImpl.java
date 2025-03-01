@@ -62,6 +62,7 @@ public class InventoryServiceImpl implements InventoryService {
 		return mapper.location(searchDTO);
 	}
 	
+	// 위치별 재고 상세리스트 카운터
 	@Override
 	public int getCountProduct(DeliverySearchDTO searchDTO) {
 		return mapper.getCountProduct(searchDTO);
@@ -77,6 +78,7 @@ public class InventoryServiceImpl implements InventoryService {
 		return true;
 	}
 
+	// 창고위치 리스트
 	@Override
 	public List<storageInfoDTO> storageInfoList() {
 		return mapper.storageInfoList();

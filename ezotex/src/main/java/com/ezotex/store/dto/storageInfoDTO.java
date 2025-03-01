@@ -9,7 +9,7 @@ public class storageInfoDTO {
 	private String storageCode;
 	private int selectRow;
 	private int selectCol;
-	private String storageName;
+	private String storageInfoName;
 	private String vl;
 	
 }
