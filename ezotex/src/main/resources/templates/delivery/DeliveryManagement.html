@@ -1,363 +1,415 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}"
-      layout:fragment="content">
-	<head>
-		<meta charset="UTF-8">
-		<title>납품등록</title>
-		<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-		<style>
-			.search-bar {
-				width: 800px;
-				height: 300px;
-				-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
-				display: inline-block;
-				flex-direction:row;
-			}
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout}" layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>납품등록</title>
+<link rel="stylesheet"
+	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+<style>
+.search-bar {
+	width: 800px;
+	height: 300px;
+	-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0
+		rgba(167, 175, 183, 0);
+	display: inline-block;
+	flex-direction: row;
+}
 
-			.order-list {
-				width: 800px;
-				height: 778px;
-			}
-			.order-info{
-				margin-top: 0;
-				margin-left: 30px;
-				width: 500px;
-				height: 100%;
-			}
-			.search-unit {
-				display: flex;
-				margin-bottom:5px;
-			}
-			.search-unit div {
-				display: inline-block;
-			}
-			.search-bar > div {
-			    display: inline-block;
-			    vertical-align: top; /* 정렬 보정 */
-			}
-			.search-bar div:nth-of-type(1) {
-				
-				padding-left:10px;
-				width: 300px;
-			}
-			.search-bar div:nth-of-type(2) {
-				padding-left:10px;
-				width: 410px;
-			}
-			.search-unit span {
-				font-size: smaller;
-				line-height: 2.5;
-				width: 67px;
-			}
-			.search-bar div:nth-of-type(1) input{
-				margin-left: 10px;
-			}
-			.search-bar div input[type=text] {
-				width: 140px;
-			}
-			.search-bar select {
-			    margin-left: 10px;
-				width: 140px;
-				border: 1px solid #dee2e6;
-			    font-weight: 400;
-			    font-size: 0.875rem;
-			    border-radius: 4px;
-			    height: 2rem;
-			}
-			input[type=date] {
-				width: 140px;
-			}
-			.search-bar input[type=number] {
-				width: 140px;
-			}
-			.dash {
-				line-height: 1.9;
-				margin-left: 2px;
-				margin-right: 2px;
-			}
-			.search-bar b {
-				display: block;
-				margin-bottom:5px;
-			}
-			.order-list b{
-				display: block;
-				margin-bottom:5px;
-			}
-			.search-bar .btn-section{
-				width: 390px !important;
-				display: flex;
-				justify-content: right;
-				margin-bottom: 10px;
-			}
-			.btn-secondary {
-				background-color: #b1b1b1;
-			}
-			.btn-section button:nth-of-type(2) {
-				margin-left: 10px;
-			}
-			#order-details .table td{
-				padding: 5px;
-			}
-			.table textarea {
-				height: 60px;
-			}
-			#productListgrid {
-			    width: 100%;
-			    height: 280px; /* 충분한 높이를 설정 */
-			}
-			.detailAmount{
-				margin-top: 10px;
-				-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
-			}
-			.detailAmount input[type=number] {
-				width: 120px;
-				margin-right: 20px;
-				margin-left: 5px;
-			}
-			.input-details {
-				display: flex;
-				line-height: 1.9;
-				justify-content: center;
-			}
-			.completeBtn-section {
-				display: flex;
-				justify-content: center;
-			}
-			.completeBtn-section button {
-				margin: 10px;
-			}
-			#productListgrid {
-				height: 300px;
-			}
-			#order-details {
-				margin-bottom: 30px;
-			}
-			#productListgrid{
-				margin-bottom: 24px;
-			}
-			.restQyModalHead{
-				margin-bottom: 30px;
-			}
-		</style>
-		
-	</head>
-	<body>
-		<h3 class="fs-3 fw-bold">| 납품등록</h3>
-		<div id="container row" style="display: flex;">
-			<div class="col">			
-				<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
-					
-					<b>검색</b>
-										
-					<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
-					<div>
-						<span class="search-unit">
-							<span>주문 코드</span>
-							<input type="text" class="form-control search-code">
-						</span>
-						<span class="search-unit">
-							<span>주문담당자</span>
-							<input type="text" class="form-control search-charger">
-						</span>
-						<span class="search-unit">
-							<span>업체코드</span>
-							<input type="text" class="form-control search-company-code"> 
-						</span>
-						<span class="search-unit">
-							<span>업체명</span>
-							<input type="text" class="form-control search-company-name"> 
-						</span>
-						<span class="search-unit search-status-group">
-							<span>상태</span>
-							<select class="search-status">
-								<option value="">전체</option>
-								<option value="OR01">대기</option>
-								<option value="OR06">분할출고</option>
-							</select>
-						</span>
+.order-list {
+	width: 800px;
+	height: 778px;
+}
 
+.order-info {
+	margin-top: 0;
+	margin-left: 30px;
+	width: 500px;
+	height: 100%;
+}
+
+.search-unit {
+	display: flex;
+	margin-bottom: 5px;
+}
+
+.search-unit div {
+	display: inline-block;
+}
+
+.search-bar>div {
+	display: inline-block;
+	vertical-align: top; /* 정렬 보정 */
+}
+
+.search-bar div:nth-of-type(1) {
+	padding-left: 10px;
+	width: 300px;
+}
+
+.search-bar div:nth-of-type(2) {
+	padding-left: 10px;
+	width: 410px;
+}
+
+.search-unit span {
+	font-size: smaller;
+	line-height: 2.5;
+	width: 67px;
+}
+
+.search-bar div:nth-of-type(1) input {
+	margin-left: 10px;
+}
+
+.search-bar div input[type=text] {
+	width: 140px;
+}
+
+.search-bar select {
+	margin-left: 10px;
+	width: 140px;
+	border: 1px solid #dee2e6;
+	font-weight: 400;
+	font-size: 0.875rem;
+	border-radius: 4px;
+	height: 2rem;
+}
+
+input[type=date] {
+	width: 140px;
+}
+
+.search-bar input[type=number] {
+	width: 140px;
+}
+
+.dash {
+	line-height: 1.9;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.search-bar b {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.order-list b {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.search-bar .btn-section {
+	width: 390px !important;
+	display: flex;
+	justify-content: right;
+	margin-bottom: 10px;
+}
+
+.btn-secondary {
+	background-color: #b1b1b1;
+}
+
+.btn-section button:nth-of-type(2) {
+	margin-left: 10px;
+}
+
+#order-details .table td {
+	padding: 5px;
+}
+
+.table textarea {
+	height: 60px;
+}
+
+#productListgrid {
+	width: 100%;
+	height: 280px; /* 충분한 높이를 설정 */
+}
+
+.detailAmount {
+	margin-top: 10px;
+	-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0
+		rgba(167, 175, 183, 0);
+}
+
+.detailAmount input[type=number] {
+	width: 120px;
+	margin-right: 20px;
+	margin-left: 5px;
+}
+
+.input-details {
+	display: flex;
+	line-height: 1.9;
+	justify-content: center;
+}
+
+.completeBtn-section {
+	display: flex;
+	justify-content: center;
+}
+
+.completeBtn-section button {
+	margin: 10px;
+}
+
+#productListgrid {
+	height: 300px;
+}
+
+#order-details {
+	margin-bottom: 30px;
+}
+
+#productListgrid {
+	margin-bottom: 24px;
+}
+
+.restQyModalHead {
+	margin-bottom: 30px;
+}
+</style>
+
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 납품등록</h3>
+	<div id="container row" style="display: flex;">
+		<div class="col">
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+
+				<b>검색</b>
+
+				<!-- 검색조건1: 주문 코드, 납품 코드, 제품코드, 제품명, 주문담당자, 납품담당자, 상태 -->
+				<div>
+					<span class="search-unit"> <span>주문 코드</span> <input
+						type="text" class="form-control search-code">
+					</span> <span class="search-unit"> <span>주문담당자</span> <input
+						type="text" class="form-control search-charger">
+					</span> <span class="search-unit"> <span>업체코드</span> <input
+						type="text" class="form-control search-company-code">
+					</span> <span class="search-unit"> <span>업체명</span> <input
+						type="text" class="form-control search-company-name">
+					</span> <span class="search-unit search-status-group"> <span>상태</span>
+						<select class="search-status">
+							<option value="">전체</option>
+							<option value="OR01">대기</option>
+							<option value="OR06">분할출고</option>
+					</select>
+					</span>
+
+				</div>
+
+				<!-- 검색조건2: 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
+				<div>
+
+					<span class="search-unit"> <span>주문일</span> <input
+						type="date" class="form-control search-date-start"> <b
+						class="dash">-</b> <input type="date"
+						class="form-control search-date-end">
+					</span> <span class="search-unit"> <span>납기일</span> <input
+						type="date" class="form-control search-dedt-start"> <b
+						class="dash">-</b> <input type="date"
+						class="form-control search-dedt-end">
+					</span> <span class="search-unit"> <span>급액합계</span> <input
+						type="number" class="form-control search-amount-start"> <b
+						class="dash">-</b> <input type="number"
+						class="form-control search-amount-end">
+					</span> <span class="search-unit"> <span>제품코드</span> <input
+						type="text" class="form-control search-product-code">
+					</span> <span class="search-unit"> <span>제품명</span> <input
+						type="text" class="form-control search-product-name">
+					</span>
+					<div class="btn-section">
+						<button class="btn btn-warning mag-glass-btn"
+							onclick="searchOrderList()">
+							<i class="fa-solid fa-magnifying-glass icon-left"
+								style="color: #ffffff;"></i>
+						</button>
+						<button class="btn btn-secondary mag-glass-btn"
+							onclick="resetCondition()">
+							<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+						</button>
 					</div>
-					
-					<!-- 검색조건2: 주문일 납기일 수량합계 급액합계 업체코드 업체명 -->
-					<div>
-						
-						<span class="search-unit">
-							<span>주문일</span>
-							<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
-							<input type="date" class="form-control search-date-end">
-						</span>
-						<span class="search-unit">
-							<span>납기일</span>
-							<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
-							<input type="date" class="form-control search-dedt-end">
-						</span>
-						<span class="search-unit">
-							<span>급액합계</span>
-							<input type="number" class="form-control search-amount-start"> <b class="dash">-</b> 
-							<input type="number" class="form-control search-amount-end">
-						</span>  
-						<span class="search-unit">
-							<span>제품코드</span>
-							<input type="text" class="form-control search-product-code"> 
-						</span>
-						<span class="search-unit">
-							<span>제품명</span>
-							<input type="text" class="form-control search-product-name"> 
-						</span>
-						<div class="btn-section">						
-							<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
-							<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
-						</div>
-					</div>
-				</div>
-				<div class="card card-body mt-3 order-list">
-					<b>목록</b>
-					<div id="grid"></div>
-				</div>
-			</div>	
-			<div class="col card card-body order-info">			
-				<div id="order-details">
-					<b>납품 등록</b>
-					<table class="table mt-3">
-						<tbody>
-							<tr>
-								<td>구매업체코드</td>
-								<td><input type="text" class="form-control input-company-code" disabled></td>
-								<td>구매업체명</td>
-								<td><input type="text" class="form-control input-company-name" disabled></td>
-							</tr>
-							<tr>
-								<td>납품주소</td>
-								<td colspan="3"><input type="text" class="form-control input-address" disabled></td>
-
-							</tr>
-							<tr>
-								<td>주문일</td>
-								<td><input type="text" class="form-control input-order-date" disabled></td>
-								<td>납기일</td>
-								<td><input type="text" class="form-control input-dedt" disabled></td>
-							</tr>
-							<tr>
-								<td>주문담당자</td>
-								<td><input type="text" class="form-control input-order-charger" disabled></td>
-								<td>납품담당자</td>
-								<td><input type="text" class="form-control input-delivery-charger" disabled></td>
-							</tr>
-							<tr>
-								<td>제품수량합계</td>
-								<td><input type="text" class="form-control input-total-qy" disabled></td>
-								<td>주문금액합계</td>
-								<td><input type="text" class="form-control input-total-price" disabled></td>
-							</tr>
-							<tr>
-								<td>비고</td>
-								<td colspan="3"><textarea class="form-control input-memo"></textarea></td>
-							</tr>
-							<tr>
-								<td></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div id="product-info">
-					<b>납품 제품 상세</b>
-					<div id="productListgrid"></div>
-				</div>
-				<div id="product-details">
-					<b>납품 수량 입력</b>
-					<div id="productDetailgrid"></div>
-				</div>
-				<div class="completeBtn-section">
-					<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
-			    		등록
-			  		</button>
-					<button class="btn btn-outline-secondary resetBtn">초기화</button>
-					
 				</div>
 			</div>
-			<div id="toastContainer" class="toast-container"></div>
+			<div class="card card-body mt-3 order-list">
+				<b>목록</b>
+				<div id="grid"></div>
+			</div>
 		</div>
-		
-		
-		 <!-- 등록 확인 모달 -->
-		    <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		      <div class="modal-dialog">
-		        <div class="modal-content">
-		          <div class="modal-header" style="height: 20px;">
-		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">등록 확인</h5>
-		          </div>
-		          <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
-		            <div>
-		              <img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
-		            </div>
-		            <div>
-		              <p style="margin-top: 12px;
-		              font-size: 21px;
-		              font-weight: bold;">알림</p>
-		              <p>내용을 등록하시겠습니까?</p>
-		            </div>
-		          </div>
-		          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
-		            <!-- -->
-		            <button type="button" class="btn btn-outline-success deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
-		            <button type="button" class="btn btn-outline-secondary denyBtn" data-bs-dismiss="modal">취소</button>
-		          </div>
-		        </div>
-		      </div>
-		    </div>
+		<div class="col card card-body order-info">
+			<div id="order-details">
+				<b>납품 등록</b>
+				<table class="table mt-3">
+					<tbody>
+						<tr>
+							<td>구매업체코드</td>
+							<td><input type="text"
+								class="form-control input-company-code" disabled></td>
+							<td>구매업체명</td>
+							<td><input type="text"
+								class="form-control input-company-name" disabled></td>
+						</tr>
+						<tr>
+							<td>납품주소</td>
+							<td colspan="3"><input type="text"
+								class="form-control input-address" disabled></td>
 
-		    <!-- 분할 배송 확인 모달 -->
-		    <div class="modal fade" id="splitDeliveryCheckModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		      <div class="modal-dialog">
-		        <div class="modal-content">
-		          <div class="modal-header" style="height: 20px;">
-		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수량 확인</h5>
-		          </div>
-		          <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
-		            <div>
-		              <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
-		            </div>
-		            <div>
-		              <p style="margin-top: 12px;
-		              font-size: 21px;
-		              font-weight: bold;">납품 수량 부족</p>
-		              <p>납품 수량이 부족합니다 <br>
-		                 수량이 부족한 경우 분할출고합니다.</p>
-		            </div>
-		          </div>
-		          <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
-		            <!-- -->
-		            <button type="button" class="btn btn-outline-success splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
-		            <button type="button" class="btn btn-outline-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
-		          </div>
-		        </div>
-		      </div>
-		    </div>
-			
-			<!-- 잔여량 출력 모달 -->
-			<div class="modal fade" id="restQyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		      <div class="modal-dialog modal-xl" >
-		         <div class="modal-content">
-		           <div class="modal-header" style="height: 20px;">
-		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">등록 완료</h5>
-		           </div>
-		           <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
-		           		<img src="/images/modal/regist.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
-	           			<p class="restQyModalHead" style="margin-top: 12px;
-			              font-size: 21px;
-			              font-weight: bold;">출고 후 잔여량</p>
-	           			<!-- 잔여량 출력 모달 -->
-	                 	<div id="restQyGrid" ></div>
-		           </div>
+						</tr>
+						<tr>
+							<td>주문일</td>
+							<td><input type="text" class="form-control input-order-date"
+								disabled></td>
+							<td>납기일</td>
+							<td><input type="text" class="form-control input-dedt"
+								disabled></td>
+						</tr>
+						<tr>
+							<td>주문담당자</td>
+							<td><input type="text"
+								class="form-control input-order-charger" disabled></td>
+							<td>납품담당자</td>
+							<td><input type="text"
+								class="form-control input-delivery-charger" disabled></td>
+						</tr>
+						<tr>
+							<td>제품수량합계</td>
+							<td><input type="text" class="form-control input-total-qy"
+								disabled></td>
+							<td>주문금액합계</td>
+							<td><input type="text"
+								class="form-control input-total-price" disabled></td>
+						</tr>
+						<tr>
+							<td>비고</td>
+							<td colspan="3"><textarea class="form-control input-memo"></textarea></td>
+						</tr>
+						<tr>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div id="product-info">
+				<b>납품 제품 상세</b>
+				<div id="productListgrid"></div>
+			</div>
+			<div id="product-details">
+				<b>납품 수량 입력</b>
+				<div id="productDetailgrid"></div>
+			</div>
+			<div class="completeBtn-section">
+				<button type="button" class="btn btn-success sendData"
+					data-bs-toggle="modal">등록</button>
+				<button class="btn btn-outline-secondary resetBtn">초기화</button>
 
-		            <div style="text-align: center; margin: 20px;">
-		               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
-		            </div>
-		         </div>
-		         </div>
-		      </div>
-		<script>
+			</div>
+		</div>
+		<div id="toastContainer" class="toast-container"></div>
+	</div>
+
+
+	<!-- 등록 확인 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!-- -->
+					<button type="button"
+						class="btn btn-outline-success deliveryRegistBtn"
+						data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-outline-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 분할 배송 확인 모달 -->
+	<div class="modal fade" id="splitDeliveryCheckModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">수량 확인</h5>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/modify.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">납품
+							수량 부족</p>
+						<p>
+							납품 수량이 부족합니다 <br> 수량이 부족한 경우 분할출고합니다.
+						</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!-- -->
+					<button type="button"
+						class="btn btn-outline-success splitDeliveryBtn"
+						data-bs-dismiss="modal">등록</button>
+					<button type="button"
+						class="btn btn-outline-secondary splitDenyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 잔여량 출력 모달 -->
+	<div class="modal fade" id="restQyModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 완료</h5>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<img src="/images/modal/regist.png" alt="등록확인이미지"
+						style="width: 84px; height: 84px;">
+					<p class="restQyModalHead"
+						style="margin-top: 12px; font-size: 21px; font-weight: bold;">출고
+						후 잔여량</p>
+					<!-- 잔여량 출력 모달 -->
+					<div id="restQyGrid"></div>
+				</div>
+
+				<div style="text-align: center; margin: 20px;">
+					<button type="button"
+						class="btn btn-outline-secondary restQyModalClose"
+						data-bs-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
 			function numberFormat(value){ 
 				
 				if(value == 0) {
@@ -566,12 +618,7 @@
 	    				//등록해야되는 정보 처음 가져온 내용
 	    				allOrderInfo = data;
 	    				
-	    				//바꾸지 않는 데이터
-	    				//originalData = data;	이렇게 하면 얕은 복사 형태로, allOrderInfo데이터를 변경하면 같이 변경됨.
-	    				originalData = JSON.parse(JSON.stringify(data));
-	    				
 	    				console.log('수정하는 원데이터', allOrderInfo);
-	    				console.log('수정하지 않는 데이터', originalData);
 	    				
 	    				let sum = 0;
 	    				data.orderInfo.forEach(e => {sum += e.reqQy});	//주문합계 구하기
@@ -583,13 +630,14 @@
 	    				document.querySelector('.input-total-qy').value = CommaFomatter(sum);	//주문 합계
 	    				
 	    				
-	    				//이미 출고 수량을 모두 채운 경우 화면에서 출력하지 않기 위한 splice
+	    				
 	    				for(let i=0; i<allOrderInfo.productDetails.length; i++) {
+	    					
+	    					//이미 출고 수량을 모두 채운 경우 화면에서 출력하지 않기 위한 splice / 하지 않으면 빈행이 출력됨.
 		            		if(allOrderInfo.productDetails[i].qyList.length == 0) {		            			
-			            		console.log('작동');
 			            		allOrderInfo.productDetails.splice(i, 1);	//작동됐음.
 			            		allOrderInfo.orderInfo.splice(i, 1);
-		            		}
+		            		} 		  
 		            		
 	    				}
 	    				
@@ -653,36 +701,48 @@
 	            
 	    		for(let i=0; i<allOrderInfo.productDetails.length; i++) {
 	            	
-		            //console.log('작동');
-		            //console.log('for문:', allOrderInfo.productDetails[i].qyList[i].productCode);
-		            //console.log('코드:', productCode);
 		            let cnt = 0;
 		            for(let j=0; j<allOrderInfo.productDetails[i].optionList.length; j++) {
-		            	//console.log('조건문 작동 안함');
-		            	//console.log('선택한 값:', productCode);
-		            	//console.log('검색중인 값:', allOrderInfo.productDetails[i].optionList[j].productCode);
-		            	//제품 코드가 같으면 납품 수량입력 그리드에 내용 추가
+		            	
 		            	if(allOrderInfo.productDetails[i].optionList[j].productCode == productCode) {
 
 		            		//사이즈
 	            			let sizeCode = allOrderInfo.productDetails[i].optionList[j].showSize;
-		            		console.log('sizeCode', sizeCode);
 		            		/*
 		            			DE: 출고 수량 입력하는 컬럼
 		            			RE: 잔여 수량 컬럼(입력하지 않음)
+		            		    IN: 재고 수량(입력하지 않음)
 		            		*/
 		            		
 		            		size.push({
 				                header: sizeCode,
 				                name: sizeCode+'head',
-				                childNames: ['DE'+sizeCode, 'RE'+sizeCode],
+				                childNames: ['DE'+sizeCode, 'RE'+sizeCode, 'IN'+sizeCode],
 				                minWidth: 150
 				             })
 				             
+				            let reqSize = 'RE'+sizeCode;
+		            		let invenSize = 'IN'+sizeCode;
 				           	//console.log(size);
 			    			//allOrderInfo.productDetails[i].productSize
+			    			
+			    			//제품의 한 색상의 사이즈 컬럼을 하나씩 넣어서 그리드를 생성함
 			    			color.push({ header: "출고수량", name: 'DE'+sizeCode, align: "center", editor: "text", minWidth: 100, formatter:(row)=>numberFormat(row.value)},
-				 		                { header: "잔여수량", name: 'RE'+sizeCode , align: "center", minWidth: 100, formatter:(row)=>numberFormat(row.value) })
+			    					{ header: "잔여수량", name: 'RE'+sizeCode , align: "center", minWidth: 100, formatter:(row)=>numberFormat(row.value) },
+			    					{ header: "재고수량", name: 'IN'+sizeCode, align: "center", minWidth: 100, formatter:(row)=> {
+			    						//요청 수량이 0이 아니라면
+			    						if(row.row[reqSize] != null) {
+			    							if(row.value == 0) {
+			    								return 0;
+			    							} else if(row.value == null || row.value == '') {
+			    								return 0;
+			    							} else {
+			    								return Number(row.value).toLocaleString();
+			    							}
+			    						} else {
+			    							return null;
+			    						}}
+			    					})
 							
 		            	}
 		            }
@@ -696,23 +756,6 @@
 		            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
 							products.push({...allOrderInfo.productDetails[i].qyList[j], productName : data.productName});
 							
-		            		/*
-		            		if(j==allOrderInfo.productDetails[i].qyList.length-1) {
-			            		//console.log('products',products);
-		            			
-		            			
-		            			for(let k=0; k<products.length; k++) {
-		            				let sizeArr = Object.keys(products[k]).filter(key => key.startsWith("RE"));
-		            				//console.log('products반복문 작동');
-		            				//console.log('sizeArr', sizeArr);
-									for(let n=0; n<sizeArr.length; n++) {
-										let inputSize = 'DE' + sizeArr[n].replace("RE", "");
-										if(products[k][inputSize])
-										products[k][inputSize] = 0;
-									}
-		            			}
-		            		}
-		            		*/
 		            		
 		            	}
 		            	
@@ -723,11 +766,11 @@
 				color.push({ header: "주문코드", name: "ORDER_CODE", align: "center", hidden:true},
 						{ header: "제품코드", name: "PRODUCT_CODE", align: "center", hidden:true},
 						{ header: "제품명", name: "productName", align: "center", hidden:true});
-        		//console.log(size);
-        		//console.log(color);
+				
+				console.log(products);
+				
 				productDetailgrid.setHeader({complexColumns:size});
 				productDetailgrid.setColumns(color);
-				console.log('products: ', products);
 				productDetailgrid.resetData(products);
 
 		    	})
@@ -1049,5 +1092,5 @@
 	        	//productDetailgrid.reloadData();
 			})
     	</script>
-	</body>
+</body>
 </html>

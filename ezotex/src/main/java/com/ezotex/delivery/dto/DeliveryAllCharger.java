@@ -20,5 +20,3 @@ public class DeliveryAllCharger {
 	private String driverName;
 	private String driveStartTime;
 }
-
-//확인
