@@ -5,9 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
 
+
+/*
+ * 공급업체 관련 매퍼
+ * */
 public interface SupplyDeliveryMapper {
 	//검색 결과 리스트
 	public List<OrderProductDeliveryDTO> findAll(@Param("searchDto") DeliveryRegistSearchDTO searchDto);
@@ -30,13 +35,19 @@ public interface SupplyDeliveryMapper {
     //(공급업체 사용)출고 등록
     public void insertDeliveryMaster(@Param("info")OrderInsertDTO info);
     
-    //(제조업체에서 사용)출고 제품 등록
+    //(공급업체에서 사용)출고 제품 등록
     public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO pinfo);
        	
-    //발주 상태 업데이트
+    //주문 상태 업데이트
     public void updateOrderStatus(@Param("info")OrderInsertDTO pinfo);
     
-    //발주내역 조회
+    //출고 내역 조회
     public List<OrderProductDeliveryDTO> supplyDeliveryList(@Param("cri")DeliveryRegistSearchDTO searchDto);
-    //담당자 코드, 담당자 넣고, 납품 상세에서는 빼기
+    
+    //출고 내역 조회 총 레코드 수
+    public int supplyDeliveryListCount(@Param("cri")DeliveryRegistSearchDTO searchDto);
+    
+    //출고 단건조회
+    public List<OrderInfoDTO> deliveryInfo(@Param("deliveryCode")String deliveryCode);
+    
 }

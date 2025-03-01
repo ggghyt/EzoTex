@@ -29,4 +29,4 @@ public class SupplyDTO {
 	
 	private String summary; // 조회용
 	private String productName;
-}
+

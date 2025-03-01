@@ -53,6 +53,7 @@ public class SupplyServiceImpl implements SupplyService {
 			List<ProductDTO> sizeList = mapper.findSize(productCode);
 			return mapper.pivotProductSupply(dto, sizeList);			
 		}
+
 	}
 	
 	@Override
@@ -64,11 +65,13 @@ public class SupplyServiceImpl implements SupplyService {
 	public int countSupplyPlan(Map<String, Object> map) {
 		return mapper.countSupplyPlan(map);
 	}
+
 	
 	@Override
 	public List<SupplyDTO> infoSupplyPlan(String supplyPlanCode) {
 		return mapper.infoSupplyPlan(supplyPlanCode);
 	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

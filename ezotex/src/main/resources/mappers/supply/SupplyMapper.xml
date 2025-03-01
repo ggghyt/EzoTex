@@ -185,6 +185,82 @@
 		WHERE  o.product_code = #{productCode}
   </select>
 	
+	<!-- 공급계획서 조회 -->
+  <select id="listSupplyPlan" resultType="SupplyDTO" parameterType="map">
+    SELECT * FROM (
+      SELECT DISTINCT(p.supply_plan_code),
+             p.supply_year,
+             get_comm(p.season) season,
+             product_summary('supply_plan_details', p.supply_plan_code) summary, 
+             (SELECT SUM(supply_qy) 
+              FROM   supply_plan_details
+              WHERE  supply_plan_code = p.supply_plan_code) supply_qy,
+             p.charger_code,
+             p.charger_name,
+             p.remark,
+             p.rgsde,
+             p.update_date
+      FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code 
+      <where>
+         <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
+         <if test='seasonNull != null'> OR p.season IS NULL </if>
+         <if test='productCode != null and productCode != ""'> AND d.product_code LIKE '%' || #{productCode} || '%' </if> 
+         <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if> 
+         
+         <if test='supplyDateMin != null and supplyDateMin != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') >= #{supplyDateMin} </if> 
+         <if test='supplyDateMax != null and supplyDateMax != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') <![CDATA[<= #{supplyDateMax}]]> </if> 
+      </where>
+    ) -- 서브쿼리 형태로 alias 사용 가능
+    <where>
+      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND supply_plan_code LIKE '%' || #{supplyPlanCode} || '%' </if>
+      <if test='supplyYear != null and supplyYear != ""'> AND supply_year = #{supplyYear} </if>
+      <if test='supplyQyMin != null and supplyQyMin != ""'> AND supply_qy >= #{supplyQyMin} </if>
+      <if test='supplyQyMax != null and supplyQyMax != ""'> AND supply_qy <![CDATA[<= #{supplyQyMax}]]> </if>
+      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if>
+      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if>
+      
+      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+    </where>
+    ORDER  BY supply_plan_code DESC
+  </select>
+  
+  <!-- 공급계획서 조회 개수 -->
+  <select id="countSupplyPlan" parameterType="map">
+    SELECT COUNT(*) FROM (
+      SELECT DISTINCT(p.supply_plan_code),
+             p.supply_year,
+             get_comm(p.season) season,
+             (SELECT SUM(supply_qy) 
+              FROM   supply_plan_details
+              WHERE  supply_plan_code = p.supply_plan_code) supply_qy,
+             p.charger_name,
+             p.remark,
+             p.rgsde,
+             p.update_date
+      FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code 
+      <where>
+         <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
+         <if test='productCode != null and productCode != ""'> AND d.product_code LIKE '%' || #{productCode} || '%' </if> 
+         <if test='productName != null and productName != ""'> AND get_prd_name(d.product_code) LIKE '%' || #{productName} || '%' </if> 
+         
+         <if test='supplyDateMin != null and supplyDateMin != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') >= #{supplyDateMin} </if> 
+         <if test='supplyDateMax != null and supplyDateMax != ""'> AND  TO_CHAR(d.supply_date, 'yyyy-mm-dd') <![CDATA[<= #{supplyDateMax}]]> </if> 
+      </where>
+    ) -- 서브쿼리 형태로 alias 사용 가능
+    <where>
+      <if test='supplyPlanCode != null and supplyPlanCode != ""'> AND supply_plan_code LIKE '%' || #{supplyPlanCode} || '%' </if>
+      <if test='supplyYear != null and supplyYear != ""'> AND supply_year = #{supplyYear} </if>
+      <if test='supplyQyMin != null and supplyQyMin != ""'> AND supply_qy >= #{supplyQyMin} </if>
+      <if test='supplyQyMax != null and supplyQyMax != ""'> AND supply_qy <![CDATA[<= #{supplyQyMax}]]> </if>
+      <if test='chargerName != null and chargerName != ""'> AND charger_name LIKE '%' || #{chargerName} || '%' </if>
+      <if test='remark != null and remark != ""'> AND remark LIKE '%' || #{remark} || '%' </if>
+      
+      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(NVL(update_date, rgsde), 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+    </where>
+  </select>
+	
 	<!-- 공급계획 등록(헤더) -->
 	<insert id="insertSupplyPlan" parameterType="SupplyDTO">
 		INSERT INTO supply_plan (supply_plan_code, supply_year, season, charger_code, charger_name, remark) 

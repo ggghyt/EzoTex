@@ -198,6 +198,13 @@
 			margin-left: 20px;
 			margin-right: 60px;
 		}
+		textarea {
+		  width: 100%;
+		  height: 200px;
+		  white-space: pre-wrap; /* 줄바꿈 허용 */
+		  word-wrap: break-word; /* 단어가 길 경우 줄바꿈 */
+		  overflow-wrap: break-word; /* 추가적인 줄바꿈 지원 */
+		}
 	</style>
 </head>
 <body>
@@ -321,10 +328,12 @@
 									<td>납기일</td>
 									<td><input type="text" class="form-control read-dedt" disabled></td>
 								</tr>
+								<!-- 								
 								<tr>
 									<td>출고창고</td>
 									<td><input type="text" class="form-control read-storage" disabled></td>
 								</tr>
+								 -->
 								<tr>
 									<td>납기주소</td>
 									<td><textarea type="text" class="form-control read-dedt-address" disabled></textarea></td>
@@ -495,7 +504,6 @@
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
 				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 69},
 				{ header: "제품명", name: "productName", width: "auto", minWidth: 311},
-				{ header: "잔여량", name: "reqQy", align: 'right', formatter:(row)=>numberFormatter(row.value) },
 				{ header: "출고량합계", name: "qySum", align: 'right', formatter:(row)=>numberFormatter(row.value)},
             ],
 			showDummyRows: true	//더미로우 추가
@@ -628,7 +636,7 @@
 			document.querySelector(".read-regist-date").value = data.registDate;
 			document.querySelector(".read-order-date").value = data.orderDate;
 			document.querySelector(".read-dedt").value = data.dedt;
-			document.querySelector(".read-storage").value = data.storageName;
+			//document.querySelector(".read-storage").value = data.storageName;
 			document.querySelector(".read-dedt-address").value = data.dedtAddress;
 			document.querySelector(".read-memo").value = data.remark;
 			
@@ -764,9 +772,10 @@
 			deliveryDetails.show();
 		})
 		
+		//추
 		document.querySelector(".showDeliveryCard").addEventListener("click", () => {
 			let divyCode = document.querySelector(".read-delivery-code").value;
-			window.open(`/delivery/pdfView?deliveryCode=${divyCode}`);
+			window.open(`/delivery/pdfView?deliveryCode=${divyCode}`, '_blank','width=1000, height=1000, scrollbars=yes');
 		})
 	</script>
 </body>

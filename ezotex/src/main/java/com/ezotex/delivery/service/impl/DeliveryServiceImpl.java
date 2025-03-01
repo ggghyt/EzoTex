@@ -1,8 +1,12 @@
 package com.ezotex.delivery.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,15 +51,35 @@ public class DeliveryServiceImpl implements DeliveryService {
 	public List<OrderInfoDTO> getOrderInfo(String prdOrderCode) {
 		return mapper.getOrderInfo(prdOrderCode);
 	}
-
+	
+	//사이즈 피벗, 요청 제품 옵션 리스트
 	@Override
 	public Map<String, Object> findByProductCode(String productCode, String orderCode) {
 		Map<String, Object> map = new HashMap<>();
 		
 		List<DeliveryProductInfo> list = mapper.findBySize(productCode);
+		List<Map<String, Object>> pivot = mapper.sizeFindByProductCode(productCode, list, orderCode);
+		
+		//화면으로 보낼 데이터를 만들어서 넣을 새로운 list변수
+		List<Map<String, Object>> sendData = new ArrayList<Map<String,Object>>();
+		
+		//리스트의 각 map에서 요청수량이 있으면 새로운 리스트에 담아서 보내기
+		for(int i=0; i<list.size(); i++) {
+			//한 제품의 옵션리스트 = list
+			String targetSize = "RE" + list.get(i).getShowSize();	//옵션리스트에 있는 사이즈를 가져와서 RE문자열을 붙이면 요청수량을 가져올 수 있음
+			
+			//옵션을 기반으로 가져온 피벗 내용 개수만큼 반복문
+			for(int j=0; j<pivot.size(); j++) {
+				//요청 수량이 있으면 널이 아님.
+				if(pivot.get(j).get(targetSize) != null) {
+					//요청수량이 있는것만 화면으로 보냄
+					sendData.add(pivot.get(j));
+				}
+			}
+		}
 		
 		map.put("optionList", list);
-		map.put("qyList", mapper.sizeFindByProductCode(productCode, list, orderCode));
+		map.put("qyList", sendData);
 		
 		return map;
 	}
@@ -67,7 +91,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 		//가장 최근 배송코드 가져오기, 객체에 저장
 		String deliveryCode = mapper.getDeliveryCode();
 		orderInfoList.get(orderInfoList.size()-1).setDeliveryCode(deliveryCode);
-		log.info("============================================================배송코드 가져오기 완료", deliveryCode);
 		
 		//주문건에 몇회차 출고건인지 가져오기 첫번째면 0, 객체에 저장
 		int deliveryTime = mapper.getTime((orderInfoList.get(orderInfoList.size()-1)).getProductOrderCode());
