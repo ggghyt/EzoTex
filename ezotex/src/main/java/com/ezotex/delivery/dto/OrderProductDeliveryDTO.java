@@ -24,6 +24,7 @@ public class OrderProductDeliveryDTO {
 	private String company;
 	private String Summary;
 	private String orderCharger;
+	private String orderChargerCode;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date orderDate;

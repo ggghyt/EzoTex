@@ -2,8 +2,11 @@ package com.ezotex.delivery.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,8 +77,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 				}
 			}
 		}
-		log.info("==============================================화면으로 보낼 요청 수량 데이터");
-		log.info(sendData.toString());
 		
 		map.put("optionList", list);
 		map.put("qyList", sendData);
@@ -90,7 +91,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 		//가장 최근 배송코드 가져오기, 객체에 저장
 		String deliveryCode = mapper.getDeliveryCode();
 		orderInfoList.get(orderInfoList.size()-1).setDeliveryCode(deliveryCode);
-		log.info("============================================================배송코드 가져오기 완료", deliveryCode);
 		
 		//주문건에 몇회차 출고건인지 가져오기 첫번째면 0, 객체에 저장
 		int deliveryTime = mapper.getTime((orderInfoList.get(orderInfoList.size()-1)).getProductOrderCode());

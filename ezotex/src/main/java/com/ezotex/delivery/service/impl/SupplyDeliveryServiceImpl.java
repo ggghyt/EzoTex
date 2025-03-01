@@ -78,6 +78,21 @@ public class SupplyDeliveryServiceImpl implements SupplyDeliveryService {
 		
 		return "success";
 	}
+
+	@Override
+	public List<OrderProductDeliveryDTO> supplyDeliveryList(DeliveryRegistSearchDTO searchDto) {
+		return mapper.supplyDeliveryList(searchDto);
+	}
+
+	@Override
+	public int supplyDeliveryListCount(DeliveryRegistSearchDTO searchDto) {
+		return mapper.supplyDeliveryListCount(searchDto);
+	}
+
+	@Override
+	public List<OrderInfoDTO> deliveryInfo(String deliveryCode) {
+		return mapper.deliveryInfo(deliveryCode);
+	}
 	
 	
 

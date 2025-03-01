@@ -443,15 +443,14 @@
 	</select>
 	
 	<select id="deliveryProductList">
-		SELECT dd.delivery_code AS delivery_code,
-			   dd.product_code AS product_code,
-		       pi.product_name AS product_name,
-		       SUM(dd.delivery_qy) AS qy_sum,
-               dd.request_qy AS req_qy
+		SELECT  dd.delivery_code AS delivery_code,
+		        dd.product_code AS product_code,
+		        pi.product_name AS product_name,
+		        SUM(dd.delivery_qy) AS qy_sum
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
-		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, dd.request_qy
+		GROUP BY dd.delivery_code, dd.product_code, pi.product_name
 	</select>
 	
 	<select id="deliveryProductDetails">	

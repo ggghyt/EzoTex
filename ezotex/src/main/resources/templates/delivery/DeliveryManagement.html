@@ -426,6 +426,10 @@ input[type=date] {
 		    //등록할 데이터 담을 변수
 		    let registData = [];
 		    
+		    //등록할 데이터를 담을 변수에서 입력할 때 중복값이 생김 필터링된 새로운 배열
+		    let filteredRegistData = [];
+		    
+		    
 			//DB에서 가져온 원 데이터 저장 변수(바뀔 수 있음);
 			let allOrderInfo = null;
 			
@@ -586,8 +590,11 @@ input[type=date] {
 	        	
 	        	document.querySelector(".input-delivery-charger").value = session_user_name;
 	        	//다른 주문건 선택할 때마다 출고 수량입력했던 데이터 초기화
-	        	//registData = [{orderCode : '', productCode : '', productColor : '', columnName : '', deliveryQy: ''}];
-	        	registData = [];
+	        	
+	        	
+	        	registData = [];	//보내는 데이터를 담을 변수 초기화
+	        	filteredRegistData = [];	//보내는 데이터를 담을 변수를 바로 입력할 수 있도록 필터링된 배열(실제로 보내는 데이터) 초기화
+	        	
 	            // 배경색 클래스 적용
 	            grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	            grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -753,25 +760,39 @@ input[type=date] {
 		            for(let j=0; j<allOrderInfo.productDetails[i].qyList.length; j++) {
 		            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
 		            	if(productCode == allOrderInfo.productDetails[i].qyList[j].PRODUCT_CODE) {	
-		            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
+			            	//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
 							products.push({...allOrderInfo.productDetails[i].qyList[j], productName : data.productName});
-							
-		            		
+			            	
 		            	}
 		            	
 		            }
 
 	    		}
 	    		
+	    		/*
+	    			product배열에서 제품의 색상 행의 반복 확인, 데이터는 중복됨. 아래 코드로 중복 제거
+    				filter에서 가져온 products배열의 배열 번호와 findIndex로 가져온 products배열의 배열번호 중 
+    				product_1과 product_2의 이중 반복문으로 PRODUCT_COLOR가 같은 배열번호를 리턴받아서 같은건 제외하여 새로운 newProduct라는 배열을 생성
+    			*/
+	    		const newProduct = products.filter((product_1, idx) => {
+	    		            return (
+	    		              products.findIndex((product_2) => {
+	    		                return product_1.PRODUCT_COLOR === product_2.PRODUCT_COLOR
+	    		              }) === idx
+	    		            )
+	    		          }
+	    		        );
+	    		
+	    		//데이터 입력에 필요한 정보 마지막에 넣고 히든
 				color.push({ header: "주문코드", name: "ORDER_CODE", align: "center", hidden:true},
 						{ header: "제품코드", name: "PRODUCT_CODE", align: "center", hidden:true},
 						{ header: "제품명", name: "productName", align: "center", hidden:true});
 				
-				console.log(products);
+				//console.log("products: ", newProduct);	//중복없는 데이터
 				
 				productDetailgrid.setHeader({complexColumns:size});
 				productDetailgrid.setColumns(color);
-				productDetailgrid.resetData(products);
+				productDetailgrid.resetData(newProduct);
 
 		    	})
 		    	
@@ -791,6 +812,7 @@ input[type=date] {
 	    	        let maxValue = 0; 					 // 컬럼에 들어갈 최대값 담을 변수
 	    	        let color = rowData.PRODUCT_COLOR;	 // 제품 색상
     	        	let inputCol = "DE" + columnName;	 //사용자가 수량을 입력하는 컬럼
+    	        	
 	    	        console.log('newValue', newValue);
     	        	
         	        if(change.value < 0) {
@@ -820,9 +842,22 @@ input[type=date] {
 	    	        
 	    	        //요청수량 컬럼
 	    	        let reqQy = 'RE' + columnName;
+	    	        //재고 수량 컬럼
+	    	        let invenQy = 'IN' + columnName;
 	    	        
 	    	        // 어떤 사이즈 컬럼이 변경되었는지 확인 후 요청 수량 가져오기
 					maxValue = Number(rowData[reqQy]);
+	    	        
+	    	        // 재고 수량
+	    	        invenValue = Number(rowData[invenQy]);
+	    	        
+	    	        if(newValue > invenValue) {
+	    	        	failToast(`출고 수량은  ${invenValue}보다 클 수 없습니다.`);
+	    	        	//재고 수량보다 출고 수량이 많을 경우 0으로 
+	    	        	rowData[inputCol] = 0;
+					    productDetailgrid.setRow(change.rowKey, rowData);
+	    	        }
+	    	        
 	    	        // 입력값이 기존 요청 수량보다 크면 경고 후 변경 취소
 	    	        if (newValue > maxValue) {
 	    	        	//입력안된다는 알림
@@ -831,6 +866,7 @@ input[type=date] {
 					    rowData[inputCol] = maxValue;
 					    productDetailgrid.setRow(change.rowKey, rowData);
 					}
+	    	        
 	    	        
 	    	        //가져온 전체 데이터 출력
 	    	        console.log('전체 데이터:', allOrderInfo);
@@ -865,7 +901,6 @@ input[type=date] {
 		    	        				//객체에 사용자가 입력한 값을 추가함.
 		    	        				info[j][inputCol] = newValue;
 		    	        				info[j].productName = rowData.productName;
-		    	        				//--조건 완성 작동확인--
      	        				   }
      	        			   }
     	        				
@@ -882,8 +917,13 @@ input[type=date] {
 	        //splitDeliveryCnt는 요청 수량에 비해 출고수량이 적으면, 0보다 커짐.
 	        let splitDeliveryCnt = 0;
 		 	
+	      	
+	      	
 	        /*등록버튼 클릭*/
 	        document.querySelector(".sendData").addEventListener('click', () => {
+	        	
+	        	//출고 수량을 모두 0을 입력했을 경우를 확인하기 위한 변수
+	        	let allZeroCnt = 0;
 	        	
 	        	//alert('등록버튼 클릭 이벤트');
 	        	//console.log(allOrderInfo);
@@ -922,6 +962,7 @@ input[type=date] {
 	        						   productSize: getSizeCommonCode(size), reqQy: info[j][reqQy],
 	        						   deliveryQy: info[j][deliveryQy], productSe: "PT02",
 	        						   productName: info[j].productName, showSize: size };
+		        			
 		        			//서버로 보낼 배열에 푸쉬
 	        				registData.push(obj);
 	        			}
@@ -930,32 +971,92 @@ input[type=date] {
 	        		}
 	        	}
 	        	
+	        	//입력하면서 생기는 중복값 모두 제거
+       		    filteredRegistData = registData.filter((product_1, idx) => {
+   		            return (
+   		            	registData.findIndex((product_2) => {
+   		             		if(product_1.productCode === product_2.productCode &&
+   		             			product_1.productColor === product_2.productColor &&
+   		             			product_1.productSize === product_2.productSize) {
+   		             		
+   		             			return true;
+   		             		}
+   		             	
+   		              }) === idx
+   		            )
+   		          }
+   		        );
+	        	
+	        	
+	        	
 	        	//보내는 데이터 수량 부족한게 있는지 확인하기
-	        	for(let i=0; i<registData.length; i++) {
+	        	for(let i=0; i<filteredRegistData.length; i++) {
 	        		
 					//주문 선택후 아무것도 입력하지 않은 경우
-					if(registData.length == 0) {
+					if(filteredRegistData.length == 0) {
 						failToast('주문을 선택해주세요');
+						registData = []; 
+						filteredRegistData = [];
 						return;
 					}
 	        		
 	        		//값을 입력하지 않았다면 바로 리턴되어 동작하지 못하게 함.
-	        		if(registData[i].deliveryQy === undefined) {
+	        		if(filteredRegistData[i].deliveryQy === undefined) {
 	        			failToast('출고 수량을 확인해주세요');
 	        			registData = []; 
+						filteredRegistData = [];
 	        			return;
 	        		} 
 	        		
+	        		//값을 입력하지 않았다면 바로 리턴되어 동작하지 못하게 함.
+	        		if(filteredRegistData[i].deliveryQy == 0) {
+	        			allZeroCnt++;
+	        		} 
+	        		
 	        		//출고 수량이 부족하다면 분할출고 할 수 있도록 구분값을 추가
-	        		if(registData[i].reqQy > registData[i].deliveryQy) {
+	        		if(filteredRegistData[i].reqQy > filteredRegistData[i].deliveryQy) {
 	        			splitDeliveryCnt++;
 	        		}
 	        		
-	        		
 	        	}
+	        	
+	        	if(allZeroCnt == filteredRegistData.length) {
+        			registData = []; 
+					filteredRegistData = [];
+	        		failToast('모든 제품의 출고 수량이 0 입니다');
+	        		return;
+	        	}
+	        	
         		let registModal = new bootstrap.Modal(document.getElementById("registModal"));
         		registModal.show();
 	        })
+	        
+	        
+	        
+	        //마스터 정보 추가하기
+	        function makeRegistData() {
+
+	       	 
+	        	let masterObj = {orderStatus: splitDeliveryCnt > 0 ? 'OR06' : 'OR03',	//주문상태
+	        			         companySe: 'CP02',										//회사구분
+	        			         productOrderCode: allOrderInfo.orderInfo[0].productOrderCode,	//제품 주문 코드
+	        			         companyCode: document.querySelector('.input-company-code').value,
+	        			         companyName: document.querySelector('.input-company-name').value,
+	        			         orderDate: document.querySelector('.input-order-date').value,
+	        			         dedt: document.querySelector('.input-dedt').value,
+	        			         dedtAddress: document.querySelector('.input-address').value,
+	        			         deliveryStatus: 'DS01',
+	        			         remark: document.querySelector('.input-memo').value,
+	        			         amount: allOrderInfo.orderInfo[0].amount,
+	        			         chargerCode: session_user_code,
+	        			       	 chargerName: session_user_name
+	        			         };
+	        	filteredRegistData.push(masterObj);
+	        	
+	        	registerDelivery();
+
+	        }
+	        
 	        
 	        //납품 처리 통신
 			function registerDelivery() {
@@ -969,7 +1070,7 @@ input[type=date] {
                         "Content-Type": "application/json",
                         ...headers
                     },
-                    body: JSON.stringify(registData)
+                    body: JSON.stringify(filteredRegistData)
                 })
                 .then(res => res.json())
                 .then(result => {
@@ -990,14 +1091,14 @@ input[type=date] {
                 		
                 	} else if(result.state == 'success'){                    		
                      // 작업 성공 후 잔여량 출력 내용 계산하기
-                     for (let i = 0; i < registData.length; i++) {
+                     for (let i = 0; i < filteredRegistData.length; i++) {
                          // 요청수량 - 입력수량으로 잔여량을 구한 후 서버로 보낸 데이터 배열의 객체에 restQy 필드를 만들고 값 추가
-                         let qy = registData[i].reqQy - registData[i].deliveryQy;
-                         registData[i].restQy = qy;
+                         let qy = filteredRegistData[i].reqQy - filteredRegistData[i].deliveryQy;
+                         filteredRegistData[i].restQy = qy;
                      }
                      //배열 마지막 삭제(주문 정보 삭제)
-                     registData.length = registData.length - 1;
-                     restQyGrid.resetData(registData);
+                     filteredRegistData.length = registData.length - 1;
+                     restQyGrid.resetData(filteredRegistData);
 
                      // 작업이 성공했으면 잔여량 모달 출력
                      const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
@@ -1011,31 +1112,6 @@ input[type=date] {
                 
                 
             }
-	        
-	        function makeRegistData() {
-
-	       	 
-	        	let masterObj = {orderStatus: splitDeliveryCnt > 0 ? 'OR06' : 'OR03',	//주문상태
-	        			         companySe: 'CP02',										//회사구분
-	        			         productOrderCode: allOrderInfo.orderInfo[0].productOrderCode,	//제품 주문 코드
-	        			         companyCode: document.querySelector('.input-company-code').value,
-	        			         companyName: document.querySelector('.input-company-name').value,
-	        			         orderDate: document.querySelector('.input-order-date').value,
-	        			         dedt: document.querySelector('.input-dedt').value,
-	        			         dedtAddress: document.querySelector('.input-address').value,
-	        			         deliveryStatus: 'DS01',
-	        			         remark: document.querySelector('.input-memo').value,
-	        			         amount: allOrderInfo.orderInfo[0].amount,
-	        			         chargerCode: session_user_code,
-	        			       	 chargerName: session_user_name
-	        			         };
-	        	registData.push(masterObj);
-	        	
-	        	registerDelivery();
-
-	        }
-	        
-	        
 	        
 	        /* 납품 등록 */
 	        document.querySelector('.deliveryRegistBtn').addEventListener('click', () => {
@@ -1068,6 +1144,7 @@ input[type=date] {
 	        	splitDeliveryCnt = 0;
 	        	//서버로 보낼 데이터 빈 배열로 만들기
 	        	registData = [];
+	        	filteredRegistData = [];
 	        	
 	        })
 	        
@@ -1078,6 +1155,7 @@ input[type=date] {
 	        	splitDeliveryCnt = 0;
 	        	//서버로 보낼 데이터 빈 배열로 만들기
 	        	registData = [];
+	        	filteredRegistData = [];
 	        })
 	        
 			document.querySelector('.restQyModalClose').addEventListener('click', () => {
