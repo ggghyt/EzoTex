@@ -11,6 +11,42 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">|반품</h3>
+
+	<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="resiBtn"
+						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 	<button type="button" class="btn btn-info" data-bs-toggle="modal"
 		data-bs-target="#deliveryViewModal">납품 내역 조회</button>
 	<p>
@@ -445,7 +481,13 @@
 	    });
 	});
 	
+	// 등록버튼 모달 띄워주기
 	function insertReturn(returnCode){
+		let resiModal = new bootstrap.Modal(document.getElementById('registModal'));
+		resiModal.show();
+	}
+	
+	resiBtn.addEventListener("click" , function () {
 		console.log("등록 버튼 클릭 이벤트");
 		
 	    // selectProductGrid의 데이터 가져오기
@@ -549,8 +591,7 @@
 		.catch(error =>{
 			console.error("반품 등록 오류:",error);
 		});
-	}
-	
+	})
 </script>
 
 <style>
