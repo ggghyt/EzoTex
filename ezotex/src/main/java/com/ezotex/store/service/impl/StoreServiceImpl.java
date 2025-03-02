@@ -35,13 +35,13 @@ public class StoreServiceImpl implements StoreService {
 	 
 	// 제품 목록 리스트
 	@Override
-	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO) {
+	public List<ProductInfoListDTO> productInfoList(DeliverySearchDTO searchDTO) {
 		return mapper.productInfoList(searchDTO);
 	}
 	 
 	// 제품 목록 total 
 	@Override
-	public int productInfoTotal(ProductInfoSearchDTO searchDTO) {
+	public int productInfoTotal(DeliverySearchDTO searchDTO) {
 		return mapper.productInfoTotal(searchDTO);
 	}
 	

@@ -12,8 +12,26 @@
 						       product_name,
 						       unit_price
 						FROM product_info
-						WHERE product_type = 'PT02'
+						<where>	               	
+						    AND product_type = 'PT02'
+			            <if test='productCode != null and productCode != ""'>
+			            	AND product_code LIKE '%' || UPPER(#{productCode}) || '%'
+			            </if>
+			            <if test='productName != null and productName != ""'>
+			            	AND product_Name LIKE '%' || UPPER(#{productName}) || '%'
+			            </if>
+			            <if test='startUnitPrice != null and startUnitPrice != ""'>
+					        AND unit_price >= #{startUnitPrice}
+					    </if>
+					    <if test='endUnitPrice != null and endUnitPrice != ""'>
+					        AND unit_price <![CDATA[ <= ]]> #{endUnitPrice}
+					    </if>
+			            <if test='startUnitPrice != null and startUnitPrice != "" and endUnitPrice != null and endUnitPrice != ""'>
+			            	AND unit_price BETWEEN #{startUnitPrice} AND #{endUnitPrice}
+			            </if>
+			            </where>
 						ORDER BY product_code
+							
 			    )a
     		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
 		WHERE page.rn <![CDATA[ >= ]]> #{start}
@@ -24,7 +42,24 @@
 	<select id="productInfoTotal">
 		SELECT count(*)
 		FROM product_info
-		WHERE product_type = 'PT02'
+		<where>	               	
+		    AND product_type = 'PT02'
+        <if test='productCode != null and productCode != ""'>
+           	AND product_code LIKE '%' || UPPER(#{productCode}) || '%'
+        </if>
+        <if test='productName != null and productName != ""'>
+          	AND product_Name LIKE '%' || UPPER(#{productName}) || '%'
+        </if>
+        <if test='startUnitPrice != null and startUnitPrice != ""'>
+		    AND unit_price >= #{startUnitPrice}
+		</if>
+		<if test='endUnitPrice != null and endUnitPrice != ""'>
+		    AND unit_price <![CDATA[ <= ]]> #{endUnitPrice}
+		</if>
+        <if test='startUnitPrice != null and startUnitPrice != "" and endUnitPrice != null and endUnitPrice != ""'>
+          	AND unit_price BETWEEN #{startUnitPrice} AND #{endUnitPrice}
+        </if>
+        </where>
 	</select>
 	
 	<!-- 제품 색상 -->
@@ -87,8 +122,25 @@
 		                    count(p.product_code) as count
 		            FROM returns r JOIN return_product p
 		            ON r.return_code = p.return_code
-		            WHERE p.processing_status = 'ER03'
-		                  AND p.show = 'on'
+		            <where>	               	
+					    AND p.processing_status = 'ER03'
+		                AND p.show = 'on'
+			        <if test='returnCode != null and returnCode != ""'>
+			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
+			        </if>
+			        <if test='requestor != null and requestor != ""'>
+					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					</if>
+	                <if test='startRequestDate != null and startRequestDate != ""'>
+					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					</if>
+					<if test='endRequestDate != null and endRequestDate != ""'>
+					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					</if>
+			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
+	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                </if>
+			        </where>
 		            GROUP BY r.return_code, r.delivery_code, r.company_code, r.company_name, r.requestor, r.request_date
 		            ORDER BY r.request_date
 		        ) a
@@ -110,9 +162,32 @@
                                COUNT(i.product_code) AS delivery_qy
                         FROM delivery d 
                         JOIN delivery_details i ON d.delivery_code = i.delivery_code
-                        WHERE d.company_se = 'CP01'
-                           AND i.delivery_qy > 0
-                           AND delivery_status = 'DS01'
+                        <where>	               	
+						    AND d.company_se = 'CP01'
+						    AND i.delivery_qy > 0
+                            AND d.delivery_status = 'DS01'
+				        <if test='deliveryCode != null and deliveryCode != ""'>
+				           	AND d.delivery_code LIKE '%' || UPPER(#{deliveryCode}) || '%'
+				        </if>
+				        <if test='startOrderDate != null and startOrderDate != ""'>
+						    AND d.order_date >= TO_DATE(#{startOrderDate}, 'yyyy-mm-dd')
+						</if>
+						<if test='endOrderDate != null and endOrderDate != ""'>
+						    AND d.order_date <![CDATA[ <= ]]> TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+						</if>
+				        <if test='startOrderDate != null and startOrderDate != "" and endOrderDate != null and endOrderDate != ""'>
+		                    AND d.order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+		                </if>
+		                <if test='startDedt != null and startDedt != ""'>
+						    AND d.date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+						</if>
+						<if test='endDedt != null and endDedt != ""'>
+						    AND d.date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+						</if>
+				        <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
+		                    AND d.date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		                </if>
+				        </where>
                         GROUP BY d.delivery_code, d.order_date, d.dedt
                         ORDER BY d.delivery_code 
                )a
@@ -130,21 +205,62 @@
 	</select> -->
 	
 	
-	<!-- 페이징(납품입고리스트(제품)) total -->
+	<!-- 페이징(납품입고리스트(반품제품)) total -->
 	<select id="getCount">
 		SELECT COUNT(DISTINCT r.return_code)
 		FROM returns r
 		JOIN return_product p
 		ON r.return_code = p.return_code
-		WHERE p.processing_status = 'ER03'
-		  AND p.show = 'on'
+		<where>	               	
+					    AND p.processing_status = 'ER03'
+		                AND p.show = 'on'
+			        <if test='returnCode != null and returnCode != ""'>
+			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
+			        </if>
+			        <if test='requestor != null and requestor != ""'>
+					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					</if>
+	                <if test='startRequestDate != null and startRequestDate != ""'>
+					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					</if>
+					<if test='endRequestDate != null and endRequestDate != ""'>
+					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					</if>
+			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
+	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                </if>
+			        </where>
 	</select>
 	
 	<!-- 페이징(납품입고리스트(자재)) total -->
 	<select id="getMtCount">
 		select count(delivery_code)
 		from delivery
-		WHERE company_se = 'CP01'
+		 <where>	               	
+			    AND company_se = 'CP01'
+                AND delivery_status = 'DS01'
+	     <if test='deliveryCode != null and deliveryCode != ""'>
+	         AND delivery_code LIKE '%' || UPPER(#{deliveryCode}) || '%'
+	     </if>
+	     <if test='startOrderDate != null and startOrderDate != ""'>
+		     AND order_date >= TO_DATE(#{startOrderDate}, 'yyyy-mm-dd')
+		 </if>
+		 <if test='endOrderDate != null and endOrderDate != ""'>
+		     AND order_date <![CDATA[ <= ]]> TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+		 </if>
+	     <if test='startOrderDate != null and startOrderDate != "" and endOrderDate != null and endOrderDate != ""'>
+             AND order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+         </if>
+         <if test='startDedt != null and startDedt != ""'>
+		     AND date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+		 </if>
+		 <if test='endDedt != null and endDedt != ""'>
+		     AND date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		 </if>
+	     <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
+             AND date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+         </if>
+	     </where>
 	</select>
 	
 	

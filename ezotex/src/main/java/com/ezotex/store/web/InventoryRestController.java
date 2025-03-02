@@ -43,7 +43,7 @@ public class InventoryRestController {
 	@GetMapping("productInfoList")
 	public Map<String, Object> productInfoList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									@RequestParam(name = "page", defaultValue = "1") int page,
-									ProductInfoSearchDTO searchDTO
+									DeliverySearchDTO searchDTO
 			) throws JsonMappingException, JsonProcessingException {
 
 		PagingDTO paging = new PagingDTO();

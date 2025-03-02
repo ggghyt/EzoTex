@@ -57,24 +57,45 @@
 		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
 	<div class="card card-body mt-3">
-		<div class="col-12 card card-body m-2">
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">납품코드</label>
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">반품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchReturnCode" placeholder="찾기" >
 				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
 				</div>
+				
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">반품 요청일</label>
+				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
+					<input type="date" class="form-control text-end" id="startRequestDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end" id="endRequestDate" style="margin-left: 10px;">
+				</div>
+				
+				
+				<!-- <label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">구분</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="se">
+						<option value="null">제품/자재</option>
+						<option value="PT02">제품</option>
+						<option value="PT01">자재</option>
+					</select>
+				</div> -->
 			</div>
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">검색조건2</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
-				</div>
-			</div>
-		</div>
+	
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchReturnList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
 
 
 		<div class="row">
@@ -149,6 +170,17 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+		function searchReturnList() {
+			storeGrid.readData(1, {
+	    	    returnCode: document.querySelector('#searchReturnCode').value,
+	    	    requestor: document.querySelector('#requestor').value,
+	    	    startRequestDate: document.querySelector('#startRequestDate').value,
+	    		endRequestDate: document.querySelector('#endRequestDate').value,
+	    	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+	    }
+	
+	
 		// obj 배열에 변경된 사이즈 정보 저장
 	    let obj = [];
 	   
@@ -207,7 +239,7 @@
 	      columns: [ 
 	        { header: "반품 코드", name: "returnCode", align: "center"},
 	        { header: "제품 종류 수", name: "count", align: "center"},
-	        { header: "납품 요청일", name: "requestDate", align: "center"},
+	        { header: "반품 요청일", name: "requestDate", align: "center"},
 	        { header: "반품담당자", name: "requestor", align: "center"},
 	      ],
 	      data: dataSource,

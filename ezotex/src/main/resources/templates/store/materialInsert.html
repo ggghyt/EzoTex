@@ -14,28 +14,53 @@
 </style>
 </head>
 	<body>
-		<h3 class="fs-3 fw-bold">| 자재 입고 등록</h3>
-		<div class="card card-body mt-3" style="background-color: #d3d3d3;">
-			<table class="table mt-3">
-					<tbody>
-						<!-- 첫 번째 줄 -->
-						<tr>
-							<!-- 							<td class="col-auto"><label class="col-form-label">주문코드</label>
-								<input type="text" id="productOrderCode" class="form-control"
-								readonly></td> -->
-							<td class="col-auto"><label class="col-form-label">납품코드</label> <input type="text" id="charger" class="form-control">
-							</td>
-							<td class="col-auto"><label class="col-form-label">납품요청일</label>
-								<input type="date" id="orderDate" class="form-control" > - <input type="date" id="orderDate" class="form-control" > 
-							</td>
-							<td class="col-auto"><label class="col-form-label">입고예정일</label>
-								<input type="date" id="orderDate" class="form-control" > - <input type="date" id="orderDate" class="form-control" >
-							</td>
-						</tr>
-					</tbody>
-				</table>
+		<div class="d-flex align-items-center">
+			<h3 class="fs-3 fw-bold">| 자재 입고 등록</h3>
+			<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
+			<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 		</div>
-		
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchDeliveryCode" placeholder="찾기" >
+				</div>
+				
+				
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품 요청일</label>
+				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
+					<input type="date" class="form-control text-end" id="startOrderDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end" id="endOrderDate" style="margin-left: 10px;">
+				</div>
+				
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고 예정일</label>
+				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2">
+					<input type="date" class="form-control text-end" id="startDedt" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end" id="endDedt" style="margin-left: 10px;">
+				</div>
+				
+				<!-- <label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">구분</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<select class="form-control" id="se">
+						<option value="null">제품/자재</option>
+						<option value="PT02">제품</option>
+						<option value="PT01">자재</option>
+					</select>
+				</div> -->
+			</div>
+	
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchDeliveryList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
+
 		
 		<div class="row">
 			<div class="col-5 card card-body m-2">
@@ -137,6 +162,16 @@
 		
 		
 		<script>
+		
+			function searchDeliveryList() {
+				mtGrid.readData(1, {
+	        		deliveryCode: document.querySelector('#searchDeliveryCode').value,
+	        		startOrderDate: document.querySelector('#startOrderDate').value,
+	        		endOrderDate: document.querySelector('#endOrderDate').value,
+	        		startDedt: document.querySelector('#startDedt').value,
+	        		endDedt: document.querySelector('#endDedt').value,
+	        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+	        }
 		
 		//납품코드
 		let deliveryCode = '';

@@ -1,5 +1,6 @@
 package com.ezotex.store.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,16 +16,16 @@ public class StoreDeliveryDTO {
 	private String deliveryCode;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date orderDate;
+	private LocalDate orderDate;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date dedt;
+	private LocalDate dedt;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date rgsde;
+	private LocalDate rgsde;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date updde;
+	private LocalDate updde;
 	
 	// 제품 종류 수량 필드
 	private int deliveryQy;
