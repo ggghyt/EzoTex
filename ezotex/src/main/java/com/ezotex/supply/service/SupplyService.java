@@ -26,10 +26,6 @@ public interface SupplyService {
 	// 공급계획서 단건조회
 	List<SupplyDTO> infoSupplyPlan(String supplyPlanCode);
 	
-	// 공급계획서 조회
-	List<SupplyDTO> listSupplyPlan(Map<String, Object> map);
-	int countSupplyPlan(Map<String, Object> map);
-	
 	// 공급계획서 등록
 	boolean insertSupplyPlan(Map<String, Object> supplies);
 }

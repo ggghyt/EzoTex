@@ -82,31 +82,37 @@
 	
 	
 	
-	<div class="row">
-			<div class="col-12 card card-body m-2"
-				style="background-color: #d3d3d3;">
-				<p class="fs-5 fw-bolder">주문 정보</p>
-				<div class="row col-12 col-lg-6 pe-0">
-					 <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
-				         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-				           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
-				         </div>
-			         <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
-				         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-				           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
-				         </div>
-				     <label for="supplyQyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
-				         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
-				           <input type="text" class="form-control me-sm-2 text-end" id="supplyQyMin">-
-				           <input type="text" class="form-control ms-sm-2 text-end" id="supplyQyMax">
-				         </div>
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
 				</div>
-				<div class="d-flex justify-content-center gap-2">
-					<button class="btn btn-secondary mag-glass-btn btn-sm"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
-					<button class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchProductName">
+				</div>
+				
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '단가' : '현재단가'}]]</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="startUnitPrice" style="margin-right: 10px;"> ~ 
+					<input type="text" class="form-control text-end" id="endUnitPrice" style="margin-left: 10px;">
 				</div>
 			</div>
-		</div>
+	
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
+
+
 		
 		
 		
@@ -132,7 +138,6 @@
 					<!-- 제품 상세 정보 및 BOM 정보 -->
 					<div class="d-flex align-items-top">
 							<p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
-							<label style="font-size: 10pt" for="remember">입력항목 유지</label><input type="checkbox" id="remember" class="ms-1 mb-4">
 					</div>
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
@@ -217,6 +222,17 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+		function searchProductList() {
+	    	storeGrid.readData(1, {
+        		productCode: document.querySelector('#searchProductCode').value,
+        		productName: document.querySelector('#searchProductName').value,
+        		startUnitPrice: document.querySelector('#startUnitPrice').value,
+        		endUnitPrice: document.querySelector('#endUnitPrice').value,
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+	
+	
 		let productCode = "";
 		let productColor = "";
 		let productName = "";

@@ -18,10 +18,10 @@ import com.ezotex.store.dto.StoreReturnDTO;
 public interface StoreMapper {
 	
 	// 제품 목록 리스트
-	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO);
+	public List<ProductInfoListDTO> productInfoList(DeliverySearchDTO searchDTO);
 	
 	// 제품 목록 total
-	public int productInfoTotal(ProductInfoSearchDTO searchDTO);
+	public int productInfoTotal(DeliverySearchDTO searchDTO);
 	
 	// 제품 컬러
 	public List<ProductInfoListDTO> productColor(String productCode);
