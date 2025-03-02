@@ -51,7 +51,7 @@ public class DeliveryController {
 	}
 	
 	//납품 조회 페이지(제조업체)
-	@GetMapping("List")
+	@GetMapping("deliveryList")
 	public String deliveryList() {
 		return "delivery/DeliveryList";
 	}
@@ -61,24 +61,6 @@ public class DeliveryController {
 	public String SupplyList() {
 		return "delivery/SupplierDeliveryList";
 	}
-	
-	
-	
-	@GetMapping("report")
-	 public void report(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Connection conn = datasource.getConnection();
-
-	    // 레포트 파일 + 데이터(connection) => 완성
-	    InputStream jasperStream = getClass().getResourceAsStream("/reports/test.jasper");
-	    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperStream, null, conn);
-	    conn.close();
-
-	    // Content-Type 설정 (필수)
-	    response.setContentType("application/pdf");
-	    
-	    // PDF 출력
-	    JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
-	 }
 	
 	//제조업체 pdf뷰
 	@GetMapping(value="pdfView")
@@ -118,19 +100,10 @@ public class DeliveryController {
 		return mav;
 	}
 	
-	@GetMapping(value="pdfViewDown")
-	public ModelAndView pdfviewDown() throws Exception {
-		String deliveryCode = "DEV2502240001";
+	//납품 관리 페이지(제조업체 사용)
+	@GetMapping("packingManagement")
+	public String driveList() {
 		
-		 // 사용자 입력 값을 포함하는 맵 생성
-	    Map<String, Object> param = new HashMap<>();
-	    param.put("deliveryCode", deliveryCode);
-	
-	    // ModelAndView 생성
-	    ModelAndView mav = new ModelAndView("pdfViewDown");
-	    mav.addObject("filename", "/reports/test.jasper"); // 리포트 파일 경로
-	    mav.addObject("param", param); // 파라미터 추가
-	
-	    return mav;
+		return "delivery/packingManagement";
 	}
 }

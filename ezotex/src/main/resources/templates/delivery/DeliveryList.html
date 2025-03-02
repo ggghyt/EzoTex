@@ -4,7 +4,7 @@
       layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>납품등록</title>
+<title>납품조회</title>
 <link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 	<style>
 		#container {
@@ -147,7 +147,7 @@
 		}
 		.delivery-status {
 			width: 100%;
-			height: 160px;
+			height: 200px;
 			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
 		}
 		.delivery-status-details{
@@ -364,12 +364,14 @@
 									<td class="packingCharger">담당자</td>
 									<td class="packingRgsde">등록일</td>
 								</tr>
+								<!--  
 								<tr>
 									<td>배차</td>
 									<td class="driverChargerCode">담당자코드</td>
 									<td class="driverChargerName">담당자</td>
 									<td class="driverChargerRgsde">등록일</td>
 								</tr>
+								-->
 								<tr>
 									<td>배송</td>
 									<td class="driverCode">담당자코드</td>
@@ -409,9 +411,10 @@
 		           <div class="modal-header" style="height: 20px;">
 		            <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">출고 현황 조회</h5>
 		           </div>
-		           <div class="modal-body" style="padding: 44px; padding-bottom:10px;">
+		           <div class="modal-body" style="padding: 44px; padding-bottom:10px; padding-top: 10px;">
 		           		<div style="width: 100%">		           		
 			           		<div class="p-3 mb-2 bg-secondary text-dark card delivery-status">
+			           		<b>| 출고상태</b>
 			           			<div class="status-icon">
 			           				<i class="fa-solid fa-file-pen fa-4x" style="color: #8a8a8a;"></i>
 			           				<span> > </span>
@@ -433,7 +436,7 @@
 			           			
 			           		</div>
 			           		<div class="delivery-status-details">
-			           			<div id="map" style="width:900px;height:300px;"></div>
+			           			<div id="map" style="width:100%;height:100%;"></div>
 			           		</div>
 		           		</div>
 		           		
@@ -446,12 +449,12 @@
 		         </div>
 		         </div>
 		      </div>
-	
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6eb87210b9b70bf039d7289fdb7bca97&libraries=services,clusterer"></script>
 	<script>
 		//출고 목록
 		const dataSource = {
 		  	      api: {
-		  	          readData: { url: '/delivery/deliveryList' , method: 'GET' },
+		  	          readData: { url: '/delivery/getDeliveryList' , method: 'GET' },
 		  	        },
 		  	      contentType: 'application/json',
 		  	    };  
@@ -654,9 +657,9 @@
 					document.querySelector('.packingChargerCode').innerHTML = res.chargerInfo.packingChargerCode;
 					document.querySelector('.packingCharger').innerHTML = res.chargerInfo.packingChargerName;
 					document.querySelector('.packingRgsde').innerHTML = res.chargerInfo.packingRgsde;
-					document.querySelector('.driverChargerCode').innerHTML = res.chargerInfo.driverChargerCode;
-					document.querySelector('.driverChargerName').innerHTML = res.chargerInfo.driverChargerName;
-					document.querySelector('.driverChargerRgsde').innerHTML = res.chargerInfo.driverChargerRgsde;
+					//document.querySelector('.driverChargerCode').innerHTML = res.chargerInfo.driverChargerCode;
+					//document.querySelector('.driverChargerName').innerHTML = res.chargerInfo.driverChargerName;
+					//document.querySelector('.driverChargerRgsde').innerHTML = res.chargerInfo.driverChargerRgsde;
 					document.querySelector('.driverCode').innerHTML = res.chargerInfo.driverCode;
 					document.querySelector('.driverName').innerHTML = res.chargerInfo.driverName;
 					document.querySelector('.driveStartTime').innerHTML = res.chargerInfo.driveStartTime;
@@ -736,6 +739,23 @@
     		})
 		})
 		
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+	    mapOption = {
+	        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+	        level: 8 // 지도의 확대 레벨
+	    };  
+		
+
+	  	
+		// 지도를 생성합니다    
+		var map = new kakao.maps.Map(mapContainer, mapOption); 
+		
+		//지도 중심 좌표
+		let startCoords = null;
+		
+		//지도 클러스터
+		var clusterer = null;
+		
 		document.querySelector(".openStatusModalBtn").addEventListener("click", () => {
 			//납품 상세 모달 닫기
 			deliveryDetails.hide();
@@ -762,21 +782,106 @@
 						  document.querySelector(".fa-house").style.color = "#4285f4";
 					break;
 			}
+			
+
+			// 주소-좌표 변환 객체를 생성합니다
+			var geocoder = new kakao.maps.services.Geocoder();
+
+			// 주소로 좌표를 검색합니다
+			geocoder.addressSearch('대구 중구 중앙대로 403 5층', function(result, status) {
+
+			    // 정상적으로 검색이 완료됐으면 
+			     if (status === kakao.maps.services.Status.OK) {
+
+			        startCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+			        // 결과값으로 받은 위치를 마커로 표시합니다
+			        var marker = new kakao.maps.Marker({
+			            map: map,
+			            position: startCoords
+			        });
+
+			        // 인포윈도우로 장소에 대한 설명을 표시합니다
+			        var infowindow = new kakao.maps.InfoWindow({
+			            content: '<div style="width:150px;text-align:center;padding:1px 0;font-size:15px;">출발지</div>'
+			        });
+			        infowindow.open(map, marker);
+
+			        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+			        map.setCenter(startCoords);
+			    } 
+			});    
+
+			var desticoder = new kakao.maps.services.Geocoder();
+			    
+			geocoder.addressSearch(document.querySelector(".read-dedt-address").value, function(result, status) {
+
+			    // 정상적으로 검색이 완료됐으면 
+			     if (status === kakao.maps.services.Status.OK) {
+
+			        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+			        // 결과값으로 받은 위치를 마커로 표시합니다
+			        var marker = new kakao.maps.Marker({
+			            map: map,
+			            position: coords
+			        });
+
+			        // 인포윈도우로 장소에 대한 설명을 표시합니다
+			        var infowindow = new kakao.maps.InfoWindow({
+			            content: '<div style="width:150px;text-align:center;padding:1px 0;font-size:15px;">도착지</div>'
+			        });
+			        infowindow.open(map, marker);
+
+			        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+			        map.setCenter(coords);
+			    } 
+			});   
+			
+		  	clusterer = new kakao.maps.MarkerClusterer({
+		        map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+		        averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+		        minLevel: 10 // 클러스터 할 최소 지도 레벨 
+		    });
+			
+		  	
 			//배송현황 모달 열기
 			const deliveryStatusModal = new bootstrap.Modal(document.getElementById("deliveryStatusModal"));
 			deliveryStatusModal.show();
+			
 		})
-	
+		
+		
+		
+		
+		
+		//카카오 맵 api는 요소의 크기가 바뀌면 안보이게 됨. 그래서 모달이 열리면 relayout
+	    document.getElementById("deliveryStatusModal").addEventListener("shown.bs.modal", function () {
+	        map.relayout();
+	        // 모든 마커 좌표 가져오기
+	        let bounds = new kakao.maps.LatLngBounds();
+	        clusterer.getMarkers().forEach(marker => {
+	            bounds.extend(marker.getPosition()); // 마커 좌표를 경계에 추가
+	        });
+
+	        // 모든 마커가 포함되도록 지도 중심 및 확대 조정
+	        //map.setBounds(bounds);
+	        map.setCenter(startCoords);
+	    })
+		
+		
 		
 		document.querySelector(".deliveryStatusModalClose").addEventListener("click", () => {
 			deliveryDetails.show();
 		})
 		
-		//추
+		//납품카드 pdf출력
 		document.querySelector(".showDeliveryCard").addEventListener("click", () => {
 			let divyCode = document.querySelector(".read-delivery-code").value;
 			window.open(`/delivery/pdfView?deliveryCode=${divyCode}`, '_blank','width=1000, height=1000, scrollbars=yes');
 		})
+		
+		
 	</script>
 </body>
 </html>

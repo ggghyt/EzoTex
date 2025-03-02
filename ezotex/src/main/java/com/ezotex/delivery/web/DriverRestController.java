@@ -1,13 +1,19 @@
 package com.ezotex.delivery.web;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
@@ -16,6 +22,8 @@ import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.DriverDeliveryDTO;
 import com.ezotex.delivery.dto.DriverDeliverySearchDTO;
 import com.ezotex.delivery.service.DriverService;
+import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CompanyDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,4 +62,25 @@ public class DriverRestController {
 		return GridUtil.grid(paging.getPage(), paging.getTotalRecord(), service.deliveryList(searchDTO));
 	}
 	
+	//@Value("${file_img}")
+	//String file_img;
+	
+	// 배송완료
+	@PostMapping("/completeDelivery")
+	public String completeDelivery(DriverDeliveryDTO insertInfo) throws Exception {
+		
+		log.info("=================================================");
+		log.info(insertInfo.toString());
+		
+		MultipartFile file = insertInfo.getImgFile();
+		UUID uuid = UUID.randomUUID();
+		
+		//이미지 url + 파일 이름 변경(중복방지)
+		String uuidFileName = uuid + "_" + file.getOriginalFilename();
+		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		insertInfo.setImgUrl(uuidFileName);
+		
+		//return service.insertDeliver(insertInfo);
+		return null;
+	}
 }

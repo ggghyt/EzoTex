@@ -39,4 +39,7 @@ public class OrderProductDeliveryDTO {
 	private String storageName;
 	private String dedtAddress;
 	private String commStatus;
+	private String deliveryCharger;
+	private String deliveryChargerCode;
+	
 }

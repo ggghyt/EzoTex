@@ -15,4 +15,9 @@ public interface DriverMapper {
 	//배송기사 배송지 목록 조회 카운트
 	public int getDeliveryListCount(@Param("search")DriverDeliverySearchDTO searchDTO);
 	
+	//배송정보 인서트
+	public int insertDeliveryInfo(@Param("info")DriverDeliveryDTO info);
+	
+	//출고 상태 업데이트
+	public int updateDeliveryState(@Param("deliveryCode")String deliveryCode);
 }

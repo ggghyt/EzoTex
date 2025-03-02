@@ -1,0 +1,362 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>포장등록</title>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<style>
+		#container {
+			height: 1000px;
+		}
+		.search-bar {
+			width: 780px;
+			height: 250px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			display: inline-block;
+			flex-direction:row;
+		}
+
+		.order-list {
+			width: 780px;
+			height: 778px;
+		}
+		.order-info{
+			flex-grow: 0 !important;
+			margin-top: 0;
+			margin-left: 30px;
+			width: 900px !important;
+			height: 1030px;
+		}
+		.search-unit {
+			display: flex;
+			margin-bottom:5px;
+		}
+		.search-unit div {
+			display: inline-block;
+		}
+		.search-bar > div {
+		    display: inline-block;
+		    vertical-align: top; /* 정렬 보정 */
+		}
+		.search-bar div:nth-of-type(1) {
+			padding-left:10px;
+			width: 300px;
+		}
+		.read-bar div:nth-of-type(1) {
+			margin-left: 40px;
+		}
+		.read-bar div {
+			margin-top: 10px;
+		}
+		.read-bar input[type=text] {
+			width: 180px !important;
+		}
+		.read-bar input[type=text]:nth-of-type(1) {
+			margin-right: 30px;
+		}
+		.read-bar span::nth-of-type(2) {
+			margin-left: 20px;
+		}
+		.search-bar div:nth-of-type(2) {
+			padding-left:10px;
+			width: 410px;
+		}
+		.search-unit span {
+			font-size: smaller;
+			line-height: 2.5;
+			width: 67px;
+		}
+		.search-bar div:nth-of-type(1) input{
+			margin-left: 10px;
+		}
+		.search-bar div input[type=text] {
+			width: 140px;
+		}
+		.search-bar select {
+		    margin-left: 10px;
+			width: 140px;
+			border: 1px solid #dee2e6;
+		    font-weight: 400;
+		    font-size: 0.875rem;
+		    border-radius: 4px;
+		    height: 2rem;
+		}
+		input[type=date] {
+			width: 140px;
+		}
+		.search-bar input[type=number] {
+			width: 140px;
+		}
+		.search-bar b {
+			display: block;
+			margin-bottom:5px;
+		}
+		.btn-secondary {
+			background-color: #b1b1b1;
+		}
+		.search-bar .btn-section{
+			width: 390px !important;
+			display: flex;
+			justify-content: right;
+			margin-top: 30px;
+			margin-bottom: 10px;
+		}
+		.search-bar .btn-section button{
+			margin-right: 10px;
+		}
+		.info-section>div{
+			width: 600px;
+		}
+		.completeBtn-section {
+			width: 807px;
+			display: flex;
+			justify-content: center;
+		}
+		.completeBtn-section button {
+			margin: 10px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+		/*여기까지 거의 공용*/
+		.read-bar {
+			width: 807px;
+			height: 130px;
+			margin-bottom: 20px !important;
+		}
+		.info-unit span{
+			width: 100px;
+		}
+		.read-memo {
+			width: 500px;
+			height: 100px;
+		}
+		.memo-span {
+			padding-left: 10px;
+			margin-right: 20px;
+		}
+		.order-info b {
+			margin-bottom: 20px;
+		}
+		.summary-info {
+			margin-top: 30px;
+		}
+		#productListGrid {
+			width: 807px;
+		}
+	</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 납품등록</h3>
+	<div id="container row" style="display: flex;">
+		<div>			
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+				<b>검색</b>
+									
+				<div>
+					<span class="search-unit">
+						<span>납품코드</span>
+						<input type="text" class="form-control search-delivery-code"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code">
+					</span>
+					<span class="search-unit">
+						<span>제품명</span>
+						<input type="text" class="form-control search-product-name"> 
+					</span>
+					<span class="search-unit">
+						<span>담당자코드</span>
+						<input type="text" class="form-control search-delivery-chargerCode">
+					</span>
+					<span class="search-unit">
+						<span>담당자</span>
+						<input type="text" class="form-control search-delivery-charger"> 
+					</span>
+				</div>
+				
+				<!-- 검색조건2: 발주일, 납기일 -->
+				<div>
+					
+					<span class="search-unit">
+						<span>발주일</span>
+						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-date-end">
+					</span>
+					<span class="search-unit">
+						<span>납기일</span>
+						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-dedt-end">
+					</span>
+
+					<div class="btn-section">						
+						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+					</div>
+				</div>
+			</div>
+			<div class="card card-body mt-3 order-list">
+				<b>목록</b>
+				<!-- 검색결과 목록 -->
+				<div id="deliveryListGrid"></div>
+			</div>
+		</div>
+		
+		
+		<div class="col card card-body order-info">		
+			<b>제품 목록</b>
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar read-bar ">
+				<div>				
+					<span class="search-unit info-unit">
+						<span>발주량 합계</span>
+						<input type="text" class="form-control read-orderTotalQy"> 
+					</span>
+				</div>
+				<div>
+					<span class="search-unit info-unit">
+						<span>납품량 합계</span>
+						<input type="text" class="form-control read-divyTotalQy"> 
+					</span>
+				</div>
+			</div>
+			<div style="width: 807px;">			
+				<!-- 제품 리스트 -->
+				<div id="productListGrid"></div>
+			</div>
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar summary-info">
+				<div>			
+					<span class="search-unit info-unit">
+						<span>발주코드</span>
+						<input type="text" class="form-control read-orderTotalQy" readOnly> 
+					</span>
+					<span class="search-unit info-unit">
+						<span>발주일</span>
+						<input type="text" class="form-control read-divyTotalQy" readOnly> 
+					</span>
+				</div>
+				<div>			
+					<span class="search-unit info-unit">
+						<span>납기일</span>
+						<input type="text" class="form-control read-dedt" readOnly> 
+					</span>
+					<span class="search-unit info-unit">
+						<span>발주담당자</span>
+						<input type="text" class="form-control read-order-charger" readOnly> 
+					</span>
+				</div>
+				<span class="search-unit info-unit">
+					<span class="memo-span">비고</span>
+					<textarea class="form-control read-memo" readOnly></textarea>
+				</span>
+			</div>
+			<div class="completeBtn-section">
+				<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
+		    		등록
+		  		</button>
+				<button class="btn btn-outline-secondary resetBtn">초기화</button>
+				
+			</div>
+		</div>
+	</div>
+		
+	<script>
+		//session_user_code => 세션에서 가져온 회사코드임
+		
+		//출고 목록
+		const dataSource = {
+		  	      api: {
+		  	          readData: { url: '/delivery/getDeliveryList' , method: 'GET' },
+		  	        },
+		  	      contentType: 'application/json',
+		  	    };  
+
+        const deliveryListGrid = new Grid({
+            el: document.getElementById('deliveryListGrid'),
+            rowHeaders: ['rowNum'],
+            pageOptions: {
+                useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+                perPage: 15
+            },
+            bodyHeight: 619,
+            columnOptions: {
+  	          resizable: true
+  	      	},
+			scrollY: true,
+			scrollX: false,
+            columns: [
+				{ header: "납품코드", name: "deliveryCode"},
+				{ header: "업체코드", name: "companyCode"},
+				{ header: "업체명", name: "company"},
+				{ header: "납기일", name: "dedt"},
+				{ header: "요약", name: "summary"},			
+				{ header: "출고등록일", name: "registDate"},
+				{ header: "비고", name: "remark", hidden: true},
+				{ header: "출고담당자", name: "deliveryChargerCode", hidden: true},
+				{ header: "출고담당자코드", name: "deliveryCharger", hidden: true},
+				
+            ],
+            data: dataSource,
+			showDummyRows: true	//더미로우 추가
+        });
+		
+		//제품 목록
+		const productListGrid = new Grid({
+			el: document.getElementById('productListGrid'),
+			bodyHeight: 500,
+			width: 807,
+			scrollY: true,
+			scrollX: false,
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "자재코드", name: "productOrderCode"},
+				{ header: "자재명", name: "productCode"},
+				{ header: "업체단가", name: "productName"},
+				{ header: "발주량", name: "reqQy"},
+				{ header: "납품량", name: "deliveryQy"}
+			]
+		});
+		
+		
+	    //출고목록 검색 함수
+        function searchOrderList() {
+        	deliveryListGrid.readData(1, {
+        		deliveryCode: document.querySelector('.search-delivery-code').value,
+        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
+        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-product-code').value,
+        		productName: document.querySelector('.search-product-name').value,
+        		deliveryStatus: 'DS01'
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+	    
+        //출고건 선택 저장 변수
+		let lastClicked = null;
+	    
+        deliveryListGrid.on('focusChange', ev => {
+			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			lastClicked = ev.rowKey; // 선택된 행 기억
+			
+			//선택행 데이터
+			let data = deliveryListGrid.getRow(ev.rowKey);
+			console.log(data);
+			
+			fetch(`/delivery/deliveryProductList?deliveryCode=${data.deliveryCode}`)
+    		.then(rep => rep.json())
+    		.then(res => { 
+    			console.log(res);
+    		})
+        })
+	</script>
+</body>
+</html>

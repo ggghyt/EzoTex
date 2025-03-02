@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
@@ -35,4 +36,7 @@ public interface DeliveryService {
 	//출고건 제품 출고 내역
 	public Map<String, Object> deliveryProductDetails(String deliveryCode,
 													  String productCode);
+	
+	// 출고 제품 조회
+	public List<DeliveryProductInfo> deliveryProductListWithLot(String deliveryCode);
 }

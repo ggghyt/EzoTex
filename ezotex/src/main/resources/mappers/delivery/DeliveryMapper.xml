@@ -316,7 +316,9 @@
 		                    de.storage_name AS storage_name,
 		                    de.dedt_address AS dedt_address,
 		                    de.delivery_status AS comm_status,
-		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date
+		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date,
+		                    de.charger_code AS delivery_charger_code,
+		                    de.charger_name AS delivery_charger
 		            FROM    delivery de JOIN order_list ol
 		                                  ON de.product_order_code = ol.product_order_code
 					<where>	               	

@@ -13,9 +13,12 @@
 		                de.company_name AS company_name,
 		                CASE WHEN de.delivery_status = 'DS05' THEN '완료'
 		                ELSE '미완료'
-		                END AS delivery_status
+		                END AS delivery_status,
+		                TO_CHAR(de.dedt, 'yyyy-MM-dd') AS dedt,
+		                de.delivery_code AS delivery_code
 		        FROM   delivery de
 		        WHERE  delivery_status != 'DS06'
+		        AND    de.delivery_company_code IS NULL
 		        <if test='search.dedtAddress != null and search.dedtAddress != ""'>
 					AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
 					</if>
@@ -56,4 +59,16 @@
 	        </choose>
 	</select>
 	
+	<insert id="insertDeliveryInfo">
+		INSERT INTO delivewry_schedule(delivery_no, delivery_code, delivery_date, prearnge_time, start_time, compet_time, rgsde, updde, driver_code, 
+										driver_name, charger_code, charger_name, delivery_img)
+		VALUES (driver_schedule_seq.nextval, #{deliverCode}, sysdate, 'TI01', sysdate, sysdate, sysdate, sysdate, #{chargerCode}, #{chargerName},
+				#{chargerCode}, #{chargerName}, #{imgUrl})
+	</insert>
+	
+	<update id="updateDeliveryState">
+		UPDATE delivery
+		SET delivery_status = 'DS05'
+		WHERE delivery_code = #{delivery_code};
+	</update>
 </mapper>

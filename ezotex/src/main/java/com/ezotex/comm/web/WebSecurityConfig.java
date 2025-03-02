@@ -32,7 +32,7 @@ public class WebSecurityConfig {
 				
 				.requestMatchers("/loginProc", "/css/**", "/fonts/**", "/images/**", "/js/**", "/pages/**", "/partials/**", "/scss/**", "/vendors/**", "/login/**", "/img/**").permitAll()
 				//                로그인 페이지 지름 지정란거, 이 외의 항목들은 css너 js같은 실행하는데 사용되는 필수 파일들
-				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY") // 역할(ROLE)을 부여하는 곳
+				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY", "DRIVER") // 역할(ROLE)을 부여하는 곳
 				.requestMatchers("/*").hasRole("SUPPLY")
 				.anyRequest().authenticated()
 			)
