@@ -94,6 +94,8 @@ public class DeliveryRestController {
 	//출고 등록
 	@PostMapping("deliveryRegist")
 	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		log.info(insertData.toString());
 		log.info(((Integer)insertData.size()).toString());
 		Map<String, String> map = new HashMap<>();

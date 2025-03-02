@@ -176,7 +176,7 @@ input[type=date] {
 <body>
 	<h3 class="fs-3 fw-bold">| 납품등록</h3>
 	<div id="container row" style="display: flex;">
-		<div class="col">
+		<div>
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 
 				<b>검색</b>
@@ -1062,7 +1062,7 @@ input[type=date] {
 			function registerDelivery() {
 	        	//스피너
 	        	//simulateLoading();
-	        	
+	        	console.log("filteredRegistData보내기 직전", filteredRegistData);
 
                 const response = fetch('/delivery/deliveryRegist', {
                     method: 'post',
@@ -1074,8 +1074,9 @@ input[type=date] {
                 })
                 .then(res => res.json())
                 .then(result => {
-                	console.log('로트 부족할 때 서버 통신결과:', result);
+                	console.log('서버 통신결과:', result);
                 	if(result.state == 'fail') {
+                		
                 		failToast('로트 수량이 부족합니다 재고를 확인해주세요');
                 		//allOrderInfo = originalData;
                 		
@@ -1096,8 +1097,11 @@ input[type=date] {
                          let qy = filteredRegistData[i].reqQy - filteredRegistData[i].deliveryQy;
                          filteredRegistData[i].restQy = qy;
                      }
+                     console.log("배열 마지막 빼기 전에", filteredRegistData);
                      //배열 마지막 삭제(주문 정보 삭제)
-                     filteredRegistData.length = registData.length - 1;
+                     //filteredRegistData.length = registData.length - 1;
+                     filteredRegistData.pop();
+                     console.log("배열 마지막 뺀 다음", filteredRegistData);
                      restQyGrid.resetData(filteredRegistData);
 
                      // 작업이 성공했으면 잔여량 모달 출력
