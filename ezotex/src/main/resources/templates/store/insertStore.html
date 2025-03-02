@@ -78,38 +78,29 @@
 		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
 		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
+	
+	
+	
+	
 	<div class="row">
-			<div class="col-5 card card-body m-2"
+			<div class="col-12 card card-body m-2"
 				style="background-color: #d3d3d3;">
 				<p class="fs-5 fw-bolder">주문 정보</p>
-				<table class="table mt-3">
-					<tbody>
-						<!-- 첫 번째 줄 -->
-						<tr>
-							<!-- 							<td class="col-auto"><label class="col-form-label">주문코드</label>
-								<input type="text" id="productOrderCode" class="form-control"
-								readonly></td> -->
-							<td class="col-auto"><label class="col-form-label">제품코드</label>
-							 <input type="text" id="charger" class="form-control"></td>
-							<td class="col-auto"><label class="col-form-label">제품명</label>
-								<input type="text" id="empCode" class="form-control" readonly></td>
-							<td class="col-4"><label class="col-form-label">제품이미지</label></td>
-						</tr>
-						<!-- 두 번째 줄 -->
-						<tr>
-							<td class="col-auto"><label class="col-form-label">대분류</label>
-							<select class="form-control">
-								<option value="null">전체</option>
-							</select></td>
-							<td class="col-auto"><label class="col-form-label">소분류</label>
-							<select class="form-control">
-								<option value="null">전체</option>
-							</select></td>
-							<td class="col-4">
-								<img alt="" src=""></td>
-						</tr>
-					</tbody>
-				</table>
+				<div class="row col-12 col-lg-6 pe-0">
+					 <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
+				         </div>
+			         <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+				         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
+				         </div>
+				     <label for="supplyQyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">단가</label>
+				         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+				           <input type="text" class="form-control me-sm-2 text-end" id="supplyQyMin">-
+				           <input type="text" class="form-control ms-sm-2 text-end" id="supplyQyMax">
+				         </div>
+				</div>
 				<div class="d-flex justify-content-center gap-2">
 					<button class="btn btn-secondary mag-glass-btn btn-sm"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
 					<button class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
