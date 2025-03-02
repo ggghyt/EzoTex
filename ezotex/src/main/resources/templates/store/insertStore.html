@@ -440,7 +440,7 @@
 		                color: productColor,
 		                sizeCode: productSize,
 		                productQy: "" ,// 초기 수량은 빈 문자열로 설정
-		                storageLocation : location
+		                //storageLocation : location
 		            };
 		
 		            // 기존 데이터에 추가
@@ -507,13 +507,14 @@
 	   	        return item;
 	   	    });
 	   		
-	   		
-	   		fetch(`http://localhost:80/store/InsertTest`,{
+	   		console.log("서버 통신 데이터 : ", transformedData);
+	   		fetch(`http://localhost:80/store/InsertProduct`,{
 	   			method: 'POST',
 	   			headers: {...headers, 'Content-Type': 'application/json'},
 	    		body: JSON.stringify(transformedData)
 	   		}).then(rep => rep.json())
 	   		  .then(result => {
+	   			  location.reload();
 	   			  console.log(result);
 	   		  })
 	   		

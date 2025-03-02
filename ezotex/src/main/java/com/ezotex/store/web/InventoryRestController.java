@@ -163,10 +163,16 @@ public class InventoryRestController {
 		return service.findByProductCode(productCode,deliveryCode);
 	}
 	
-	// 제품 옵션별 등록
+	// 제품 입고 등록
+	@PostMapping("InsertProduct")
+	public boolean InsertPorduct(@RequestBody List<SizeDTO> sdto) {
+		return service.InsertProduct(sdto);
+	}
+	
+	// 반품 제품 옵션별 등록
 	@PostMapping("InsertTest")
 	public boolean test(@RequestBody List<SizeDTO> sdata) {
-		return service.InsertProduct(sdata);
+		return service.returnInsertProduct(sdata);
 	}
 	
 	// 제품별 리스트
@@ -269,6 +275,12 @@ public class InventoryRestController {
 	 /**
 	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
 	 **/
+	
+	// 재고조정 위치이동
+	@PostMapping("locationUpdate")
+	public boolean locationUpdate(@RequestBody List<SizeDTO> sdto) {
+		return iService.locationUpdate(sdto);
+	}
 	
 	
 }

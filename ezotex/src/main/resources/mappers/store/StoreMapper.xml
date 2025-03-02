@@ -132,10 +132,12 @@
 	
 	<!-- 페이징(납품입고리스트(제품)) total -->
 	<select id="getCount">
-		SELECT count(*)
-		FROM returns r join return_product p
-		on r.return_code = p.return_code
+		SELECT COUNT(DISTINCT r.return_code)
+		FROM returns r
+		JOIN return_product p
+		ON r.return_code = p.return_code
 		WHERE p.processing_status = 'ER03'
+		  AND p.show = 'on'
 	</select>
 	
 	<!-- 페이징(납품입고리스트(자재)) total -->
@@ -148,18 +150,23 @@
 	
 	<!-- 반품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
-		SELECT r.product_code,
-		       r.product_name,
-		       SUM(distinct r.qy) as qy,
-		       SUM(distinct r.qy) -  SUM(NVL(i.store_qy, 0)) as not_store_qy,
-		       NVL(sum(i.store_qy),0) as store_qy
-		FROM return_product r left join inventory i
-		on r.return_code = i.return_code
-		           AND r.product_code = i.product_code
-		WHERE r.return_code = #{returnCode}
-		GROUP BY r.product_code,
-		         r.product_name,
-		         i.store_qy
+		SELECT  r.product_code,
+			    r.product_name,
+			    SUM(r.qy) AS qy,
+			    SUM(r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
+			    NVL(SUM(i.store_qy), 0) AS store_qy
+			FROM 
+			    return_product r
+			LEFT JOIN 
+			    inventory i ON r.return_code = i.return_code
+			                 AND r.product_code = i.product_code
+			                 AND r.product_size = i.product_size
+			                 AND r.product_color = i.product_color
+			WHERE 
+			    r.return_code = #{returnCode}
+			GROUP BY 
+			    r.product_code, 
+			    r.product_name
 	</select>
 	
 	
@@ -216,9 +223,109 @@
 		)pvt
 	</select>
 	
-	
 	<!-- 제품옵션별 등록 -->
 	<insert id="InsertProduct" parameterType="SizeDTO">
+	  INSERT INTO inventory(lot,
+                            product_code,
+                            store_qy,
+                            inventory_qy,
+                            product_color,
+                            product_size,
+                            store_charger,
+                            storage_location,
+                            store_date,
+                            product_se,
+                            delivery_code,
+                            return_code) 
+		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
+		       #{list.productCode},
+		       #{list.productQy},
+		       #{list.productQy},
+		       #{list.color},
+		       #{list.sizeCode},
+		       #{name},
+		       #{list.location},
+		       sysdate,
+		       'PT02',
+		       #{list.deliveryCode},
+		       #{list.returnCode})
+	</insert>
+	
+	<!-- 옵션코드 제품이름 조회 -->
+	<select id="optionSelect" resultType="OptionProductDTO">
+		SELECT (SELECT MAX(lot) FROM inventory) AS lot,
+		       o.option_code,
+		       p.product_name
+		FROM product_option o JOIN product_info p 
+		ON o.product_code = p.product_code
+		WHERE o.product_code = #{productCode}
+		  AND o.product_color = #{color}
+		  AND o.product_size = #{sizeCode}
+		GROUP BY o.option_code, p.product_name
+		ORDER BY lot DESC
+	</select>
+	
+	
+	<!-- 창고 제품 위치 테이블 등록 -->
+	<insert id="InsertOption">
+		<selectKey keyProperty="empCode" resultType="String" order="BEFORE">
+			SELECT emp_code
+			FROM emp
+			WHERE emp_id = #{id}
+			AND emp_name = #{name}
+		</selectKey>
+		INSERT INTO storage_product(lot,
+                            storage_info_code,
+                            option_code,
+                            product_code,
+                            product_name,
+                            store_date,
+                            store_charger_name,
+                            store_charger_code,
+                            qy)
+		VALUES (#{size.lot},
+		        #{list.location},
+		        #{size.optionCode},
+		        #{list.productCode},
+		        #{size.productName},
+		        sysdate,
+		        #{name},
+		        #{empCode},
+		        #{list.productQy})
+	</insert>
+	
+	
+	<!-- 창고 제품 위치 테이블 등록(반품) -->
+	<insert id="InsertReturnOption">
+		<selectKey keyProperty="empCode" resultType="String" order="BEFORE">
+			SELECT emp_code
+			FROM emp
+			WHERE emp_id = #{id}
+			AND emp_name = #{name}
+		</selectKey>
+		INSERT INTO storage_product(lot,
+                            storage_info_code,
+                            option_code,
+                            product_code,
+                            product_name,
+                            store_date,
+                            store_charger_name,
+                            store_charger_code,
+                            qy)
+		VALUES (#{size.lot},
+		        #{list.storageLocation},
+		        #{size.optionCode},
+		        #{list.productCode},
+		        #{size.productName},
+		        sysdate,
+		        #{name},
+		        #{empCode},
+		        #{list.productQy})
+	</insert>
+	
+	
+	<!-- 반품제품옵션별 등록 -->
+	<insert id="returnInsertProduct" parameterType="SizeDTO">
 	  INSERT INTO inventory(lot,
                             product_code,
                             store_qy,
@@ -292,7 +399,7 @@
 		from delivery_details d left join inventory i
 		on d.delivery_code = i.delivery_code
 		WHERE d.product_se = 'PT01'
-		AND i.delivery_code = #{delivery_code}	
+		AND i.delivery_code = #{deliveryCode}	
 	</select>
 	
 	<!-- 납품상태 상태변환 -->

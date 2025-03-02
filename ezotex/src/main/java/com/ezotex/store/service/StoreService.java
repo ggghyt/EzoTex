@@ -65,6 +65,9 @@ public interface StoreService {
 	// 제품 입고 등록
 	public boolean InsertProduct(List<SizeDTO> list); 
 	
+	// 반품 제품 입고 등록
+	public boolean returnInsertProduct(List<SizeDTO> list); 
+	
 	// 자재 입고 등록
 	public boolean MtInsertProduct(List<StoreDeliveryDetailsDTO> list);
 	

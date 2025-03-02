@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.DomListDTO;
+import com.ezotex.store.dto.OptionProductDTO;
 import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
@@ -133,14 +134,33 @@ public class StoreServiceImpl implements StoreService {
 	}
 
 	
-	// 반품제품 옵션별 등록 및 업데이트
+	// 제품 옵션별 등록 및 업데이트
 	@Override
 	public boolean InsertProduct(List<SizeDTO> list) {
-		
 		String name = (String) session.getAttribute("name");
+		String id = (String) session.getAttribute("id");
 		list.forEach(data -> {
 			if(data.getProductQy() > 0) {
 				mapper.InsertProduct(data, name);
+				OptionProductDTO size = mapper.optionSelect(data);
+				mapper.InsertOption(data, name, size, id);
+			}
+	    });
+		
+		return true;
+	}
+	
+	// 반품제품 옵션별 등록 및 업데이트
+	@Override
+	public boolean returnInsertProduct(List<SizeDTO> list) {
+		
+		String name = (String) session.getAttribute("name");
+		String id = (String) session.getAttribute("id");
+		list.forEach(data -> {
+			if(data.getProductQy() > 0) {
+				mapper.returnInsertProduct(data, name);
+				OptionProductDTO size = mapper.optionSelect(data);
+				mapper.InsertReturnOption(data, name, size, id);
 			}
 	    });
 		
