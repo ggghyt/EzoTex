@@ -11,13 +11,29 @@ import lombok.Data;
 @Data
 public class StoreReturnDTO {
 	
-	private String return_code;
-	private String delivery_code;
-	private String company_code;
-	private String company_name;
+	private String returnCode;
+	private String deliveryCode;
+	private String companyCode;
+	private String companyName;
 	private String requestor;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date request_date;
+	private Date requestDate;
+	
+	// 제품코드
+	private String productCode;
+	// 제품이름
+	private String productName;
+	
+	// 제품수량 카운터
+	private int count;
+	// 반품요청수량
+	private int qy;
+	// 미처리 수량
+	private int notStoreQy;
+	// 처리완료수량
+	private int storeQy;
+	// 사이즈
+	private String productSizeInfo;
 	
 }

@@ -8,6 +8,7 @@ import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
 import com.ezotex.returns.dto.changeDTO;
+import com.ezotex.returns.dto.showDTO;
 
 public interface ReturnsMapper {
 	// 납품 내역 조회
@@ -24,7 +25,7 @@ public interface ReturnsMapper {
 	
 	// 교환 조회
 	List<changeDTO> getChangeList();
-	List<changeDTO> getChangeProductList(String returnCodereturnCode);
+	List<changeDTO> getChangeProductList(String returnCode);
 	
 	// 반품 전체 조회
 	List<ReturnsDTO> getReturnList();
@@ -35,5 +36,9 @@ public interface ReturnsMapper {
 	// 교환 주문 제품 등록
 	int insertProductOrder(ChangeOrderDTO productOrderList);
 	
-	List<changeDTO> showChange(List<changeDTO> no);
+	// show 변경
+	int showChange(showDTO newReturnData);
+	
+	// 반품 제품 조회
+	List<ReturnsProductDTO> selectReturnProductList(String returnCode);
 }

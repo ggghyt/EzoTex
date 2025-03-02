@@ -32,6 +32,43 @@ let clickedData = ""; // 클릭한 행의 데이터
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 관리</h3>
+
+	<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="resiBtn"
+						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
 	<div class="card card-body mt-3">
 		<div class="row">
 			<div class="col-5 card card-body m-2"
@@ -60,8 +97,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 							<td class="col-auto"><label class="col-form-label">업체
 									담당자</label> <input type="text" id="companyCharger" class="form-control"
 								readonly></td>
-							<td class="col-auto"><label class="col-form-label">업체 전화번호</label>
-								<input type="tel" id="companyTel" class="form-control">
+							<td class="col-auto"><label class="col-form-label">업체
+									전화번호</label> <input type="tel" id="companyTel" class="form-control">
 							</td>
 							<td class="col-auto"><label class="col-form-label">주문일</label>
 								<input type="date" id="orderDate" class="form-control" readonly>
@@ -243,8 +280,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 						productOption,// 서버에서 전달된 데이터
 						api:{
 							modifyData : { url: '/order/insertOrder' , method: 'POST' , headers} ,
-						}
-					,
+						},
 					columnOptions : {
 						resizable : true
 						
@@ -523,6 +559,12 @@ let clickedData = ""; // 클릭한 행의 데이터
 		  let newData2 = [];
 		  // 등록이벤트
 		  function insertOrder(productCode) {
+				let resiModal = new bootstrap.Modal(document.getElementById('registModal'));
+				resiModal.show();
+				
+				resiBtn.addEventListener("click" , function () {
+					
+					
 			    const orderData = {
 /* 			    	productOrderCode : document.getElementById("productOrderCode").value, // 주문코드 */
 			        charger: document.getElementById("charger").value, // 담당자
@@ -632,7 +674,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    })
 				    .then(rep => rep.json())
 				    .then(data => {
-				        if (data === true) { // 성공했을 때만 리로드
+				        if (data === true) {
 				            console.log("주문 등록 성공:", data);
 				        } else {
 				        	console.log(data);
@@ -645,6 +687,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        alert("주문 등록 중 오류가 발생했습니다.");
 			    });
 			    
+				})
 			}
 	</script>
 	</div>

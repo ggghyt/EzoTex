@@ -91,7 +91,7 @@ public class SupplyRestController {
 		return map;
 	}
 	
-	// 해당 제품의 색상 or 사이즈 일괄 목록
+	// 단일제품이나 단일옵션(색상/사이즈)인 경우 단순 목록 반환
 	@GetMapping("optionList/{productCode}")
 	public Map<String, Object> optionList(@PathVariable String productCode) { // 검색 조건 파라미터
 		Map<String, Object> map = GridUtil.grid(0, 0, service.findOptions(productCode));
@@ -108,6 +108,19 @@ public class SupplyRestController {
 		return map;
 	}
 	
+
+	// 공급계획서 상세조회
+	@GetMapping("supplyPlan/{planCode}")
+	public Map<String, Object> supplyPlanPivot(@PathVariable String planCode) {
+		return GridUtil.grid(0, 0, service.infoSupplyPlan(planCode));
+	}
+	
+	// 공급계획서에 등록된 제품의 옵션 집계
+	@GetMapping("supplyPlanPivot")
+	public Map<String, Object> supplyPlanPivot(@RequestParam Map<String, Object> params) {
+		return GridUtil.grid(0, 0, service.pivotProductSupply(params));
+	}
+
 	// 공급계획서 등록
 	@PostMapping("plan")
 	public Boolean insertSupplyPlan(@RequestBody Map<String, Object> supplyList) {

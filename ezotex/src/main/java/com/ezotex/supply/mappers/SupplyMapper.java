@@ -19,15 +19,23 @@ public interface SupplyMapper {
 	List<ProductDTO> findSize(String productCode);
 	
 	// 해당 제품의 공급계획 조회
-	List<Map<String,Object>> pivotProductSupply(@Param("dto") SupplyDTO dto,
+	List<Map<String,Object>> pivotProductSupply(@Param("dto") Map<String, Object> dto, // 색상, 사이즈로 조회
             									@Param("sizeList") List<ProductDTO> sizeList);
+	List<Map<String,Object>> listProductSupply(Map<String, Object> dto);
+	
+	// 빈 피벗양식 (옵션 존재 여부 포함)
 	List<Map<String,Object>> pivotProductOption(@Param("productCode") String productCode, 
-			                                    @Param("sizeList") List<ProductDTO> sizeList); // 빈 양식 (옵션 존재 여부)
+			                                    @Param("sizeList") List<ProductDTO> sizeList);
+
 	
 	// 공급계획서 조회
 	List<SupplyDTO> listSupplyPlan(Map<String, Object> map);
 	int countSupplyPlan(Map<String, Object> map);
 	
+
+	// 공급계획서 단건조회
+	List<SupplyDTO> infoSupplyPlan(String supplyPlanCode);
+  
 	// 공급계획서 등록
 	int insertSupplyPlan(Object supply);
 	int insertSupplyPlanDetail(Object supply);

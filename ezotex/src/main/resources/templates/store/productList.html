@@ -27,7 +27,10 @@
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
-
+	#productLot {
+	   	    height: 400px; /* 높이를 고정하여 스크롤을 활성화 */
+	   	    overflow-y: scroll;
+	}
 </style>
 </head>
 <body>
@@ -228,31 +231,29 @@
 	   	*========================================================================
 	   	*/
 	   	
-	   	
+
 	   	
 	   	/*
 	   	*========================================================================
 	   	* 제품 옵션별 LOT 재고 리스트 그리드
 	   	*========================================================================
 	   	*/
-	   	
 	   	const productLot = new Grid({
-	   		el: document.getElementById('productLot'),
-	   		rowHeaders: ['rowNum'],
-	   		pageOptions: {
-	   			useClient: false,
-	   			perPage: 5
-	   		},
-	   		columns: [
-	   			{ header: "LOT", name: "lot" },
-	   			{ header: "제품명", name: "productName" },
-	   			{ header: "사이즈", name: "productSize" },
-	   			{ header: "색상", name: "productColor" },
-	   			{ header: "재고량", name: "inventoryQy" },
-	   			{ header: "입고 담당자", name: "storeCharger" }
-	   		],
-	   		data: []
-	   	})
+	   	    el: document.getElementById('productLot'),
+	   	    rowHeaders: ['rowNum'],
+	   	    height: 400, // 높이를 지정하여 세로 스크롤을 활성화
+	   	    scrollY: true, // 세로 스크롤 활성화
+	   	    columns: [
+	   	        { header: "LOT", name: "lot" },
+	   	        { header: "제품명", name: "productName" },
+	   	        { header: "사이즈", name: "productSize" },
+	   	        { header: "색상", name: "productColor" },
+	   	        { header: "재고량", name: "inventoryQy" },
+	   	        { header: "입고 담당자", name: "storeCharger" },
+	   	        { header: "적재위치", name: "storageLocation" }
+	   	    ],
+	   	    data: []
+	   	});
 	   	
 	   	
 	   	/*

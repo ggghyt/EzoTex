@@ -142,48 +142,48 @@
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">주문코드</label> <input type="text"
-											id="productOrderCode" class="form-control w-50">
+											id="productOrderCode" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">업체명</label> <input type="text"
-											id="company" class="form-control w-50">
+											id="company" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">업체 담당자</label> <input type="text"
-											id="companyRepresentative" class="form-control w-50">
+											id="companyRepresentative" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">업체담당자 연락처</label> <input type="text"
-											id="companyTel" class="form-control w-50">
+											id="companyTel" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">주문담당자</label> <input type="text"
-											id="charger" class="form-control w-50">
+											id="charger" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">주문일</label> <input type="text"
-											id="orderDate" class="form-control w-50">
+											id="orderDate" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">납기일</label> <input type="text"
-											id="deliveryRequestDeadline" class="form-control w-50">
+											id="deliveryRequestDeadline" class="form-control w-50" readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">주문상태</label> <input type="text"
-											id="orderStatus" class="form-control w-50">
+											id="orderStatus" class="form-control w-50" readonly>
 									</div>
 								</div>
 								<div class="col-md-6 d-flex align-items-center">
 									<label class="col-form-label me-5 text-end"
 										style="width: 80px;">비고</label> <input type="text"
-										id="remarks" class="form-control" style="max-width: 580px;">
+										id="remarks" class="form-control" style="max-width: 580px;" readonly>
 								</div>
 							</div>
 						</div>
@@ -342,7 +342,19 @@ function openOrderDetailModal(rowData) {
     document.getElementById('charger').value = rowData.charger;
     document.getElementById('orderDate').value = rowData.orderDate;
     document.getElementById('deliveryRequestDeadline').value = rowData.deliveryRequestDeadline;
-    document.getElementById('orderStatus').value = rowData.orderStatus;
+    if(rowData.orderStatus = 'OR01'){
+    	document.getElementById('orderStatus').value = '대기';
+    }else if(rowData.orderStatus = 'OR02'){
+    	document.getElementById('orderStatus').value = '입고';
+    }else if(rowData.orderStatus = 'OR03'){
+    	document.getElementById('orderStatus').value = '출고';
+    }else if(rowData.orderStatus = 'OR04'){
+    	document.getElementById('orderStatus').value = '주문완료';
+    }else if(rowData.orderStatus = 'OR05'){
+    	document.getElementById('orderStatus').value = '주문취소';
+    }else if(rowData.orderStatus = 'OR06'){
+    	document.getElementById('orderStatus').value = '부분출고';
+    }
     document.getElementById('remarks').value = rowData.remarks;
 }
 

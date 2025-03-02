@@ -14,8 +14,17 @@ public interface SupplyService {
 	List<ProductDTO> findOptions(String productCode);
 	
 	// 해당 제품의 공급계획 조회
-	List<Map<String,Object>> pivotProductSupply(SupplyDTO dto);
-	List<Map<String,Object>> pivotProductOption(String productCode); // 빈 양식 (옵션 존재 여부)
+	List<Map<String,Object>> pivotProductSupply(Map<String, Object> dto);
+	
+	// 빈 피벗양식 (옵션 존재 여부 포함)
+	List<Map<String,Object>> pivotProductOption(String productCode); 
+	
+	// 공급계획서 조회
+	List<SupplyDTO> listSupplyPlan(Map<String, Object> map);
+	int countSupplyPlan(Map<String, Object> map);
+	
+	// 공급계획서 단건조회
+	List<SupplyDTO> infoSupplyPlan(String supplyPlanCode);
 	
 	// 공급계획서 조회
 	List<SupplyDTO> listSupplyPlan(Map<String, Object> map);

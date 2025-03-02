@@ -76,7 +76,43 @@
 	<button type="button" class="btn btn-warning registBtn"
 		data-bs-toggle="modal" data-bs-target="#modifyMOdal" hidden="true">
 		수정</button>
+	
+	
+	<!-- 창고모달 -->
+	<div class="modal fade" id="exampleModal2" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-header"></div>
+				<div class="card">
+					<div class="card-body">
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
+						<div class="mb-3 row">
+							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="inputPassword"
+									style="width: 200px;">
+							</div>
+						</div>
 
+						<div id="modalGrid"></div>
+					</div>
+				</div>
+				<div style="text-align: center; margin: 20px;">
+					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
+					<button type="button" class="btn btn-inverse-dark btn-fw"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 
 
 	<div class="modal fade" id="modifyMOdal" tabindex="-1"
@@ -429,7 +465,13 @@
 		   		console.log('ev : ', ev);
 		   	})
 
-		   	
+		   /* 	modalGrid.on('click', ev => {
+		   		if(ev.columnName == "storageLocation"){
+		   			let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+			        modal.show();
+		   			console.log('클릭테스트');
+		   		}
+		   	}) */
 		   	
 		   	// 클릭 이벤트 처리
 		   	locationUpdate.addEventListener("click", function(){
@@ -634,6 +676,20 @@
 		    modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
 		    modalElement.style.opacity = '1'; // 투명도 복원
 		});
+		
+		
+		
+		/* let modalElement2 = document.getElementById('exampleModal2');
+
+		modalElement.addEventListener('show.bs.modal', function () {
+		    modalElement2.style.display = 'block'; // 모달을 블록으로 변경
+		    modalElement2.style.opacity = '0'; // 투명하게 숨김
+		});
+		
+		modalElement.addEventListener('shown.bs.modal', function () {
+		    modalGrid2.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
+		    modalElement2.style.opacity = '1'; // 투명도 복원
+		}); */
 
 			
 			

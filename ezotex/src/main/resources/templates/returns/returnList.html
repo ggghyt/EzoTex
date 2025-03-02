@@ -11,8 +11,44 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
-		<div id="returnGrid"></div>
-		<div id="returnProductGrid"></div>
+
+	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+		<table class="table mt-3">
+			<tbody>
+				<!-- 첫 번째 줄 -->
+				<tr>
+					<td class="col-auto"><label class="col-form-label">반품코드</label></td>
+					<td class="col-auto"><input type="text" id="returnCode"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">납품코드</label></td>
+					<td class="col-auto"><input type="text" id="deliveryCode"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">업체명</label></td>
+					<td class="col-auto"><input type="text" id="companyName"
+						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">요청일</label></td>
+					<td class="col-auto"><input type="date" id="startRequestDate"
+						class="form-control"></td>
+					<td class="col-auto"><input type="date" id="endRequestDate"
+						class="form-control"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="text-center mt-3">
+			<button class="btn btn-warning mag-glass-btn"
+				onclick="searchReturnList()">
+				<i class="fa-solid fa-magnifying-glass icon-left"
+					style="color: #ffffff;"></i>
+			</button>
+			<button class="btn btn-secondary mag-glass-btn"
+				onclick="resetCondition()">
+				<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+			</button>
+		</div>
+	</div>
+	<br>
+	<div id="returnGrid"></div>
+	<div id="returnProductGrid"></div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
 		const returnList = /*[[${getReturnList}]]*/[];
@@ -38,6 +74,7 @@
 					header : "업체코드",
 					name : "companyCode",
 					align : 'center',
+					hidden : true ,
 				},
 				{
 					header : "업체명",
@@ -61,13 +98,76 @@
 	      	},
 		})
 		
-		const returnProductList = /*[[${getReturnProductList}]]*/[];
+		// 검색 함수
+		function searchReturnList() {
+	        const returnCode = document.querySelector('#returnCode').value;
+	        const deliveryCode = document.querySelector('#deliveryCode').value;
+	        const companyName = document.querySelector('#companyName').value;
+	        const startRequestDate = document.querySelector('#startRequestDate').value;
+	        const endRequestDate = document.querySelector('#endRequestDate').value;
+	        
+	        const filteredData = returnList.filter(item => {
+	            return (!returnCode || item.returnCode.includes(returnCode)) &&
+	                   (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
+	                   (!companyName || item.companyName.includes(companyName)) &&
+	                   (!startRequestDate || item.requestDate >= startRequestDate) &&
+	                   (!endRequestDate || item.requestDate <= endRequestDate);
+	        });
+	
+		    // 필터링된 데이터를 다시 설정
+		    returnGrid.resetData(filteredData);
+		}
+
+		// 검색 엔터 이벤트 추가
+		document.querySelectorAll(".card-body input").forEach((ele) => {
+		    ele.addEventListener('keydown', (event) => {				
+		        if (event.keyCode === 13) {
+		        	searchReturnList();
+		        }
+		    });
+		});
+
+		// 검색 조건 초기화 함수
+		function resetCondition() {
+		    document.querySelectorAll('.card-body input').forEach((e) => {
+		        e.value = null;
+		    });
+		    searchReturnList();
+		}
+		
+		// returnGrid 클릭 이벤트 추가
+		returnGrid.on('click', function(ev) {
+		    const clickedRow = ev.rowKey; // 클릭된 행 인덱스
+		    const clickedData = returnGrid.getData()[clickedRow];
+		    const returnCode = clickedData.returnCode;
+		    
+		    console.log("클릭된 행 데이터:", clickedData);
+		    console.log("클릭된 반품코드:", returnCode);
+		    
+		    fetch(`http://localhost:80/returns/selectReturn?returnCode=${returnCode}`)
+			    .then(response => response.json())
+			    .then(data => {
+			    	console.log("조회 할 returnCode" , returnCode);
+			    	console.log("가져온 데이터",data);
+			    	returnProductGrid.resetData(data);
+			    });
+		});
+		
+		
+		// 사이즈 매핑
+		const sizeMap = {
+		    "SI01": "FREE", "SI02": "XS", "SI03": "S", "SI04": "M", "SI05": "L", "SI06": "XL", "SI07": "XXL",
+		    "SI25": "25", "SI26": "26", "SI27": "27", "SI28": "28", "SI29": "29", "SI30": "30", "SI31": "31", "SI32": "32",
+		    "SI33": "33", "SI34": "34", "SI35": "35", "SI36": "36", "SI37": "37", "SI38": "38",
+		    "SI44": "44", "SI55": "55", "SI66": "66", "SI77": "77", "SI88": "88", "SI90": "90"
+		};
 		
 		const returnProductGrid = new tui.Grid({
 			el : document.getElementById("returnProductGrid"),
-			data : returnProductList,
+			data : [],
 			scrollX : false, // 가로 스크롤바 비활성화
 			scrollY : false, // 세로 스크롤바 비활성화
+			bodyHeight : 200,
 			rowHeight : 'auto',
 			columns : [ 
 		 		{
@@ -94,6 +194,10 @@
 					header : "사이즈",
 					name : "productSize",
 					align : 'center',
+					formatter: (value) => {
+						const size = value && value.value ? value.value : value;
+						return sizeMap[size] || size;
+					},
 				},
 				{
 					header : "수량",
@@ -109,6 +213,16 @@
 					header : "처리상태",
 					name : "processingStatus",
 					align : 'center',
+					formatter: (value) => {
+
+						const status = value && value.value ? value.value : value;
+
+						if (status === 'ER03') return '반품';
+						if (status === 'ER02') return '교환';
+						if (status === 'ER01') return '폐기';
+						
+						return status;
+					},
 				},
 
 			],
