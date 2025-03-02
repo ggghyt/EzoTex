@@ -604,11 +604,10 @@
 		                            
 		                            // 새로 변경된 입고 수량
 		                            let newStockQy = item[ele];
-		                            let check = productRow ? productRow[columnQy] || 0 : 0;
+		                            let check = rowData[columnQy];
 		                            
 		                            if (newStockQy > check) {
-		                            	console.log('수량확인해라 시발아')
-		                                newStockQy = check;  // 요청 수량으로 변경
+		                                storeGrid3.setValue(change.rowKey, columnName, check);
 		                            }
 		                            
 		                            

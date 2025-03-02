@@ -215,25 +215,27 @@
 		let insertData = []
 		
 		mtGrid2.on('afterChange', ev => {
-			if (!ev || !ev.changes) return;
-			ev.changes.forEach(change => {
-				let data = mtGrid2.getRow(change.rowKey);
-				if(data.qy < data.productInsertQy){
-					console.log('수량확인');
-					 mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
-				}else{
-					
-					let exists = insertData.some(item => {
-						item.productCode === data.productCode &&
-						item.sizeCode === data.sizeCode &&
-						item.productName === data.productName
-					}) 
-					
-					insertData.push(data);
-					console.log(insertData);
-				}
-			})
-		})
+		    if (!ev || !ev.changes) return;
+		    
+		    ev.changes.forEach(change => {
+		        let data = mtGrid2.getRow(change.rowKey);
+		        if (change.columnName === 'productInsertQy' || change.columnName === 'location') {
+		            insertData = insertData.filter(item => {
+		                return !(item.productCode === data.productCode &&
+		                         item.sizeCode === data.sizeCode &&
+		                         item.productName === data.productName);
+		            });
+
+		            insertData.push(data);
+		        }
+
+		        if (data.qy < data.productInsertQy) {
+		            console.log('수량확인');
+		            mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
+		        }
+		    });
+		});
+
 			
 		mtGrid2.on('click', ev => {
 			if(ev.columnName == "location"){

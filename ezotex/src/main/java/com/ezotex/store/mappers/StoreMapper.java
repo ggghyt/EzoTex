@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.DomListDTO;
+import com.ezotex.store.dto.OptionProductDTO;
 import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
@@ -66,8 +67,20 @@ public interface StoreMapper {
 	// 제품코드 기반 옵션 리스트
 	public List<Map<String, Object>> findByProductCode(@Param("productCode")String productCode, @Param("list")List<StoreDeliveryDetailsDTO> list, @Param("returnCode") String returnCode);
 	
+	// 옵션 코드 제품명 들고오기
+	public OptionProductDTO optionSelect(SizeDTO sdto);
+	
+	// 창고 제품 위치 등록
+	public int InsertOption(@Param("list")SizeDTO SDto, @Param("name")String name, @Param("size")OptionProductDTO size, @Param("id")String id);
+	
 	// 제품 입고 등록
 	public int InsertProduct(@Param("list")SizeDTO SDto, @Param("name")String name);
+	
+	// 창고 제품 위치 등록(반품)
+	public int InsertReturnOption(@Param("list")SizeDTO SDto, @Param("name")String name, @Param("size")OptionProductDTO size, @Param("id")String id);
+	
+	// 반품 제품 입고 등록
+	public int returnInsertProduct(@Param("list")SizeDTO SDto, @Param("name")String name);
 	
 	// 반품코드기반 남은 제품량
 	public int deliveryPrCheck(String returnCode);

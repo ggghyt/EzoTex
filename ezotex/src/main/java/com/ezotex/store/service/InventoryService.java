@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.storageInfoDTO;
 
 public interface InventoryService {
@@ -30,5 +31,8 @@ public interface InventoryService {
 	
 	// 창고 위치 코드 리스트
 	public List<storageInfoDTO> storageInfoList();
+	
+	// 재고조정 창고위치 이동
+	public boolean locationUpdate(List<SizeDTO> sdto);
 	
 }

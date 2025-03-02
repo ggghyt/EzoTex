@@ -127,5 +127,12 @@
 		FROM storage_info
 	</select>
 	
+	<!-- 재고조정 위치이동 -->
+	<update id="locationUpdate">
+		UPDATE inventory
+		 SET storage_location = #{storageLocation}
+		WHERE lot = #{lot}
+	</update>
+	
 	
 </mapper>
