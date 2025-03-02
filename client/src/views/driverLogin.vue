@@ -37,9 +37,9 @@
             .find(row => row.startsWith('XSRF-TOKEN='));
             
         if (!csrfCookie) {
-        console.error(" CSRF 토큰이 없습니다. 쿠키를 확인하세요.");
-        return null;
-    }
+            console.error(" CSRF 토큰이 없습니다. 쿠키를 확인하세요.");
+            return null;
+        }
         //console.log('csrf쿠키:', csrfCookie.split('=')[1]);
         return csrfCookie ? csrfCookie.split('=')[1] : null;
     }
