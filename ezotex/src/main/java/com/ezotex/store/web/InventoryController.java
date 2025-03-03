@@ -1,14 +1,21 @@
 package com.ezotex.store.web;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.ezotex.store.service.StoreService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRParameter;
 
 @Controller
 @Slf4j
@@ -82,5 +89,36 @@ public class InventoryController {
 	public String errorList() {
 		return "store/errorList";
 	}
+	
+	//제조업체 pdf뷰
+		@GetMapping(value="pdfView")
+		public ModelAndView pdfview(@RequestParam(name = "deliveryCode")String deliveryCode) throws Exception {
+			//pdfView라는 뷰에 등록된 컴포넌트를 찾아감;
+			
+			// 사용자 입력 값을 포함하는 맵 생성
+		    Map<String, Object> param = new HashMap<>();
+		    param.put("P_DELIVERY_CODE", deliveryCode);
+			param.put(JRParameter.REPORT_LOCALE, Locale.KOREA);
+			param.put(JRParameter.IS_IGNORE_PAGINATION, Boolean.FALSE);
+			
+		    // ModelAndView 생성
+		    ModelAndView mav = new ModelAndView("pdfView");
+		    mav.addObject("filename", "/reports/delivery/deliveryCard.jasper"); // 리포트 파일 경로
+		    mav.addObject("param", param); // 파라미터 추가
+		
+		    return mav;
+		}
+		
+		
+	// 제스퍼 테스트중
+	@GetMapping(value="ErrorPdfview")
+	public ModelAndView testPdf() throws Exception{
+		ModelAndView mav = new ModelAndView("pdfView");
+		mav.addObject("filenam", "/reports/ErrorListTest.jasper");
+		
+		return mav;
+	}
+	
+	
 
 }

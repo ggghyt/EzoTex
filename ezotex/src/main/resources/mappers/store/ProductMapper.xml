@@ -225,4 +225,32 @@
 	</update>
 	
 	
+	<!-- 불량 재고 조회 -->
+	<select id="errorProductList">
+		SELECT *
+		FROM (
+		      SELECT a.*, ROWNUM as rn
+		      FROM(
+		            SELECT e.product_code,
+		                   i.product_name,
+		                   e.product_color,
+		                   get_comm(e.product_size) as product_size,
+		                   e.lot,
+		                   e.process_date,
+		                   e.error_charger,
+		                   e.error_info
+		            FROM inventory_error e join product_info i
+		            on e.product_code = i.product_code
+		            ORDER BY e.process_date desc
+		            )a
+		        WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
+		    WHERE page.rn >= #{start}
+	</select>
+	
+	<!-- 불량 재고 카운트 -->
+	<select id="errorProductCount">
+		SELECT COUNT(*)
+		FROM inventory_error
+	</select>
+	
 </mapper>

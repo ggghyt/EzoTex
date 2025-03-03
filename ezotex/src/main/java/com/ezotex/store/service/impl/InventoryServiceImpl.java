@@ -100,7 +100,16 @@ public class InventoryServiceImpl implements InventoryService {
 		});
 		return true;
 	}
-
 	
+	// 불량 재고 조회
+	@Override
+	public List<ErrorProductDTO> errorProductList(DeliverySearchDTO searchDTO) {
+		return mapper.errorProductList(searchDTO);
+	}
+
+	@Override
+	public int errorProductCount(DeliverySearchDTO searchDTO) {
+		return mapper.errorProductCount(searchDTO);
+	}
 
 }
