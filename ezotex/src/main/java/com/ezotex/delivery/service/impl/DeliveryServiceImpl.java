@@ -239,6 +239,21 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return map;
 	}
 
+	@Override
+	public List<OrderInsertDTO> deliveryLot(OrderInsertDTO info) {
+		return mapper.deliveryLot(info);
+	}
+
+	@Override
+	public Map<String, Object> packingSTDInfo() {
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("storage", mapper.getStorageInfo());	//창고 리스트
+		map.put("box", mapper.getBoxInfo());			//상자 리스트
+		
+		return map;
+	}
+
 	
 	
 }

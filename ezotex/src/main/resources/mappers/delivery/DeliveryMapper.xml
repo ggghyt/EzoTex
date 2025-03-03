@@ -480,4 +480,26 @@
 			)pvt
 	</select>
 	
+	<select id = "deliveryLot">
+		SELECT product_lot,
+		       delivery_qy
+		FROM   delivery_details
+		WHERE  delivery_code = #{info.deliveryCode}
+		AND    product_code = #{info.productCode}
+		AND    product_size = #{info.productSize}
+		AND    product_color = #{info.productColor}
+	</select>
+	
+	<select id="getBoxInfo">
+		SELECT box_size AS box_size,
+				vl AS box_vl
+		FROM   box
+		ORDER BY vl DESC
+	</select>
+	
+	<select id="getStorageInfo">
+		SELECT storage_name
+		FROM   storage
+	</select>
+	
 </mapper>

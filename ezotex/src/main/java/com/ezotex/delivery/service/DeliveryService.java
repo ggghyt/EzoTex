@@ -39,4 +39,9 @@ public interface DeliveryService {
 	
 	// 출고 제품 조회
 	public List<DeliveryProductInfo> deliveryProductListWithLot(String deliveryCode);
+	
+	//납품 로트
+    public List<OrderInsertDTO> deliveryLot(@Param("info")OrderInsertDTO info);
+    
+    public Map<String, Object> packingSTDInfo();
 }
