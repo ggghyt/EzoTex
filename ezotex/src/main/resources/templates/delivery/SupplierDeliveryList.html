@@ -142,6 +142,14 @@
 		.chargerInfo td{
 			padding: 10px;
 		}
+		textarea {
+		  width: 100%;
+		  height: 200px;
+		  white-space: pre-wrap; /* 줄바꿈 허용 */
+		  word-wrap: break-word; /* 단어가 길 경우 줄바꿈 */
+		  overflow-wrap: break-word; /* 추가적인 줄바꿈 지원 */
+		}
+		
 	</style>
 </head>
 <body>
@@ -174,11 +182,11 @@
 					</span>
 					<span class="search-unit">
 						<span>담당자코드</span>
-						<input type="text" class="form-control search-delivery-chargerCode">
+						<input type="text" class="form-control search-order-chargerCode">
 					</span>
 					<span class="search-unit">
 						<span>담당자</span>
-						<input type="text" class="form-control search-delivery-charger"> 
+						<input type="text" class="form-control search-order-charger"> 
 					</span>
 				</div>
 				
@@ -200,9 +208,6 @@
 						<select class="search-status">
 							<option value="">전체</option>
 							<option value="DS01">납품등록</option>
-							<option value="DS02">포장완료</option>
-							<option value="DS03">기사배정</option>
-							<option value="DS04">배송출발</option>
 							<option value="DS05">납품완료</option>
 						</select>
 					</span>
@@ -245,11 +250,6 @@
 									<td><input type="text" class="form-control read-company-name" disabled></td>
 								</tr>
 								<tr>
-									<td>등록일</td>
-									<td colspan="3"><input type="text" class="form-control read-regist-date" disabled></td>
-	
-								</tr>
-								<tr>
 									<td>주문일</td>
 									<td><input type="text" class="form-control read-order-date" disabled></td>
 								</tr>
@@ -258,8 +258,8 @@
 									<td><input type="text" class="form-control read-dedt" disabled></td>
 								</tr>
 								<tr>
-									<td>출고창고</td>
-									<td><input type="text" class="form-control read-storage" disabled></td>
+									<td>등록일</td>
+									<td colspan="3"><input type="text" class="form-control read-regist-date" disabled></td>
 								</tr>
 								<tr>
 									<td>납기주소</td>
@@ -280,43 +280,21 @@
 									<td>등록일</td>
 								</tr>
 								<tr>
-									<td>출고</td>
-									<td class="deliveryChargerCode">담당자코드</td>
-									<td class="deliveryCharger">담당자</td>
-									<td class="deliveryRgsde">등록일</td>
+									<td>주문</td>
+									<td class="orderChargerCode">담당자코드</td>
+									<td class="orderCharger">담당자</td>
+									<td class="orderRgsde">등록일</td>
 								</tr>
-								<tr>
-									<td>포장</td>
-									<td class="packingChargerCode">담당자코드</td>
-									<td class="packingCharger">담당자</td>
-									<td class="packingRgsde">등록일</td>
-								</tr>
-								<tr>
-									<td>배차</td>
-									<td class="driverChargerCode">담당자코드</td>
-									<td class="driverChargerName">담당자</td>
-									<td class="driverChargerRgsde">등록일</td>
-								</tr>
-								<tr>
-									<td>배송</td>
-									<td class="driverCode">담당자코드</td>
-									<td class="driverName">담당자</td>
-									<td class="driveStartTime">등록일</td>
-								</tr>
-									
-								
 							</tbody>
 						</table>
            			</div>
            			<div class="deliveryProductDetails">
            				<div class="mb-2 more-info-group">						
-							<button type="button" class="btn btn-primary btn-rounded">납품카드</button>
+							<button type="button" class="btn btn-primary btn-rounded openDeliveryCard">납품카드</button>
 						</div>
 						<!-- 출고 제품 목록 -->
 						<b>출고 제품 목록</b>
 						<div id="productList"  class="mb-3"></div>
-						<b>상세 출고 수량</b>
-						<div id="productDetails"></div>
 
            			</div>
                  	
@@ -335,7 +313,7 @@
 		//출고 목록
 		const dataSource = {
 		  	      api: {
-		  	          readData: { url: '/delivery/deliveryList' , method: 'GET' },
+		  	          readData: { url: '/delivery/mtrilDeliveryList' , method: 'GET' },
 		  	        },
 		  	      contentType: 'application/json',
 		  	    };  
@@ -355,18 +333,17 @@
 			scrollX: false,
             columns: [
 				{ header: "납품코드", name: "deliveryCode"},
-				{ header: "주문코드", name: "productOrderCode"},
-				{ header: "업체코드", name: "companyCode"},
-				{ header: "업체명", name: "company"},
+				{ header: "주문코드", name: "mtrilOrderCode"},
+				{ header: "주문담당자", name: "orderCharger"},
 				{ header: "주문일", name: "orderDate"},
 				{ header: "납기일", name: "dedt"},
 				{ header: "요약", name: "summary"},
 				{ header: "회차", name: "time"},					
-				{ header: "상태", name: "deliveryStatus"},
+				{ header: "상태", name: "commStatus"},
 				{ header: "출고등록일", name: "registDate"},
 				{ header: "비고", name: "remark", hidden: true},
-				{ header: "출고창고", name: "storageName", hidden: true},
-				{ header: "납기주소", name: "dedtAddress", hidden: true}
+				{ header: "주문 담당자 코드", name: "orderChargerCode", hidden: true},
+				
             ],
             data: dataSource,
 			showDummyRows: true	//더미로우 추가
@@ -375,7 +352,7 @@
         const productList = new Grid({
             el: document.getElementById('productList'),
             rowHeaders: ['rowNum'],
-            bodyHeight: 345,
+            bodyHeight: 500,
             width: 600,
             scrollY: true,
 			scrollX: false,
@@ -383,93 +360,29 @@
   	          resizable: true
   	      	},
             columns: [
-				{ header: "출고번호", name: "deliveryCode", hidden: true},
 				{ header: "제품코드", name: "productCode"},
 				{ header: "제품명", name: "productName"},
-				{ header: "출고량합계", name: "qySum"},
+				{ header: "색상", name: "productColor"},
+				{ header: "출고시 잔여량", name: "reqQy"},
+				{ header: "출고량", name: "deliveryQy"},
             ],
 			showDummyRows: true	//더미로우 추가
         });
+       
         
-        const productDetails = new Grid({
-            el: document.getElementById('productDetails'),
-            bodyHeight: 240,
-            width: 600,
-  	        header: {
-	        	height: 70,
-	            complexColumns: [
-	              {
-	                header: 'S',
-	                name: 'stest',
-	                childNames: ['sizeS', 's']
-	              },
-	              {
-		             header: 'M',
-		             name: 'mtest',
-		             childNames: ['sizeM', 'm']
-		          },
-		          {
-			         header: 'L',
-			         name: 'ltest',
-			         childNames: ['sizeL', 'l']
-			      },
-			      {
-				      header: 'XL',
-				      name: 'xltest',
-				      childNames: ['sizeXl', 'xl']
-				  }
-	             ]},
-	        columns: [
-	            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
-	            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
-	            { header: "잔여수량", name: "s", align: "center" },
-	            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
-	            { header: "잔여수량", name: "m", align: "center" },
-	            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
-	            { header: "잔여수량", name: "l", align: "center" },
-	            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
-	            { header: "잔여수량", name: "xl", align: "center" }
-	        ],
-		  columnOptions: {
-		        frozenCount: 1,
-		        frozenBorderWidth: 1,
-		        minWidth: 150
-		      },
-			showDummyRows: true	//더미로우 추가
-        });
-        
-        /*
-        const chargerGrid = new Grid({
-            el: document.getElementById('chargerGrid'),
-            bodyHeight: 200,
-            width: 350,
-            columnOptions: {
-  	          resizable: true
-  	      	},
-            columns: [
-				{ header: "구분", name: "productCode"},
-				{ header: "담당자코드", name: "productName"},
-				{ header: "담당자", name: "deliveryQy"},
-				{ header: "등록일", name: "sumQy"}
-            ],
-			showDummyRows: true	//더미로우 추가
-        });
-        */
 	    //출고목록 검색 함수
         function searchOrderList() {
         	deliveryListGrid.readData(1, {
-        		orderCode: document.querySelector('.search-order-code').value,
-        		deliveryCode: document.querySelector('.search-delivery-code').value,
-        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
-        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
-        		orderDateStart: document.querySelector('.search-date-start').value,
-        		orderDateEnd: document.querySelector('.search-date-end').value,
-        		dedtStart: document.querySelector('.search-dedt-start').value,
-        		dedtEnd: document.querySelector('.search-dedt-end').value,
-        		productCode: document.querySelector('.search-product-code').value,
-        		productName: document.querySelector('.search-product-name').value,
-        		companyCode: document.querySelector('.search-company-code').value,
-        		companyName: document.querySelector('.search-company-name').value,
+        		orderCode: document.querySelector('.search-order-code').value, 
+        		deliveryCode: document.querySelector('.search-delivery-code').value, 
+        		orderCharger: document.querySelector('.search-order-charger').value, 
+        		orderChargerCode: document.querySelector('.search-order-chargerCode').value, 
+        		orderDateStart: document.querySelector('.search-date-start').value, 
+        		orderDateEnd: document.querySelector('.search-date-end').value, 
+        		dedtStart: document.querySelector('.search-dedt-start').value, 
+        		dedtEnd: document.querySelector('.search-dedt-end').value, 
+        		productCode: document.querySelector('.search-product-code').value, 
+        		productName: document.querySelector('.search-product-name').value, 
         		deliveryStatus: document.querySelector('.search-status').value
         	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
         }
@@ -505,38 +418,27 @@
 			
 			//출고정보 인풋 박스 안에 넣기
 			document.querySelector(".read-delivery-code").value = data.deliveryCode;
-			document.querySelector(".read-order-code").value = data.productOrderCode;
-			document.querySelector(".read-company-name").value = data.company;
+			document.querySelector(".read-order-code").value = data.mtrilOrderCode;
+			document.querySelector(".read-company-name").value = "예담 직업 전문 학교";
 			document.querySelector(".read-regist-date").value = data.registDate;
 			document.querySelector(".read-order-date").value = data.orderDate;
 			document.querySelector(".read-dedt").value = data.dedt;
-			document.querySelector(".read-storage").value = data.storageName;
 			document.querySelector(".read-dedt-address").value = data.dedtAddress;
 			document.querySelector(".read-memo").value = data.remark;
+			document.querySelector(".orderChargerCode").innerHTML = data.orderChargerCode;
+			document.querySelector(".orderCharger").innerHTML = data.orderCharger;
+			document.querySelector(".orderRgsde").innerHTML = data.orderDate;;
 			
 			//제품 데이터 가져오기
-			fetch(`/delivery/deliveryInfo?deliveryCode=${data.deliveryCode}`)
+			fetch(`/delivery/mtrilOrderList?deliveryCode=${data.deliveryCode}`)
 	    		.then(rep => rep.json())
 	    		.then(res => {
 	    			console.log('서버에서 가져온 데이터',res);
 	    			//res.chargerInfo
 	    			//담당자 정보 넣기
 									
-					document.querySelector('.deliveryChargerCode').innerHTML = res.chargerInfo.deliveryChargerCode;
-					document.querySelector('.deliveryCharger').innerHTML = res.chargerInfo.deliveryChargerName;
-					document.querySelector('.deliveryRgsde').innerHTML = res.chargerInfo.deliveryRgsde;
-					document.querySelector('.packingChargerCode').innerHTML = res.chargerInfo.packingChargerCode;
-					document.querySelector('.packingCharger').innerHTML = res.chargerInfo.packingChargerName;
-					document.querySelector('.packingRgsde').innerHTML = res.chargerInfo.packingRgsde;
-					document.querySelector('.driverChargerCode').innerHTML = res.chargerInfo.driverChargerCode;
-					document.querySelector('.driverChargerName').innerHTML = res.chargerInfo.driverChargerName;
-					document.querySelector('.driverChargerRgsde').innerHTML = res.chargerInfo.driverChargerRgsde;
-					document.querySelector('.driverCode').innerHTML = res.chargerInfo.driverCode;
-					document.querySelector('.driverName').innerHTML = res.chargerInfo.driverName;
-					document.querySelector('.driveStartTime').innerHTML = res.chargerInfo.driveStartTime;
-					
 					//제품 리스트 그리드 초기화
-	    			productList.resetData(res.productList);
+	    			productList.resetData(res);
 					
 					//모달 열기
 					const deliveryDetails = new bootstrap.Modal(document.getElementById("deliveryDetails"));
@@ -545,60 +447,11 @@
 	    		})
 		})
 		
-		//선택한 제품
-		let selectedProduct = '';
-		
-		productList.on('focusChange', ev => {
-			productList.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-			productList.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-			selectedProduct = ev.rowKey; // 선택된 행 기억
-			
-			//선택행 데이터
-			let data = productList.getRow(ev.rowKey);
-			
-			console.log('선택한 행 데이터:', data);
-			
-			fetch(`/delivery/deliveryProductDetails?deliveryCode=${data.deliveryCode}&productCode=${data.productCode}`)
-    		.then(rep => rep.json())
-    		.then(res => {
-    			console.log(res);
-    			// 선택한 제품코드 저장
-	    		productCode = data.productCode;
-	    		
-	            //사이즈 정보 담을 배열
-	            let products = [];
-	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
-	    		let size = [];
-	            //색상, 사이즈 컬럼
-				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center", minWidth: 80 }];
-	            
-	            let deliveryDetails = res;
-	            for(let i=0; i<deliveryDetails.optionList.length; i++) {
-	            	let sizeCode = deliveryDetails.optionList[i].showSize;
-	            	
-	            	size.push({
-		                header: sizeCode,
-		                name: 'DE' + sizeCode,
-		                minWidth: 150
-		             })
-		             
-		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "center", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
-	            }
-	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
-	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
-	            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
-	            	if(productCode == deliveryDetails.qyList[i].PRODUCT_CODE) {	
-	            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
-						products.push({...deliveryDetails.qyList[i], productName : data.productName});
-						
-	            	}
-	            }
-				
-				productDetails.setColumns(color);
-				productDetails.resetData(products);
-		    	
-    		})
+		document.querySelector(".openDeliveryCard").addEventListener("click", () => {
+			let divyCode = document.querySelector(".read-delivery-code").value;
+			window.open(`/delivery/supplyPdfview?deliveryCode=${divyCode}`, '_blank','width=1000, height=1000, scrollbars=yes');
 		})
+		
 	</script>
 </body>
 </html>

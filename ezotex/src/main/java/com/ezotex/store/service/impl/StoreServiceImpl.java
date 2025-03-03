@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.DomListDTO;
+import com.ezotex.store.dto.OptionProductDTO;
 import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.StoreReturnDTO;
 import com.ezotex.store.mappers.StoreMapper;
 import com.ezotex.store.service.StoreService;
 
@@ -33,13 +35,13 @@ public class StoreServiceImpl implements StoreService {
 	 
 	// 제품 목록 리스트
 	@Override
-	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO) {
+	public List<ProductInfoListDTO> productInfoList(DeliverySearchDTO searchDTO) {
 		return mapper.productInfoList(searchDTO);
 	}
 	 
 	// 제품 목록 total 
 	@Override
-	public int productInfoTotal(ProductInfoSearchDTO searchDTO) {
+	public int productInfoTotal(DeliverySearchDTO searchDTO) {
 		return mapper.productInfoTotal(searchDTO);
 	}
 	
@@ -94,7 +96,7 @@ public class StoreServiceImpl implements StoreService {
 
 	// 입고 예정 리스트(제품)
 	@Override
-	public List<StoreDeliveryDTO> DeliveryList(DeliverySearchDTO searchDTO) {
+	public List<StoreReturnDTO> DeliveryList(DeliverySearchDTO searchDTO) {
 		//mapper.deliveryQy();
 		return mapper.DeliveryList(searchDTO);
 	}
@@ -105,10 +107,10 @@ public class StoreServiceImpl implements StoreService {
 		return mapper.MtDeliveryList(searchDTO);
 	}
 
-	// 납품리스트 기반 입고 제품 상세 조회
+	// 반품리스트 기반 입고 반품 상세 조회
 	@Override
-	public List<StoreDeliveryDetailsDTO> findByDeliveryCode(String DeliveryCode) {
-		return mapper.findByDeliveryCode(DeliveryCode);
+	public List<StoreReturnDTO> findByDeliveryCode(String returnCode) {
+		return mapper.findByDeliveryCode(returnCode);
 	}
 	
 	// 납품리스트 기반 입고 자재 상세 조회
@@ -120,13 +122,13 @@ public class StoreServiceImpl implements StoreService {
 
 	// 제품코드 기반 옵션 리스트
 	@Override
-	public Map<String, Object> findByProductCode(String productCode, String deliveryCode) {
+	public Map<String, Object> findByProductCode(String productCode, String returnCode) {
 		
 		Map<String, Object> map = new HashMap<>();
 		
 		List<StoreDeliveryDetailsDTO> list = mapper.findBySizeInventory(productCode);
 		map.put("optionList", list);
-		map.put("qyList", mapper.findByProductCode(productCode, list, deliveryCode));
+		map.put("qyList", mapper.findByProductCode(productCode, list, returnCode));
 		
 		return map;
 	}
@@ -135,13 +137,40 @@ public class StoreServiceImpl implements StoreService {
 	// 제품 옵션별 등록 및 업데이트
 	@Override
 	public boolean InsertProduct(List<SizeDTO> list) {
-		
 		String name = (String) session.getAttribute("name");
+		String id = (String) session.getAttribute("id");
 		list.forEach(data -> {
 			if(data.getProductQy() > 0) {
 				mapper.InsertProduct(data, name);
+				OptionProductDTO size = mapper.optionSelect(data);
+				mapper.InsertOption(data, name, size, id);
 			}
 	    });
+		
+		return true;
+	}
+	
+	// 반품제품 옵션별 등록 및 업데이트
+	@Override
+	public boolean returnInsertProduct(List<SizeDTO> list) {
+		
+		String name = (String) session.getAttribute("name");
+		String id = (String) session.getAttribute("id");
+		list.forEach(data -> {
+			if(data.getProductQy() > 0) {
+				mapper.returnInsertProduct(data, name);
+				OptionProductDTO size = mapper.optionSelect(data);
+				mapper.InsertReturnOption(data, name, size, id);
+			}
+	    });
+		
+		String returnCode = list.get(0).getReturnCode();
+		
+		int check = mapper.deliveryPrCheck(returnCode);
+		if(check == 0) {
+			mapper.returnProcessing(returnCode);
+		}
+		
 		return true;
 	}
 
@@ -152,9 +181,21 @@ public class StoreServiceImpl implements StoreService {
 		
 		String name = (String) session.getAttribute("name");
 		
+		System.out.println(list);
+		
 		list.forEach(data -> {
+			System.out.println(data);
 			mapper.MtInsertProduct(data, name);
 		});
+		
+		 String deliveryCode = list.get(0).getDeliveryCode();
+		  
+		 int check = mapper.deliveryMtCheck(deliveryCode);
+		 
+		 if(check == 0) {
+			 mapper.deliveryProcessing(deliveryCode);
+			 System.out.println("상태변환 업데이트 진행");
+		 }
 		
 		return false;
 	}

@@ -34,6 +34,7 @@ public class SupplyController {
 		return "supply/supplyPlan";
 	}
 	
+
 	@GetMapping("listPlan")
 	public String supplyPlanList(Model model) {
 		model.addAttribute("thisYear", LocalDate.now().getYear());

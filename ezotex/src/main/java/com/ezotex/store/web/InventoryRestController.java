@@ -19,6 +19,7 @@ import com.ezotex.store.dto.ProductInfoListDTO;
 import com.ezotex.store.dto.ProductInfoSearchDTO;
 import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
+import com.ezotex.store.dto.StoreReturnDTO;
 import com.ezotex.store.dto.storageInfoDTO;
 import com.ezotex.store.service.InventoryService;
 import com.ezotex.store.service.StoreService;
@@ -42,7 +43,7 @@ public class InventoryRestController {
 	@GetMapping("productInfoList")
 	public Map<String, Object> productInfoList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									@RequestParam(name = "page", defaultValue = "1") int page,
-									ProductInfoSearchDTO searchDTO
+									DeliverySearchDTO searchDTO
 			) throws JsonMappingException, JsonProcessingException {
 
 		PagingDTO paging = new PagingDTO();
@@ -138,14 +139,14 @@ public class InventoryRestController {
 		// 페이징처리 만들어야됨
 //			paging.getPage());
 //			service.getCount(searchDTO));
-		return GridUtil.grid(paging.getPage(), service.getCount(searchDTO), service.MtDeliveryList(searchDTO));
+		return GridUtil.grid(paging.getPage(), service.getMtCount(searchDTO), service.MtDeliveryList(searchDTO));
 	}
 	
 	
-	// 납품리스트 기반 입고 제품 상세 조회
+	// 반품리스트 기반 입고 반품 상세 조회
 	@GetMapping("deliveryDetailsList")
-	public List<StoreDeliveryDetailsDTO> findByDelivertCode(@RequestParam(name= "deliveryCode") String deliveryCode){
-		return service.findByDeliveryCode(deliveryCode);
+	public List<StoreReturnDTO> findByDelivertCode(@RequestParam(name= "returnCode") String returnCode){
+		return service.findByDeliveryCode(returnCode);
 	}
 	
 	// 납품리스트 기반 입고 자재 상세 조회
@@ -158,14 +159,20 @@ public class InventoryRestController {
 	// 제품코드 기반 옵션 리스트
 	@GetMapping("productCodeList")
 	public Map<String, Object> findByProductCode(@RequestParam(name= "productCode")String productCode,
-			                                     @RequestParam(name= "deliveryCode")String deliveryCode){
+			                                     @RequestParam(name= "returnCode")String deliveryCode){
 		return service.findByProductCode(productCode,deliveryCode);
 	}
 	
-	// 제품 옵션별 등록
+	// 제품 입고 등록
+	@PostMapping("InsertProduct")
+	public boolean InsertPorduct(@RequestBody List<SizeDTO> sdto) {
+		return service.InsertProduct(sdto);
+	}
+	
+	// 반품 제품 옵션별 등록
 	@PostMapping("InsertTest")
 	public boolean test(@RequestBody List<SizeDTO> sdata) {
-		return service.InsertProduct(sdata);
+		return service.returnInsertProduct(sdata);
 	}
 	
 	// 제품별 리스트
@@ -268,6 +275,12 @@ public class InventoryRestController {
 	 /**
 	  * =========================================== 반품으로 변경해야 되는 것들 =========================================== 
 	 **/
+	
+	// 재고조정 위치이동
+	@PostMapping("locationUpdate")
+	public boolean locationUpdate(@RequestBody List<SizeDTO> sdto) {
+		return iService.locationUpdate(sdto);
+	}
 	
 	
 }

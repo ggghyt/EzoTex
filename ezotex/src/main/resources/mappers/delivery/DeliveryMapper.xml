@@ -26,13 +26,13 @@
 			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
 			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd}              --금액합계
 			            </if>
-			            <if test="cri.productName != null and cri.productName != null">		    
+			            <if test='cri.productName != null and cri.productName != ""'>		    
 			                AND  ol.product_order_code IN (SELECT op.product_order_code 
                                  						   FROM order_product op JOIN product_info pi 
                                                          						   ON (op.product_code = pi.product_code)
                                  						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
 			            </if>
-			            <if test="cri.productCode != null and cri.productCode != null">		    
+			            <if test='cri.productCode != null and cri.productCode != ""'>		    
 			                AND ol.product_order_code IN (SELECT  product_order_code 
                                  						  FROM order_product
                                  						  WHERE UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
@@ -74,16 +74,16 @@
 			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
 			                AND ol.product_order_code LIKE '%' || #{cri.orderCode} || '%'    --주문코드
 			            </if>
-			            <if test="cri.totalAmountStart != null and cri.totalAmountEnd != null">		    
+			            <if test='cri.totalAmountStart != null and cri.totalAmountEnd != ""'>		    
 			                AND ol.amount BETWEEN #{cri.totalAmountStart} AND #{cri.totalAmountEnd}              --금액합계
 			            </if>
-			            <if test="cri.productName != null and cri.productName != null">		    
+			            <if test='cri.productName != null and cri.productName != ""'>		    
 			                AND  ol.product_order_code IN (SELECT op.product_order_code 
                                  						   FROM order_product op JOIN product_info pi 
                                                          						   ON (op.product_code = pi.product_code)
                                  						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
 			            </if>
-			            <if test="cri.productCode != null and cri.productCode != null">		    
+			            <if test='cri.productCode != null and cri.productCode != ""'>		    
 			                AND ol.product_order_code IN (SELECT  product_order_code 
                                  						  FROM order_product
                                  						  WHERE UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
@@ -168,34 +168,58 @@
 		ORDER BY TO_NUMBER(SUBSTR(size_sort, 3))
 	</select>
 	
-	<!-- 제품 코드 기반 옵션,잔여량 리스트 -->
+	<!-- 주문 정보에 있는 하나의 제품의 색상별, 사이즈별로 출력하기 위한 피벗 함수 사용 쿼리-->
 	<select id="sizeFindByProductCode">
-		WITH product_size AS(
-				    SELECT  
-				        op.product_order_code AS order_code,
-				        op.product_code AS product_code,
-				        op.product_color AS product_color,
-				        're' || get_comm(op.product_size) AS forpvt,
-				        (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) AS request_qy
-				    FROM order_product op LEFT JOIN delivery_details dd
-				        						 ON op.product_order_code = dd.order_code
-										        AND op.product_code = dd.product_code
-										        AND op.product_color = dd.product_color
-										        AND op.product_size = dd.product_size
-				    WHERE op.product_order_code = #{orderCode}
-				      AND op.product_code = #{productCode}
-				    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy
-				    HAVING (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0)
-			SELECT  *
-		 	FROM product_size
-			pivot( sum(request_qy)
-		            FOR forpvt IN (
-
-					   <foreach collection="list" item="size" separator=",">
-		                 '${'re' + size.showSize}' AS ${'re' + size.showSize}
-		               </foreach>
-		            )
-		)pvt
+		WITH product_size AS (														--잔여량 검색
+		    SELECT  op.product_order_code AS order_code,
+		        	op.product_code AS product_code,
+		        	op.product_color AS product_color,
+		        	're' || get_comm(op.product_size) AS forpvt,
+		        	(op.qy - COALESCE(SUM(dd.delivery_qy), 0)) AS request_qy		--출고 완료된 건을 가져와서 요청수량에서 빼기, 출고건이 하나도 없으면 null이기 때문에 coalesce함수 사용하여 0리턴
+		    FROM order_product op LEFT JOIN delivery_details dd						--출고건 아직 없는 첫번째 출고건일 경우 delivery_details테이블에는 정보가 없어 left join
+		        						 ON op.product_order_code = dd.order_code	--제품의 옵션이 맞는 수량을 가져오기 위한 join문
+		        						AND op.product_code = dd.product_code
+		        						AND op.product_color = dd.product_color
+		        						AND op.product_size = dd.product_size
+		    WHERE op.product_order_code = #{orderCode}								--주문 코드
+		    AND op.product_code = #{productCode}									--제품 코드
+		    GROUP BY op.product_order_code, op.product_code, op.product_color, op.product_size, op.qy	--delivery_details와 조인하면 로트수량, 출고건이 여러건일 경우 여러개가 생기기때문에 그룹함수 사용
+		    HAVING (op.qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0										--잔여량이 0이하인 경우는 결과에서 제외시킴
+		),
+		inventory_data AS (												--재고 수량 검색
+		    SELECT  #{orderCode} AS order_code,  						--피벗 함수내에서 사용하기 위한 주문코드, inventory테이블에는 해당 정보가 없기 때문에 직접 넣어서 알레아스
+		        	i.product_code, 
+		        	i.product_color, 
+		        	'in' || get_comm(i.product_size) AS forpvt,
+		        	SUM(i.inventory_qy) AS request_qy  
+		    FROM inventory i
+		    WHERE i.product_code = #{productCode}						--제품 코드
+		    AND   i.inventory_qy > 0									--수량이 0이상인 데이터만 검색
+		    GROUP BY i.product_code, i.product_color, i.product_size
+		),
+		combined_data AS (
+		    SELECT order_code, product_code, product_color, forpvt, request_qy FROM product_size	-- union all로 모든 결과를 합함
+		    UNION ALL
+		    SELECT order_code, product_code, product_color, forpvt, request_qy FROM inventory_data
+		)
+		SELECT * 	--피벗을 사용하기 위해서는 select *로 검색해야 돼서 사용한 서브쿼리
+		FROM (
+		    SELECT order_code,
+		           product_code, 
+		           product_color, 
+		           forpvt, 
+		           request_qy
+		    FROM combined_data
+		) src
+		PIVOT (
+		    SUM(request_qy)
+		    FOR forpvt IN (
+		        <foreach collection="list" item="size" separator=",">					-- findBySize에서 동적으로 가져온 사이즈 리스트, re: 요청수량 / in: 재고수량
+		            '${'re' + size.showSize}' AS ${'re' + size.showSize},
+		            '${'in' + size.showSize}' AS ${'in' + size.showSize}
+		        </foreach>
+		    )
+		) pvt
 	</select>
 	
 	<!-- 출고코드 자동 생성 -->
@@ -419,15 +443,14 @@
 	</select>
 	
 	<select id="deliveryProductList">
-		SELECT dd.delivery_code AS delivery_code,
-			   dd.product_code AS product_code,
-		       pi.product_name AS product_name,
-		       SUM(dd.delivery_qy) AS qy_sum,
-               dd.request_qy AS req_qy
+		SELECT  dd.delivery_code AS delivery_code,
+		        dd.product_code AS product_code,
+		        pi.product_name AS product_name,
+		        SUM(dd.delivery_qy) AS qy_sum
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
-		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, dd.request_qy
+		GROUP BY dd.delivery_code, dd.product_code, pi.product_name
 	</select>
 	
 	<select id="deliveryProductDetails">	

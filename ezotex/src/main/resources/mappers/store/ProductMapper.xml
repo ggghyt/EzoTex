@@ -40,7 +40,8 @@
 		       get_comm(i.product_size) as product_size,
 		       i.product_color,
 		       i.inventory_qy,
-		       i.store_charger
+		       i.store_charger,
+		       i.storage_location
 		FROM inventory i join product_info p
 		ON i.product_code = p.product_code
 		WHERE i.product_size = #{sizeCode}
@@ -120,9 +121,18 @@
 	
 	<!-- 창고 위치 코드 리스트 -->
 	<select id="storageInfoList" resultType="storageInfoDTO">
-		SELECT *
+		SELECT storage_code,
+		       storage_info_code,
+		       storage_info_name
 		FROM storage_info
 	</select>
+	
+	<!-- 재고조정 위치이동 -->
+	<update id="locationUpdate">
+		UPDATE inventory
+		 SET storage_location = #{storageLocation}
+		WHERE lot = #{lot}
+	</update>
 	
 	
 </mapper>

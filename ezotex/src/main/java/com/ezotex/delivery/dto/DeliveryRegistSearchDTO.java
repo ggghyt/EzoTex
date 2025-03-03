@@ -18,6 +18,8 @@ public class DeliveryRegistSearchDTO {
 	String deliveryCode;
 	//주문담당자
 	String orderCharger;
+	//주문 담당자 코드
+	String orderChargerCode;
 	//납품담당자
 	String deliveryCharger;
 	//납품담당자 코드

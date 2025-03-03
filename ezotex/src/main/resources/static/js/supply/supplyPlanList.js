@@ -1,3 +1,4 @@
+
 // 선택한 공급계획서의 상세조회 내용
 let supplyPlanCode = document.getElementById('supplyPlanCode');
 let supplyYear = document.getElementById('supplyYear');
@@ -23,6 +24,7 @@ class CustomBtnRender {
     el.innerText = '선택';
     
     el.addEventListener('click', () => {
+
       selected = supplyGrid.getRow(props.rowKey);
       console.log(selected);
       
@@ -35,6 +37,7 @@ class CustomBtnRender {
       remark.value = selected.remark;
       
       loadPlanDetail(selected.supplyPlanCode);
+
     });
     this.el = el;
     this.render(props);
@@ -47,6 +50,7 @@ class CustomBtnRender {
 
 /******************** Tui Grid ********************/
 // 공급계획 목록 그리드
+
 const supplyGrid = new Grid({
     el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
     data: {
@@ -151,6 +155,7 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   };
   loadPlan(dto);
 });
+
 
 // 공급계획서 목록 조회
 function loadPlan(obj){

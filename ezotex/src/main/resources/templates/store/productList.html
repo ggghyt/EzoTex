@@ -27,30 +27,40 @@
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
-
+	#productLot {
+	   	    height: 400px; /* 높이를 고정하여 스크롤을 활성화 */
+	   	    overflow-y: scroll;
+	}
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 재고 조회</h3>
+	<div class="d-flex align-items-center">
+		<h3 class="fs-3 fw-bold">| 재고 조회</h3>
+	</div>
 	<div class="card card-body mt-3">
-		<div class="col-12 card card-body m-2">
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">납품코드</label>
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
 				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
-				</div>
-			</div>
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">검색조건</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" id="" class="form-control">
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchProductName" placeholder="찾기" >
 				</div>
 			</div>
-		</div>
+	
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchReturnList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
 
 
 		<div class="row">
@@ -76,7 +86,6 @@
 		</div>
 
 	</div>
-
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
@@ -228,31 +237,29 @@
 	   	*========================================================================
 	   	*/
 	   	
-	   	
+
 	   	
 	   	/*
 	   	*========================================================================
 	   	* 제품 옵션별 LOT 재고 리스트 그리드
 	   	*========================================================================
 	   	*/
-	   	
 	   	const productLot = new Grid({
-	   		el: document.getElementById('productLot'),
-	   		rowHeaders: ['rowNum'],
-	   		pageOptions: {
-	   			useClient: false,
-	   			perPage: 5
-	   		},
-	   		columns: [
-	   			{ header: "LOT", name: "lot" },
-	   			{ header: "제품명", name: "productName" },
-	   			{ header: "사이즈", name: "productSize" },
-	   			{ header: "색상", name: "productColor" },
-	   			{ header: "재고량", name: "inventoryQy" },
-	   			{ header: "입고 담당자", name: "storeCharger" }
-	   		],
-	   		data: []
-	   	})
+	   	    el: document.getElementById('productLot'),
+	   	    rowHeaders: ['rowNum'],
+	   	    height: 400, // 높이를 지정하여 세로 스크롤을 활성화
+	   	    scrollY: true, // 세로 스크롤 활성화
+	   	    columns: [
+	   	        { header: "LOT", name: "lot" },
+	   	        { header: "제품명", name: "productName" },
+	   	        { header: "사이즈", name: "productSize" },
+	   	        { header: "색상", name: "productColor" },
+	   	        { header: "재고량", name: "inventoryQy" },
+	   	        { header: "입고 담당자", name: "storeCharger" },
+	   	        { header: "적재위치", name: "storageLocation" }
+	   	    ],
+	   	    data: []
+	   	});
 	   	
 	   	
 	   	/*

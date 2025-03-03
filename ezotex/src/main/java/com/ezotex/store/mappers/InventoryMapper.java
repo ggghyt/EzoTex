@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ezotex.store.dto.DeliverySearchDTO;
 import com.ezotex.store.dto.ErrorProductDTO;
 import com.ezotex.store.dto.InventoryDTO;
+import com.ezotex.store.dto.SizeDTO;
 import com.ezotex.store.dto.StoreDeliveryDetailsDTO;
 import com.ezotex.store.dto.storageInfoDTO;
 
@@ -36,5 +37,8 @@ public interface InventoryMapper {
 	
 	// 창고 위치 코드 리스트
 	public List<storageInfoDTO> storageInfoList();
+	
+	// 재고조정 창고위치 이동
+	public int locationUpdate(SizeDTO sdto);
 	
 }
