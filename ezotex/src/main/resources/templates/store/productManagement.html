@@ -101,7 +101,7 @@
 							</div>
 						</div>
 
-						<div id="modalGrid"></div>
+						<div id="modalGrid2"></div>
 					</div>
 				</div>
 				<div style="text-align: center; margin: 20px;">
@@ -186,25 +186,56 @@
 
 	<h3 class="fs-3 fw-bold">| 재고 조정</h3>
 	<div class="card card-body mt-3">
-		<div class="col-12 card card-body m-2">
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">납품코드</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" class="form-control">
-				</div>
-			</div>
-			<div class="row g-3 align-items-center">
-				<div class="col-auto">
-					<label class="col-form-label">검색조건2</label>
-				</div>
-				<div class="col-auto">
-					<input type="text" class="form-control">
-				</div>
+				<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+			    <div class="row ps-2">
+							
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<input type="text" class="form-control pointer bg-white" id="searchReturnCode" placeholder="찾기" >
+						</div>
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+						</div>
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">LOT</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+						</div>
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">창고위치</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+						</div>
+						<label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<select class="form-control" id="se">
+								<option value="null">색상</option>
+							</select>
+						</div>
+						<label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<select class="form-control" id="se">
+								<option value="null">사이즈</option>
+							</select>
+						</div>
+						
+						<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고일</label>
+						<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
+							<input type="date" class="form-control text-end" id="startRequestDate" style="margin-right: 10px;"> ~ 
+							<input type="date" class="form-control text-end" id="endRequestDate" style="margin-left: 10px;">
+						</div>
+					</div>
+			
+			    <!-- 버튼 -->
+			    <div class="d-flex justify-content-center mt-2">
+		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchReturnList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+		         </div>
+			  </div>
 			</div>
 		</div>
-	</div>
 
 
 	<div class="row">
@@ -215,7 +246,7 @@
 				<button class="btn btn-warning" id="productLocation"
 					style="width: 110px">위치이동</button>
 				<button class="btn btn-danger" id="productError"
-					style="width: 110px">불량처리</button>
+					style="width: 110px">불량처리이동</button>
 			</div>
 			<div id="Management"></div>
 		</div>
@@ -315,12 +346,27 @@
 				],
 				data: ManagementData
 			})
+			
+			
+			
+			const modalGrid2 = new Grid({
+		    	el: document.getElementById('modalGrid2'),
+		    	rowHeaders: ['rowNum'],
+		    	columns: [
+		    		{ header: "창고코드", name: "storageCode" },
+		    		{ header: "창고상세코드", name: "storageInfoCode" },
+		    		{ header: "창고이름", name: "storageInfoName" },
+		    	],
+		    	data: [],
+		    })
+			
+			
 			/*
 		   	*========================================================================
 		   	* 위치별 제품 재고 현황 그리드 END
 		   	*========================================================================
 		   	*/
-		   	class SearchableSelectEditor {
+		  /*  	class SearchableSelectEditor {
 		   	    constructor(props) {
 		   	        this.el = document.createElement('div');
 		   	        this.el.classList.add('custom-dropdown-container');
@@ -403,7 +449,7 @@
 		   	            this.dropdown.style.display = 'none'; // 필터 결과가 없으면 숨김
 		   	        }
 		   	    }
-		   	}
+		   	} */
 			
 			
 			
@@ -422,21 +468,9 @@
 					{ header: "사이즈", name: "productSize", align: "center" },
 					{ header: "LOT번호", name: "lot", align: "center" },
 					{ header: "입고일", name: "storeDate", align: "center" },
-					{ header: "창고위치", name: "storageLocation", align: "center", 
-						editor: {
-			                type: SearchableSelectEditor,  // 검색 가능한 select 박스 적용
-			                options: {
-			                    listItems: [
-			                        { text: 'AA1', value: 'A1' },
-			                        { text: 'AA2', value: 'A2' },
-			                        { text: 'AA3', value: 'A3' },
-			                        { text: 'BA4', value: 'A4' },
-			                        { text: 'BA5', value: 'A5' } 
-			                    ]
-			                }
-			            }
-					},
-					{ header: "재고수량", name: "inventoryQy", align: "center", editor: 'text' }
+					{ header: "이동가능수량", name: "inventoryQy", align: "center" },
+					{ header: "창고위치", name: "storageLocation", align: "center" },
+					/* { header: "이동수량", name: "qy", align: "center", editor: 'text' } */
 				],
 				data: [],
 				      
@@ -458,25 +492,106 @@
 		   	*/
 		   	
 		   	// 체인지 이벤트 데이터 저장 처리
-		   	modalGrid.on('afterChange', ev => {
-		   		let data = ev.changes.rowData;
-		   		let rowData = modalGrid.getRow(ev.rowKey);
-		   		console.log('key : ', rowData);
-		   		console.log('ev : ', ev);
-		   	})
+			modalGrid.on('click', ev => {
+			    if (ev.columnName == "storageLocation") {
+			    	
+			        let modal1 = new bootstrap.Modal(document.getElementById('exampleModal'));
+			        modal1.hide();
+			
+			        let modal2 = new bootstrap.Modal(document.getElementById('exampleModal2'));
+			
+			        document.getElementById('exampleModal2').style.zIndex = '1060';
+			
+			        document.getElementById('exampleModal').style.zIndex = '1050';
+			
+			        modal2.show();
+			        
+			        
+			        fetch(`http://localhost:80/store/storageInfoList`)
+	   			    .then(rep => rep.json())
+	   			    .then(data => {
+	   			    	modalGrid2.resetData(data);
+	   			    })
+			        
+			
+			    }
+			});
 
-		   /* 	modalGrid.on('click', ev => {
-		   		if(ev.columnName == "storageLocation"){
-		   			let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-			        modal.show();
-		   			console.log('클릭테스트');
-		   		}
-		   	}) */
-		   	
-		   	// 클릭 이벤트 처리
-		   	locationUpdate.addEventListener("click", function(){
-		   		
-		   	})
+		   modalGrid2.on('click', ev => {
+		   	    let data = modalGrid2.getRow(ev.rowKey);
+		   	    console.log("선택한 창고 데이터:", data);
+		   	    
+		   	    let selectedRowKey = modalGrid.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
+		   	    
+		   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
+		   	    	modalGrid.setValue(selectedRowKey, 'storageLocation', data.storageInfoCode); // location 값 업데이트
+		   	    }
+
+		   	    // 기존 모달 인스턴스 가져와서 닫기
+		   	    let modalElement = document.getElementById('exampleModal2');
+		   	    let modalInstance = bootstrap.Modal.getInstance(modalElement); // 기존 모달 가져오기
+
+		   	    if (modalInstance) {
+		   	        modalInstance.hide(); // 모달 닫기
+		   	    }
+		   	});
+
+		   let changedRows = []; // 변경된 데이터를 담을 배열
+
+		   modalGrid.on("afterChange", ev => {
+		       console.log('변경확인');
+		       if (!ev || !ev.changes) return;
+
+		       ev.changes.forEach(change => {
+		           let rowData = modalGrid.getRow(change.rowKey);
+		           console.log("rowData", rowData);
+                   if(rowData.inventoryQy < rowData.qy){
+                	   modalGrid.setValue(change.rowKey, 'qy', rowData.inventoryQy)
+                   }
+                   
+		           let objInfo = {
+		               lot: rowData.lot,
+		               storageLocation: rowData.storageLocation,
+		               qy: rowData.qy
+		           };
+
+		           let existingRowIndex = changedRows.findIndex(row => row.lot === objInfo.lot && row.storageLocation === objInfo.storageLocation);
+		           if (existingRowIndex === -1) {
+		               changedRows.push(objInfo);
+		           } else {
+		               changedRows[existingRowIndex] = objInfo;
+		           }
+		       });
+		       changedRows = removeDuplicates(changedRows);
+		   });
+
+		   // 중복값을 제거하는 함수
+		   function removeDuplicates(arr) {
+		       return arr.filter((value, index, self) =>
+		           index === self.findIndex((t) => (
+		               t.lot === value.lot && t.storageLocation === value.storageLocation
+		           ))
+		       );
+		   }
+
+		   // 클릭 이벤트 처리
+		   locationUpdate.addEventListener("click", function() {
+		       let emptyQyRows = changedRows.filter(row => row.storageLocation && (!row.qy || row.qy === '' || row.qy === null));
+
+		       fetch(`http://localhost:80/store/locationUpdate`, {
+		    	   method: 'POST',
+				   headers: {...headers, 'Content-Type': 'application/json'},
+				   body: JSON.stringify(emptyQyRows)
+		       }).then(rep => rep.json())
+		         .then(result => {
+		        	 console.log(result);
+		         })
+
+		      
+		   });
+
+
+
 		   	
 		   	
 		   	/*
@@ -539,7 +654,7 @@
 			    })
 			    .then(req => req.json())
 			    .then(result => {
-			        listItems = result.map(data => ({
+			       listItems = result.map(data => ({
 			            text: data.storageInfoCode,
 			            value: data.storageInfoCode
 			        }));
@@ -631,26 +746,30 @@
 	    	}
 	    	
 	    	let productCode = document.querySelector("#productCode").value;
+	    	let productQy = document.querySelector("#productQy").value;
 	    	let errorQy = document.querySelector("#errorQy").value;
 	    	
-	    	if(productCode == null || errorQy == null || errorQy == 0){
+	    	if(productCode == null || errorQy == null){
 	    		modalText.innerHTML = '하나 이상의 제품을 선택해 주세요	';
 				let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 				modifyModal.show();
+	    	}else if(errorQy == 0 || errorQy == null){
+	    		modalText.innerHTML = '수량을 입력하세요';
+				let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+				modifyModal.show();
 	    	}else{
-	    		
 		    	fetch(`http://localhost:80/store/InsertProductError`, {
 					method: 'POST',
 					headers: {...headers, 'Content-Type': 'application/json'},
 		    		body: JSON.stringify(obj)
 				}).then(req => req.json())
 				  .then(result => {
-					  fetch(`http://localhost:80/store/Management`, {
-						  method: 'GET'
-					  }).then(req => req.json())
-					    .then(data => {
-					    	ManagementGrid.clear();		// 그리드 재정의 전 초기데이터 날리기
-					    	ManagementGrid.resetData(data.data.contents);
+					  
+					  document.querySelector("#productQy").value = productQy - errorQy
+					  
+					  ManagementGrid.readData({
+		    	          url: 'http://localhost:80/store/Management',
+		    	          method: 'GET',
 					    })
 				  })
 	    	}
@@ -665,31 +784,28 @@
 			
 		
 			
-		let modalElement = document.getElementById('exampleModal');
+	   let modalElement = document.getElementById('exampleModal');
+	   modalElement.addEventListener('show.bs.modal', function () {
+	       modalElement.style.display = 'block';
+	       modalElement.style.opacity = '0';
+	   });
 
-		modalElement.addEventListener('show.bs.modal', function () {
-		    modalElement.style.display = 'block'; // 모달을 블록으로 변경
-		    modalElement.style.opacity = '0'; // 투명하게 숨김
-		});
-		
-		modalElement.addEventListener('shown.bs.modal', function () {
-		    modalGrid.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
-		    modalElement.style.opacity = '1'; // 투명도 복원
-		});
-		
-		
-		
-		/* let modalElement2 = document.getElementById('exampleModal2');
+	   modalElement.addEventListener('shown.bs.modal', function () {
+	       modalGrid.refreshLayout(); 
+	       modalElement.style.opacity = '1'; 
+	   });
 
-		modalElement.addEventListener('show.bs.modal', function () {
-		    modalElement2.style.display = 'block'; // 모달을 블록으로 변경
-		    modalElement2.style.opacity = '0'; // 투명하게 숨김
-		});
-		
-		modalElement.addEventListener('shown.bs.modal', function () {
-		    modalGrid2.refreshLayout();  // 모달이 완전히 뜬 후 크기 조정
-		    modalElement2.style.opacity = '1'; // 투명도 복원
-		}); */
+	   let modalElement2 = document.getElementById('exampleModal2');
+	   modalElement2.addEventListener('show.bs.modal', function () {
+	       modalElement2.style.display = 'block';
+	       modalElement2.style.opacity = '0';
+	   });
+
+	   modalElement2.addEventListener('shown.bs.modal', function () {
+	       modalGrid2.refreshLayout();
+	       modalElement2.style.opacity = '1';
+	   });
+
 
 			
 			

@@ -46,8 +46,13 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> listColorByCompany(String productCode, String companyCode) {
-		return mapper.listColorByCompany(productCode, companyCode);
+	public List<Map<String, Object>> listColorInfoByCompany(String productCode, String companyCode) {
+		return mapper.listColorInfoByCompany(productCode, companyCode);
+	}
+	
+	@Override
+	public Map<String, Object> infoMtrByCompany(String productCode, String companyCode) {
+		return mapper.infoMtrByCompany(productCode, companyCode);
 	}
 
 	@Override
@@ -78,7 +83,17 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 			if(headerResult == 1 && dtlResult == 0) companyCnt--; // 모두 성공하면 숫자 체크
 		}
 		
-		return companyCnt == 0 ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
+		String planCode = (String) map.get("mtrilOrderPlanCode");
+		int updateResult = 0;
+		if(planCode != null) { // 발주계획서를 참조한 경우 계획서 상태 변경
+			MaterialOrderPlanDTO planDto = new MaterialOrderPlanDTO();
+			planDto.setStatus("MO02");
+			planDto.setMtrilOrderPlanCode(planCode);
+			updateResult = mapper.updatePlanState(planDto);
+		}
+		
+		return companyCnt == 0 && planCode == null || 
+				(planCode != null && updateResult > 0) ? true : false; // 모든 업체에 헤더/디테일 입력 성공했다면 최종 true 반환
 	}
 	
 	@Override
@@ -98,6 +113,11 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}
+	
+	@Override
+	public boolean updatePlanState(MaterialOrderPlanDTO dto) {
+		return mapper.updatePlanState(dto) > 0 ? true : false;
+	}
 
 	@Override
 	public List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map) {
@@ -112,6 +132,16 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 	@Override
 	public List<MaterialOrderPlanDTO> infoOrderPlan(String mtrilOrderPlanCode) {
 		return mapper.infoOrderPlan(mtrilOrderPlanCode);
+	}
+
+	@Override
+	public List<MaterialOrderDTO> listOrder(Map<String, Object> map) {
+		return mapper.listOrder(map);
+	}
+
+	@Override
+	public List<MaterialOrderDTO> infoOrder(String mtrilOrderCode) {
+		return mapper.infoOrder(mtrilOrderCode);
 	}
 
 }

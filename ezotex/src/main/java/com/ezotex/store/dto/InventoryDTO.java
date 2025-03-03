@@ -1,7 +1,8 @@
 package com.ezotex.store.dto;
 
 
-import java.util.Date;
+
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,7 +25,7 @@ public class InventoryDTO {
 	private String storageLocation;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date storeDate;
+	private LocalDate storeDate;
 	private String productSe;
 	private String deliveryCode;
 	

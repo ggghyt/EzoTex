@@ -68,8 +68,8 @@ public class SupplyServiceImpl implements SupplyService {
 
 	
 	@Override
-	public List<SupplyDTO> infoSupplyPlan(String supplyPlanCode) {
-		return mapper.infoSupplyPlan(supplyPlanCode);
+	public List<SupplyDTO> infoSupplyPlan(String supplyPlanCode, String productCode) {
+		return mapper.infoSupplyPlan(supplyPlanCode, productCode);
 	}
 
 
@@ -90,6 +90,11 @@ public class SupplyServiceImpl implements SupplyService {
 			dtlResult--;
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
+	}
+
+	@Override
+	public List<SupplyDTO> listMrp(SupplyDTO dto) {
+		return mapper.listMrp(dto);
 	}
 	
 }

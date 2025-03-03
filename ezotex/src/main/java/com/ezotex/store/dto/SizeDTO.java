@@ -23,5 +23,10 @@ public class SizeDTO {
 	
 	// 불량수량
 	private int errorQy;
+	private String lot;
+	private String location;
+	
+	
+	
 	
 }

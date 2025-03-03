@@ -11,6 +11,7 @@ public interface BomService {
 	int countProduct(ProductDTO product);
 	
 	// 선택한 제품의 옵션 조회
+	List<ProductDTO> listSize(String productCode);
 	List<ProductDTO> listColor(String productCode);
 	List<ProductDTO> listSizeByColor(String productCode, String productColor);
 	
@@ -19,4 +20,7 @@ public interface BomService {
 	
 	// bom 등록
 	boolean insertBom(Map<String, Object> boms);
+	
+	// BOM 등록 이후 페이지에서 모든 옵션 완료됐는지 확인하기 위함
+	boolean checkBomAllInserted(String productCode);
 }

@@ -9,7 +9,24 @@ public class DeliverySearchDTO {
 	int end;
 	
 	String productCode;
+	String productName;
+	String startUnitPrice;
+	String endUnitPrice;
+	String se;
 	String  color;
 	String sizeCode;
+	
+	String deliveryCode;
+	String startOrderDate;
+	String endOrderDate;
+	String startDedt;
+	String endDedt;
+	
+	
+	String returnCode;
+	String requestor;
+	String startRequestDate;
+	String endRequestDate;
+	
 	
 }

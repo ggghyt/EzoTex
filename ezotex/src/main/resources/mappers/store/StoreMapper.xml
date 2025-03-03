@@ -12,8 +12,26 @@
 						       product_name,
 						       unit_price
 						FROM product_info
-						WHERE product_type = 'PT02'
+						<where>	               	
+						    AND product_type = 'PT02'
+			            <if test='productCode != null and productCode != ""'>
+			            	AND product_code LIKE '%' || UPPER(#{productCode}) || '%'
+			            </if>
+			            <if test='productName != null and productName != ""'>
+			            	AND product_Name LIKE '%' || UPPER(#{productName}) || '%'
+			            </if>
+			            <if test='startUnitPrice != null and startUnitPrice != ""'>
+					        AND unit_price >= #{startUnitPrice}
+					    </if>
+					    <if test='endUnitPrice != null and endUnitPrice != ""'>
+					        AND unit_price <![CDATA[ <= ]]> #{endUnitPrice}
+					    </if>
+			            <if test='startUnitPrice != null and startUnitPrice != "" and endUnitPrice != null and endUnitPrice != ""'>
+			            	AND unit_price BETWEEN #{startUnitPrice} AND #{endUnitPrice}
+			            </if>
+			            </where>
 						ORDER BY product_code
+							
 			    )a
     		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
 		WHERE page.rn <![CDATA[ >= ]]> #{start}
@@ -24,7 +42,24 @@
 	<select id="productInfoTotal">
 		SELECT count(*)
 		FROM product_info
-		WHERE product_type = 'PT02'
+		<where>	               	
+		    AND product_type = 'PT02'
+        <if test='productCode != null and productCode != ""'>
+           	AND product_code LIKE '%' || UPPER(#{productCode}) || '%'
+        </if>
+        <if test='productName != null and productName != ""'>
+          	AND product_Name LIKE '%' || UPPER(#{productName}) || '%'
+        </if>
+        <if test='startUnitPrice != null and startUnitPrice != ""'>
+		    AND unit_price >= #{startUnitPrice}
+		</if>
+		<if test='endUnitPrice != null and endUnitPrice != ""'>
+		    AND unit_price <![CDATA[ <= ]]> #{endUnitPrice}
+		</if>
+        <if test='startUnitPrice != null and startUnitPrice != "" and endUnitPrice != null and endUnitPrice != ""'>
+          	AND unit_price BETWEEN #{startUnitPrice} AND #{endUnitPrice}
+        </if>
+        </where>
 	</select>
 	
 	<!-- 제품 색상 -->
@@ -87,8 +122,25 @@
 		                    count(p.product_code) as count
 		            FROM returns r JOIN return_product p
 		            ON r.return_code = p.return_code
-		            WHERE p.processing_status = 'ER03'
-		                  AND p.show = 'on'
+		            <where>	               	
+					    AND p.processing_status = 'ER03'
+		                AND p.show = 'on'
+			        <if test='returnCode != null and returnCode != ""'>
+			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
+			        </if>
+			        <if test='requestor != null and requestor != ""'>
+					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					</if>
+	                <if test='startRequestDate != null and startRequestDate != ""'>
+					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					</if>
+					<if test='endRequestDate != null and endRequestDate != ""'>
+					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					</if>
+			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
+	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                </if>
+			        </where>
 		            GROUP BY r.return_code, r.delivery_code, r.company_code, r.company_name, r.requestor, r.request_date
 		            ORDER BY r.request_date
 		        ) a
@@ -110,9 +162,32 @@
                                COUNT(i.product_code) AS delivery_qy
                         FROM delivery d 
                         JOIN delivery_details i ON d.delivery_code = i.delivery_code
-                        WHERE d.company_se = 'CP01'
-                           AND i.delivery_qy > 0
-                           AND delivery_status = 'DS01'
+                        <where>	               	
+						    AND d.company_se = 'CP01'
+						    AND i.delivery_qy > 0
+                            AND d.delivery_status = 'DS01'
+				        <if test='deliveryCode != null and deliveryCode != ""'>
+				           	AND d.delivery_code LIKE '%' || UPPER(#{deliveryCode}) || '%'
+				        </if>
+				        <if test='startOrderDate != null and startOrderDate != ""'>
+						    AND d.order_date >= TO_DATE(#{startOrderDate}, 'yyyy-mm-dd')
+						</if>
+						<if test='endOrderDate != null and endOrderDate != ""'>
+						    AND d.order_date <![CDATA[ <= ]]> TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+						</if>
+				        <if test='startOrderDate != null and startOrderDate != "" and endOrderDate != null and endOrderDate != ""'>
+		                    AND d.order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+		                </if>
+		                <if test='startDedt != null and startDedt != ""'>
+						    AND d.date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+						</if>
+						<if test='endDedt != null and endDedt != ""'>
+						    AND d.date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+						</if>
+				        <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
+		                    AND d.date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		                </if>
+				        </where>
                         GROUP BY d.delivery_code, d.order_date, d.dedt
                         ORDER BY d.delivery_code 
                )a
@@ -130,36 +205,84 @@
 	</select> -->
 	
 	
-	<!-- 페이징(납품입고리스트(제품)) total -->
+	<!-- 페이징(납품입고리스트(반품제품)) total -->
 	<select id="getCount">
-		SELECT count(*)
-		FROM returns r join return_product p
-		on r.return_code = p.return_code
-		WHERE p.processing_status = 'ER03'
+		SELECT COUNT(DISTINCT r.return_code)
+		FROM returns r
+		JOIN return_product p
+		ON r.return_code = p.return_code
+		<where>	               	
+					    AND p.processing_status = 'ER03'
+		                AND p.show = 'on'
+			        <if test='returnCode != null and returnCode != ""'>
+			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
+			        </if>
+			        <if test='requestor != null and requestor != ""'>
+					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					</if>
+	                <if test='startRequestDate != null and startRequestDate != ""'>
+					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					</if>
+					<if test='endRequestDate != null and endRequestDate != ""'>
+					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					</if>
+			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
+	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                </if>
+			        </where>
 	</select>
 	
 	<!-- 페이징(납품입고리스트(자재)) total -->
 	<select id="getMtCount">
 		select count(delivery_code)
 		from delivery
-		WHERE company_se = 'CP01'
+		 <where>	               	
+			    AND company_se = 'CP01'
+                AND delivery_status = 'DS01'
+	     <if test='deliveryCode != null and deliveryCode != ""'>
+	         AND delivery_code LIKE '%' || UPPER(#{deliveryCode}) || '%'
+	     </if>
+	     <if test='startOrderDate != null and startOrderDate != ""'>
+		     AND order_date >= TO_DATE(#{startOrderDate}, 'yyyy-mm-dd')
+		 </if>
+		 <if test='endOrderDate != null and endOrderDate != ""'>
+		     AND order_date <![CDATA[ <= ]]> TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+		 </if>
+	     <if test='startOrderDate != null and startOrderDate != "" and endOrderDate != null and endOrderDate != ""'>
+             AND order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
+         </if>
+         <if test='startDedt != null and startDedt != ""'>
+		     AND date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+		 </if>
+		 <if test='endDedt != null and endDedt != ""'>
+		     AND date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		 </if>
+	     <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
+             AND date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+         </if>
+	     </where>
 	</select>
 	
 	
 	<!-- 반품코드를 기반으로 입고해야될 제품 기본정보 리스트 -->
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
-		SELECT r.product_code,
-		       r.product_name,
-		       SUM(distinct r.qy) as qy,
-		       SUM(distinct r.qy) -  SUM(NVL(i.store_qy, 0)) as not_store_qy,
-		       NVL(sum(i.store_qy),0) as store_qy
-		FROM return_product r left join inventory i
-		on r.return_code = i.return_code
-		           AND r.product_code = i.product_code
-		WHERE r.return_code = #{returnCode}
-		GROUP BY r.product_code,
-		         r.product_name,
-		         i.store_qy
+		SELECT  r.product_code,
+			    r.product_name,
+			    SUM(r.qy) AS qy,
+			    SUM(r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
+			    NVL(SUM(i.store_qy), 0) AS store_qy
+			FROM 
+			    return_product r
+			LEFT JOIN 
+			    inventory i ON r.return_code = i.return_code
+			                 AND r.product_code = i.product_code
+			                 AND r.product_size = i.product_size
+			                 AND r.product_color = i.product_color
+			WHERE 
+			    r.return_code = #{returnCode}
+			GROUP BY 
+			    r.product_code, 
+			    r.product_name
 	</select>
 	
 	
@@ -216,9 +339,109 @@
 		)pvt
 	</select>
 	
-	
 	<!-- 제품옵션별 등록 -->
 	<insert id="InsertProduct" parameterType="SizeDTO">
+	  INSERT INTO inventory(lot,
+                            product_code,
+                            store_qy,
+                            inventory_qy,
+                            product_color,
+                            product_size,
+                            store_charger,
+                            storage_location,
+                            store_date,
+                            product_se,
+                            delivery_code,
+                            return_code) 
+		VALUES(concat(TO_CHAR(sysdate, 'yyyyMMdd'),LPAD(inventory_lot_seq.nextval, 4,'0')),
+		       #{list.productCode},
+		       #{list.productQy},
+		       #{list.productQy},
+		       #{list.color},
+		       #{list.sizeCode},
+		       #{name},
+		       #{list.location},
+		       sysdate,
+		       'PT02',
+		       #{list.deliveryCode},
+		       #{list.returnCode})
+	</insert>
+	
+	<!-- 옵션코드 제품이름 조회 -->
+	<select id="optionSelect" resultType="OptionProductDTO">
+		SELECT (SELECT MAX(lot) FROM inventory) AS lot,
+		       o.option_code,
+		       p.product_name
+		FROM product_option o JOIN product_info p 
+		ON o.product_code = p.product_code
+		WHERE o.product_code = #{productCode}
+		  AND o.product_color = #{color}
+		  AND o.product_size = #{sizeCode}
+		GROUP BY o.option_code, p.product_name
+		ORDER BY lot DESC
+	</select>
+	
+	
+	<!-- 창고 제품 위치 테이블 등록 -->
+	<insert id="InsertOption">
+		<selectKey keyProperty="empCode" resultType="String" order="BEFORE">
+			SELECT emp_code
+			FROM emp
+			WHERE emp_id = #{id}
+			AND emp_name = #{name}
+		</selectKey>
+		INSERT INTO storage_product(lot,
+                            storage_info_code,
+                            option_code,
+                            product_code,
+                            product_name,
+                            store_date,
+                            store_charger_name,
+                            store_charger_code,
+                            qy)
+		VALUES (#{size.lot},
+		        #{list.location},
+		        #{size.optionCode},
+		        #{list.productCode},
+		        #{size.productName},
+		        sysdate,
+		        #{name},
+		        #{empCode},
+		        #{list.productQy})
+	</insert>
+	
+	
+	<!-- 창고 제품 위치 테이블 등록(반품) -->
+	<insert id="InsertReturnOption">
+		<selectKey keyProperty="empCode" resultType="String" order="BEFORE">
+			SELECT emp_code
+			FROM emp
+			WHERE emp_id = #{id}
+			AND emp_name = #{name}
+		</selectKey>
+		INSERT INTO storage_product(lot,
+                            storage_info_code,
+                            option_code,
+                            product_code,
+                            product_name,
+                            store_date,
+                            store_charger_name,
+                            store_charger_code,
+                            qy)
+		VALUES (#{size.lot},
+		        #{list.storageLocation},
+		        #{size.optionCode},
+		        #{list.productCode},
+		        #{size.productName},
+		        sysdate,
+		        #{name},
+		        #{empCode},
+		        #{list.productQy})
+	</insert>
+	
+	
+	<!-- 반품제품옵션별 등록 -->
+	<insert id="returnInsertProduct" parameterType="SizeDTO">
 	  INSERT INTO inventory(lot,
                             product_code,
                             store_qy,
@@ -292,7 +515,7 @@
 		from delivery_details d left join inventory i
 		on d.delivery_code = i.delivery_code
 		WHERE d.product_se = 'PT01'
-		AND i.delivery_code = #{delivery_code}	
+		AND i.delivery_code = #{deliveryCode}	
 	</select>
 	
 	<!-- 납품상태 상태변환 -->

@@ -190,7 +190,7 @@ function loadBlankGrid(productCode){
 		let data = result.data.contents;
 		console.log(data);
 		
-		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80 }];
+		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80, align: "center" }];
 		let sizeNmArr = [];
 		
 		// data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ...}, ...]

@@ -78,44 +78,41 @@
 		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
 		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 	</div>
-	<div class="row">
-			<div class="col-5 card card-body m-2"
-				style="background-color: #d3d3d3;">
-				<p class="fs-5 fw-bolder">주문 정보</p>
-				<table class="table mt-3">
-					<tbody>
-						<!-- 첫 번째 줄 -->
-						<tr>
-							<!-- 							<td class="col-auto"><label class="col-form-label">주문코드</label>
-								<input type="text" id="productOrderCode" class="form-control"
-								readonly></td> -->
-							<td class="col-auto"><label class="col-form-label">제품코드</label>
-							 <input type="text" id="charger" class="form-control"></td>
-							<td class="col-auto"><label class="col-form-label">제품명</label>
-								<input type="text" id="empCode" class="form-control" readonly></td>
-							<td class="col-4"><label class="col-form-label">제품이미지</label></td>
-						</tr>
-						<!-- 두 번째 줄 -->
-						<tr>
-							<td class="col-auto"><label class="col-form-label">대분류</label>
-							<select class="form-control">
-								<option value="null">전체</option>
-							</select></td>
-							<td class="col-auto"><label class="col-form-label">소분류</label>
-							<select class="form-control">
-								<option value="null">전체</option>
-							</select></td>
-							<td class="col-4">
-								<img alt="" src=""></td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="d-flex justify-content-center gap-2">
-					<button class="btn btn-secondary mag-glass-btn btn-sm"><i class="fa-solid fa-magnifying-glass icon-left-sm" style="color: #646464;"></i></button>
-					<button class="btn btn-warning mag-glass-btn btn-sm"><i class="fa-solid fa-repeat icon-left-sm" style="color: #ffffff;"></i></button>
+	
+	
+	
+	
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchProductName">
+				</div>
+				
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '단가' : '현재단가'}]]</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control text-end" id="startUnitPrice" style="margin-right: 10px;"> ~ 
+					<input type="text" class="form-control text-end" id="endUnitPrice" style="margin-left: 10px;">
 				</div>
 			</div>
-		</div>
+	
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
+
+
 		
 		
 		
@@ -141,7 +138,6 @@
 					<!-- 제품 상세 정보 및 BOM 정보 -->
 					<div class="d-flex align-items-top">
 							<p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
-							<label style="font-size: 10pt" for="remember">입력항목 유지</label><input type="checkbox" id="remember" class="ms-1 mb-4">
 					</div>
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
@@ -226,6 +222,17 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+		function searchProductList() {
+	    	storeGrid.readData(1, {
+        		productCode: document.querySelector('#searchProductCode').value,
+        		productName: document.querySelector('#searchProductName').value,
+        		startUnitPrice: document.querySelector('#startUnitPrice').value,
+        		endUnitPrice: document.querySelector('#endUnitPrice').value,
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+	
+	
 		let productCode = "";
 		let productColor = "";
 		let productName = "";
@@ -440,7 +447,7 @@
 		                color: productColor,
 		                sizeCode: productSize,
 		                productQy: "" ,// 초기 수량은 빈 문자열로 설정
-		                storageLocation : location
+		                //storageLocation : location
 		            };
 		
 		            // 기존 데이터에 추가
@@ -507,13 +514,14 @@
 	   	        return item;
 	   	    });
 	   		
-	   		
-	   		fetch(`http://localhost:80/store/InsertTest`,{
+	   		console.log("서버 통신 데이터 : ", transformedData);
+	   		fetch(`http://localhost:80/store/InsertProduct`,{
 	   			method: 'POST',
 	   			headers: {...headers, 'Content-Type': 'application/json'},
 	    		body: JSON.stringify(transformedData)
 	   		}).then(rep => rep.json())
 	   		  .then(result => {
+	   			  location.reload();
 	   			  console.log(result);
 	   		  })
 	   		

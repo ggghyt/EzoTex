@@ -16,10 +16,10 @@ public interface StoreService {
 
 	
 	// 제품 목록 리스트
-	public List<ProductInfoListDTO> productInfoList(ProductInfoSearchDTO searchDTO);
+	public List<ProductInfoListDTO> productInfoList(DeliverySearchDTO searchDTO);
 	
 	// 제품 목록 total
-	public int productInfoTotal(ProductInfoSearchDTO searchDTO);
+	public int productInfoTotal(DeliverySearchDTO searchDTO);
 	
 	// 제품 컬러
 	public List<ProductInfoListDTO> productColor(String productColor);
@@ -65,8 +65,12 @@ public interface StoreService {
 	// 제품 입고 등록
 	public boolean InsertProduct(List<SizeDTO> list); 
 	
+	// 반품 제품 입고 등록
+	public boolean returnInsertProduct(List<SizeDTO> list); 
+	
 	// 자재 입고 등록
 	public boolean MtInsertProduct(List<StoreDeliveryDetailsDTO> list);
+
 	
 	/**
 	 * =========================================== 반품으로 변경해야 되는 것들 =========================================== 

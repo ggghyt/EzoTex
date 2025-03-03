@@ -26,17 +26,19 @@ public interface SupplyMapper {
 	// 빈 피벗양식 (옵션 존재 여부 포함)
 	List<Map<String,Object>> pivotProductOption(@Param("productCode") String productCode, 
 			                                    @Param("sizeList") List<ProductDTO> sizeList);
-
 	
 	// 공급계획서 조회
 	List<SupplyDTO> listSupplyPlan(Map<String, Object> map);
 	int countSupplyPlan(Map<String, Object> map);
 	
-
 	// 공급계획서 단건조회
-	List<SupplyDTO> infoSupplyPlan(String supplyPlanCode);
-  
+	List<SupplyDTO> infoSupplyPlan(@Param("supplyPlanCode") String supplyPlanCode,
+			                       @Param("productCode") String productCode);
+	
 	// 공급계획서 등록
 	int insertSupplyPlan(Object supply);
 	int insertSupplyPlanDetail(Object supply);
+	
+	// 자재소요계획 조회
+	List<SupplyDTO> listMrp(SupplyDTO dto);
 }

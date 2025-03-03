@@ -1,0 +1,215 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<style>
+      .modal {
+        display: block !important; /* Bootstrap 기본 동작 우회 (모달에서 데이터 안 보이는 현상) */
+        visibility: hidden;
+      }
+      
+      .modal.show {
+        visibility: visible;
+      }
+    </style>
+	</head>
+	<body>
+	  <div class="d-flex justify-content-between">
+		<h3 class="fs-3 fw-bold m-0">| 발주계획서 조회</h3>
+		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+	  </div>
+	  <div th:fragment="materialOrderPlanList(th)">
+	    <script th:inline="javascript">  let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 </script>
+		<div class="card card-body mt-4">
+			<form class="row ms-3 pe-0">
+			
+				 <!-- 검색조건 -->
+				 <div class="row col-12 col-lg-6 pe-0">
+				     <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control pointer" placeholder="찾기" id="companyCode">
+			         </div>
+			         <label for="companyName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="companyName">
+			         </div>
+			         <label for="mtrilCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">자재코드</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control pointer" id="mtrilCode" placeholder="찾기">
+			         </div>
+			         <label for="mtrilName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">자재명</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="mtrilName">
+			         </div>
+			         <label for="scRemark" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="scRemark">
+			         </div>
+			         <label for="orderPlanCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-center wbreak">[[${th == null ? '발주계획코드' : '발주코드'}]]</label>
+                     <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+                       <input type="text" class="form-control" id="orderPlanCode">
+                     </div>
+			         
+			         <div class="row col-12 pe-0">
+	                     <label class="col-4 col-sm-2 d-flex mb-2 align-items-center justify-content-center wbreak">상태</label>
+	                     <div class="col-7 col-sm-9 d-flex align-items-center mb-2">
+	                     <th:block th:if="${th != null}"><!-- 발주서 상태 옵션 -->
+	                       <label for="RS01">대기<input type="checkbox" value="RS01" id="RS01" name="status" class="ms-1 me-3"></label>
+                           <label for="RS02">부분출고<input type="checkbox" value="RS02" id="RS02" name="status" class="ms-1 me-3"></label>
+                           <label for="RS03">출고완료<input type="checkbox" value="RS03" id="RS03" name="status" class="ms-1 me-3"></label>
+                           <label for="RS04">취소<input type="checkbox" value="RS04" id="RS04" name="status" class="ms-1 me-3"></label>
+	                     </th:block> <!-- 발주계획서 상태 옵션 -->
+	                     <th:block th:unless="${th != null}">
+	                       <label for="MO02">발주완료<input type="checkbox" value="MO02" id="MO02" name="status" class="ms-1 me-3"></label>
+	                       <label for="MO01">미발주<input type="checkbox" value="MO01" id="MO01" name="status" class="ms-1 me-3"></label>	                     
+                         </th:block>
+	                     </div>
+                     </div>
+                     
+				 </div>
+				 
+		         <div class="row col-12 col-lg-6 pe-0 ps-lg-4">
+		             <label for="qyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-center wbreak">[[${th == null ? '발주계획량' : '발주량'}]] 합계</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="text" class="form-control me-sm-2 text-end" id="qyMin">-
+			           <input type="text" class="form-control ms-sm-2 text-end" id="qyMax">
+			         </div>
+			         
+			         <th:block th:if="${th != null}">
+			             <label for="amountMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center text-center wbreak">발주금액 합계</label>
+	                     <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+	                       <input type="text" class="form-control me-sm-2 text-end" id="amountMin">-
+	                       <input type="text" class="form-control ms-sm-2 text-end" id="amountMax">
+	                     </div>
+			         </th:block>
+			         
+			         <label for="dueMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '계획' : ''}]]납기일</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="date" class="form-control me-sm-2" id="dueMin">-
+			           <input type="date" class="form-control ms-sm-2" id="dueMax">
+			         </div>
+			         <label for="rgsdeMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="date" class="form-control me-sm-2" id="rgsdeMin">-
+			           <input type="date" class="form-control ms-sm-2" id="rgsdeMax">
+			         </div>
+			         <label for="scChargerName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '' : '발주'}]]담당자</label>
+                     <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2 ms-2">
+                       <input type="text" class="form-control" id="scChargerName">
+                     </div>
+			         <div class="col-12 col-sm-5 d-flex justify-content-end mt-2">
+			           <button type="button" id="orderSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+			           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+			         </div>
+		         </div>
+		         
+			</form>
+		</div>
+		
+		<div class="card card-body mt-3">
+			<div id="planGrid"></div>
+		</div>
+		
+		
+		<!-- 상세조회 모달 -->
+	    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+	       <div class="modal-dialog modal-xl mt-4">
+	           <div class="modal-content">
+	             <div class="modal-header" style="height: 20px;">
+	                <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">[[${th == null ? '발주계획서' : '발주서'}]] 상세조회</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	             </div>
+	             <div class="modal-body p-3 pt-2">
+	             
+	               <form id="materialList" style="display: none">
+                       <!-- 자재 선택 모달 -->
+                       <div th:replace="supply/bomManagement :: productList"></div>
+                   </form>
+                                
+                    <form id="companyList" style="display: none">
+	                       <!-- 업체 선택 모달 -->
+	                       <div class="row ps-2 mb-3">
+	                        <label for="scCompanyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+	                        <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="text" class="form-control" id="scCompanyCode">
+	                        </div>
+	                        <label for="scCompanyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+	                        <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="text" class="form-control" id="scCompanyName">
+	                        </div>
+	                        <label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+	                        <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+	                            <input type="text" class="form-control" id="address">
+	                        </div>
+	                        <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
+	                            <button type="button" id="comSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+	                            <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+	                        </div>
+	                    </div>
+	                    <div id="companyGrid"></div>
+                    </form>
+	                
+	                <!-- 모달 내용 -->
+	                <!-- 헤더 상세내용 -->
+	                <div id="planDetailList" style="display: none">
+		                <div class="card card-body mb-3 pb-2">
+		                  <div class="row ps-2">
+		                    <label for="mtrilOrderPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '발주계획코드' : '발주코드'}]]</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="mtrilOrderPlanCode" readonly>
+		                    </div>
+		                    <label for="dueDate" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">[[${th == null ? '계획' : ''}]]납기일</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="dueDate" readonly>
+		                    </div>
+		                    <label for="chargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="chargerName" readonly>
+		                    </div>
+		                    <label for="totalQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">[[${th == null ? '발주계획량' : '발주량'}]] 합계</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control text-end" id="totalQy" readonly>
+		                    </div>
+		                  </div>
+		                </div>		                
+		                
+		                <!-- 제품 목록 -->
+		                <div class="d-flex justify-content-end align-items-center mb-2">
+		                  <button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		                </div>
+		                <div id="planDetailGrid"></div>
+		                
+		                <!-- 합계, 등록일, 비고 -->
+		                <div class="card card-body mt-2 pb-2">
+		                  <div class="row ps-2">
+		                  
+		                    <label for="rgsde" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="rgsde" readonly>
+		                    </div>
+		                    <label for="remark" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+		                    <div class="col-8 col-lg-8 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="remark" readonly>
+		                    </div>
+		                    
+		                  </div>
+		                </div>
+	                </div>
+	                
+	             </div>
+	              <div class="modal-footer">
+	                <button type="button" id="writeBtn" class="btn btn-success" data-bs-dismiss="modal" style="display: none">발주서 작성</button>
+	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+	              </div>
+	           </div>
+	        </div>
+	        
+	    </div>
+		<script src="/js/supply/mtrilOrderPlanList.js"></script>
+	  </div>
+	</body>
+	
+</html>
