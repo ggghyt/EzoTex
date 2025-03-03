@@ -17,8 +17,7 @@
 		                TO_CHAR(de.dedt, 'yyyy-MM-dd') AS dedt,
 		                de.delivery_code AS delivery_code
 		        FROM   delivery de
-		        WHERE  delivery_status != 'DS06'
-		        AND    de.delivery_company_code IS NULL
+		        WHERE    de.delivery_company_code IS NULL
 		        <if test='search.dedtAddress != null and search.dedtAddress != ""'>
 					AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
 					</if>
@@ -42,7 +41,7 @@
 	<select id="getDeliveryListCount">
 		SELECT  COUNT(*)
         FROM    delivery de
-        WHERE   delivery_status != 'DS06'
+        WHERE    de.delivery_company_code IS NULL
         <if test='search.dedtAddress != null and search.dedtAddress != ""'>
 			AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
 			</if>

@@ -11,12 +11,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
       {
-        path: '/',
-        redirect : {name: 'driver'}
-      },
-      {
-        path: '/driver',
-        name: 'driver',
+        path: '/delivery',
+        name: 'delivery',
         children : driverRoutes
       },
     ]

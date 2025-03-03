@@ -48,6 +48,10 @@ public class DriverRestController {
 	public Map<String, Object> deliveryList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 									            @RequestParam(name = "page", defaultValue = "1")int page,
 									            DriverDeliverySearchDTO searchDTO) {
+		
+		log.info("=================================================");
+		log.info(searchDTO.toString());
+		
 		PagingDTO paging = new PagingDTO();
 		
 		paging.setPageUnit(perPage);	//페이지당 최대 건수

@@ -448,11 +448,12 @@
 		SELECT  dd.delivery_code AS delivery_code,
 		        dd.product_code AS product_code,
 		        pi.product_name AS product_name,
-		        SUM(dd.delivery_qy) AS qy_sum
+		        SUM(dd.delivery_qy) AS qy_sum,
+		        pi.vl AS vl
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
-		GROUP BY dd.delivery_code, dd.product_code, pi.product_name
+		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, pi.vl
 	</select>
 	
 	<select id="deliveryProductDetails">	

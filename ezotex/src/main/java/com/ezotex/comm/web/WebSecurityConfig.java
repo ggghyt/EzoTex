@@ -24,12 +24,10 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-			.cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
-	        .csrf(csrf -> csrf
-	            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // CSRF 토큰을 쿠키로 저장
-	        )
+			.csrf(csrf -> csrf
+				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // CSRF 토큰을 쿠키에 저장
+				)
 			.authorizeHttpRequests((requests) -> requests
-				
 				.requestMatchers("/loginProc", "/css/**", "/fonts/**", "/images/**", "/js/**", "/pages/**", "/partials/**", "/scss/**", "/vendors/**", "/login/**", "/img/**").permitAll()
 				//                로그인 페이지 지름 지정란거, 이 외의 항목들은 css너 js같은 실행하는데 사용되는 필수 파일들
 				.requestMatchers("/*").hasAnyRole("EMP", "SUPPLY", "DRIVER") // 역할(ROLE)을 부여하는 곳
@@ -37,12 +35,12 @@ public class WebSecurityConfig {
 				.anyRequest().authenticated()
 			)
 			.formLogin((form) -> form
-				.loginPage("/login/main") // 로그인 페이지 경로
-				.loginProcessingUrl("/loginProc") // 로그인 페이지에서 요청하는 폼의 action 경로
-				.usernameParameter("id")	//form의 name속성중 id인 값을 가지고 옴
+				.loginPage("/login/main") // 로그인 페이지
+				.loginProcessingUrl("/loginProc") // 로그인 페이지 이름 지정
+				.usernameParameter("id")
 				.successHandler(authenticationSuccessHandler()) // 성공시 실행하는 핸들러
 				.failureHandler(authenticationFailureHandler()) // 실패시 실행하는 핸들러
-				.permitAll()	//위 요청은 모든 사용자가 요청 가능
+				.permitAll()
 			)
 			.rememberMe(r -> r.tokenValiditySeconds(86400).key("uniqueAndSecret") // 세션 저장 (86400초 = 1일)
 			)
@@ -52,19 +50,6 @@ public class WebSecurityConfig {
 		
 		http.exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHander()));
 		return http.build();
-	}
-	
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-	    CorsConfiguration configuration = new CorsConfiguration();
-	    configuration.setAllowedOrigins(List.of("http://localhost:8081")); // Vue.js 실행 주소
-	    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-	    configuration.setAllowCredentials(true);
-	    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN"));
-
-	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-	    source.registerCorsConfiguration("/**", configuration);
-	    return source;
 	}
 	
 	@Bean

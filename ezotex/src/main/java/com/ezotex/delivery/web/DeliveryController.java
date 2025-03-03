@@ -62,6 +62,13 @@ public class DeliveryController {
 		return "delivery/SupplierDeliveryList";
 	}
 	
+	//납품 관리 페이지(제조업체 사용)
+	@GetMapping("packingManagement")
+	public String packingManagement() {
+		
+		return "delivery/packingManagement";
+	}
+	
 	//제조업체 pdf뷰
 	@GetMapping(value="pdfView")
 	public ModelAndView pdfview(@RequestParam(name = "deliveryCode")String deliveryCode) throws Exception {
@@ -99,11 +106,11 @@ public class DeliveryController {
 		
 		return mav;
 	}
-	
-	//납품 관리 페이지(제조업체 사용)
-	@GetMapping("packingManagement")
+
+	//배송기사
+	@GetMapping("driveList")
 	public String driveList() {
 		
-		return "delivery/packingManagement";
+		return "delivery/driveList";
 	}
 }
