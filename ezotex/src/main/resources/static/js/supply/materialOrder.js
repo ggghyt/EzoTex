@@ -20,7 +20,10 @@ const orderDomEventHandler = function (){
   changeClas(lclasBox, sclasBox);
   dueDateBox.min = dateFormatter(); // 오늘 이전 날짜 선택 방지
   
-  if(selectedPlanCode != null) loadPlanData(selectedPlanCode); // 발주계획서에서 넘어온 경우 바로 데이터 불러오기
+  if(selectedPlan != null){ // 발주계획서에서 넘어온 경우 바로 데이터 불러오기
+    loadPlanData(selectedPlan.mtrilOrderPlanCode);
+    dueDateBox.value = dateFormatter(selectedPlan.dueDate);
+  } 
   
   $('#finalBtn').on('click', () => {
     let orderData = orderGrid.getData();
@@ -141,7 +144,8 @@ class CustomBtnRender {
 			compNameBox.value = selectedComp.companyName;
 		} else {
             let selectedPlan = planGrid.getRow(props.rowKey);
-            selectedPlanCode = selectedPlan.mtrilOrderPlanCode;
+            let dueDate = selectedPlan.dueDate < new Date() ? '' : selectedPlan.dueDate;
+            dueDateBox.value = dateFormatter(dueDate); // 계획납기일이 현재보다 이전이라면 공백처리
             loadPlanData(selectedPlan.mtrilOrderPlanCode);
         }
     
@@ -274,12 +278,12 @@ const insertGrid = new Grid({
 			  { header: '발주금액', name: 'totalAmount', align: 'right',
 					  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 	    	{ header: '납기일', name: 'dueDate', 
-          editor: { 
-            type: 'datePicker', 
-            options: { selectableRanges: [[new Date(), new Date('9999-12-31')]] }
-          } 
-        },
-			  { header: '비고', name: 'remark', width: 200, whiteSpace: 'pre-line', editor: 'text' }
+              editor: { 
+                type: 'datePicker', 
+                options: { selectableRanges: [[new Date(), new Date('9999-12-31')]] }
+              } 
+            },
+		    { header: '비고', name: 'remark', width: 200, whiteSpace: 'pre-line', editor: 'text' }
     ],
     rowHeaders: ['rowNum'],
   	scrollX: false, // 가로 스크롤
@@ -291,14 +295,23 @@ const insertGrid = new Grid({
 const planGrid = new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
     columns: [
-        { header: '발주계획코드', name: 'mtrilOrderPlanCode' },
-        { header: '납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 110 },
+        { header: '계획납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
         { header: '요약', name: 'summary', width: 150 },
         { header: '발주계획량', name: 'orderQy', align: 'right',
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
         { header: '비고', name: 'remark', whiteSpace: 'pre-line', width: 150 },
         { header: '담당자', name: 'chargerName' },
-        { header: '최종수정일', name: 'updateDate', formatter: (row) => dateFormatter(row.value) },
+        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
+        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '상태', name: 'status', align: 'center', width: 80,
+          renderer: {
+            styles: {
+              fontWeight: 'bold',
+              color: props => props.value == '미발주' ? '#aaa' : '#4b96e6'
+            }
+          }
+         },
         { header: '', name: '', className: 'plan', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
@@ -443,7 +456,7 @@ async function loadColorPriceInfo(row){
     if(options != null){
         let prdColorArr = options.map(obj => obj.PRODUCT_COLOR);
         
-        for(let color of prdColorArr){          
+        for(let color of prdColorArr){
             let opt = document.createElement('option');
             opt.value = color;
             opt.innerText = color;
@@ -462,18 +475,18 @@ async function loadColorPriceInfo(row){
     changeByColorInfo(colorBox.value);
 }
 
-colorBox.addEventListener('change', e => {
-	changeByColorInfo(e.target.value);
-});
+colorBox.addEventListener('change', e => changeByColorInfo(e.target.value));
 
 // 색상 선택 시 단가 및 정보 재반영
 function changeByColorInfo(val){
   let idx = colorInfo.findIndex(obj => obj.PRODUCT_COLOR == val);
-  unitPriceBox.value = colorInfo[idx].UNIT_PRICE ? numberFormatter(colorInfo[idx].UNIT_PRICE) : numberFormatter(colorInfo[idx].unitPrice);
-  inventoryQyBox.value = numberFormatter(colorInfo[idx].INVENTORY_QY);
-  storingQyBox.value = numberFormatter(colorInfo[idx].STORING_QY);
-  safetyQyBox.value = colorInfo[idx].SAFETY_QY ? numberFormatter(colorInfo[idx].SAFETY_QY) : '-';
-  duration.value = typeof(colorInfo[idx].DURATION) != 'undefined' ? colorInfo[idx].DURATION : '-';
+  if(idx != -1){
+      unitPriceBox.value = colorInfo[idx].UNIT_PRICE ? numberFormatter(colorInfo[idx].UNIT_PRICE) : numberFormatter(colorInfo[idx].unitPrice);
+      inventoryQyBox.value = numberFormatter(colorInfo[idx].INVENTORY_QY);
+      storingQyBox.value = numberFormatter(colorInfo[idx].STORING_QY);
+      safetyQyBox.value = colorInfo[idx].SAFETY_QY ? numberFormatter(colorInfo[idx].SAFETY_QY) : '-';
+      duration.value = typeof(colorInfo[idx].DURATION) != 'undefined' ? colorInfo[idx].DURATION + '일' : '-';    
+  }
 }
 
 /******************** 발주목록 추가 ********************/	
@@ -481,7 +494,7 @@ function changeByColorInfo(val){
 function insertRow(rowKey){
 	let orderQy = orderQyBox.value;
 	if((compCodeBox.value == '' || mtrCodeBox.value == '') && th == null){
-		failToast('업체와 자재를 선택해주세요.');
+		failToast('업체와 자재를 모두 선택해주세요.');
 		return;
 	} else if(mtrCodeBox.value == ''){ // 타임리프 페이지(발주계획)에서는 업체 선택 필수 아님.
         failToast('자재를 선택해주세요.');
@@ -551,18 +564,21 @@ orderGrid.on('focusChange', async ev => {
 	orderQyBox.value = row.orderQy;
 	unitNameBox.value = row.unitName;
 	
-    if(row.colorInfo == null) await loadColorPriceInfo(row);
-	else colorInfo = row.colorInfo; // 저장해둔 값이 있으면 가져오기
-	
-    colorBox.innerHTML = '<option value="null">미선택</option>';
+    if(row.colorInfo == null){
+        await loadColorPriceInfo(row);
+    } else {
+        colorInfo = row.colorInfo; // 저장해둔 값이 있으면 가져오기
     	
-    for(let i = 0; i < colorInfo.length - 1; i++){ // 마지막 null옵션 제외하고 태그 생성			
-      let opt = document.createElement('option');
-      opt.value = colorInfo[i].PRODUCT_COLOR;
-      opt.innerText = colorInfo[i].PRODUCT_COLOR;
-      colorBox.append(opt);
+        colorBox.innerHTML = '<option value="null">미선택</option>';
+        	
+        for(let i = 0; i < colorInfo.length; i++){ // null옵션 제외하고 태그 생성			
+          if(colorInfo[i].PRODUCT_COLOR == 'null') continue;
+          let opt = document.createElement('option');
+          opt.value = colorInfo[i].PRODUCT_COLOR;
+          opt.innerText = colorInfo[i].PRODUCT_COLOR;
+          colorBox.append(opt);
+        }
     }
-    
     changeByColorInfo(row.productColor);     
     colorBox.value = row.productColor;
 	

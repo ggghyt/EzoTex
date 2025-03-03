@@ -30,7 +30,7 @@ public interface MaterialOrderService {
 	boolean insertMaterialOrderPlan(Map<String, Object> map);
 
 	// 발주계획서 수정
-	boolean updatePlanState(MaterialOrderPlanDTO dto);
+	boolean updatePlan(Map<String, Object> map);
 	
 	// 발주계획서 조회
 	List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map);

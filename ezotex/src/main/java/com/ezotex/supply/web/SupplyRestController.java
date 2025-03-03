@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -200,8 +201,15 @@ public class SupplyRestController {
 	// 발주계획서 등록
 	@PostMapping("mtrOrderPlan")
 	public Boolean insertMaterialOrderPlan(@RequestBody Map<String, Object> orderPlanList) {
-		log.info("orderPlanList::: " + orderPlanList.toString());
 		return orderService.insertMaterialOrderPlan(orderPlanList); // true/false 반환
+	}
+	
+	// 발주계획서 수정
+	@PutMapping("mtrOrderPlan")
+	public Boolean updateMaterialOrderPlan(@RequestBody Map<String,Object> orderPlanDetail) {
+		log.info("-----------------------------");
+		log.info(orderPlanDetail.toString());
+		return orderService.updatePlan(orderPlanDetail); // true/false 반환
 	}
 	
 	// 발주계획서 목록 

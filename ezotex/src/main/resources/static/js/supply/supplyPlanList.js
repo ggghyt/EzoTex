@@ -11,6 +11,9 @@ let remark = document.getElementById('remark');
 
 document.addEventListener('DOMContentLoaded', () => {
   makeQuantityTag();
+  updateRange('supplyQyMin', 'supplyQyMax');
+  updateRange('supplyDateMin', 'supplyDateMax');
+  updateRange('rgsdeMin', 'rgsdeMax');
 });
 
 /******************** Tui Grid Custom Renderer ********************/  
@@ -265,4 +268,6 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
+    document.getElementById('selectedPrdCode').value = '';
+    document.getElementById('selectedPrdName').value = '';
 }

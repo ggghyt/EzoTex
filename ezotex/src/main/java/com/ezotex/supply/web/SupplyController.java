@@ -1,6 +1,7 @@
 package com.ezotex.supply.web;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,11 +49,9 @@ public class SupplyController {
 	}
 	
 	@GetMapping("mtrOrder")
-	public String materialOrder(@RequestParam(value="mtrPlanCode", required=false) String mtrPlanCode, Model model) {
+	public String materialOrder(@RequestParam Map<String, String> plan, Model model) {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
-		model.addAttribute("selectedPlanCode", mtrPlanCode);
-		log.info("code::::::::::::::::::::::::::::::", mtrPlanCode);
-		log.info(mtrPlanCode);
+		model.addAttribute("selectedPlan", plan);
 		return "supply/materialOrder";
 	}
 	

@@ -232,7 +232,7 @@
 		  <if test='season != "null" and season != null and season != ""'>AND s.season = #{season}</if>
 		</where>
 		GROUP  BY bd.mtril_code, i.product_name, bd.mtril_color, i.unit_name, sd.supply_date
-		ORDER  BY product_code DESC, supply_date, product_color
+		ORDER  BY product_code DESC, product_color, supply_date
 	</select>
 	
 </mapper>
