@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ezotex.standard.service.impl.ProductServiceImpl;
 
@@ -39,9 +40,18 @@ public class SupplyController {
 		return "supply/supplyPlanList";
 	}
 	
+	@GetMapping("mrpList")
+	public String mrpList(Model model) {
+		model.addAttribute("thisYear", LocalDate.now().getYear());
+		return "supply/mrpList";
+	}
+	
 	@GetMapping("mtrOrder")
-	public String materialOrder(Model model) {
+	public String materialOrder(@RequestParam(value="mtrPlanCode", required=false) String mtrPlanCode, Model model) {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
+		model.addAttribute("selectedPlanCode", mtrPlanCode);
+		log.info("code::::::::::::::::::::::::::::::", mtrPlanCode);
+		log.info(mtrPlanCode);
 		return "supply/materialOrder";
 	}
 	
@@ -49,6 +59,16 @@ public class SupplyController {
 	public String materialOrderPlan(Model model) {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
 		return "supply/materialOrderPlan";
+	}
+	
+	@GetMapping("mPlanList")
+	public String materialOrderPlanList(Model model) {
+		return "supply/materialOrderPlanList";
+	}
+	
+	@GetMapping("mOrderList")
+	public String materialOrderList(Model model) {
+		return "supply/materialOrderList";
 	}
 		
 }

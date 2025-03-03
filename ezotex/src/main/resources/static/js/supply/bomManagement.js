@@ -32,14 +32,15 @@ const changeClas = function(lclasEle, sclasEle){
 }
 
 // select-option 태그 생성 함수 (카테고리, 제품옵션 공통 적용)
-const createOptions = function(ele, uri){	
+const createOptions = async function(ele, uri){	
+	if(ele === colorBox) sizeBox.innerHTML = '<option value="null">미선택</option>';
+	if(ele === colorBox || ele === sizeBox) ele.innerHTML = '<option value="null">미선택</option>';
+	else ele.innerHTML = '<option value="null">전체</option>';
+	
 	// 서버에서 데이터 불러오기
-	fetch(uri)
+	let resultData = await fetch(uri)
 	.then(response => response.json())
-	.then(data => {
-		ele.innerHTML = '<option value="null">전체</option>';
-		sizeBox.innerHTML = '<option value="null">전체</option>';
-		
+	.then(data => {		
 		for(let value of data){	
             if(value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
@@ -61,7 +62,9 @@ const createOptions = function(ele, uri){
 			opt.innerText = prdOptText != null ? prdOptText : value;
 			ele.append(opt);
 		}
+		return data;
 	});
+	return resultData;
 }
 
 /******************** Tui Grid Custom Renderer ********************/	
@@ -71,7 +74,7 @@ class CustomSelectBox {
 	// props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
 	// props = grid, rowKey, columnInfo, value(데이터)
 	const el = document.createElement('select');
-	el.classList = 'form-control h-100 w-75';
+	el.classList = 'form-control h-100 w-90';
 	el.id = props.rowKey; // 태그 자체에 rowKey 저장		
 	
 	let nullOpt = document.createElement('option');
@@ -95,11 +98,12 @@ class CustomSelectBox {
 		let rowKey = e.target.id; // 선택한 색상배열 인덱스
 		mtrData[rowKey].mtrilColor = e.target.value; // 선택한 색상 반영
 		
-		let selectedRow = selectedMtrGrid.getRow(rowKey);
-		if(selectedRow != null){
-			selectedRow.mtrilColor = e.target.value;
-			selectedMtrGrid.setRow(rowKey, selectedRow); // 다른 그리드에도 반영			
-		}
+		let selected = selectedMtrGrid.getData();
+		let idx = selected.findIndex(data => data.mtrilCode == mtrData[rowKey].mtrilCode);
+		if(idx != -1){
+    		selected[idx].mtrilColor = e.target.value;
+    		selectedMtrGrid.resetData(selected);            
+        }
     });
     this.el = el;
     this.render(props);
@@ -211,16 +215,18 @@ function loadMtrGrid(obj){
 	.then(response => response.json())
 	.then(result => {
 		let data = result.data.contents;
+		originBomData = structuredClone(data); // 원본 깊은복사
+		
+		let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
+        if(saveCk == true && !isReset) return;// 기억하기나 초기화버튼 동작이 아닌 경우에만 재출력
+		
 		selectedMtrGrid.resetData([]); // 선택된 자재 초기화
 		mtrGrid.resetData(data); // 데이터 입력
 		mtrData = data;
-		console.log(data);
 		
 		data.forEach((obj, idx) => {
 			if(obj.requireQy != null) mtrGrid.check(idx) // bom 등록된 자재는 자동 선택
 		});
-		
-		originBomData = selectedMtrGrid.getData();
 		
 		let rgsde = dateFormatter(data[0].rgsde);
 		let charger = data[0].chargerName == null ? session_user_name : data[0].chargerName;
@@ -234,7 +240,7 @@ let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
-prdGrid.on('focusChange', ev => {
+prdGrid.on('focusChange', async ev => {
 	// 배경색 클래스 적용
 	prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -244,21 +250,19 @@ prdGrid.on('focusChange', ev => {
 	selectedPrd = prdGrid.getRow(ev.rowKey);
 	document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
 	document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
-	createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	let colorData = await createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	if(colorData.length > 0 && colorData[0].productColor == null) createOptions(sizeBox, `/supply/optionSize/${selectedPrd.PRODUCT_CODE}`); // 색상 없으면 사이즈 목록 불러오기
 	loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
 });
 
 // 선택한 제품-색상의 사이즈 불러오기
-const changeOpt = (isReset) => {
-	let saveCk = document.getElementById('remember').checked; // 기억하기 체크되어 있으면 재출력하지 않음.
-	if(saveCk == false || isReset){
-		let selectedOpt = {
-			productCode: selectedPrd.PRODUCT_CODE,
-			productColor: colorBox.value,
-			productSize: sizeBox.value
-		};
-		loadMtrGrid(selectedOpt);		
-	}
+const changeOpt = () => {
+	let selectedOpt = {
+		productCode: selectedPrd.PRODUCT_CODE,
+		productColor: colorBox.value,
+		productSize: sizeBox.value
+	};
+	loadMtrGrid(selectedOpt);
 }
 
 colorBox.addEventListener('change', e => {
@@ -399,12 +403,14 @@ selectedMtrGrid.on('afterChange', ev => {
 });
 
 // 초기화 버튼 동작
+let isReset = false;
 document.getElementById('resetBtn').addEventListener('click', () => {
 	createModal({ 
 		type: 'confirm',
 		content: '입력한 자재 정보를 모두 초기화하시겠습니까?',
 		confirm(){
-			changeOpt(true);
+            isReset = true;
+			changeOpt();
 		}
 	});
 	$('#simpleModal').modal('show'); // 유효성 검사 통과 시 등록 확인
@@ -416,8 +422,8 @@ function insertBom(){
 	
 	let headerObj = {
 		productCode: selectedPrd.PRODUCT_CODE,
-		productColor: colorBox.value.replace(' (단종)', ''),
-		productSize: sizeBox.value,
+		productColor: colorBox.value == 'null' ? null : colorBox.value.replace(' (단종)', ''),
+		productSize: sizeBox.value == 'null' ? null : sizeBox.value.replace(' (단종)', ''),
 		chargerCode: session_user_code,
 		chargerName: session_user_name
 	};
@@ -437,12 +443,15 @@ function insertBom(){
 		body: JSON.stringify({headerObj, detailArr})
 	})
 	.then(response => response.json())
-	.then(result => {
+	.then(async result => {
 		console.log(result);
-		if(result == true){
+		if(result == true){ // 등록 성공 시
 			successToast('자재명세서가 등록되었습니다.');
 			originBomData = selectedBom; // 비교값을 입력한 값으로 업데이트 (중복 등록 방지)
-			selectedPrd.STATUS = '완료'; // 등록 상태 반영
+			
+			await fetch('/supply/bomAllInserted/' + selectedPrd.PRODUCT_CODE) // 모든 옵션 등록됐는지 확인
+			.then(response => response.json())
+			.then(allInserted => selectedPrd.STATUS = allInserted == true ? '완료' : '등록중');
 			prdGrid.setRow(selectedPrd.rowKey, selectedPrd);
 		} else failToast('알 수 없는 오류로 실패했습니다.');
 	});
@@ -458,7 +467,9 @@ function validBom(selectedBom){
 			return false;
 		} else {
 			for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
-				if(origin.mtrilCode == data.mtrilCode && origin.requireQy == data.requireQy){
+			console.log(origin, data);
+				if(origin.mtrilCode == data.mtrilCode && origin.mtrilColor == data.mtrilColor &&
+				   origin.requireQy == data.requireQy){
 					return false;
 				}
 			}	

@@ -14,79 +14,83 @@
       .modal.show {
         visibility: visible;
       }
+      
+      td.tui-grid-cell-summary[data-column-name="supplyQy"] {
+        text-align: right;
+      }
     </style>
 	</head>
 	<body>
 	  <div class="d-flex justify-content-between">
-			<h3 class="fs-3 fw-bold m-0">| 공급계획서 조회</h3>
-			<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		<h3 class="fs-3 fw-bold m-0">| 공급계획서 조회</h3>
+		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	  </div>
 		<div class="card card-body mt-4">
 			<form class="row ms-3 pe-0">
 			
 				 <!-- 검색조건 -->
 				 <label for="scSupplyYear" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급년도</label>
-         <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-           <div class="quantity">
-             <input id="scSupplyYear" type="number" th:value="${thisYear}">
-           </div>
-         </div>
-         <div class="row col-12 col-lg-9 pe-0">
-	         <label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 ms-xl-2 align-items-center justify-content-center wbreak">시즌</label>
-	         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center mb-2 ms-lg-3">
-	           <label for="SE00">상시<input type="checkbox" value="SE00" id="SE00" name="season" class="ms-1 me-3"></label>
-	           <label for="SE01">봄<input type="checkbox" value="SE01" id="SE01" name="season" class="ms-1 me-3"></label>
-	           <label for="SE02">여름<input type="checkbox" value="SE02" id="SE02" name="season" class="ms-1 me-3"></label>
-	           <label for="SE03">가을<input type="checkbox" value="SE03" id="SE03" name="season" class="ms-1 me-3"></label>
-	           <label for="SE04">겨울<input type="checkbox" value="SE04" id="SE04" name="season" class="ms-1 me-3"></label>
-	         </div>
-         </div>
+		         <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		           <div class="quantity">
+		             <input id="scSupplyYear" type="number" th:value="${thisYear}">
+		           </div>
+		         </div>
+		         <div class="row col-12 col-lg-9 pe-0">
+			         <label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 ms-xl-2 align-items-center justify-content-center wbreak">시즌</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center mb-2 ms-lg-3">
+			           <label for="SE00">상시<input type="checkbox" value="SE00" id="SE00" name="season" class="ms-1 me-3"></label>
+			           <label for="SE01">봄<input type="checkbox" value="SE01" id="SE01" name="season" class="ms-1 me-3"></label>
+			           <label for="SE02">여름<input type="checkbox" value="SE02" id="SE02" name="season" class="ms-1 me-3"></label>
+			           <label for="SE03">가을<input type="checkbox" value="SE03" id="SE03" name="season" class="ms-1 me-3"></label>
+			           <label for="SE04">겨울<input type="checkbox" value="SE04" id="SE04" name="season" class="ms-1 me-3"></label>
+			         </div>
+		         </div>
 				 
 				 <div class="row col-12 col-lg-6 pe-0">
-				   <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
-	         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-	           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
-	         </div>
-	         <label for="productName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
-	         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-	           <input type="text" class="form-control" id="productName">
-	         </div>
-	         <label for="scSupplyPlanCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
-	         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-	           <input type="text" class="form-control" id="scSupplyPlanCode">
-	         </div>
-	         <label for="scChargerName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
-	         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-	           <input type="text" class="form-control" id="scChargerName">
-	         </div>
-	         <label for="scRemark" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
-	         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center mb-2">
-	           <input type="text" class="form-control" id="scRemark">
-	         </div>
+				     <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
+			         </div>
+			         <label for="productName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="productName">
+			         </div>
+			         <label for="scSupplyPlanCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="scSupplyPlanCode">
+			         </div>
+			         <label for="scChargerName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="scChargerName">
+			         </div>
+			         <label for="scRemark" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center mb-2">
+			           <input type="text" class="form-control" id="scRemark">
+			         </div>
 				 </div>
 				 
-         <div class="row col-12 col-lg-6 pe-0 ps-lg-4">
-           <label for="supplyQyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급량합계</label>
-	         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
-	           <input type="text" class="form-control me-sm-2 text-end" id="supplyQyMin">-
-	           <input type="text" class="form-control ms-sm-2 text-end" id="supplyQyMax">
-	         </div>
-	         <label for="supplyDateMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급일자</label>
-	         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
-	           <input type="date" class="form-control me-sm-2" id="supplyDateMin">-
-	           <input type="date" class="form-control ms-sm-2" id="supplyDateMax">
-	         </div>
-	         <label for="rgsdeMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
-	         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
-	           <input type="date" class="form-control me-sm-2" id="rgsdeMin">-
-	           <input type="date" class="form-control ms-sm-2" id="rgsdeMax">
-	         </div>
-         </div>
-         
-         <div class="d-flex justify-content-center mt-2">
-           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
-         </div>
+		         <div class="row col-12 col-lg-6 pe-0 ps-lg-4">
+		           <label for="supplyQyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급량합계</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="text" class="form-control me-sm-2 text-end" id="supplyQyMin">-
+			           <input type="text" class="form-control ms-sm-2 text-end" id="supplyQyMax">
+			         </div>
+			         <label for="supplyDateMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급일자</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="date" class="form-control me-sm-2" id="supplyDateMin">-
+			           <input type="date" class="form-control ms-sm-2" id="supplyDateMax">
+			         </div>
+			         <label for="rgsdeMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
+			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+			           <input type="date" class="form-control me-sm-2" id="rgsdeMin">-
+			           <input type="date" class="form-control ms-sm-2" id="rgsdeMax">
+			         </div>
+		         </div>
+		         
+		         <div class="d-flex justify-content-center mt-2">
+		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+		         </div>
          
 			</form>
 		</div>
@@ -97,7 +101,7 @@
 		
 		
 		<!-- 공급계획서 상세조회 모달 -->
-	  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+	    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
 	       <div class="modal-dialog modal-xl mt-4">
 	           <div class="modal-content">
 	             <div class="modal-header" style="height: 20px;">
@@ -131,14 +135,14 @@
 	                
 	                <!-- 제품 목록 -->
 	                <div class="d-flex justify-content-between align-items-center mb-2">
-	                  <p class="fs-5 fw-bolder m-0">공급제품 목록</p>
+	                  <p class="fs-6 fw-bolder m-0">공급제품 목록</p>
 	                  <button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	                </div>
 	                <div id="planDetailGrid"></div>
 	                
 	                <hr>
 	                <!-- 제품 상세 정보 -->
-	                <p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
+	                <p class="fs-6 fw-bolder mb-3 me-3">선택한 제품</p>
 	                <div class="row">
 	                  <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 	                  <div class="col-8 col-lg-4 d-flex mb-2">
@@ -155,16 +159,12 @@
 	                <div class="card card-body mt-2 pb-2">
 	                  <div class="row ps-2">
 	                  
-	                    <label for="totalQy" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak text-center">공급계획량 합계</label>
-	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control text-end" id="totalQy" readonly>
-	                    </div>
 	                    <label for="rgsde" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
 	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
 	                      <input type="text" class="form-control" id="rgsde" readonly>
 	                    </div>
 	                    <label for="remark" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
-	                    <div class="col-8 col-lg-5 d-flex align-items-center mb-2">
+	                    <div class="col-8 col-lg-8 d-flex align-items-center mb-2">
 	                      <input type="text" class="form-control" id="remark" readonly>
 	                    </div>
 	                    
@@ -173,7 +173,7 @@
 	                
 	             </div>
 	              <div class="modal-footer">
-	                <button type="button" id="confirmBtn" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+	                <button type="button" id="confirmBtn" class="btn btn-success" data-bs-dismiss="modal">자재소요량 조회</button>
 	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 	              </div>
 	           </div>

@@ -17,15 +17,18 @@
 		</style>
 	</head>
 	<body>
-		 <h3 class="fs-3 fw-bold">| 발주서 등록</h3>
+	   <h3 class="fs-3 fw-bold">| 발주서 등록</h3>
 	   <div th:fragment="materialOrder(th)">
 	      <!-- th:fragment에 객체로 변수를 받음.
 	        문법: ${th?.orderQy ?: '발주량'} => th가 null일 때도, th.orderQy가 null일 때도 기본값 반영-->
-	      <script th:inline="javascript"> let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 </script>
+	      <script th:inline="javascript"> 
+		      let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 
+		      let selectedPlanCode = /*[[${selectedPlanCode}]]*/null;
+	      </script>
 				<form class="card card-body mt-4" id="orderForm">
 					<!-- 발주할 자재, 업체 선택 -->
 					<p class="fs-5 fw-bolder mb-3">발주 품목</p>
-					<div class="row ps-2">
+					<div class="row ps-4">
 					
 						<label for="companyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
@@ -148,59 +151,59 @@
 				           		
 				           		<form id="companyList" style="display: none">
 				           		  <!-- 업체 선택 모달 -->
-				           			<div class="row ps-2 mb-3">
-													<label for="scCompanyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
-													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-														<input type="text" class="form-control pointer" id="scCompanyCode">
-													</div>
-													<label for="scCompanyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
-													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-														<input type="text" class="form-control" id="scCompanyName">
-													</div>
-													<label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
-													<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-														<input type="text" class="form-control" id="address">
-													</div>
-													<div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
-														<button type="button" id="comSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-														<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
-													</div>
-												</div>
-												<div id="companyGrid"></div>
+			           			  <div class="row ps-2 mb-3">
+									<label for="scCompanyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체코드</label>
+									<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+										<input type="text" class="form-control" id="scCompanyCode">
+									</div>
+									<label for="scCompanyName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">업체명</label>
+									<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+										<input type="text" class="form-control" id="scCompanyName">
+									</div>
+									<label for="address" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">소재지</label>
+									<div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+										<input type="text" class="form-control" id="address">
+									</div>
+									<div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
+										<button type="button" id="comSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+										<button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+									</div>
+								</div>
+								<div id="companyGrid"></div>
 				           		</form>
 				           		
 				           		<form id="planList" style="display: none">
-                        <!-- 발주계획서 불러오기 모달 -->
-                        <div class="row ps-2 mb-3 ms-1">
-                          <div class="row">
-	                          <label for="mtrilOrderPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">발주계획코드</label>
-	                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                            <input type="text" class="form-control pointer" id="mtrilOrderPlanCode">
-	                          </div>
-	                          <label for="scChargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
-	                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                            <input type="text" class="form-control" id="scChargerName">
-	                          </div>
-                            <label for="dueMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납기일</label>
-                            <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2">
-                              <input type="date" class="form-control me-sm-2" id="dueMin">-
-                              <input type="date" class="form-control ms-sm-2" id="dueMax">
-                            </div>
-                          </div>
-                          <div class="row d-flex">
-                            <div class="col d-flex align-items-center">
-	                            <p class="fs-6 me-5 ms-2 mb-0">상태</p>
-	                            <label for="MO01">미발주<input type="checkbox" value="MO01" id="MO01" name="status" class="ms-1" checked></label>
-	                            <label for="MO02" class="ms-4">발주완료<input type="checkbox" value="MO02" id="MO02" name="status" class="ms-1" checked></label>
-                            </div>
-	                          <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-end">
-	                            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-	                            <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
-	                          </div>
-                          </div>
-                        </div>
-                        <div id="planGrid"></div>
-                      </form>
+			                        <!-- 발주계획서 불러오기 모달 -->
+			                        <div class="row ps-2 mb-3 ms-1">
+			                          <div class="row">
+				                          <label for="mtrilOrderPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">발주계획코드</label>
+				                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+				                            <input type="text" class="form-control" id="mtrilOrderPlanCode">
+				                          </div>
+				                          <label for="scChargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+				                          <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+				                            <input type="text" class="form-control" id="scChargerName">
+				                          </div>
+			                            <label for="dueMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납기일</label>
+			                            <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2">
+			                              <input type="date" class="form-control me-sm-2" id="dueMin">-
+			                              <input type="date" class="form-control ms-sm-2" id="dueMax">
+			                            </div>
+			                          </div>
+			                          <div class="row d-flex">
+			                            <div class="col d-flex align-items-center">
+				                            <p class="fs-6 me-5 ms-2 mb-0">상태</p>
+				                            <label for="MO01">미발주<input type="checkbox" value="MO01" id="MO01" name="status" class="ms-1" checked></label>
+				                            <label for="MO02" class="ms-4">발주완료<input type="checkbox" value="MO02" id="MO02" name="status" class="ms-1" checked></label>
+			                            </div>
+				                          <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-end">
+				                            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+				                            <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				                          </div>
+			                          </div>
+			                        </div>
+			                        <div id="planGrid"></div>
+			                      </form>
 				           		
 				           		<div id="insertList" style="display: none" class="text-center">
 				           		  <!-- 등록 확인 모달 -->
@@ -213,8 +216,8 @@
 				           </div>
 				            <div class="modal-footer">
 				            	<button type="button" id="confirmBtn" class="btn btn-primary" data-bs-dismiss="modal" style="display: none">확인</button>
-											<button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-										</div>
+								<button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+							</div>
 				         </div>
 			        </div>
 			   </div>

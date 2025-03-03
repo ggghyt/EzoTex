@@ -1,87 +1,43 @@
-// 선택한 공급계획서의 상세조회 내용
-let supplyPlanCode = document.getElementById('supplyPlanCode');
-let supplyYear = document.getElementById('supplyYear');
-let season = document.getElementById('season');
-let chargerName = document.getElementById('chargerName');
-let selectedPrdCode = document.getElementById('selectedPrdCode');
-let selectedPrdName = document.getElementById('selectedPrdName');
-let rgsde = document.getElementById('rgsde');
-let remark = document.getElementById('remark');
-
 document.addEventListener('DOMContentLoaded', () => {
+  mrpGrid.setRequestParams({supplyYear: new Date().getFullYear()});
+  mrpGrid.reloadData();
   makeQuantityTag();
 });
 
-/******************** Tui Grid Custom Renderer ********************/  
-let selected;
-// 선택버튼 커스텀 렌더링
-class CustomBtnRender {
-  constructor(props) {
-    const el = document.createElement('button');
-    el.type = 'button';
-    el.classList = 'btn btn-outline-light btn-sm';
-    el.innerText = '선택';
-    
-    el.addEventListener('click', () => {
-      selected = supplyGrid.getRow(props.rowKey);
-      console.log(selected);
-      
-      // 모달에 선택한 정보 표시
-      supplyPlanCode.value = selected.supplyPlanCode;
-      supplyYear.value = selected.supplyYear;
-      season.value = selected.season;
-      chargerName.value = selected.chargerName;
-      rgsde.value = dateFormatter(selected.rgsde);
-      remark.value = selected.remark;
-      
-      loadPlanDetail(selected.supplyPlanCode);
-    });
-    this.el = el;
-    this.render(props);
-  }
-  getElement() { return this.el; }
-  render(props) { 
-    this.el.value = props.value;
-  }
-}
-
 /******************** Tui Grid ********************/
-// 공급계획 목록 그리드
-const supplyGrid = new Grid({
-    el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
+// 자재소요계획 그리드
+const mrpGrid = new Grid({
+    el: document.getElementById('mrpGrid'), // 해당 위치에 그리드 출력
     data: {
-      api: { readData: { url: '/supply/supplyPlanList', method: 'GET', initParams : {supplyYear: new Date().getFullYear()} } }
+      api: { readData: { url: '/supply/listMrp', method: 'GET' }, initialRequest: false }
     },
     columns: [
-        { header: '공급계획코드', name: 'supplyPlanCode', width: 120, sortable: true },
-        { header: '공급년도', name: 'supplyYear', width: 80, sortable: true },
-        { header: '시즌', name: 'season', width: 50, sortable: true },
-        { header: '요약', name: 'summary', whiteSpace: 'pre-line', sortable: true },
-        { header: '공급량합계', name: 'supplyQy', width: 150, sortable: true, align: 'right',
+        { header: '자재코드', name: 'productCode', width: 100, sortable: true, rowSpan: true, align: 'center', className: 'pointer bg-light' },
+        { header: '자재명', name: 'productName', sortable: true, rowSpan: true, align: 'center', className: 'pointer bg-light' },
+        { header: '색상', name: 'productColor', sortable: true, align: 'center' },
+        { header: '수량', name: 'supplyQy', width: 150, sortable: true, align: 'right',
            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-        { header: '비고', name: 'remark', whiteSpace: 'pre-line', sortable: true, elipsis: true },
-        { header: '담당자', name: 'chargerName', width: 100, sortable: true },
-        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
-        { header: '최종수정일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
-        { header: '', name: '', className: 'mtr', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
+        { header: '단위', name: 'unitName', width: 80, sortable: true },
+        { header: '합계', name: 'totalQy', width: 150, align: 'right', rowSpan: true,
+           formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
+        { header: '날짜', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value), align: 'center' }
     ],
-    columnOptions: { resizable: true },
-    rowHeaders: ['rowNum'],
-    pageOptions: {
-        useClient: true, // 페이징을 위해 필요
-        perPage: 10
-    },
     scrollX: false, // 가로 스크롤
     scrollY: false, // 세로 스크롤
     summary: {
          height: 40,
-         position: 'bottom', // or 'top'
+         position: 'top',
          columnContent: {
-            supplyPlanCode: { // 컬럼명
+            productCode: { // 컬럼명
                    template: (valueMap) => {
                        return `총 ${valueMap.cnt}건`
                    }
-               }
+            },
+            totalQy: { // 컬럼명
+                   template: (valueMap) => {
+                       return `총계: ${numberFormatter(valueMap.sum)}`
+                   }
+            }
          }
      }
 });
@@ -93,6 +49,7 @@ const planDetailGrid = new Grid({
     columns: [
         { header: '제품코드', name: 'productCode', sortable: true },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
+        { header: '공급계획코드', name: 'supplyPlanCode', sortable: true },
         { header: '공급계획일자', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value) },
         { header: '공급계획량', name: 'supplyQy', sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) }
     ],
@@ -129,49 +86,55 @@ const optionGrid = new Grid({
 });
 
 /******************** Tui Grid 출력 ********************/ 
-// 검색 적용 
-document.getElementById('planSearchBtn').addEventListener('click', () => {
-  let checkedSeasons = document.querySelectorAll('input[name="season"]:checked');
-  checkedSeasons = Array.from(checkedSeasons).map(ele => ele.value); // 가상의 노드들을 복사하여 배열처리
-  
+// 검색조건으로 조회
+document.getElementById('planSearchBtn').addEventListener('click', () => {  
   let dto = {
-    productCode: document.getElementById('productCode').value,
-    productName: document.getElementById('productName').value,
-    supplyDateMin: document.getElementById('supplyDateMin').value,
-    supplyDateMax: document.getElementById('supplyDateMax').value,
-    supplyPlanCode: document.getElementById('scSupplyPlanCode').value,
     supplyYear: document.getElementById('scSupplyYear').value,
-    supplyQyMin: document.getElementById('supplyQyMin').value,
-    supplyQyMax: document.getElementById('supplyQyMax').value,
-    chargerName: document.getElementById('scChargerName').value,
-    remark: document.getElementById('scRemark').value,
-    rgsdeMin: document.getElementById('rgsdeMin').value,
-    rgsdeMax: document.getElementById('rgsdeMax').value,
-    season: checkedSeasons
+    supplyMonth: document.getElementById('scSupplyMonth').value,
+    season: document.getElementById('season').value
   };
-  loadPlan(dto);
+  mrpGrid.setRequestParams(dto); // 조회 조건 전달
+  mrpGrid.reloadData(); // 그리드 재출력 (readData)
 });
 
-// 공급계획서 목록 조회
-function loadPlan(obj){
-  let {season, ...others} = obj;
-  let query = new URLSearchParams(others);
-  
-  // 배열값이 있는 경우 쿼리스트링을 직접 만들어야 정상 출력
-  if(season) season.forEach(code => query += `&season=${code}` );
-  
-  fetch(`/supply/supplyPlanList?${query}`)
-  .then(response => response.json())
-  .then(result => {
-    let data = result.data.contents;
-    console.log(data);
-    supplyGrid.resetData(data);
-  });
+// 제품코드별 합계 출력
+let loadSuccess = false; // reloadData 이후 합계 입력하기 위함.
+mrpGrid.on('successResponse', () => loadSuccess = true);
+
+mrpGrid.on('onGridUpdated', () => { 
+    if(loadSuccess){
+        getTotalQy();
+        loadSuccess = false; // successResponse, onGridUpdated 갭 차이로 무한루프 방지
+    }
+});
+
+function getTotalQy(){
+    // 제품코드별 합계 계산하여 데이터 입력
+    let data = mrpGrid.getData();
+    let sumObj = {};
+    data.forEach(obj => {
+        let value = sumObj[obj.productCode] ? sumObj[obj.productCode] : 0;
+        sumObj[obj.productCode] = value + obj.supplyQy;
+    });
+    data.forEach(obj => obj.totalQy = sumObj[obj.productCode]);
+    mrpGrid.resetData(data);
 }
 
+
+
+/******************** 모달 동작 ********************/ 
+// 제품코드 or 제품명 클릭 시 공급계획서 조회
+mrpGrid.on('focusChange', async ev => {
+  if(ev.columnName == 'productCode' || ev.columnName == 'productName'){
+    let prdCode = mrpGrid.getRow(ev.rowKey).productCode;
+    loadPlanDetail(prdCode);
+  }
+})
+    
+    
 // 선택한 공급계획서의 상세내역 조회
-function loadPlanDetail(supplyPlanCode){
-  fetch(`/supply/supplyPlan?supplyPlanCode=${supplyPlanCode}`)
+function loadPlanDetail(productCode){
+  fetch(`/supply/supplyPlan?productCode=${productCode}`)
   .then(response => response.json())
   .then(result => {
     let data = result.data.contents;
@@ -202,7 +165,7 @@ planDetailGrid.on('focusChange', async ev => {
 function loadPrdPivot(selectedPrd){
   let query = new URLSearchParams({
     productCode: selectedPrd.productCode, 
-    supplyPlanCode: supplyPlanCode.value
+    supplyPlanCode: selectedPrd.supplyPlanCode
   });
   
   fetch(`/supply/supplyPlanPivot?${query}`)

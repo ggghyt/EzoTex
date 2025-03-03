@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.standard.dto.ProductDTO;
+import com.ezotex.supply.dto.MaterialOrderDTO;
 import com.ezotex.supply.dto.MaterialOrderPlanDTO;
+import com.ezotex.supply.dto.SupplyDTO;
 import com.ezotex.supply.service.impl.BomServiceImpl;
 import com.ezotex.supply.service.impl.MaterialOrderServiceImpl;
 import com.ezotex.supply.service.impl.SupplyServiceImpl;
@@ -42,16 +44,23 @@ public class SupplyRestController {
 		return map;
 	}
 	
+	// 해당 제품의 사이즈 목록
+	@GetMapping("optionSize/{prdCode}")
+	public List<ProductDTO> sizeList(@PathVariable String prdCode) {
+		List<ProductDTO> list = bomService.listSize(prdCode);
+		return list;
+	}
+	
 	// 해당 제품의 색상 목록
 	@GetMapping("options/{prdCode}")
-	public List<ProductDTO> sizeList(@PathVariable String prdCode) {
+	public List<ProductDTO> colorList(@PathVariable String prdCode) {
 		List<ProductDTO> list = bomService.listColor(prdCode);
 		return list;
 	}
 
-	// 색상에 따른 사이즈 옵션 목록
+	// 색상에 따른 사이즈 옵션 목록 (색상/사이즈 모두 있는 경우)
 	@GetMapping("options/{prdCode}/{color}")
-	public List<ProductDTO> colorList(@PathVariable String prdCode, @PathVariable String color) {
+	public List<ProductDTO> sizeByColorList(@PathVariable String prdCode, @PathVariable String color) {
 		List<ProductDTO> list = bomService.listSizeByColor(prdCode, color);
 		return list;
 	}
@@ -70,6 +79,12 @@ public class SupplyRestController {
 	public Boolean insertBom(@RequestBody Map<String, Object> bomList) {
 		log.info("bom::: " + bomList.toString());
 		return bomService.insertBom(bomList); // true/false 반환
+	}
+	
+	// bom 등록 이후 모든 옵션이 등록되었는지 확인
+	@GetMapping("bomAllInserted/{prdCode}")
+	public Boolean bomMaterialList(@PathVariable String prdCode) {
+		return bomService.checkBomAllInserted(prdCode);
 	}
 	
 	
@@ -109,9 +124,10 @@ public class SupplyRestController {
 	}
 	
 	// 공급계획서 상세조회
-	@GetMapping("supplyPlan/{planCode}")
-	public Map<String, Object> supplyPlanPivot(@PathVariable String planCode) {
-		return GridUtil.grid(0, 0, service.infoSupplyPlan(planCode));
+	@GetMapping("supplyPlan")
+	public Map<String, Object> supplyPlanPivot(@RequestParam(value="supplyPlanCode", required=false) String planCode,
+			                                   @RequestParam(value="productCode", required=false) String productCode) {
+		return GridUtil.grid(0, 0, service.infoSupplyPlan(planCode, productCode));
 	}
 	
 	// 공급계획서에 등록된 제품의 옵션 집계
@@ -125,6 +141,12 @@ public class SupplyRestController {
 	public Boolean insertSupplyPlan(@RequestBody Map<String, Object> supplyList) {
 		log.info("planData::: " + supplyList.toString());
 		return service.insertSupplyPlan(supplyList); // true/false 반환
+	}
+	
+	// 자재소요계획 조회
+	@GetMapping("listMrp")
+	public Map<String, Object> listMrp(SupplyDTO dto) {
+		return GridUtil.grid(0, 0, service.listMrp(dto));
 	}
 	
 	
@@ -149,13 +171,22 @@ public class SupplyRestController {
 		return map;
 	}
 	
-	// 업체/자재별 옵션 및 단가 목록
+	// 업체/자재의 옵션별 상세정보
 	@GetMapping("optionPriceList")
 	public List<Map<String, Object>> optionPriceList(@RequestParam("productCode") String productCode, 
-										  		@RequestParam("companyCode")String companyCode) { // 검색 조건 파라미터
-		List<Map<String, Object>> list = orderService.listColorByCompany(productCode, companyCode);
+										  		@RequestParam("companyCode")String companyCode) {
+		List<Map<String, Object>> list = orderService.listColorInfoByCompany(productCode, companyCode);
 		log.info(list.toString());
 		return list;
+	}
+	
+	// 업체/자재의 상세정보 (단일제품)
+	@GetMapping("optionPrice")
+	public Map<String, Object> optionPrice(@RequestParam("productCode") String productCode, 
+										  		@RequestParam("companyCode")String companyCode) {
+		Map<String, Object> result = orderService.infoMtrByCompany(productCode, companyCode);
+		log.info(result.toString());
+		return result;
 	}
 	
 	// 발주서 등록
@@ -187,6 +218,25 @@ public class SupplyRestController {
 	@GetMapping("orderPlan/{code}")
 	public List<MaterialOrderPlanDTO> orderPlan(@PathVariable String code) {
 		List<MaterialOrderPlanDTO> result = orderService.infoOrderPlan(code);
+		log.info(result.toString());
+		return result;
+	}
+	
+	// 발주서 목록 
+	@GetMapping("orderList")
+	public Map<String, Object> orderList(@RequestParam Map<String, Object> params, // 검색 조건 파라미터
+										@RequestParam(value="status", required=false) String[] status) { // List타입은 2개 이상 값이 필수라 배열로 받음.
+		params.put("status", status);
+		List<MaterialOrderDTO> result = orderService.listOrder(params);
+		Map<String, Object> map = GridUtil.grid(1, result.size(), result);
+		log.info(map.toString());
+		return map;
+	}
+	
+	// 발주서 단건조회
+	@GetMapping("orderInfo/{code}")
+	public List<MaterialOrderDTO> orderInfo(@PathVariable String code) {
+		List<MaterialOrderDTO> result = orderService.infoOrder(code);
 		log.info(result.toString());
 		return result;
 	}

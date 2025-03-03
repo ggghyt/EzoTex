@@ -42,15 +42,12 @@
 		<if test='productColor != null and productColor != "null" and productColor != ""'> AND o.product_color = #{productColor} </if>
 	</select>
 	
-	<!-- 자재 목록과 기본 단가 -->
+	<!-- 자재 목록과 기본 정보 -->
 	<select id="listProductByCompany" resultType="map" parameterType="map">
 		SELECT DISTINCT(p.product_code),
 		       p.product_name,
 		       get_comm(p.unit_name) unit_name,
-		       p.unit_price,
-		       NVL(( SELECT SUM(i.inventory_qy)
-		               FROM inventory i
-		              WHERE i.product_code = p.product_code ), 0) inventory_qy
+		       p.unit_price
 		FROM   product_info p LEFT JOIN  product_category c ON p.product_code = c.product_code
 		                      JOIN material_of_company m ON p.product_code = m.product_code
 		WHERE  p.product_type = 'PT01'
@@ -77,8 +74,8 @@
 		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
 	</select>
 	
-    <!-- 해당 업체/자재 옵션 조회 -->
-    <select id="listColorByCompany" resultType="map" parameterType="String">
+    <!-- 해당 업체/자재 옵션 및 정보 조회 -->
+    <select id="listColorInfoByCompany" resultType="map" parameterType="String">
         SELECT DISTINCT(o.product_color),
                o.unit_price,
                NVL(( SELECT SUM(i.inventory_qy) -- 현재고량
@@ -86,10 +83,25 @@
                       WHERE i.product_code = o.product_code
                         AND i.product_color = o.product_color ), 0) inventory_qy,
                NVL(( SELECT SUM(mod.order_qy) -- 아직 처리되지 않은 기발주량 합계
-                       FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
-                      WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
-                        AND mod.product_code = o.product_code
-                        AND mod.product_color = o.product_color ), 0) storing_qy
+		               FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
+		              WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
+		                AND mod.product_code = o.product_code
+		                AND mod.product_color = o.product_color ), 0) storing_qy,
+		       (SELECT ROUND(AVG(duration))
+		        FROM   (SELECT (TRUNC(TO_DATE( (SELECT MAX(updde)
+		                                        FROM   delivery
+		                                        WHERE  mtril_order_code = mo.mtril_order_code) ))
+		                        - TRUNC(rgsde)) duration,
+		                       mo.mtril_order_code,
+		                       d.product_code,
+		                       d.product_color,
+		                       mo.company_code
+		                FROM   material_order mo JOIN material_order_details d ON mo.mtril_order_code = d.mtril_order_code
+		                WHERE  mo.status = 'RS03') -- 발주에서 출고완료 상태까지의 평균값 산출 (7일 범위 이내에서 계산))
+		        WHERE duration <![CDATA[<=]]> 7
+		          AND product_code = o.product_code
+		          AND product_color = o.product_color
+		          AND company_code = m.company_code) duration
         FROM   product_option o JOIN material_of_company m ON o.option_code = m.option_code
         WHERE  o.product_code = #{productCode}
           AND  o.discontinued = 'YN02'
@@ -98,6 +110,41 @@
           AND  m.discontinued = 'YN02'        
         </if>
         ORDER  BY product_color
+    </select>
+    
+    <!-- 해당 업체/자재의 옵션이 없을 경우 조회 (자재 조회 listProductByCompany에서 한번에 조회하려니 속도가 지나치게 느림.) -->
+    <select id="infoMtrByCompany" resultType="map" parameterType="String">
+        SELECT inventory_qy, storing_qy, duration FROM (
+        SELECT DISTINCT(p.product_code), 
+               rownum rn,
+               NVL(( SELECT SUM(i.inventory_qy) -- 현재고량
+                       FROM inventory i
+                      WHERE i.product_code = p.product_code ), 0) inventory_qy,
+               NVL(( SELECT SUM(mod.order_qy) -- 아직 처리되지 않은 기발주량 합계
+                       FROM material_order_details mod JOIN material_order mo ON mod.mtril_order_code = mo.mtril_order_code
+                      WHERE mo.status IN ('RS01', 'RS02') -- 발주상태: 대기 혹은 부분출고
+                        AND mod.product_code = p.product_code ), 0) storing_qy,
+               (SELECT ROUND(AVG(duration))
+                FROM   (SELECT (TRUNC(TO_DATE( (SELECT MAX(updde)
+                                                FROM   delivery
+                                                WHERE  mtril_order_code = mo.mtril_order_code) ))
+                                - TRUNC(rgsde)) duration,
+                               mo.mtril_order_code,
+                               d.product_code,
+                               d.product_color,
+                               mo.company_code
+                        FROM   material_order mo JOIN material_order_details d ON mo.mtril_order_code = d.mtril_order_code
+                        WHERE  mo.status = 'RS03') -- 발주에서 출고완료 상태까지의 평균값 산출 (7일 범위 이내에서 계산))
+                WHERE duration <![CDATA[<=]]> 7
+                  AND product_code = p.product_code
+                  <if test='companyCode != null and companyCode != ""'> AND company_code = m.company_code</if>) duration
+        FROM   product_info p JOIN material_of_company m ON p.product_code = m.product_code
+        WHERE  p.product_code = #{productCode}
+        <if test='companyCode != null and companyCode != ""'> 
+          AND  m.company_code = #{companyCode} 
+          AND  m.discontinued = 'YN02'        
+        </if>
+        ORDER  BY duration NULLS LAST ) WHERE rn = 1
     </select>
 	
 	<!-- 발주계획서(헤더) 조회 -->
@@ -116,8 +163,10 @@
 		     FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
 		    <where>
 		      <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
-		      <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-		      <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if>
+		      <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' ||  UPPER(#{productCode}) || '%' </if>
+              <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if>
+              <if test='companyCode != null and companyCode != ""'> AND UPPER(d.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if>
+              <if test='companyName != null and companyName != ""'> AND UPPER(d.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if>
 		    </where> ) -- 서브쿼리 형태로 alias 사용 가능
 		<where> 
 		  <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND UPPER(mtril_order_plan_code) LIKE '%' || UPPER(#{mtrilOrderPlanCode}) || '%' </if>
@@ -131,7 +180,7 @@
 	      
 	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
 	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
-			</where>
+		</where>
 			ORDER  BY mtril_order_plan_code DESC
 	  </select>
 	  
@@ -145,13 +194,16 @@
 	                 WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
 	                p.remark,
 	                p.charger_name,
-	                NVL(p.update_date, p.rgsde) update_date
+	                NVL(p.update_date, p.rgsde) update_date,
+	                get_comm(p.status) status
 	         FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
 	        <where>
 	          <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
-	          <if test='productCode != null and productCode != ""'> AND d.product_code = #{productCode} </if>
-	          <if test='productName != null and productName != ""'> AND UPPER(d.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if>
-	        </where> ) -- 바깥에서 추가조건 검색하여 alias 이용 가능
+	          <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' ||  UPPER(#{productCode}) || '%' </if>
+              <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if>
+              <if test='companyCode != null and companyCode != ""'> AND UPPER(d.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if>
+              <if test='companyName != null and companyName != ""'> AND UPPER(d.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if>
+	        </where> ) -- 바깥에서 검색하여 alias 이용 가능
 	    <where> 
 	      <if test='mtrilOrderPlanCode != null and mtrilOrderPlanCode != ""'> AND UPPER(mtril_order_plan_code) LIKE '%' || UPPER(#{mtrilOrderPlanCode}) || '%' </if>
 	      <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
@@ -182,6 +234,63 @@
 		                                LEFT JOIN product_option o ON d.product_code = o.product_code
 		                                                          AND d.product_color = o.product_color
 		WHERE  d.mtril_order_plan_code = #{mtrilOrderPlanCode}
+    </select>
+    
+    <!-- 발주서(헤더) 조회 -->
+    <select id="listOrder" resultType="MaterialOrderDTO" parameterType="MaterialOrderDTO">
+        SELECT * FROM (
+			SELECT o.mtril_order_code,
+			       o.company_code,
+			       o.company_name,
+			       product_summary('material_order_details', o.mtril_order_code) summary,
+			       o.due_date,
+			       SUM(d.order_qy) order_qy,
+			       SUM(d.amount) amount,
+			       o.charger_name,
+			       o.remark,
+			       o.rgsde,
+			       get_comm(o.status) status
+			FROM   material_order o JOIN material_order_details d ON o.mtril_order_code = d.mtril_order_code
+			<where>
+              <if test='status != null'> AND o.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
+              <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' ||  UPPER(#{productCode}) || '%' </if>
+              <if test='productName != null and productName != ""'> AND UPPER(get_prd_name(d.product_code)) LIKE '%' || UPPER(#{productName}) || '%' </if>
+              <if test='companyCode != null and companyCode != ""'> AND UPPER(o.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if>
+              <if test='companyName != null and companyName != ""'> AND UPPER(o.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if>
+            </where> 
+			GROUP  BY o.mtril_order_code, o.company_code, o.company_name, o.due_date, o.charger_name, o.remark, o.rgsde, o.status
+		    ) -- 바깥에서 검색하여 alias 이용 가능
+		<where> 
+          <if test='mtrilOrderCode != null and mtrilOrderCode != ""'> AND UPPER(mtril_order_code) LIKE '%' || UPPER(#{mtrilOrderCode}) || '%' </if>
+          <if test='dueMin != null and dueMin != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') >= #{dueMin} </if> 
+          <if test='dueMax != null and dueMax != ""'> AND  TO_CHAR(due_date, 'yyyy-mm-dd') <![CDATA[<= #{dueMax}]]> </if> 
+          
+          <if test='qyMin != null and qyMin != ""'> AND  order_qy >= #{qyMin} </if> 
+          <if test='qyMax != null and qyMax != ""'> AND  order_qy <![CDATA[<= #{qyMax}]]> </if> 
+          <if test='amountMin != null and amountMin != ""'> AND  amount >= #{amountMin} </if> 
+          <if test='amountMax != null and amountMax != ""'> AND  amount <![CDATA[<= #{amountMax}]]> </if> 
+          <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if> 
+          <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if> 
+          
+          <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+          <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+        </where>
+       ORDER  BY mtril_order_code DESC
+    </select>
+    
+    <!-- 발주서(디테일) 조회 -->
+    <select id="infoOrder" resultType="MaterialOrderDTO" parameterType="String">
+        SELECT product_code, 
+               get_prd_name(d.product_code) product_name,
+		       product_color, 
+		       order_qy,
+		       get_comm((SELECT unit_name 
+		                 FROM product_info 
+		                 WHERE product_code = d.product_code)) unit_name,
+		       unit_price, 
+		       amount 
+		FROM   material_order_details d
+		WHERE  mtril_order_code = #{mtrilOrderCode}
     </select>
 	
 	<!-- 발주서 등록(헤더) -->
@@ -225,5 +334,16 @@
             (SELECT MAX(mtril_order_plan_code) FROM material_order_plan), 
             #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor})
   </insert>
+  
+  <update id="updatePlanState" parameterType="MaterialOrderPlanDTO">
+    UPDATE material_order_plan
+    <trim prefix="SET" suffixOverrides=",">
+      update_date = SYSDATE,
+      <if test="dueDate != null">dueDate = #{dueDate},</if>
+      <if test="remark != null">remark = #{remark},</if>
+      <if test="status != null">status = #{status},</if>
+   </trim>
+   WHERE mtril_order_plan_code = #{mtrilOrderPlanCode}
+  </update>
 	
 </mapper>

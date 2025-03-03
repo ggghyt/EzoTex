@@ -27,4 +27,9 @@ public class MaterialOrderDTO {
 	private Integer amount;
 	private String productColor;
 	private Integer unitPrice;
+	
+	// 조회용 필드
+	private String summary; // 함수로 임의 생성한 값
+	private String unitName;
+	private String productName;
 }

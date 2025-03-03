@@ -1,0 +1,110 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+	<head>
+		<meta charset="UTF-8">
+		<title>이조텍스SCM</title>
+		<style>
+      .modal {
+        display: block !important; /* Bootstrap 기본 동작 우회 (모달에서 데이터 안 보이는 현상) */
+        visibility: hidden;
+      }
+      
+      .modal.show {
+        visibility: visible;
+      }
+      
+      td.tui-grid-cell-summary[data-column-name="totalQy"] {
+        text-align: right;
+      }
+    </style>
+	</head>
+	<body>
+	  <div class="d-flex justify-content-between">
+		<h3 class="fs-3 fw-bold m-0">| 자재소요계획 조회</h3>
+		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+	  </div>
+		<div class="card card-body mt-4">
+			<form class="row ms-3 pe-0">
+			
+				 <!-- 검색조건 -->
+				 <label for="scSupplyYear" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급년도</label>
+		         <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		           <div class="quantity">
+		             <input id="scSupplyYear" type="number" th:value="${thisYear}">
+		           </div>
+		         </div>
+		         
+                 <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+                   <div class="quantity">
+                     <input id="scSupplyMonth" type="number" min="1" max="12">
+                   </div>
+                 </div>
+		         <label for="scSupplyMonth" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-start ps-1 wbreak">월</label>
+		         
+		         <label for="season" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
+                 <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+                     <select class="form-control" id="season">
+                         <option value="null">전체</option>
+                         <option value="SE00">상시</option>
+                         <option value="SE01">봄</option>
+                         <option value="SE02">여름</option>
+                         <option value="SE03">가을</option>
+                         <option value="SE04">겨울</option>
+                     </select>
+                 </div>
+		         
+		         <div class="col-12 col-sm-6 col-lg-3 d-flex mb-2 align-items-center justify-content-center wbreak">
+		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+		         </div>
+         
+			</form>
+		</div>
+		
+		<div class="card card-body mt-3">
+			<div id="mrpGrid"></div>
+		</div>
+		
+		<!-- 공급계획서 상세조회 모달 -->
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+           <div class="modal-dialog modal-xl mt-4">
+               <div class="modal-content">
+                 <div class="modal-header" style="height: 20px;">
+                    <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">연관된 제품 조회</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                 </div>
+                 <div class="modal-body p-3 pt-2">
+                 
+                    <!-- 제품 목록 -->
+                    <div id="planDetailGrid"></div>
+                    
+                    <hr>
+                    <!-- 제품 상세 정보 -->
+                    <p class="fs-6 fw-bolder mb-3 me-3">선택한 제품</p>
+                    <div class="row">
+                      <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+                      <div class="col-8 col-lg-4 d-flex mb-2">
+                        <input type="search" class="form-control" id="selectedPrdCode" readonly>
+                      </div>
+                      <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+                      <div class="col-8 col-lg-4 d-flex mb-2">
+                        <input type="search" class="form-control" id="selectedPrdName" readonly>
+                      </div>
+                     </div>
+                    <div id="optionGrid"></div>
+                    
+                 </div>
+                  <div class="modal-footer">
+                    <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                  </div>
+               </div>
+            </div>
+       </div>
+		
+		
+	</body>
+	
+	<script src="/js/supply/mrpList.js"></script>
+</html>

@@ -19,9 +19,6 @@
 	<body>
 	   <h3 class="fs-3 fw-bold">| 발주계획서 등록</h3>
 	   <!-- 타임리프 fragment 사용하여 html, js 통째로 복사 -->
-	   <script>
-	     
-	   </script>
 		<div th:replace="~{supply/materialOrder :: materialOrder(th)}">
 		</div>
 		<script>
@@ -29,31 +26,31 @@
 			// * 업체 입력 필수 아님
 			// * 날짜선택 현재 + 3일뒤부터 가능
 			let dateLimit = new Date();
-      dateLimit.setDate(dateLimit.getDate() + 3);
-			
-		  // 이벤트리스너 제거 (인자가 완전히 동일해야 함)
+	        dateLimit.setDate(dateLimit.getDate() + 3);
+				
+			// 이벤트리스너 제거 (인자가 완전히 동일해야 함)
 			document.removeEventListener('DOMContentLoaded', orderDomEventHandler);
 			// 이벤트리스너 재등록
 			const planDomEventHandler = function (){
-        changeClas(lclasBox, sclasBox);
-        dueDateBox.min = dateFormatter(dateLimit);
-        
-        createModal({ 
-          type: 'regist',
-          content: '발주계획서를 등록하시겠습니까?',
-          confirm: insertOrderPlan
-        });
-        $('#finalBtn').on('click', () => {
-          let orderData = orderGrid.getData();
-          if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
-          else if(dueDateBox.value == ''){
-            failToast('납기일을 입력해주세요.');
-            return;
-          }
-          $('#simpleModal').modal('show');
-        });
-      }
-			document.addEventListener('DOMContentLoaded', planDomEventHandler);
+	        changeClas(lclasBox, sclasBox);
+	        dueDateBox.min = dateFormatter(dateLimit);
+	        
+	        createModal({ 
+	          type: 'regist',
+	          content: '발주계획서를 등록하시겠습니까?',
+	          confirm: insertOrderPlan
+	        });
+	        $('#finalBtn').on('click', () => {
+	          let orderData = orderGrid.getData();
+	          if(orderData.length == 0) return; // 아무것도 입력되지 않았으면 종료
+	          else if(dueDateBox.value == ''){
+	            failToast('납기일을 입력해주세요.');
+	            return;
+	          }
+	          $('#simpleModal').modal('show');
+	        });
+	       }
+		   document.addEventListener('DOMContentLoaded', planDomEventHandler);
 			
 		  
 		  /******************** 발주계획 등록 ********************/ 
