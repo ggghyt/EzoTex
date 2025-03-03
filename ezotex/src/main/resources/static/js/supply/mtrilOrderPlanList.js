@@ -6,6 +6,9 @@ let compNameBox = document.getElementById('companyName');
 let mtrCodeBox = document.getElementById('mtrilCode');
 let mtrNameBox = document.getElementById('mtrilName');
 
+let dueDateBox = document.getElementById('dueDate');
+let remarkBox = document.getElementById('remark');
+
 document.addEventListener('DOMContentLoaded', () => { 
   changeClas(lclasBox, sclasBox);
 });
@@ -55,11 +58,10 @@ class CustomBtnRender {
           
             // 모달에 선택한 정보 표시
             document.getElementById('mtrilOrderPlanCode').value = selected.mtrilOrderPlanCode ? selected.mtrilOrderPlanCode : selected.mtrilOrderCode;
-            document.getElementById('dueDate').value = dateFormatter(selected.dueDate);
             document.getElementById('chargerName').value = selected.chargerName;
-            document.getElementById('totalQy').value = numberFormatter(selected.orderQy);
-            document.getElementById('rgsde').value = dateFormatter(selected.updateDate ? selected.updateDate : selected.rgsde);
-            document.getElementById('remark').value = selected.remark;
+            document.getElementById('rgsde').value = dateFormatter(selected.rgsde);
+            dueDateBox.value = dateFormatter(selected.dueDate);
+            remarkBox.value = selected.remark;
           
             loadPlanDetail(selected.mtrilOrderPlanCode ? selected.mtrilOrderPlanCode : selected.mtrilOrderCode);
         }
@@ -82,15 +84,16 @@ let planGrid = th != null ? null : new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
     data: { api: { readData: { url: '/supply/orderPlanList', method: 'GET' }, initialRequest: false } },
     columns: [
-        { header: '발주계획코드', name: 'mtrilOrderPlanCode' },
-        { header: '납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
-        { header: '요약', name: 'summary', width: 150 },
-        { header: '발주계획량', name: 'orderQy', align: 'right',
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 120 },
+        { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value) },
+        { header: '요약', name: 'summary' },
+        { header: '발주계획량', name: 'orderQy', align: 'right', width: 120, 
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-        { header: '비고', name: 'remark', whiteSpace: 'pre-line', width: 150 },
-        { header: '담당자', name: 'chargerName' },
-        { header: '최종수정일', name: 'updateDate', formatter: (row) => dateFormatter(row.value) },
-        { header: '상태', name: 'status', align: 'center',
+        { header: '비고', name: 'remark', whiteSpace: 'pre-line' },
+        { header: '담당자', name: 'chargerName', width: 100 },
+        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
+        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '상태', name: 'status', align: 'center', width: 80,
           renderer: {
             styles: {
               fontWeight: 'bold',
@@ -111,9 +114,9 @@ let planGrid = th != null ? null : new Grid({
        height: 30,
        position: 'bottom', // or 'top'
        columnContent: {
-          mtrilOrderPlanCode: { // 컬럼명
+           mtrilOrderPlanCode: { // 컬럼명
                template: (valueMap) => {
-                   return `총 ${valueMap.cnt}건`
+                   return `총 ${numberFormatter(valueMap.cnt)}건`
                }
            }
        }
@@ -145,8 +148,8 @@ const prdGrid = new Grid({
              columnContent: {
                     productCode: { // 컬럼명
                      template: (valueMap) => {
-                         return `총 ${valueMap.cnt}건`
-                     }
+                         return `총 ${numberFormatter(valueMap.cnt)}건`
+                    }
                  }    
              }
      }
@@ -178,7 +181,7 @@ const companyGrid = new Grid({
          columnContent: {
                 companyCode: { // 컬럼명
                  template: (valueMap) => {
-                     return `총 ${valueMap.cnt}건`
+                     return `총 ${numberFormatter(valueMap.cnt)}건`
                  }
              }
          }
@@ -193,7 +196,8 @@ let planDetailGrid = th != null ? null : new Grid({
         { header: '자재코드', name: 'productCode', sortable: true },
         { header: '자재명', name: 'productName', sortable: true },
         { header: '색상', name: 'productColor', sortable: true, formatter: (row) => row.value == 'null' ? '' : row.value },
-        { header: '발주계획량', name: 'orderQy', sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) },
+        { header: '발주계획량', name: 'orderQy', sortable: true, align: 'right', editor: 'text', disabled: true,
+          formatter: (row) => numberFormatter(row.value) },
         { header: '단위', name: 'unitName', sortable: true },
         { header: '업체코드', name: 'companyCode', sortable: true },
         { header: '업체명', name: 'companyName', sortable: true },
@@ -208,7 +212,12 @@ let planDetailGrid = th != null ? null : new Grid({
          columnContent: {
               productCode: { // 컬럼명
                    template: (valueMap) => {
-                       return `총 ${valueMap.cnt}건`
+                       return `총 ${numberFormatter(valueMap.cnt)}건`
+                   }
+              },
+              orderQy: { // 컬럼명
+                   template: (valueMap) => {
+                       return `합계: ${numberFormatter(valueMap.sum)}`
                    }
               }
          }
@@ -243,7 +252,7 @@ function loadPlanList(obj, uri){
 }
 
 // 검색 적용
-document.getElementById('orderSearchBtn').addEventListener('click', orderSearch());
+document.getElementById('orderSearchBtn').addEventListener('click', orderSearch);
 
 function orderSearch(){
     let checkedStatus = document.querySelectorAll('input[name="status"]:checked');
@@ -347,14 +356,67 @@ document.getElementById('comSearchBtn').addEventListener('click', () => {
 
 // 발주계획서 => 발주서 작성 이동
 writeBtn.addEventListener('click', () => {
-    location.href = '/supply/mtrOrder?mtrPlanCode=' + selected.mtrilOrderPlanCode;
+    location.href = '/supply/mtrOrder?mtrilOrderPlanCode=' + selected.mtrilOrderPlanCode 
+                  + '&dueDate=' + dateFormatter(selected.dueDate);
 });
+
+// 발주계획서 수정
+let isModify;
+let modifyBtn = document.getElementById('modifyBtn');
+let modifyConfirmBtn = document.getElementById('modifyConfirmBtn');
+
+modifyBtn.addEventListener('click', () => {
+    modifyMode(true);
+})
+
+modifyConfirmBtn.addEventListener('click', () => {
+    let updated = planDetailGrid.getModifiedRows().updatedRows;
+    let detailArr = updated.map(data => {
+        return {
+            productCode: data.productCode,
+            productColor: data.productColor,
+            orderQy: data.orderQy
+        };
+    });
+    let headerObj = {
+        mtrilOrderPlanCode: selected.mtrilOrderPlanCode,
+        dueDate: dueDateBox.value,
+        remark: remarkBox.value
+    };
+    
+    fetch('/supply/mtrOrderPlan', {
+        method: 'PUT',
+        headers: {...headers, 'Content-Type': 'application/json'},
+        body: JSON.stringify({headerObj, detailArr})
+    })
+    .then(response => response.json())
+    .then(result => {
+        if(result == true) successToast('저장되었습니다.');
+        // 수정사항 목록에 반영
+        else failToast('알 수 없는 오류로 실패했습니다.');
+    });
+    
+    modifyMode(false);
+})
+
+// 수정모드 전환
+function modifyMode(boolean){
+    isModify = boolean;
+    modifyBtn.style.display = isModify ? 'none' : '';
+    modifyConfirmBtn.style.display = isModify ? '' : 'none';
+    writeBtn.style.display = isModify ? 'none' : '';
+    dueDateBox.readOnly = !isModify;
+    remarkBox.readOnly = !isModify;
+    isModify ? planDetailGrid.enableColumn('orderQy') : planDetailGrid.disableColumn('orderQy');
+    if(isModify) dueDateBox.min = dateFormatter(); // 오늘 날짜로 제한
+}
 
 // 모달 내부 닫기버튼 동작 (모두 숨김)
 document.getElementById('closeBtn').addEventListener('click', () => closeAll());
 document.querySelector('.btn-close').addEventListener('click', () => closeAll());
 
 function closeAll(){
+    if(isModify) modifyMode(false);
     mtrListDiv.style.display = 'none';
     compListDiv.style.display = 'none';
     planDetailDiv.style.display = 'none';

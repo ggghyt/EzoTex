@@ -80,8 +80,8 @@ public class BomServiceImpl implements BomService {
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
 		for(Object detail : detailList) {
 			BomDTO bom = objMapper.convertValue(detail, BomDTO.class); // DTO로 변환
-			mapper.insertBomDetail(bom);
-			dtlResult--;
+			int result = mapper.insertBomDetail(bom);
+			dtlResult = dtlResult - result;
 		}
 		return bomResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}

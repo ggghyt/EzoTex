@@ -14,6 +14,11 @@
       .modal.show {
         visibility: visible;
       }
+      
+      td.tui-grid-cell-summary[data-column-name="orderQy"],
+      td.tui-grid-cell-summary[data-column-name="amount"] {
+        text-align: right;
+      }
     </style>
 	</head>
 	<body>
@@ -32,9 +37,9 @@
 		    el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
 		    data: { api: { readData: { url: '/supply/orderList', method: 'GET' }, initialRequest: false } },
 		    columns: [
-		        { header: '발주코드', name: 'mtrilOrderCode' },
+		        { header: '발주코드', name: 'mtrilOrderCode', width: 120 },
 		        { header: '업체코드', name: 'companyCode' },
-		        { header: '업체명', name: 'companyName' },
+		        { header: '업체명', name: 'companyName', width: 150 },
 		        { header: '납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
 		        { header: '요약', name: 'summary', width: 150 },
 		        { header: '발주량', name: 'orderQy', align: 'right',
@@ -107,9 +112,19 @@
 	             columnContent: {
 	                  productCode: { // 컬럼명
 	                       template: (valueMap) => {
-	                           return `총 ${valueMap.cnt}건`
+	                           return `총 ${numberFormatter(valueMap.cnt)}건`
 	                       }
-	                  }
+	                  },
+	                  orderQy: { // 컬럼명
+	                      template: (valueMap) => {
+	                          return `합계: ${numberFormatter(valueMap.sum)}`
+	                      }
+	                 },
+	                 amount: { // 컬럼명
+	                     template: (valueMap) => {
+	                         return `총 ${numberFormatter(valueMap.sum)}원`
+	                     }
+	                }
 	             }
 	        }
 	    });

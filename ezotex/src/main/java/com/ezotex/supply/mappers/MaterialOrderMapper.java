@@ -32,7 +32,8 @@ public interface MaterialOrderMapper {
 	int insertMaterialOrderPlanDetail(Object dto);
 	
 	// 발주계획서 수정
-	int updatePlanState(MaterialOrderPlanDTO dto);
+	int updatePlan(MaterialOrderPlanDTO dto);
+	int updatePlanDetail(MaterialOrderPlanDTO dto);
 	
 	// 발주계획서 조회
 	List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map);

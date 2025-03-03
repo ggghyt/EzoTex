@@ -86,8 +86,8 @@ public class SupplyServiceImpl implements SupplyService {
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
 		for(Object detail : detailList) {
 			SupplyDTO dto = objMapper.convertValue(detail, SupplyDTO.class); // DTO로 변환
-			mapper.insertSupplyPlanDetail(dto);
-			dtlResult--;
+			int result = mapper.insertSupplyPlanDetail(dto);
+			dtlResult = dtlResult - result;
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}
