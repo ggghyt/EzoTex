@@ -8,9 +8,15 @@
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<style>
+.inputbold {
+	font-weight: bold;
+	color: green;
+}
+</style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">|반품</h3>
+	<h3 class="fs-3 fw-bold">|반품 등록</h3>
 
 	<!-- 등록 모달 -->
 	<div class="modal fade" id="registModal" tabindex="-1"
@@ -58,28 +64,28 @@
 					<td class="col-auto">
 						<div class="d-flex align-items-center">
 							<label class="col-form-label me-2" style="width: 80px;">납품코드
-							</label> <input type="text" id="deliveryCode" class="form-control w-50"
+							</label> <input type="text" id="deliveryCode" class="form-control inputbold w-50"
 								readonly>
 						</div>
 					</td>
 					<td class="col-auto">
 						<div class="d-flex align-items-center">
 							<label class="col-form-label me-2" style="width: 80px;">업체코드</label>
-							<input type="text" id="companyCode" class="form-control w-50"
+							<input type="text" id="companyCode" class="form-control inputbold w-50"
 								readonly>
 						</div>
 					</td>
 					<td class="col-auto">
 						<div class="d-flex align-items-center">
 							<label class="col-form-label me-2" style="width: 80px;">업체명</label>
-							<input type="text" id="companyName" class="form-control w-50"
+							<input type="text" id="companyName" class="form-control inputbold w-50"
 								readonly>
 						</div>
 					</td>
 					<td class="col-auto">
 						<div class="d-flex align-items-center">
 							<label class="col-form-label me-2" style="width: 80px;">담당자</label>
-							<input type="text" id="requestor" class="form-control w-50"
+							<input type="text" id="requestor" class="form-control inputbold w-50"
 								readonly>
 						</div>
 					</td>
@@ -483,9 +489,44 @@
 	
 	// 등록버튼 모달 띄워주기
 	function insertReturn(returnCode){
+	    // deliProductGrid 데이터 가져오기
+	    const deliProductData = deliProductGrid.getData();
+	    if (deliProductData.length === 0) {
+	        alert("납품 내역 조회하여 납품건을 선택해주세요.");
+	        return;
+	    }
+	    
+	    // 처리상태가 하나라도 선택되었는지 확인
+	    const hasStatus = deliProductData.some(item => item.status); // 하나라도 있으면 true
+	    if (!hasStatus) {
+	        alert("처리 상태를 선택하고 제품을 선택해 주세요.");
+	        return;
+	    }
+
+	    // selectProductGrid 데이터 가져오기
+	    let rows = selectProductGrid.getData(); // 그리드 데이터 가져오기
+	    for (let i = 0; i < rows.length; i++) {
+	        const row = rows[i];
+	        if (!row.deliveryQy || row.deliveryQy === '') {
+	            // 수량이 없으면 경고 처리
+	            alert('수량을 입력해주세요.'); // 여기서는 alert로 처리
+	            return false;
+	        }
+	    }
+	    
+	    // 수량이 0 인지 체크
+	    for (let i = 0; i < rows.length; i++) {
+	        const row = rows[i];
+	        // 수량이 없거나 0 이하일 경우 경고 처리
+	        if (!row.deliveryQy || row.deliveryQy <= 0) {
+	            alert('수량은 1 이상이어야 합니다.'); // 수량이 0 이하일 경우 경고
+	            return false;
+	        }
+	    }
+		
 		let resiModal = new bootstrap.Modal(document.getElementById('registModal'));
-		resiModal.show();
-	}
+			resiModal.show();
+		}
 	
 	resiBtn.addEventListener("click" , function () {
 		console.log("등록 버튼 클릭 이벤트");
@@ -493,13 +534,13 @@
 	    // selectProductGrid의 데이터 가져오기
 	    const gridData = selectProductGrid.getData();
 
-	    // 수량 검증: 0 이하인 항목이 있는지 확인
+/* 	    // 수량 검증: 0 이하인 항목이 있는지 확인
 	    const hasInvalidQuantity = gridData.some(row => row.deliveryQy <= 0);
 
 	    if (hasInvalidQuantity) {
 	        alert("수량이 0 이하인 제품이 포함되어 있어 등록할 수 없습니다.");
 	        return;
-	    }
+	    } */
 		
 		
 		// 반품 등록 헤더 데이터

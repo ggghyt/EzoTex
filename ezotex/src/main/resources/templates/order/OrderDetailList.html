@@ -10,6 +10,56 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
+
+	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+		<h3>검색</h3>
+		<table class="table mt-3">
+			<tbody>
+				<!-- 첫 번째 줄 -->
+				<tr>
+					<td><label class="col-form-label">주문코드</label></td>
+					<td><input type="text" id="productOrderCode"
+						class="form-control"></td>
+					<td><label class="col-form-label">주문일</label></td>
+					<td><input type="date" id="startOrderDate"
+						class="form-control"></td>
+					<td>~</td>
+					<td><input type="date" id="endOrderDate" class="form-control"></td>
+
+				</tr>
+				<!-- 두 번째 줄 -->
+				<tr>
+					<td><label class="col-form-label">업체명</label></td>
+					<td><input type="text" id="company" class="form-control"></td>
+
+					<td><label class="col-form-label">납기일</label></td>
+					<td><input type="date" id="startReturnDate"
+						class="form-control"></td>
+					<td>~</td>
+					<td><input type="date" id="endReturnDate" class="form-control"></td>
+				</tr>
+				<tr>
+					<td><label class="col-form-label">주문상태</label></td>
+					<td><input type="text" id="orderStatus" class="form-control"></td>
+					<td><label class="col-form-label">주문금액</label></td>
+					<td><input type="text" id="startMoney" class="form-control"></td>
+					<td>~</td>
+					<td><input type="text" id="endMoney" class="form-control"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="text-center mt-3">
+			<button class="btn btn-warning mag-glass-btn" onclick="searchOrder()">
+				<i class="fa-solid fa-magnifying-glass icon-left"
+					style="color: #ffffff;"></i>
+			</button>
+			<button class="btn btn-secondary mag-glass-btn"
+				onclick="resetCondition()">
+				<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+			</button>
+		</div>
+	</div>
+
 	<div class="card card-body mt-3">
 		<div class="row">
 			<!-- Toast Grid를 표시할 div 추가 -->
@@ -82,11 +132,6 @@
 							        }
 							        return value; // 그 외의 값은 그대로 출력
 							    }
-							},
-							{
-								header : '요약',
-								name : 'summary',
-								align : 'center'
 							},
 							{
 								header : '주문일',
@@ -172,7 +217,8 @@
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
 											style="width: 80px;">납기일</label> <input type="text"
-											id="deliveryRequestDeadline" class="form-control w-50" readonly>
+											id="deliveryRequestDeadline" class="form-control w-50"
+											readonly>
 									</div>
 									<div class="col-md-6 d-flex align-items-center">
 										<label class="col-form-label me-5 text-end"
@@ -183,7 +229,8 @@
 								<div class="col-md-6 d-flex align-items-center">
 									<label class="col-form-label me-5 text-end"
 										style="width: 80px;">비고</label> <input type="text"
-										id="remarks" class="form-control" style="max-width: 580px;" readonly>
+										id="remarks" class="form-control" style="max-width: 580px;"
+										readonly>
 								</div>
 							</div>
 						</div>
@@ -361,6 +408,66 @@ function openOrderDetailModal(rowData) {
 // 서버에서 받은 제품 정보로 그리드를 업데이트하는 함수
 function updateProductDetails(products) {
     orderDetailGrid.resetData(products); // 그리드 업데이트
+}
+
+// 검색 함수
+function searchOrder() {
+	let productOrderCode = document.querySelector('#productOrderCode').value;
+    let company = document.querySelector('#company').value;
+    let orderStatus = document.querySelector('#orderStatus').value;
+    let startOrderDate = document.querySelector('#startOrderDate').value;
+    let endOrderDate = document.querySelector('#endOrderDate').value;
+    let startReturnDate = document.querySelector('#startReturnDate').value;
+    let endReturnDate = document.querySelector('#endReturnDate').value;
+    let startMoney = document.querySelector('#startMoney').value;
+    let endMoney = document.querySelector('#endMoney').value;
+    
+    // 주문상태 값 변환
+    if (orderStatus === "대기") {
+        orderStatus = "OR01";
+    } else if (orderStatus === "입고") {
+        orderStatus = "OR02";
+    } else if (orderStatus === "출고") {
+        orderStatus = "OR03";
+    } else if (orderStatus === "주문완료") {
+        orderStatus = "OR04";
+    } else if (orderStatus === "주문취소") {
+        orderStatus = "OR05";
+    } else if (orderStatus === "부분출고") {
+        orderStatus = "OR06";
+    }
+    
+    const filteredData = orderList.filter(item => {
+        return (!productOrderCode || item.productOrderCode.includes(productOrderCode)) &&
+               (!company || item.company.includes(company)) &&
+               (!orderStatus || item.orderStatus == orderStatus) &&
+               (!startOrderDate || item.orderDate >= startOrderDate) &&
+               (!endOrderDate || item.orderDate <= endOrderDate) &&
+               (!startReturnDate || item.deliveryRequestDeadline >= startReturnDate) &&
+               (!endReturnDate || item.deliveryRequestDeadline <= endReturnDate)&&
+               (!startMoney || item.amount >= startMoney) &&
+               (!endMoney || item.amount <= endMoney);
+    });
+
+// 필터링된 데이터를 다시 설정
+grid.resetData(filteredData);
+}
+
+// 검색 엔터 이벤트 추가
+document.querySelectorAll(".card-body input").forEach((ele) => {
+    ele.addEventListener('keydown', (event) => {				
+        if (event.keyCode === 13) {
+        	searchOrder();
+        }
+    });
+});
+
+// 검색 조건 초기화 함수
+function resetCondition() {
+    document.querySelectorAll('.card-body input').forEach((e) => {
+        e.value = null;
+    });
+    searchOrder();
 }
 </script>
 
