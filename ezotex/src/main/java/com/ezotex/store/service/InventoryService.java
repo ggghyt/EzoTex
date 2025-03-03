@@ -12,7 +12,10 @@ import com.ezotex.store.dto.storageInfoDTO;
 public interface InventoryService {
 
 	// 제품목록
-	public List<InventoryDTO> productList();
+	public List<InventoryDTO> productList(DeliverySearchDTO searchDTO);
+	
+	// 제품목록 카운트
+	public int productListCount(DeliverySearchDTO searchDTO);
 	
 	// 제품별 옵션 리스트
 	public Map<String, Object> productInfoList(String productCode);
@@ -34,5 +37,11 @@ public interface InventoryService {
 	
 	// 재고조정 창고위치 이동
 	public boolean locationUpdate(List<SizeDTO> sdto);
+	
+	// 불량 재고 조회
+	public List<ErrorProductDTO> errorProductList(DeliverySearchDTO searchDTO);
+	
+	// 불량 재고 카운트
+	public int errorProductCount(DeliverySearchDTO searchDTO);
 	
 }

@@ -7,9 +7,144 @@
 		<title>이조텍스SCM</title>
 	</head>
 	<body>
-		<h3 class="fs-3 fw-bold">| 불량처리 재고 조회</h3>
-		<div class="card card-body mt-3">
-			
+		<div class="d-flex align-items-center">
+		<h3 class="fs-3 fw-bold">| 불량 제품 조회</h3>
+		<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
+		<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
+	</div>
+	
+	
+	
+	
+	<div class="row ps-2">
+	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	    <p class="fs-5 fw-bolder">제품 정보</p>
+	
+	    <div class="row ps-2">
+					
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchProductName">
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchColor">
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchSize">
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">LOT</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="searchLot">
+				</div>
+				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">처리담당자</label>
+				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+					<input type="text" class="form-control" id="requestor">
+				</div>
+				
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">불량 처리일</label>
+				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
+					<input type="date" class="form-control text-end" id="startErrorDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end" id="endErrorDate" style="margin-left: 10px;">
+				</div>
+			</div>
+		
+	    <!-- 버튼 -->
+	    <div class="d-flex justify-content-center mt-2">
+           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchErrorProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+         </div>
+	  </div>
+	</div>
+	
+	
+	<div class="row">
+		<div class="col-5 card card-body m-2">
+			<p class="fs-5 fw-bolder mt-2">불량 제품 목록</p>
+		    <div class="d-flex align-items-center">
+			    <button class="btn btn-dark btn-sm" style="width:150px" onclick="exportSelectedToPDF()">PDF 내보내기</button>
+			    <label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">출력할 제품 선택</label>
+			    <div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+			        <select class="form-control" id="se">
+			            <option value="null">전체</option>
+			            <option value="PT02">PRD0001</option>
+			            <option value="PT01">PRD0002</option>
+			        </select>
+			    </div>
+			</div>
+
+			<div id="grid">
+				<div id="pagination" class="tui-pagination"></div>
+			</div>
 		</div>
+	</div>
+	
+	<script>
+	
+			function searchErrorProductList(){
+				errorGrid.readData(1,{
+					productCode: document.querySelector("#searchProductCode").value,
+					ProductName: document.querySelector("#searchProductName").value,
+					color: document.querySelector("#searchColor").value,
+					sizeCode: document.querySelector("#searchSize").value,
+					searchLot: document.querySelector("#searchLot").value,
+					requestor: document.querySelector("#requestor").value,
+					startErrorDate: document.querySelector("#startErrorDate").value,
+					endErrorDate: document.querySelector("#endErrorDate").value,
+				}, false)
+			}
+	
+			const dataSource = {
+		      api: {
+		          readData: { url: 'http://localhost:80/store/errorProductList', method: 'GET' },
+		        },
+		      contentType: 'application/json',
+		    };  
+		    
+		    const errorGrid = new Grid({
+		      el: document.getElementById('grid'), // 컨테이너 엘리먼트
+		      rowHeaders: ['rowNum','checkbox'],
+		      columnOptions: {
+		          resizable: true
+		      },
+		      pageOptions:{
+		          useClient: false,
+		          perPage: 10
+		        },
+		      columns: [ 
+		        { header: "제품코드", name: "productCode", align: "center"},
+		        { header: "제품명", name: "productName", align: "center"},
+		        { header: "색상", name: "productColor", align: "center"},
+		        { header: "사이즈", name: "productSize", align: "center"},
+		        { header: "LOT번호", name: "lot", align: "center"},
+		        { header: "처리일", name: "processDate", align: "center"},
+		        { header: "처리담당자", name: "errorCharger", align: "center"},
+		        
+		      ],
+		      data: dataSource,
+		    });
+		    
+		    
+		    
+		    
+		    function getSelectedRows() {
+		        const checkedRows = errorGrid.getCheckedRows();
+		        return checkedRows.map(row => row.productCode);
+		    }
+
+		    
+		    function exportSelectedToPDF(){
+		    	let data = getSelectedRows();
+		    	window.open(`/store/ErrorPdfview`, '_blank', 'width=1000', 'scrollbars=yes');
+		    }
+		    
+		    
+	</script>
+	
 	</body>
 </html>
