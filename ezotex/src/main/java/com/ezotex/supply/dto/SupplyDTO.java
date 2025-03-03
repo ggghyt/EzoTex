@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class SupplyDTO {
 	private String supplyPlanCode;
 	private Integer supplyYear;
+	private String supplyMonth;
+	
 	private String season;
 	private String chargerCode;
 	private String chargerName;
@@ -29,5 +31,6 @@ public class SupplyDTO {
 	
 	private String summary; // 조회용
 	private String productName;
+	private String unitName;
 }
 

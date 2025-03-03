@@ -43,8 +43,6 @@ function getSizeCommonCode(size) {
 
 
 
-
-
 // <input type="number"> 커스텀
 /* 사용법 : <div class="quantity">
 						 <input type="number" min="1" max="10" step="1" value="1">

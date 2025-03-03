@@ -14,6 +14,7 @@ public interface BomMapper {
 	int countProduct(ProductDTO product);
 	
 	// 선택한 제품의 옵션 조회
+	List<ProductDTO> listSize(String productCode);
 	List<ProductDTO> listColor(String productCode);
 	List<ProductDTO> listSizeByColor(@Param("productCode") String productCode, @Param("productColor") String productColor);
 	
@@ -23,4 +24,7 @@ public interface BomMapper {
 	// bom 등록
 	int insertBom(Object bom);
 	int insertBomDetail(Object bom);
+	
+	// BOM 등록 이후 페이지에서 모든 옵션 완료됐는지 확인하기 위함
+	String checkBomNull(String productCode);
 }

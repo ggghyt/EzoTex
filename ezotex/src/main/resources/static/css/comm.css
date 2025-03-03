@@ -51,7 +51,13 @@ td.tui-grid-cell select {
 	margin: 0 auto !important;
 }
 
+.w-90 {
+	width: 90% !important;
+}
 
+.modal::-webkit-scrollbar{
+    display:none;
+}
 
 
 
