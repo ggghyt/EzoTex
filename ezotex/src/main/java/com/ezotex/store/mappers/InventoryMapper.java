@@ -15,7 +15,10 @@ import com.ezotex.store.dto.storageInfoDTO;
 public interface InventoryMapper {
 
 	// 제품목록
-	public List<InventoryDTO> productList();
+	public List<InventoryDTO> productList(DeliverySearchDTO searchDTO);
+	
+	// 제품목록 카운트
+	public int productListCount(DeliverySearchDTO searchDTO);
 	
 	// 제품별 옵션 리스트
 	public List<Map<String, Object>> productInfoList(@Param("productCode")String productCode, @Param("list")List<StoreDeliveryDetailsDTO> list);

@@ -177,9 +177,25 @@ public class InventoryRestController {
 	
 	// 제품별 리스트
 	@GetMapping("productQyList")
-	public Map<String, Object> productList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage
-			) throws JsonMappingException, JsonProcessingException {
-		return GridUtil.grid(1, 100, iService.productList());
+	public Map<String, Object> productList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+										   @RequestParam(name = "page", defaultValue = "1") int page,
+										   DeliverySearchDTO searchDTO
+										) throws JsonMappingException, JsonProcessingException {
+		
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	// toast 페이지당 최대 건수
+		paging.setPage(page);			// 현재 페이지
+
+//			// 페이징 조건
+		searchDTO.setStart(paging.getFirst());
+		searchDTO.setEnd(paging.getLast());
+//
+//			// 페이징처리
+		paging.setTotalRecord(iService.productListCount(searchDTO));
+		
+		
+		return GridUtil.grid(paging.getPage(), iService.productListCount(searchDTO), iService.productList(searchDTO));
 	}
 	
 	// 제품별 옵션 리스트

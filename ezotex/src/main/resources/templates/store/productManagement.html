@@ -194,43 +194,46 @@
 							
 						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<input type="text" class="form-control pointer bg-white" id="searchReturnCode" placeholder="찾기" >
+							<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
 						</div>
 						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+							<input type="text" class="form-control pointer bg-white" id="searchProductName" placeholder="찾기" >
 						</div>
 						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">LOT</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+							<input type="text" class="form-control pointer bg-white" id="searchLot" placeholder="찾기" >
 						</div>
 						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">창고위치</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+							<input type="text" class="form-control pointer bg-white" id="location" placeholder="찾기" >
 						</div>
-						<label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<select class="form-control" id="se">
-								<option value="null">색상</option>
-							</select>
+							<input type="text" class="form-control pointer bg-white" id="searchColor" placeholder="찾기" >
 						</div>
-						<label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
+						<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
 						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-							<select class="form-control" id="se">
+							<input type="text" class="form-control pointer bg-white" id="sizeCode" placeholder="찾기" >
+						</div>
+						
+						<!-- <label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
+						<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
+							<select class="form-control" id="sizeCode">
 								<option value="null">사이즈</option>
 							</select>
-						</div>
+						</div> -->
 						
 						<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고일</label>
 						<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-							<input type="date" class="form-control text-end" id="startRequestDate" style="margin-right: 10px;"> ~ 
-							<input type="date" class="form-control text-end" id="endRequestDate" style="margin-left: 10px;">
+							<input type="date" class="form-control text-end" id="startStoreDate" style="margin-right: 10px;"> ~ 
+							<input type="date" class="form-control text-end" id="endStoreDate" style="margin-left: 10px;">
 						</div>
 					</div>
 			
 			    <!-- 버튼 -->
 			    <div class="d-flex justify-content-center mt-2">
-		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchReturnList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
+		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductManagementList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
 		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 		         </div>
 			  </div>
@@ -310,6 +313,21 @@
 	</div>
 
 	<script>
+	
+			function searchProductManagementList(){
+				ManagementGrid.readData(1,{
+					productCode: document.querySelector('#searchProductCode').value,
+					productName: document.querySelector('#searchProductName').value,
+					lot: document.querySelector('#searchLot').value,
+					location: document.querySelector('#location').value,
+					color: document.querySelector('#searchColor').value,
+					sizeCode: getSizeCommonCode(document.querySelector('#sizeCode').value.toUpperCase()),
+					startStoreDate: document.querySelector('#startStoreDate').value,
+					endStoreDate: document.querySelector('#endStoreDate').value,
+				}, false)
+			}
+	
+	
 		
 		
 			const ManagementData = {
