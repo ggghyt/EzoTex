@@ -296,7 +296,23 @@
 	</div>
 		
 	<script>
-		//session_user_code => 세션에서 가져온 회사코드임
+	
+		//상자 정보 객체
+		let boxInfo = null;
+		
+		fetch(`/delivery/packingSTDInfo`)
+		.then(rep => rep.json())
+		.then(res => { 
+			console.log(res);
+			let html = ''
+			for(let i=0; i<res.storage.length; i++) {
+				html += '<option value="' + res.storage[i] +'">'+ res.storage[i] +'</option>';
+			}
+			document.querySelector(".storage select").innerHTML = html;
+			
+			//박스 정보
+			boxInfo = res.box;
+		})
 		
 		//출고 목록
 		const dataSource = {
@@ -444,6 +460,57 @@
     		.then(res => { 
     			console.log('출고건 선택 통신 결과: ', res);
     			productListGrid.resetData(res);
+    			
+    			//부피 총 합을 구할 변수
+    			let vlSum = 0;
+    			//부피 총합 구하기
+    			for(let i=0; i<res.length; i++) {
+    				vlSum += res[i].vl * res[i].qySum;
+    			}
+    			
+    			
+    			/*
+    			//제일 작은 박스보다 작을 경우
+    			for(let i=0; i<boxInfo.length; i++) {
+    				console.log("boxInfo[i].boxVl", boxInfo[i].boxVl);
+    				
+
+    				
+    				if(boxInfo[i].boxSize == "소" && boxInfo[i].boxVl > vlSum) {
+    					console.log(' 작동');
+    					document.querySelector(".big-box").value = 0;
+    					document.querySelector(".middle-box").value = 0;
+    					document.querySelector(".small-box").value = 1;
+    					return;
+    				}
+    				if(boxInfo[i].boxSize == "중" && boxInfo[i].boxVl > vlSum) {
+    					document.querySelector(".big-box").value = 0;
+    					if(boxInfo[i].boxVl % vlSum != 0) {
+    						//중 상자로 딱 나누어 떨어지지 않을 때
+    						//document.querySelector(".middle-box").value = Math.floor(boxInfo[i].boxVl / vlSum);
+    						
+    						
+    					} else {
+    						//중 상자로 딱 나누어 떨어질 때
+    						document.querySelector(".middle-box").value = (boxInfo[i].boxVl / vlSum);
+    					}
+    				}
+    				
+    				if(boxInfo[i].boxSize == "대" && boxInfo[i].boxVl > vlSum) {
+    				
+    				}
+    				} */
+    			
+    			
+    			
+
+    				for(let i=0; i<boxInfo.length; i++) {
+    					console.log(0);
+    				}
+    			
+    			
+  				
+    			//boxInfo
     		})
         })
         
@@ -506,8 +573,19 @@
 			let data = productDetails.getRow(ev.rowKey);
 			console.log('제품 상세 선택:', data);
 			console.log("선택한 컬럼(검색할 사이즈)",ev.columnName);
-			//출고번호(deliveryCode), 제품코드(PRODUCT_CODE), 색상(PRODUCT_COLOR) 
 			
+			//사용자가 선택한 사이즈
+			let targetSize = getSizeCommonCode(ev.columnName.replace("DE", ""));
+			
+			//출고번호(data.deliveryCode), 제품코드(data.PRODUCT_CODE), 색상(data.PRODUCT_COLOR), 사이즈(ev.columnName)
+			
+			
+			fetch(`/delivery/deliveryLot?deliveryCode=${data.deliveryCode}&productCode=${data.PRODUCT_CODE}&productColor=${data.PRODUCT_COLOR}&productSize=${targetSize}`)
+    			.then(rep => rep.json())
+    			.then(res => {
+    				console.log(res);
+    				productLot.resetData(res);
+    			})
 			
         })
 	</script>

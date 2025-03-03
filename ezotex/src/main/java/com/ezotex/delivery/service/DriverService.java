@@ -3,8 +3,11 @@ package com.ezotex.delivery.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ezotex.delivery.dto.DriverDeliveryDTO;
 import com.ezotex.delivery.dto.DriverDeliverySearchDTO;
+import com.ezotex.delivery.dto.OrderInsertDTO;
 
 public interface DriverService {
 	
@@ -16,4 +19,5 @@ public interface DriverService {
 	
 	//배송완료
 	public String insertDeliver(DriverDeliveryDTO info);
+
 }

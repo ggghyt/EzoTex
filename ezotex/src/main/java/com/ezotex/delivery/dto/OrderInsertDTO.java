@@ -53,4 +53,7 @@ public class OrderInsertDTO {
 	private Integer price;			//제품 단가 금액 합계
 	private String productName;		//제품명
 	private Integer restQy;			//잔여수량
+	private String boxSize;			//박스 사이즈
+	private Integer boxVl;			//박스 용량
+	
 }

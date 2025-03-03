@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -138,6 +138,7 @@ public class DeliveryRestController {
 		return service.deliveryProductListWithLot(deliveryCode);
 	}
 	
+	//출고 제품 상세
 	@GetMapping("deliveryProductDetails")
 	public Map<String, Object> deliveryDetails(@RequestParam(name="deliveryCode")String deliveryCode,
 											   @RequestParam(name="productCode")String productCode) {
@@ -145,4 +146,18 @@ public class DeliveryRestController {
 		log.info(deliveryCode);
 		return service.deliveryProductDetails(deliveryCode, productCode);
 	}
+	
+	//출고 제품 로트
+	@GetMapping("deliveryLot")
+	public List<OrderInsertDTO> deliveryLot(@Param("info")OrderInsertDTO info) {
+		//deliveryCode, productCode, productSize, productColor
+		return service.deliveryLot(info);
+	}
+	
+	//출고 창고이름, 상자 사이즈 가져오기
+	@GetMapping("packingSTDInfo")
+	public Map<String, Object> deliveryLot() {
+		return service.packingSTDInfo();
+	}
+	
 }

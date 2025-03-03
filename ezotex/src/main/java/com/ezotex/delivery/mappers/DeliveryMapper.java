@@ -73,4 +73,12 @@ public interface DeliveryMapper {
     public List<Map<String, Object>> deliveryProductDetails(@Param("productCode")String productCode, 
 			@Param("list")List<DeliveryProductInfo> list,
 			@Param("deliveryCode")String deliveryCode);
+    
+    //납품 로트
+    public List<OrderInsertDTO> deliveryLot(@Param("info")OrderInsertDTO info);
+    
+    //상자 정보
+    public List<OrderInsertDTO> getBoxInfo();
+    
+    public List<String> getStorageInfo();
 }
