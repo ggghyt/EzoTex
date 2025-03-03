@@ -32,4 +32,6 @@ public class DeliveryProductInfo {
 	private int qySum;
 	//사이즈
 	private String sizeSort;
+	//부피
+	private int vl;
 }

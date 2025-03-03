@@ -316,7 +316,9 @@
 		                    de.storage_name AS storage_name,
 		                    de.dedt_address AS dedt_address,
 		                    de.delivery_status AS comm_status,
-		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date
+		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date,
+		                    de.charger_code AS delivery_charger_code,
+		                    de.charger_name AS delivery_charger
 		            FROM    delivery de JOIN order_list ol
 		                                  ON de.product_order_code = ol.product_order_code
 					<where>	               	
@@ -446,11 +448,12 @@
 		SELECT  dd.delivery_code AS delivery_code,
 		        dd.product_code AS product_code,
 		        pi.product_name AS product_name,
-		        SUM(dd.delivery_qy) AS qy_sum
+		        SUM(dd.delivery_qy) AS qy_sum,
+		        pi.vl AS vl
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
-		GROUP BY dd.delivery_code, dd.product_code, pi.product_name
+		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, pi.vl
 	</select>
 	
 	<select id="deliveryProductDetails">	

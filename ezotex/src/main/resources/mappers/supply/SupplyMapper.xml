@@ -196,7 +196,7 @@
 		                                                          OR d.product_size = o.product_size)
 		WHERE  o.product_code = #{productCode}
 	 </select>
-	
+
 	<!-- 공급계획 등록(헤더) -->
 	<insert id="insertSupplyPlan" parameterType="SupplyDTO">
 		INSERT INTO supply_plan (supply_plan_code, supply_year, season, charger_code, charger_name, remark) 

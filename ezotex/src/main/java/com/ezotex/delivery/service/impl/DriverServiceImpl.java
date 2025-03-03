@@ -1,8 +1,11 @@
 package com.ezotex.delivery.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.delivery.dto.DriverDeliveryDTO;
 import com.ezotex.delivery.dto.DriverDeliverySearchDTO;
@@ -28,6 +31,18 @@ public class DriverServiceImpl implements DriverService{
 	@Override
 	public int getDeliveryListCount(DriverDeliverySearchDTO searchDTO) {
 		return mapper.getDeliveryListCount(searchDTO);
+	}
+
+	@Override
+	@Transactional
+	public String insertDeliver(DriverDeliveryDTO info) {
+		//입력
+		mapper.insertDeliveryInfo(info);
+		
+		//
+		mapper.updateDeliveryState(info.getDeliveryCode());
+		
+		return "success";
 	}
 	
 	

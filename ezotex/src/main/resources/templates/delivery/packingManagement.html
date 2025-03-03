@@ -1,0 +1,515 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}"
+      layout:fragment="content">
+<head>
+<meta charset="UTF-8">
+<title>포장등록</title>
+<link rel="stylesheet" href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
+	<style>
+		#container {
+			height: 1000px;
+		}
+		.search-bar {
+			width: 780px;
+			height: 250px;
+			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
+			display: inline-block;
+			flex-direction:row;
+		}
+
+		.order-list {
+			width: 780px;
+			height: 778px;
+		}
+		.order-info{
+			flex-grow: 0 !important;
+			margin-top: 0;
+			margin-left: 30px;
+			width: 900px !important;
+			height: 1030px;
+		}
+		.search-unit {
+			display: flex;
+			margin-bottom:5px;
+		}
+		.search-unit div {
+			display: inline-block;
+		}
+		.search-bar > div {
+		    display: inline-block;
+		    vertical-align: top; /* 정렬 보정 */
+		}
+		.search-bar div:nth-of-type(1) {
+			padding-left:10px;
+			width: 300px;
+		}
+		.read-bar div:nth-of-type(1) {
+			margin-left: 40px;
+		}
+		.read-bar div {
+			margin-top: 10px;
+		}
+		.read-bar input[type=text] {
+			width: 180px !important;
+		}
+		.read-bar input[type=text]:nth-of-type(1) {
+			margin-right: 30px;
+		}
+		.read-bar span::nth-of-type(2) {
+			margin-left: 20px;
+		}
+		.search-bar div:nth-of-type(2) {
+			padding-left:10px;
+			width: 410px;
+		}
+		.search-unit span {
+			font-size: smaller;
+			line-height: 2.5;
+			width: 67px;
+		}
+		.search-bar div:nth-of-type(1) input{
+			margin-left: 10px;
+		}
+		.search-bar div input[type=text] {
+			width: 140px;
+		}
+		.search-bar select {
+		    margin-left: 10px;
+			width: 140px;
+			border: 1px solid #dee2e6;
+		    font-weight: 400;
+		    font-size: 0.875rem;
+		    border-radius: 4px;
+		    height: 2rem;
+		}
+		input[type=date] {
+			width: 140px;
+		}
+		.search-bar input[type=number] {
+			width: 140px;
+		}
+		.search-bar b {
+			display: block;
+			margin-bottom:5px;
+		}
+		.btn-secondary {
+			background-color: #b1b1b1;
+		}
+		.search-bar .btn-section{
+			width: 390px !important;
+			display: flex;
+			justify-content: right;
+			margin-top: 30px;
+			margin-bottom: 10px;
+		}
+		.search-bar .btn-section button{
+			margin-right: 10px;
+		}
+		.info-section>div{
+			width: 600px;
+		}
+		.completeBtn-section {
+			width: 807px;
+			display: flex;
+			justify-content: center;
+		}
+		.completeBtn-section button {
+			margin: 10px;
+		}
+		.dash {
+			line-height: 1.9;
+			margin-left: 2px;
+			margin-right: 2px;
+		}
+		/*여기까지 거의 공용*/
+		.read-bar {
+			width: 807px;
+			height: 130px;
+			margin-bottom: 20px !important;
+		}
+		.info-unit span{
+			width: 100px;
+		}
+		.read-memo {
+			width: 500px;
+			height: 100px;
+		}
+		.memo-span {
+			padding-left: 10px;
+			margin-right: 20px;
+		}
+		.order-info b {
+			margin-bottom: 20px;
+		}
+		.summary-info {
+			margin-top: 30px;
+		}
+		#productListGrid {
+			width: 807px;
+		}
+		.packing-info {
+			
+			width: 807px;
+			border: 1px solid #eeeeee;
+			border-radius: 13px;
+			flex-grow: 0!important
+		}
+		.storage select {
+			width: 150px;
+		}
+		.storage {
+			border-top-left-radius: 13px;
+    		border-top-right-radius: 13px;
+			display: flex;
+			width: 805px;
+			border-bottom: 1px solid #eeeeee;
+		}
+		.storage span {
+			width: 100px;
+		}
+		.storage {
+			background-color: #f9f9f9;
+			padding: 10px;
+		}
+		.packing-table {
+			width: 805px;
+		}
+		.packing-table table tr{
+			background-color: #f9f9f9 !important;
+		}
+		.packing-table table td{
+			border: 1px solid #eeeeee !important;
+		}
+		.bg-custom-gray {
+			background-color: #f9f9f9 !important;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<h3 class="fs-3 fw-bold">| 포장등록</h3>
+	<div id="container row" style="display: flex;">
+		<div>			
+			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
+				
+				<b>검색</b>
+									
+				<div>
+					<span class="search-unit">
+						<span>납품코드</span>
+						<input type="text" class="form-control search-delivery-code"> 
+					</span>
+					<span class="search-unit">
+						<span>제품코드</span>
+						<input type="text" class="form-control search-product-code">
+					</span>
+					<span class="search-unit">
+						<span>제품명</span>
+						<input type="text" class="form-control search-product-name"> 
+					</span>
+					<span class="search-unit">
+						<span>담당자코드</span>
+						<input type="text" class="form-control search-delivery-chargerCode">
+					</span>
+					<span class="search-unit">
+						<span>담당자</span>
+						<input type="text" class="form-control search-delivery-charger"> 
+					</span>
+				</div>
+				
+				<!-- 검색조건2: 발주일, 납기일 -->
+				<div>
+					
+					<span class="search-unit">
+						<span>발주일</span>
+						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-date-end">
+					</span>
+					<span class="search-unit">
+						<span>납기일</span>
+						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
+						<input type="date" class="form-control search-dedt-end">
+					</span>
+
+					<div class="btn-section">						
+						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+					</div>
+				</div>
+			</div>
+			<div class="card card-body mt-3 order-list">
+				<b>목록</b>
+				<!-- 검색결과 목록 -->
+				<div id="deliveryListGrid"></div>
+			</div>
+		</div>
+		
+		
+		<div class="col card card-body order-info">		
+			<b>제품 목록</b>
+			<!-- 제품 리스트 -->
+			<div id="productListGrid"></div>
+			<!-- 제품 상세 수량 피벗 -->
+			<div id="productDetails"></div>
+			<!-- 출고 로트 -->
+			<div id="productLot"></div>
+			
+			<b class="mt-5 mb-0">포장 정보</b>
+			<div class="packing-info">
+				<div class="storage">
+					<span>출고창고</span>
+					<select class=" form-control">
+						<option value=""></option>
+					</select>
+				</div>
+				
+				<table class="table packing-table">
+					<tbody>
+						<tr class="bg-custom-gray">
+							<td>상자사이즈</td>
+							<td>대</td>
+							<td>중</td>
+							<td>소</td>
+							<td>합계</td>
+						</tr>
+						<tr>
+							<td>출고수량</td>
+							<td><input type="number" class="form-control big-box"></td>
+							<td><input type="number" class="form-control middle-box"></td>
+							<td><input type="number" class="form-control small-box"></td>
+							<td><input type="number" class="form-control boxQySum" readOnly></td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="completeBtn-section">
+				<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
+		    		등록
+		  		</button>
+				<button class="btn btn-outline-secondary resetBtn">초기화</button>
+				
+			</div>
+		</div>
+	</div>
+		
+	<script>
+		//session_user_code => 세션에서 가져온 회사코드임
+		
+		//출고 목록
+		const dataSource = {
+		  	      api: {
+		  	          readData: { url: '/delivery/getDeliveryList' , method: 'GET' },
+		  	        },
+		  	      contentType: 'application/json',
+		  	    };  
+
+        const deliveryListGrid = new Grid({
+            el: document.getElementById('deliveryListGrid'),
+            rowHeaders: ['rowNum'],
+            pageOptions: {
+                useClient: false,    //데이터를 한번에 다 가져옴. 나중에 false로 할 예정
+                perPage: 15
+            },
+            bodyHeight: 619,
+            columnOptions: {
+  	          resizable: true
+  	      	},
+			scrollY: true,
+			scrollX: false,
+            columns: [
+				{ header: "납품코드", name: "deliveryCode"},
+				{ header: "업체코드", name: "companyCode"},
+				{ header: "업체명", name: "company"},
+				{ header: "납기일", name: "dedt"},
+				{ header: "요약", name: "summary"},			
+				{ header: "출고등록일", name: "registDate"},
+				{ header: "비고", name: "remark", hidden: true},
+				{ header: "출고담당자", name: "deliveryChargerCode", hidden: true},
+				{ header: "출고담당자코드", name: "deliveryCharger", hidden: true},
+				
+            ],
+            data: dataSource,
+			showDummyRows: true	//더미로우 추가
+        });
+		
+		//제품 목록
+		const productListGrid = new Grid({
+			el: document.getElementById('productListGrid'),
+			bodyHeight: 150,
+			width: 807,
+			scrollY: true,
+			scrollX: false,
+			rowHeaders: ['rowNum'],
+			columns: [
+				{ header: "출고번호", name: "deliveryCode", hidden: true},
+				{ header: "제품코드", name: "productCode"},
+				{ header: "제품명", name: "productName"},
+				{ header: "출고량합계", name: "qySum"},
+				{ header: "부피", name: "vl", hidden: true},
+			]
+		});
+		
+		//제품 출고 상세
+		const productDetails = new Grid({
+			el: document.getElementById('productDetails'),
+			scrollY: true,
+		    scrollX: true,
+		    width: 807,
+		    bodyHeight: 200,
+		    header: {
+		        	height: 70,
+		            complexColumns: [
+		              {
+		                header: 'S',
+		                name: 'stest',
+		                childNames: ['sizeS', 's']
+		              },
+		              {
+			             header: 'M',
+			             name: 'mtest',
+			             childNames: ['sizeM', 'm']
+			          },
+			          {
+				         header: 'L',
+				         name: 'ltest',
+				         childNames: ['sizeL', 'l']
+				      },
+				      {
+					      header: 'XL',
+					      name: 'xltest',
+					      childNames: ['sizeXl', 'xl']
+					  }
+		             ]},
+		        columns: [
+		            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
+		            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
+		            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
+		            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
+		            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
+		        ],
+			  columnOptions: {
+			        frozenCount: 1,
+			        frozenBorderWidth: 1,
+			        minWidth: 150
+			      }
+		  	  });  
+		
+		//출고 로트 수량
+		const productLot = new Grid({
+			el: document.getElementById('productLot'),
+			bodyHeight: 100,
+			width: 807,
+			scrollY: true,
+			scrollX: false,
+			columns: [
+				{ header: "로트", name: "productLot"},
+				{ header: "출고수량", name: "deliveryQy"}
+			]
+		});
+		
+		
+	    //출고목록 검색 함수
+        function searchOrderList() {
+        	deliveryListGrid.readData(1, {
+        		deliveryCode: document.querySelector('.search-delivery-code').value,
+        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
+        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-product-code').value,
+        		productName: document.querySelector('.search-product-name').value,
+        		deliveryStatus: 'DS01'
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+	    
+        //출고건 선택 저장 변수
+		let lastClicked = null;
+	    
+        deliveryListGrid.on('focusChange', ev => {
+			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			lastClicked = ev.rowKey; // 선택된 행 기억
+			
+			//선택행 데이터
+			let data = deliveryListGrid.getRow(ev.rowKey);
+			console.log('출고건 선택:', data);
+			
+			fetch(`/delivery/deliveryProductList?deliveryCode=${data.deliveryCode}`)
+    		.then(rep => rep.json())
+    		.then(res => { 
+    			console.log('출고건 선택 통신 결과: ', res);
+    			productListGrid.resetData(res);
+    		})
+        })
+        
+        //제품 선택 저장 변수
+        let lastClickedProduct = null;
+        //deliveryProductDetails
+        productListGrid.on('focusChange', ev => {
+        	productListGrid.removeRowClassName(lastClickedProduct, 'bg-blue'); // 이전 선택 행 배경색 삭제
+        	productListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+        	lastClickedProduct = ev.rowKey; // 선택된 행 기억
+			let data = productListGrid.getRow(ev.rowKey);
+			console.log('제품 선택:', data);
+			//deliveryCode, productCode
+			
+			fetch(`/delivery/deliveryProductDetails?deliveryCode=${data.deliveryCode}&productCode=${data.productCode}`)
+    			.then(rep => rep.json())
+    			.then(res => { 
+    				console.log('제품 사이즈 가져오기 통신 결과: ', res);
+    				//사이즈 정보 담을 배열
+    	            let products = [];
+    	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
+    	    		let size = [];
+    	            //색상, 사이즈 컬럼
+    				let color = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", align: "center", minWidth: 80 }];
+    	            
+    	            let deliveryDetails = res;
+    	            for(let i=0; i<deliveryDetails.optionList.length; i++) {
+    	            	let sizeCode = deliveryDetails.optionList[i].showSize;
+    	            	
+    	            	size.push({
+    		                header: sizeCode,
+    		                name: 'DE' + sizeCode,
+    		                minWidth: 150
+    		             })
+    		             
+    		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+    	            }
+    	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
+    	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
+    	            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
+    	            	if(data.productCode == deliveryDetails.qyList[i].PRODUCT_CODE) {	
+    	            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
+    						products.push({...deliveryDetails.qyList[i], productName : data.productName, deliveryCode: data.deliveryCode});
+    						
+    	            	}
+    	            }
+    				
+    				productDetails.setColumns(color);
+    				productDetails.resetData(products);
+    			})
+			
+        })
+        
+        //제품 상세 선택 저장 변수
+        let lastClickedProductDetail = null;
+        productDetails.on('focusChange', ev => {
+        	productDetails.removeRowClassName(lastClickedProductDetail, 'bg-blue'); // 이전 선택 행 배경색 삭제
+        	productDetails.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+        	lastClickedProductDetail = ev.rowKey; // 선택된 행 기억
+			let data = productDetails.getRow(ev.rowKey);
+			console.log('제품 상세 선택:', data);
+			console.log("선택한 컬럼(검색할 사이즈)",ev.columnName);
+			//출고번호(deliveryCode), 제품코드(PRODUCT_CODE), 색상(PRODUCT_COLOR) 
+			
+			
+        })
+	</script>
+</body>
+</html>

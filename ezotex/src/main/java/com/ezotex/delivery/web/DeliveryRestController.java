@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
+import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
@@ -93,6 +94,8 @@ public class DeliveryRestController {
 	//출고 등록
 	@PostMapping("deliveryRegist")
 	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		log.info(insertData.toString());
 		log.info(((Integer)insertData.size()).toString());
 		Map<String, String> map = new HashMap<>();
@@ -102,7 +105,7 @@ public class DeliveryRestController {
 	}
 	
 	//출고 조회
-	@GetMapping("deliveryList")
+	@GetMapping("getDeliveryList")
 	public Map<String, Object> deliveryList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
 											            @RequestParam(name = "page", defaultValue = "1")int page,
 											            DeliveryRegistSearchDTO searchDTO) {
@@ -127,6 +130,12 @@ public class DeliveryRestController {
 	public Map<String, Object> deliveryInfo(@RequestParam(name="deliveryCode")String deliveryCode) {
 		Map<String, Object> info = service.deliveryInfo(deliveryCode);
 		return info;
+	}
+	
+	//제품 리스트
+	@GetMapping("deliveryProductList")
+	public List<DeliveryProductInfo> deliveryProductList(@RequestParam(name="deliveryCode")String deliveryCode) { 
+		return service.deliveryProductListWithLot(deliveryCode);
 	}
 	
 	@GetMapping("deliveryProductDetails")

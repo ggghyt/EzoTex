@@ -5,7 +5,7 @@ import modalTest from "@/views/modalTest.vue";
 const driverRoutes = [
     {
         path: '',
-        redirect: { name : 'login' }
+        redirect: { name : 'driveList' }
     },
     {
         path: 'login',
@@ -13,8 +13,8 @@ const driverRoutes = [
         component: driverLogin
     },
     {
-        path: 'deliveryList',
-        name: 'deliveryList',
+        path: 'driveList',
+        name: 'driveList',
         component: driverMenu
     },
     {

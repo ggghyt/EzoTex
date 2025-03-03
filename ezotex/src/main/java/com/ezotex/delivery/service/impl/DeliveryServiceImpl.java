@@ -109,6 +109,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 			int reqQy = orderInfoList.get(i).getReqQy();
 			
 			int divyQy = orderInfoList.get(i).getDeliveryQy();
+			
+			//중간에 로트 수량이 없는 경우에는 디테일 정보를 입력하지 않고 다음으로 넘어감
+			if(divyQy == 0) {
+				continue;
+			}
+			
 			//로트 검색
 			List<OrderInsertDTO> lotList = mapper.getProductLot(orderInfoList.get(i));
 			//if(lotList.size() <= 0) return "fail";	//로트 수량 없을경우 바로 리턴하면 안됨. 0으로 의도적으로 보낼수도 있음.
@@ -203,7 +209,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		return mapper.deliveryListCnt(searchDTO);
 	}
 
-	//출고 단건조회
+	//출고 단건조회(출고 제품 + 담당자 리스트)
 	@Override
 	public Map<String, Object> deliveryInfo(String deliveryCode) {
 		DeliveryAllCharger charger = mapper.allcharger(deliveryCode);
@@ -216,7 +222,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 		
 		return map;
 	}
-
+	
+	//출고 제품 조회
+	public List<DeliveryProductInfo> deliveryProductListWithLot(String deliveryCode) { 
+		return mapper.deliveryProductList(deliveryCode);
+	}
+	
 	@Override
 	public Map<String, Object> deliveryProductDetails(String deliveryCode, String productCode) {
 		Map<String, Object> map = new HashMap<>();

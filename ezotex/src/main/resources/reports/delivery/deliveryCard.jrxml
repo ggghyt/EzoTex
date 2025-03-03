@@ -412,7 +412,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 					<font fontName="malgum"/>
 					<paragraph spacingAfter="0"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{QY_SUM}) + " 개  "]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{QY_SUM}) + " 개   "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="380" y="252" width="169" height="30" uuid="5f330697-adf1-4dcf-9843-ba247f6fc4d9"/>
@@ -423,7 +423,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 					<font fontName="malgum"/>
 					<paragraph spacingAfter="0"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{AMOUNT}) + " 원  "]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{AMOUNT}) + " 원   "]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -570,7 +570,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 								<box>
 									<pen lineWidth="0.25"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="malgum"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{REQUEST_QY}) + "    "]]></textFieldExpression>
@@ -597,7 +597,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 								<box>
 									<pen lineWidth="0.25"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="malgum"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{DELIVERY_QY}) + "    "]]></textFieldExpression>
@@ -624,7 +624,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 								<box>
 									<pen lineWidth="0.25"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="malgum"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{UNIT_PRICE}) + "    "]]></textFieldExpression>
@@ -651,7 +651,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 								<box>
 									<pen lineWidth="0.25"/>
 								</box>
-								<textElement textAlignment="Right" verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="malgum"/>
 								</textElement>
 								<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{PRICE}) + "    "]]></textFieldExpression>
