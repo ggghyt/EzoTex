@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +35,7 @@ import com.ezotex.standard.dto.ResetPasswordDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -174,7 +177,6 @@ public class CommonController {
 	@ResponseBody
 	@GetMapping("/idApproval")
 	public String idApproval(@RequestParam(name="id") String id) {
-		
 		return "{\"approval\" : \"" + service.idApproval(id) + "\"}";
 	}
 	

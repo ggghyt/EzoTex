@@ -370,6 +370,8 @@
 				failToast("직급을 선택하세요");
 			} else if (document.querySelector("#company_phone").value == 0) {
 				failToast("전화번호를 입력하세요");
+			} else if (phone_check(document.querySelector("#company_phone").value)) {
+				failToast("전화번호 양식이 다릅니다 (XXX-XXXX-XXXX)");
 			} else if (document.querySelector("#company_email").value == 0) {
 				failToast("이메일을 입력하세요");
 			} else if (document.querySelector("#addressNumber").value == 0) {
@@ -389,6 +391,18 @@
 				return true;
 			}
 			return false;
+		}
+		
+		function phone_check(num) {			
+			if (num.slice(3, 4) == "-" && num.slice(8, 9) == "-" && num.slice(9).length == 4) {
+				let test = num.slice(0, 3) + num.slice(4, 8) + num.slice(9)
+				return isNaN(test)
+			} else if (num.slice(3, 4) == "-" && num.slice(7, 8) == "-" && num.slice(8).length == 4) {
+				let test = num.slice(0, 3) + num.slice(4, 7) + num.slice(8)
+				return isNaN(test)
+			} else {
+				return true
+			}
 		}
 		
 		function simulateLoading() {
