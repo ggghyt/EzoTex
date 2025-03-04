@@ -166,6 +166,7 @@
 			border-bottom: 1px solid #eeeeee;
 		}
 		.storage span {
+		    padding-top: 4px;
 			width: 100px;
 		}
 		.storage {
@@ -184,6 +185,16 @@
 		.bg-custom-gray {
 			background-color: #f9f9f9 !important;
 			text-align: center;
+		}
+		.chargerInfo-section {
+			display: flex;
+			width: 200px !important;
+			position: relative;
+			left: 40%;
+		}
+		.chargerInfo-section input {
+			text-align: center;
+			width: 130px;
 		}
 	</style>
 </head>
@@ -262,6 +273,10 @@
 					<select class=" form-control">
 						<option value=""></option>
 					</select>
+					<span class="chargerInfo-section">					
+						<span>작성자 : </span>
+						<input type="text" class="form-control chargerName" readOnly>
+					</span>
 				</div>
 				
 				<table class="table packing-table">
@@ -273,7 +288,7 @@
 							<td>소</td>
 							<td>합계</td>
 						</tr>
-						<tr>
+						<tr class="boxQy">
 							<td>출고수량</td>
 							<td><input type="number" class="form-control big-box"></td>
 							<td><input type="number" class="form-control middle-box"></td>
@@ -286,7 +301,9 @@
 			</div>
 			
 			<div class="completeBtn-section">
-				<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
+				<!-- 배송 번호 -->
+				<input type="hidden" class="deliveryCode">
+				<button type="button" class="btn btn-success openIsRegist" data-bs-toggle="modal">
 		    		등록
 		  		</button>
 				<button class="btn btn-outline-secondary resetBtn">초기화</button>
@@ -294,8 +311,48 @@
 			</div>
 		</div>
 	</div>
-		
+	
+		<!-- 등록 확인 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!-- -->
+					<button type="button"
+						class="btn btn-outline-success packingRegistBtn"
+						data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-outline-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<script>
+		addEventListener("DOMContentLoaded", () => {
+			setTimeout(() => {
+				//바로넣으니 undifined로 나와서 살짝 지연해서 입력.
+				document.querySelector(".chargerName").value = session_user_name;
+			}, "300");
+			
+		});
 	
 		//상자 정보 객체
 		let boxInfo = null;
@@ -314,10 +371,26 @@
 			boxInfo = res.box;
 		})
 		
+			    //출고목록 검색 함수
+        function searchOrderList() {
+        	deliveryListGrid.readData(1, {
+        		deliveryCode: document.querySelector('.search-delivery-code').value,
+        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
+        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
+        		orderDateStart: document.querySelector('.search-date-start').value,
+        		orderDateEnd: document.querySelector('.search-date-end').value,
+        		dedtStart: document.querySelector('.search-dedt-start').value,
+        		dedtEnd: document.querySelector('.search-dedt-end').value,
+        		productCode: document.querySelector('.search-product-code').value,
+        		productName: document.querySelector('.search-product-name').value,
+        		deliveryStatus: 'DS01'
+        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
+        }
+		
 		//출고 목록
 		const dataSource = {
 		  	      api: {
-		  	          readData: { url: '/delivery/getDeliveryList' , method: 'GET' },
+		  	          readData: { url: '/delivery/getPackingList' , method: 'GET' },
 		  	        },
 		  	      contentType: 'application/json',
 		  	    };  
@@ -427,33 +500,40 @@
 		});
 		
 		
-	    //출고목록 검색 함수
-        function searchOrderList() {
-        	deliveryListGrid.readData(1, {
-        		deliveryCode: document.querySelector('.search-delivery-code').value,
-        		deliveryCharger: document.querySelector('.search-delivery-charger').value,
-        		deliveryChargerCode: document.querySelector('.search-delivery-chargerCode').value,
-        		orderDateStart: document.querySelector('.search-date-start').value,
-        		orderDateEnd: document.querySelector('.search-date-end').value,
-        		dedtStart: document.querySelector('.search-dedt-start').value,
-        		dedtEnd: document.querySelector('.search-dedt-end').value,
-        		productCode: document.querySelector('.search-product-code').value,
-        		productName: document.querySelector('.search-product-name').value,
-        		deliveryStatus: 'DS01'
-        	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
-        }
+
 	    
         //출고건 선택 저장 변수
 		let lastClicked = null;
+        
+        //제품 부피 총합 변수
+	    let allProductVlSum = 0;
 	    
+	  	//박스 수량
+		let lBox = 0;
+		let mBox = 0;
+		let sBox = 0;
+		let totalBoxQy = 0;
+		
         deliveryListGrid.on('focusChange', ev => {
 			deliveryListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 			deliveryListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 			lastClicked = ev.rowKey; // 선택된 행 기억
 			
+			//그리드 초기화
+			productDetails.clear();
+			productLot.clear();
+			
+			//상자 수량 기본값
+			document.querySelector(".big-box").value = 0;
+			document.querySelector(".middle-box").value = 0;
+			document.querySelector(".small-box").value = 0;
+			
 			//선택행 데이터
 			let data = deliveryListGrid.getRow(ev.rowKey);
 			console.log('출고건 선택:', data);
+			
+			//배송번호
+			document.querySelector(".deliveryCode").value = data.deliveryCode;			
 			
 			fetch(`/delivery/deliveryProductList?deliveryCode=${data.deliveryCode}`)
     		.then(rep => rep.json())
@@ -467,50 +547,63 @@
     			for(let i=0; i<res.length; i++) {
     				vlSum += res[i].vl * res[i].qySum;
     			}
-    			
-    			
-    			/*
-    			//제일 작은 박스보다 작을 경우
-    			for(let i=0; i<boxInfo.length; i++) {
-    				console.log("boxInfo[i].boxVl", boxInfo[i].boxVl);
-    				
+    			allProductVlSum = vlSum; //초기화시 사용할 변수에 값 저장
 
-    				
-    				if(boxInfo[i].boxSize == "소" && boxInfo[i].boxVl > vlSum) {
-    					console.log(' 작동');
-    					document.querySelector(".big-box").value = 0;
-    					document.querySelector(".middle-box").value = 0;
-    					document.querySelector(".small-box").value = 1;
-    					return;
-    				}
-    				if(boxInfo[i].boxSize == "중" && boxInfo[i].boxVl > vlSum) {
-    					document.querySelector(".big-box").value = 0;
-    					if(boxInfo[i].boxVl % vlSum != 0) {
-    						//중 상자로 딱 나누어 떨어지지 않을 때
-    						//document.querySelector(".middle-box").value = Math.floor(boxInfo[i].boxVl / vlSum);
-    						
-    						
-    					} else {
-    						//중 상자로 딱 나누어 떨어질 때
-    						document.querySelector(".middle-box").value = (boxInfo[i].boxVl / vlSum);
-    					}
-    				}
-    				
-    				if(boxInfo[i].boxSize == "대" && boxInfo[i].boxVl > vlSum) {
-    				
-    				}
-    				} */
-    			
-    			
-    			
-
-    				for(let i=0; i<boxInfo.length; i++) {
-    					console.log(0);
-    				}
-    			
-    			
+    			console.log('vlSum', vlSum);
+   				for(let i=0; i<boxInfo.length; i++) {
+   					//console.log("반복문 시작");
+   					//while문 반복 변수
+   					let roopVal = true;
+   					
+   					
+   					//제품 전체 사이즈가 박스 사이즈보다 클경우 내부 내용 실행
+   					if( vlSum - boxInfo[i].boxVl > 0) {   		
+   						//console.log("반복문 내부 제품 전체 사이즈가 박스 사이즈보다 클 경우 내부 내용 실행");
+	   					while(roopVal) {
+	   						//console.log("반복문 내부 while문 내부 박스 사이즈에 vlSum을 계속 뺌");
+	   						//console.log("빼고 있는 상자 사이즈: ", boxInfo[i].boxVl);
+							//제품 총 부피에서 상자 크기를 계속 뺌
+	   						vlSum -= boxInfo[i].boxVl;
+							
+							//계속 빼서 제품 총 부피가 0보다 작을때 
+	   						if(vlSum < 0) {
+	   							//console.log("반복문 내부 while문 내부 vlSum이 0보다 작아졌음");
+	   							//console.log('i의 값', i);
+	   							//roopVal = false;
+	   							switch(i) {
+	   								case 0 : //console.log('case1실행', Math.floor(allProductVlSum / boxInfo[i].boxVl));
+	   										 lBox = Math.floor(allProductVlSum / boxInfo[i].boxVl);
+	   										 document.querySelector(".big-box").value = lBox;
+	   										 vlSum = allProductVlSum % boxInfo[i].boxVl;
+	   										 roopVal = false;
+	   									break;
+	   								case 1 : //console.log('case2실행', Math.floor(vlSum / boxInfo[i].boxVl));
+	   										 mBox = Math.floor(allProductVlSum / boxInfo[i].boxVl);
+	   										 document.querySelector(".middle-box").value = mBox;
+	   										 vlSum = (allProductVlSum / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
+										     roopVal = false;
+										break;
+	   								case 2 : //console.log('case3실행', Math.floor(vlSum / boxInfo[i].boxVl));
+	   										 sBox = Math.ceil(allProductVlSum / boxInfo[i].boxVl);
+	   										 document.querySelector(".small-box").value = sBox;
+			   								 vlSum = ((allProductVlSum / boxInfo[i-2].boxVl) / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
+										     roopVal = false;
+										break;
+	   						        default:
+	   						            break;	
+	   							}
+	   							break;
+	   						}
+							//console.log('roopVal', roopVal);
+	   					}
+   					}
+   				}
+   				lBox = document.querySelector(".big-box").value;
+   				mBox = document.querySelector(".middle-box").value;
+   				sBox = document.querySelector(".small-box").value;
+   				//박스 수량 업데이트
+   				document.querySelector(".boxQySum").value = Number(document.querySelector(".big-box").value) + Number(document.querySelector(".middle-box").value) + Number(document.querySelector(".small-box").value);
   				
-    			//boxInfo
     		})
         })
         
@@ -587,6 +680,83 @@
     				productLot.resetData(res);
     			})
 			
+        })
+        
+        document.querySelectorAll(".boxQy input").forEach(ele => 
+        	ele.addEventListener("change", (event) => {
+        		console.log('작동');
+        		//상자 총 합계 화면에 출력
+   				document.querySelector(".boxQySum").value = Number(document.querySelector(".big-box").value) + Number(document.querySelector(".middle-box").value) + Number(document.querySelector(".small-box").value);
+        	})
+        );
+        /*
+        DELIVERY_CODE     
+		BOX_SIZE   
+		QY  
+		
+        PACKING_NO    packing_seq.nextVal                     
+		RGSDE                 
+		UPDDE               
+		CHARGER_CODE      
+		CHARGER_NAME
+		*/
+		
+		//서버로 보내기
+		document.querySelector('.openIsRegist').addEventListener("click", () => {
+			let registModal = new bootstrap.Modal(document.getElementById("registModal"));
+    		registModal.show();
+
+		})
+		
+		document.querySelector('.packingRegistBtn').addEventListener('click', () => {
+			//상자 정보 객체
+			let boxQyArr = [{size: "대", qy: Number(lBox)}, 
+				 {size: "중", qy: Number(mBox)}, 
+				 {size: "소", qy: Number(sBox)}];
+			
+			//서버로 보낼 객체 배열
+			let sendArr = [];
+			
+			//객체 배열 만들기
+			for(let i=0; i<3; i++) {
+				if(boxQyArr[i] != 0) {					
+					sendArr.push({boxSize: boxQyArr[i].size, 
+								  deliveryCode: document.querySelector(".deliveryCode").value,
+								  boxQy : boxQyArr[i].qy,
+								  storageName : document.querySelector(".storage select").value,
+								  chargerName : session_user_name,
+								  chargerCode : session_user_code
+									  });
+				}
+			}	
+			
+			console.log("서버 보내기 전 배열", sendArr);
+			//포장등록
+			const response = fetch('/delivery/packingInsert', {
+                method: 'post',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(sendArr)
+            })
+            .then(res => res.json())
+            .then(result => {
+            	console.log('서버 통신결과:', result);
+            	if(result == 'success') {
+						loading(400);
+						successToast("포장등록이 완료되었습니다.");
+            		}
+            	})
+		}) 
+        
+		//입력값 초기화
+        document.querySelector('.resetBtn').addEventListener("click", () => {
+        	console.log('작동');
+        	document.querySelector(".big-box").value = lBox;
+        	document.querySelector(".middle-box").value = mBox;
+        	document.querySelector(".small-box").value = sBox;
+        	document.querySelector(".boxQySum").value = totalBoxQy;
         })
 	</script>
 </body>

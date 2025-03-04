@@ -20,4 +20,7 @@ public interface DriverMapper {
 	
 	//출고 상태 업데이트
 	public int updateDeliveryState(@Param("deliveryCode")String deliveryCode);
+	
+	//배송 담당자 이름 업데이트
+	public int updateDriverInfo(@Param("info")DriverDeliveryDTO info);
 }

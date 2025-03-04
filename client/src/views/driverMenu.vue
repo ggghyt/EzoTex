@@ -22,7 +22,7 @@
           <span>상태</span>
           <select class="search-status form-control" v-model="status">
             <option value="">전체</option>
-            <option value="DS01">미완료</option>
+            <option value="DS03">미완료</option>
             <option value="DS05">완료</option>
           </select>
           <span class="btn-gruop">
@@ -52,7 +52,7 @@
         <div class="modal-body" style="text-align: center;">
           <div>
             <form>
-              <table class="table" action="http://localhost:80/driver/deliveryComplete" method="post" enctype="multipart/form-data">
+              <table class="table">
                 <tbody>
                   <tr>
                         <td scope="row">출고코드</td>
@@ -70,10 +70,12 @@
                         <td scope="row">납기일</td>
                         <td><input type="text" class="form-control" v-model="readDedt" disabled></td>
                       </tr>
+                      <!--
                       <tr>
                         <td scope="row">배송사진</td>
                         <td><input type="file" class="form-control" id="profile-upload" accept="image/*" @change="onChangeImg"/></td>
                       </tr>
+                    -->
                     </tbody>
                 </table>
                 <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none;">
@@ -98,9 +100,7 @@ import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
 import { Modal } from 'bootstrap'; //모달
 
-
-const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content") || "";
-const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content") || "X-XSRF-TOKEN"; // 기본값
+//document.title = "배송기사";
 
 const showToast = ref(false);
 const toastMessage = ref("");
@@ -292,6 +292,7 @@ function getCsrfToken() {
     }
 */
 
+/*
 //이미지 업로드 했을 때
 const onChangeImg = (e) => {
   e.preventDefault();
@@ -300,19 +301,42 @@ const onChangeImg = (e) => {
     console.log('업로드한 이미지:', fileInput.value);
   }
 }
+  */
 
 //폼 제출 메소드
 const submitFormBtn = async() => {
+  //const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content") || "";
+  //const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content") || "X-XSRF-TOKEN"; // 기본값
 
+  /*
   if(fileInput.value == '') {
     console.log('안됨');
     showToastMessage("사진을 업로드 해 주세요", "error");
     return;
   }
+    */
 
   console.log('작동');
   console.log({deliveryCode: readDeliveryCode.value, dedtAddress: readAddress.value, companyName: readCompanyName.value, dedt: readDedt.value, image: fileInput.value})
   
+
+  axios({method: 'get',
+         url: `${ajaxUrl}/driver/completeDelivery?deliveryCode=${readDeliveryCode.value}`
+        })
+        .then(result => {
+          console.log(result);
+          if(result.data == 'success') {
+            showToastMessage("배송이 완료되었습니다", "success");
+            gridInstance.value.readData();
+            //gridInstance.value.removeRow(selectedDelivery.value);
+          }
+          
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+  /* formData보내기---시간없어서 사진 올리는거 뺄 예정
   //const csrfTokkenVal = getCsrfToken();
   const formData = new FormData();
 
@@ -323,11 +347,12 @@ const submitFormBtn = async() => {
   formData.append(`image`, fileInput.value);
 
   console.log('formData:', formData);
-
+  */
 
   //let result = await axios.post(`${ajaxUrl}/driver/completeDelivery`, formData)
   //                        .catch(err=> console.log(err));
 
+  /*
   axios({method: 'post',
          url: `${ajaxUrl}/driver/completeDelivery`,
          data: formData,
@@ -347,7 +372,7 @@ const submitFormBtn = async() => {
         .catch(error => {
             console.error(error);
         });
-        
+        */
 
 
 }
