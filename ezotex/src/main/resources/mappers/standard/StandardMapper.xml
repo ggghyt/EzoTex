@@ -42,7 +42,7 @@ values(concat('EMP', LPAD(EMP_SEQ.nextval, 4, 0)),
        #{empImg}, 
        sysdate, 
        null, 
-       '0'
+       '1'
 )
 </insert>
 
@@ -73,7 +73,7 @@ values(concat('COM', LPAD(COMPANY_SEQ.nextval, 4, 0)),
        #{distance}, 
        #{requireTime}, 
        #{addressCode}, 
-       '0'
+       '1'
 )
 </insert>
 
@@ -159,7 +159,7 @@ join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
 join common_code_details common_code_details_2
 on product_info.unit_name = common_code_details_2.comm_detail_code
-where product_info.product_code like '%' || #{productCode} || '%'
+where product_info.product_code like '%' || upper(#{productCode}) || '%'
 <if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
 <if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
 <if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
@@ -176,7 +176,7 @@ left join product_category
 on product_info.product_code = product_category.product_code
 join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
-where product_info.product_code like '%' || #{productCode} || '%'
+where product_info.product_code like '%' || upper(#{productCode}) || '%'
 <if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
 <if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
 <if test='lclas != null and lclas != ""'> and lclas like '%' || #{lclas} || '%' </if>
@@ -394,4 +394,56 @@ set qy = #{qy}
 where safety_stock_month = #{safetyStockMonth}
 and product_code = #{productCode}
 </update>
+
+<select id="infomationList" resultType="map">
+select info_no, 
+       title, 
+       content, 
+       writer, 
+       emp_name as writer_name, 
+       write_date, 
+       edit_date
+from infomation
+join emp
+on infomation.writer = emp.emp_code
+</select>
+
+<select id="getInfomationCount">
+select count(*)
+from infomation
+</select>
+
+<select id="infomationNum" resultType="InfomationDTO">
+select info_no, 
+       title, 
+       content, 
+       writer, 
+       emp_name as writer_name, 
+       write_date, 
+       edit_date
+from infomation
+join emp
+on infomation.writer = emp.emp_code
+where info_no = #{num}
+</select>
+
+<update id="infomationUpdate">
+update infomation
+set title = #{title}, 
+    content = #{content},
+    edit_date = sysdate
+where info_no = #{num}
+</update>
+
+<insert id="infomationInsert">
+insert into infomation
+values(INFO_NO_SEQ.nextval, 
+       #{title}, 
+       #{content}, 
+       #{userCode}, 
+       sysdate, 
+       null
+)
+</insert>
+
 </mapper>

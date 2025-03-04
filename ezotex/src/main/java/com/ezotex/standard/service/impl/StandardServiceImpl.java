@@ -12,6 +12,7 @@ import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
 import com.ezotex.standard.dto.EmpDTO;
+import com.ezotex.standard.dto.InfomationDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
@@ -221,6 +222,26 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public int updateSafety(SafetyStockDTO safetyStockDTO) {
 		return mapper.updateSafety(safetyStockDTO);
+	}
+
+	@Override
+	public List<Map<String, Object>> infomationList() {
+		return mapper.infomationList();
+	}
+
+	@Override
+	public int getInfomationCount() {
+		return mapper.getInfomationCount();
+	}
+
+	@Override
+	public InfomationDTO infomationNum(int num) {
+		return mapper.infomationNum(num);
+	}
+
+	@Override
+	public int infomationUpdate(int num, String title, String content) {
+		return mapper.infomationUpdate(num, title, content);
 	}
 
 	

@@ -121,9 +121,11 @@
 	            // 승인된 경우, 폼을 제출
 	            event.target.submit();  // 폼을 강제로 제출
 	            simulateLoading()
-	        } else {
-	            console.log("false", result);
+	        } else if (result == 0) {
+	        	console.log("false", result);
 	            failToast("미승인 계정입니다");
+	        } else {
+	        	failToast("로그인 실패");
 	        }
 	    } catch (error) {
 	        console.error("Error:", error);
