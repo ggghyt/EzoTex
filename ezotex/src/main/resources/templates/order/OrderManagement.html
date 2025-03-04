@@ -259,6 +259,11 @@ let clickedData = ""; // 클릭한 행의 데이터
     	    savedProductData = savedProductData.filter(data => !deletedProductCodes.includes(data.productCode));
 
     	    console.log("삭제 후 savedProductData:", savedProductData);
+    	    
+    	    // newData2(최종 등록 데이터) 삭제
+    	    newData2 = newData2.filter(data => !deletedProductCodes.includes(data.productCode));
+    	    
+    	    console.log("삭제 후 newData2:", newData2);
     	  
     	});
     
@@ -624,8 +629,13 @@ let clickedData = ""; // 클릭한 행의 데이터
 		        if (!orderQuantity.value || orderQuantity.value == 0 || !orderAmount.value || orderAmount.value == 0) {
 		            alert("등록할 제품이 없습니다.");
 		            return false;
-		        	}
-		   		
+	        	}
+		        
+		        // newData2가 비어있으면 등록 불가
+		        if (newData2.length === 0) {
+		            alert("등록할 제품이 없습니다.");
+		            return false;
+		        }
 			  
 			  
 			  
@@ -768,7 +778,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 <!-- 제품추가 모달 -->
 <div class="modal fade" id="productCodeModal" tabindex="-1"
 	aria-labelledby="productCodeModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
+	<div class="modal-dialog" style="max-width: 600px; width: 80%;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="productCodeModalLabel">제품 선택</h5>
@@ -776,23 +786,40 @@ let clickedData = ""; // 클릭한 행의 데이터
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<!-- 검색창 -->
-				<div class="mb-3">
-					<label for="productCodeSearch" class="form-label">제품 코드</label> <input
-						type="text" id="productCodeSearch" class="form-control"
-						placeholder="제품 코드로 검색" oninput="filterGrid()"> <label
-						for="productNameSearch" class="form-label">제품명</label> <input
-						type="text" id="productNameSearch" class="form-control"
-						placeholder="제품명으로 검색" oninput="filterGrid()">
+				<!-- 제품 검색창 -->
+				<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+					<h3>검색</h3>
+					<table class="table mt-3">
+						<tbody>
+							<!-- 첫 번째 줄 -->
+							<tr>
+								<td class="col-auto"><label class="col-form-label">제품코드</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchProductCode" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">제품명</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchProductName" class="form-control"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="text-center mt-3">
+						<button class="btn btn-warning mag-glass-btn"
+							onclick="searchProductList()">
+							<i class="fa-solid fa-magnifying-glass icon-left"
+								style="color: #ffffff;"></i>
+						</button>
+						<button class="btn btn-secondary mag-glass-btn"
+							onclick="resetCondition()">
+							<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+						</button>
+					</div>
 				</div>
 				<div class="card card-body mt-3">
 					<div class="row">
 						<!-- Toast Grid를 표시할 div 추가 -->
-						<div class="col-12 card card-body m-2">
-							<p class="fs-5 fw-bolder">제품 선택 모달</p>
-							<!-- 그리드를 표시할 div -->
-							<div id="productGrid" style="width: 100%;"></div>
-						</div>
+						<p class="fs-5 fw-bolder">제품 선택</p>
+						<!-- 그리드를 표시할 div -->
+						<div id="productGrid" style="width: 100%;"></div>
 					</div>
 				</div>
 				<script th:inline="javascript">
@@ -827,7 +854,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 					{
 						header : '단가',
 						name : 'unitPrice',
-						align : 'center'
+						align : 'right'
 					},
 					],
 				    pageOptions: {
@@ -884,38 +911,12 @@ function addProductToOrderList(product) {
     // 그리드 데이터 갱신
     grid.resetData(currentData);
 }
-    // 제품 검색 필터링 함수
-function filterGrid() {
-    const productCode = document.getElementById('productCodeSearch').value.toLowerCase();
-    const productName = document.getElementById('productNameSearch').value.toLowerCase();
-    // productList 변수를 사용하여 필터링 수행
-    const filteredData = productList.filter(product => {
-        return product.productCode.toLowerCase().includes(productCode) &&
-               product.productName.toLowerCase().includes(productName);
-    });
-    // 필터링된 데이터를 Toast Grid에 적용
-    grid2.resetData(filteredData);
-}
-    //업체 검색 필터링 함수
-function filterCompanyGrid() {
-    const companyCode = document.getElementById('companyCodeSearch').value.toLowerCase();  // 업체 코드 검색값
-    const companyName = document.getElementById('companyNameSearch').value.toLowerCase();  // 업체명 검색값
-
-    // companyList 변수를 사용하여 필터링 수행
-    const filteredData = companyList.filter(company => {
-        return company.companyCode.toLowerCase().includes(companyCode) &&
-               company.companyName.toLowerCase().includes(companyName);
-    });
-
-    // 필터링된 데이터를 회사 그리드에 적용
-    companyGrid.resetData(filteredData);
-}
     
 </script>
 <!-- 업체코드 모달 -->
 <div class="modal fade" id="companyCodeModal" tabindex="-1"
 	aria-labelledby="companyCodeModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
+	<div class="modal-dialog" style="max-width: 600px; width: 80%;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="companyCodeModalLabel">업체 선택</h5>
@@ -923,21 +924,40 @@ function filterCompanyGrid() {
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<!-- 업체코드 , 업체명 검색 -->
-				<input type="text" id="companyCodeSearch" class="form-control mb-2"
-					placeholder="업체코드로 검색" oninput="filterCompanyGrid()"> <input
-					type="text" id="companyNameSearch" class="form-control mb-2"
-					placeholder="업체명으로 검색" oninput="filterCompanyGrid()">
-
+				<!-- 업체 검색창 -->
+				<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+					<h3>검색</h3>
+					<table class="table mt-3">
+						<tbody>
+							<tr>
+								<td class="col-auto"><label class="col-form-label">업체코드</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchCompanyCode" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">업체명</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchCompanyName" class="form-control"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="text-center mt-3">
+						<button class="btn btn-warning mag-glass-btn"
+							onclick="searchCompanyList()">
+							<i class="fa-solid fa-magnifying-glass icon-left"
+								style="color: #ffffff;"></i>
+						</button>
+						<button class="btn btn-secondary mag-glass-btn"
+							onclick="resetCompanyCondition()">
+							<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+						</button>
+					</div>
+				</div>
 				<!-- 예시: 업체코드 리스트 -->
 				<div class="card card-body mt-3">
 					<div class="row">
 						<!-- Toast Grid를 표시할 div 추가 -->
-						<div class="col-12 card card-body m-2">
-							<p class="fs-5 fw-bolder">업체 선택 모달</p>
-							<!-- 그리드를 표시할 div -->
-							<div id="companyGrid" style="width: 100%;"></div>
-						</div>
+						<p class="fs-5 fw-bolder">업체 선택</p>
+						<!-- 그리드를 표시할 div -->
+						<div id="companyGrid" style="width: 100%;"></div>
 					</div>
 				</div>
 				<script th:inline="javascript">
@@ -1026,6 +1046,73 @@ function filterCompanyGrid() {
       // 주문일 input에 오늘 날짜 기본값 설정
       document.getElementById('orderDate').value = dateString;
   };
+  
+  
+	// 제품 모달 검색 함수
+	function searchProductList() {
+      const productCode = document.querySelector('#searchProductCode').value;
+      const productName = document.querySelector('#searchProductName').value;
+      
+      const filteredData = productList.filter(item => {
+          return (!productCode || item.productCode.includes(productCode)) &&
+                 (!productName || item.productName.includes(productName));
+      });
+
+	    // 필터링된 데이터를 다시 설정
+	    grid2.resetData(filteredData);
+	}
+
+	// 검색 엔터 이벤트 추가
+	document.querySelectorAll(".card-body input").forEach((ele) => {
+	    ele.addEventListener('keydown', (event) => {				
+	        if (event.keyCode === 13) {
+	        	searchProductList();
+	        }
+	    });
+	});
+
+	// 검색 조건 초기화 함수
+	function resetCondition() {
+/* 	    document.querySelectorAll('.card-body input').forEach((e) => {
+	        e.value = null;
+	    }); */
+	    document.getElementById('searchProductCode').value = '';
+	    document.getElementById('searchProductName').value = '';
+	    searchProductList();
+	}
+	
+	// 업체 모달 검색 함수
+	function searchCompanyList() {
+      const companyCode = document.querySelector('#searchCompanyCode').value;
+      const companyName = document.querySelector('#searchCompanyName').value;
+      
+      const filteredData = companyList.filter(item => {
+          return (!companyCode || item.companyCode.includes(companyCode)) &&
+                 (!companyName || item.companyName.includes(companyName));
+      });
+
+	    // 필터링된 데이터를 다시 설정
+	    companyGrid.resetData(filteredData);
+	}
+
+	// 검색 엔터 이벤트 추가
+	document.querySelectorAll(".card-body input").forEach((ele) => {
+	    ele.addEventListener('keydown', (event) => {				
+	        if (event.keyCode === 13) {
+	        	searchCompanyList();
+	        }
+	    });
+	});
+
+	// 검색 조건 초기화 함수
+	function resetCompanyCondition() {
+/* 	    document.querySelectorAll('.card-body input').forEach((e) => {
+	        e.value = null;
+	    }); */
+	    document.getElementById('searchCompanyCode').value = '';
+	    document.getElementById('searchCompanyName').value = '';
+	    searchCompanyList();
+	}
 </script>
 
 <style>
