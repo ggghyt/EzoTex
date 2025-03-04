@@ -71,6 +71,7 @@ const createOptions = function(ele, uri){
 
 // 초기화 버튼 클릭 시 입력값뿐만 아니라 옵션도 초기화
 document.getElementById('resetBtn').onclick = () => {
+  //selectedPlan = null;
 	selectedMtr = null;
 	colorInfo = [];
 	colorBox.innerHTML = '<option value="null">미선택</option>';
@@ -352,7 +353,7 @@ function loadModalGrid(type, obj){ // type: 'material' or 'company' or 'orderPla
   // 배열값이 있는 경우 쿼리스트링을 직접 만들어야 정상 출력
   if(status) status.forEach(code => query += `&status=${code}` );
 	
-	fetch(`/supply/${type}List?${query}`)
+	fetch(`/mtr/${type}List?${query}`)
 	.then(response => response.json())
 	.then(result => {
     let data = result.data.contents;
@@ -435,14 +436,14 @@ async function loadColorPriceInfo(row){
 	let query = new URLSearchParams(valueObj);
 	
 	// null옵션 먼저 불러오기
-	let nullOpt = await fetch(`/supply/optionPrice?${query}`)
+	let nullOpt = await fetch(`/mtr/optionPrice?${query}`)
         .then(response => response.json())
         .then(result => {
             console.log('null옵션 정보: ', result);
             return result;
     })
 	
-	let options = await fetch(`/supply/optionPriceList?${query}`)
+	let options = await fetch(`/mtr/optionPriceList?${query}`)
 		.then(response => response.json())
 		.then(result => {
 			console.log('옵션별 정보: ', result);
@@ -658,7 +659,7 @@ function insertOrder(){
 	
 	// 업체별 발주서 비고/납기일 조정 모달 표시
 	insertGrid.resetData(modalData);
-    document.getElementById('insertCnt').innerText = modalData.length;
+  document.getElementById('insertCnt').innerText = modalData.length;
 	modalTitle.innerText = '등록 확인';
   
 	insertListDiv.style.display = '';
@@ -674,11 +675,11 @@ confirmBtn.addEventListener('click', () => {
     header.dueDate = data.dueDate;
     header.remark = data.remark;
   });
-  insertObj.mtrilOrderPlanCode = selectedPlanCode; // 발주계획서를 선택했다면 상태변경하기위해 전송
+  if(selectedPlan != null) insertObj.mtrilOrderPlanCode = selectedPlan.mtrilOrderPlanCode; // 발주계획서를 선택했다면 상태변경하기위해 전송
   console.log(insertObj);
   
 	loading();
-	fetch('/supply/mtrOrder', {
+	fetch('/mtr/mtrOrder', {
 		method: 'POST',
 		headers: {...headers, 'Content-Type': 'application/json'},
 		body: JSON.stringify(insertObj)
@@ -702,7 +703,7 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
-    planListDiv.style.display = 'none';
+  planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
 }
@@ -711,7 +712,7 @@ function closeAll(){
 function loadPlanData(planCode){  
   if(isModifying) modifyMode(false);
   
-  fetch(`/supply/orderPlan/${planCode}`) // 단건조회한 결과를 발주목록에 그대로 추가함.
+  fetch(`/mtr/orderPlan/${planCode}`) // 단건조회한 결과를 발주목록에 그대로 추가함.
   .then(response => response.json())
   .then(result => {
     console.log(result);

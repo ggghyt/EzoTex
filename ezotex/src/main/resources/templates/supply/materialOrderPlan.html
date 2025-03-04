@@ -71,7 +71,7 @@
 			  // => orderGrid에 있는 데이터들이라 통째로 전송
 			  
 			  loading();
-			  fetch('/supply/mtrOrderPlan', {
+			  fetch('/mtr/mtrOrderPlan', {
 			    method: 'POST',
 			    headers: {...headers, 'Content-Type': 'application/json'},
 			    body: JSON.stringify({headerObj, detailArr: planData})

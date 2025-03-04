@@ -23,7 +23,7 @@
 	<body>
 	  <div class="d-flex justify-content-between">
 		<h3 class="fs-3 fw-bold m-0">| 공급계획서 조회</h3>
-		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	  </div>
 		<div class="card card-body mt-4">
 			<form class="row ms-3 pe-0">
@@ -47,13 +47,13 @@
 		         </div>
 				 
 				 <div class="row col-12 col-lg-6 pe-0">
-				     <label for="productCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				     <label for="scProductCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control pointer" placeholder="찾기" id="productCode">
+			           <input type="text" class="form-control pointer" placeholder="찾기" id="scProductCode">
 			         </div>
-			         <label for="productName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+			         <label for="scProductName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control" id="productName">
+			           <input type="text" class="form-control" id="scProductName">
 			         </div>
 			         <label for="scSupplyPlanCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
@@ -111,70 +111,80 @@
 	             <div class="modal-body p-3 pt-2">
 	                
 	                <!-- 모달 내용 -->
+	                <form id="productList" style="display: none">
+                    <!-- 자재 선택 모달 -->
+                    <div th:replace="supply/bomManagement :: productList"></div>
+                  </form>
+	                
 	                <!-- 공급계획서 헤더 상세내용 -->
-	                <div class="card card-body mb-3 pb-2">
-	                  <div class="row ps-2">
-	                    <label for="supplyPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
-	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="supplyPlanCode" readonly>
-	                    </div>
-	                    <label for="supplyYear" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급년도</label>
-	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="supplyYear" readonly>
-	                    </div>
-	                    <label for="season" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
-	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="season" readonly>
-	                    </div>
-	                    <label for="chargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
-	                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="chargerName" readonly>
-	                    </div>
-	                  </div>
-	                </div>
-	                
-	                <!-- 제품 목록 -->
-	                <div class="d-flex justify-content-between align-items-center mb-2">
-	                  <p class="fs-6 fw-bolder m-0">공급제품 목록</p>
-	                  <button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
-	                </div>
-	                <div id="planDetailGrid"></div>
-	                
-	                <hr>
-	                <!-- 제품 상세 정보 -->
-	                <p class="fs-6 fw-bolder mb-3 me-3">제품 상세</p>
-	                <div class="row">
-	                  <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
-	                  <div class="col-8 col-lg-4 d-flex mb-2">
-	                    <input type="search" class="form-control" id="selectedPrdCode" readonly>
-	                  </div>
-	                  <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
-	                  <div class="col-8 col-lg-4 d-flex mb-2">
-	                    <input type="search" class="form-control" id="selectedPrdName" readonly>
-	                  </div>
-	                 </div>
-	                <div id="optionGrid"></div>
-	                
-	                <!-- 합계, 등록일, 비고 -->
-	                <div class="card card-body mt-2 pb-2">
-	                  <div class="row ps-2">
-	                  
-	                    <label for="rgsde" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
-	                    <div class="col-8 col-lg-2 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="rgsde" readonly>
-	                    </div>
-	                    <label for="remark" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
-	                    <div class="col-8 col-lg-8 d-flex align-items-center mb-2">
-	                      <input type="text" class="form-control" id="remark" readonly>
-	                    </div>
-	                    
-	                  </div>
+	                <div id="detailList" style="display: none">
+		                <div class="card card-body mb-3 pb-2">
+		                  <div class="row ps-2">
+		                    <label for="supplyPlanCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="supplyPlanCode" readonly>
+		                    </div>
+		                    <label for="supplyYear" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급년도</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="supplyYear" readonly>
+		                    </div>
+		                    <label for="season" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">시즌</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="season" readonly>
+		                    </div>
+		                    <label for="chargerName" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+		                    <div class="col-8 col-sm-4 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="chargerName" readonly>
+		                    </div>
+		                  </div>
+		                </div>
+		                
+		                <!-- 제품 목록 -->
+		                <div class="d-flex justify-content-between align-items-center mb-2">
+		                  <p class="fs-6 fw-bolder m-0">공급제품 목록</p>
+		                  <button id="xlsxDetail" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		                </div>
+		                <div id="planDetailGrid"></div>
+		                
+		                <hr>
+		                <!-- 제품 상세 정보 -->
+		                <p class="fs-6 fw-bolder mb-3 me-3">제품 상세</p>
+		                <div class="row">
+		                  <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+		                  <div class="col-8 col-lg-4 d-flex mb-2">
+		                    <input type="search" class="form-control" id="selectedPrdCode" readonly>
+		                  </div>
+		                  <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+		                  <div class="col-8 col-lg-4 d-flex mb-2">
+		                    <input type="search" class="form-control" id="selectedPrdName" readonly>
+		                  </div>
+		                 </div>
+		                <div id="optionGrid"></div>
+		                
+		                <!-- 합계, 등록일, 비고 -->
+		                <div class="card card-body mt-2 pb-2">
+		                  <div class="row ps-2">
+		                  
+		                    <label for="rgsde" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">등록일</label>
+		                    <div class="col-8 col-lg-2 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="rgsde" readonly>
+		                    </div>
+		                    <label for="remark" class="col-4 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
+		                    <div class="col-8 col-lg-8 d-flex align-items-center mb-2">
+		                      <input type="text" class="form-control" id="remark" readonly>
+		                    </div>
+		                    
+		                  </div>
+		                </div>
 	                </div>
 	                
 	             </div>
 	              <div class="modal-footer">
-	                <button type="button" id="confirmBtn" class="btn btn-success" data-bs-dismiss="modal">자재소요량 조회</button>
 	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+	                <!-- 
+	                <button type="button" id="modifyBtn" class="btn btn-warning">수정</button>
+                  <button type="button" id="modifyConfirmBtn" class="btn btn-success" style="display: none">수정완료</button>
+	                -->
 	              </div>
 	           </div>
 	        </div>

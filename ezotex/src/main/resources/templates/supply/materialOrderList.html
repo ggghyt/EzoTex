@@ -24,7 +24,7 @@
 	<body>
 	  <div class="d-flex justify-content-between">
 		<h3 class="fs-3 fw-bold m-0">| 발주내역 조회</h3>
-		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
 	  </div>
 	  <!-- 타임리프 fragment 사용하여 html, js 통째로 복사 -->
 	  <div th:replace="~{supply/materialOrderPlanList :: materialOrderPlanList(th)}"></div>
@@ -35,7 +35,7 @@
 	    // 발주내역 그리드
 	    planGrid = new Grid({
 		    el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
-		    data: { api: { readData: { url: '/supply/orderList', method: 'GET' }, initialRequest: false } },
+		    data: { api: { readData: { url: '/mtr/orderList', method: 'GET' }, initialRequest: false } },
 		    columns: [
 		        { header: '발주코드', name: 'mtrilOrderCode', width: 120 },
 		        { header: '업체코드', name: 'companyCode' },
@@ -132,7 +132,7 @@
 	    /******************** Tui Grid 출력 ********************/
 	    // 검색 적용
 	    document.getElementById('orderSearchBtn').removeEventListener('click', orderSearch);
-		document.getElementById('orderSearchBtn').addEventListener('click', () => {
+		  document.getElementById('orderSearchBtn').addEventListener('click', () => {
 		    let checkedStatus = document.querySelectorAll('input[name="status"]:checked');
 		    checkedStatus = Array.from(checkedStatus).map(ele => ele.value); // 가상의 노드들을 복사하여 배열처리
 		    
@@ -147,19 +147,19 @@
 		        qyMin: document.getElementById('qyMin').value,
 		        qyMax: document.getElementById('qyMax').value,
 		        amountMin: document.getElementById('amountMin').value,
-                amountMax: document.getElementById('amountMax').value,
+            amountMax: document.getElementById('amountMax').value,
 		        dueMin: document.getElementById('dueMin').value,
 		        dueMax: document.getElementById('dueMax').value,
 		        rgsdeMin: document.getElementById('rgsdeMin').value,
 		        rgsdeMax: document.getElementById('rgsdeMax').value,
 		        chargerName: document.getElementById('scChargerName').value,        
 		    };
-		    loadPlanList(dto, '/supply/orderList');
+		    loadPlanList(dto, '/mtr/orderList');
 		});
 		
 		// 선택한 발주서의 상세내역 조회
 		function loadPlanDetail(mtrilOrderCode){
-		  fetch(`/supply/orderInfo/${mtrilOrderCode}`)
+		  fetch(`/mtr/orderInfo/${mtrilOrderCode}`)
 		  .then(response => response.json())
 		  .then(result => {
 		    let data = result;
@@ -172,6 +172,36 @@
 		  });
 		}
 		
+		// 발주취소버튼 동작 (상태가 RS01='대기'인 발주서에만 표시)	
+		document.addEventListener('DOMContentLoaded', () => {
+			createModal({ 
+		      type: 'delete',
+		      header: '취소 확인',
+		      content: '해당 발주내역을 취소하시겠습니까?',
+		    	buttonText: '확인',
+		      confirm: () => {
+		    	  fetch('/mtr/mtrOrder', {
+	    	        method: 'PUT',
+	    	        headers: {...headers, 'Content-Type': 'application/json'},
+	    	        body: JSON.stringify({mtrilOrderCode: selected.mtrilOrderCode, status: 'RS04'})
+	    	    })
+	    	    .then(response => response.json())
+	    	    .then(result => {
+	    	        if(result == true){
+	    	        	successToast('발주내역이 취소되었습니다.');
+	    	        	selected.status = '취소';
+	    	        	planGrid.setRow(selected.rowKey, selected);
+	    	        	cancelBtn.style.display = 'none';
+	    	        }
+	    	        else failToast('알 수 없는 오류로 실패했습니다.');
+	    	    });
+		      }
+		  }); 
+		});
+		
+		cancelBtn.addEventListener('click', () => {
+			$('#simpleModal').modal('show');
+		});
 		
 	  </script>
 	  

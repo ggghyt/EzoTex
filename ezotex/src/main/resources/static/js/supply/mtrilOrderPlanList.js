@@ -11,6 +11,29 @@ let remarkBox = document.getElementById('remark');
 
 document.addEventListener('DOMContentLoaded', () => { 
   changeClas(lclasBox, sclasBox);
+  updateRange('qyMin', 'qyMax');
+  if(th != null) updateRange('amountMin', 'amountMax');
+  updateRange('dueMin', 'dueMax');
+  updateRange('rgsdeMin', 'rgsdeMax');
+});
+
+// 엑셀 내보내기 버튼 이벤트
+document.getElementById('xlsx').addEventListener('click', () => {
+  if(planGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+  let fileNm = th != null ? '발주내역전체_' : '발주계획전체_';
+  planGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: fileNm + dateFormatter().replaceAll('-','')
+  });
+});
+
+// 엑셀 내보내기(디테일)
+document.getElementById('xlsxDetail').addEventListener('click', () => {
+  let fileNm = th != null ? '발주내역_' : '발주계획_';
+  planDetailGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: fileNm + document.getElementById('mtrilOrderPlanCode').value
+  });
 });
 
 // 대분류 onChange 이벤트 등록 함수
@@ -54,7 +77,6 @@ class CustomBtnRender {
             compNameBox.value = selectedComp.companyName;
         } else if(type == 'plan'){
             selected = planGrid.getRow(props.rowKey);
-            console.log(selected);
           
             // 모달에 선택한 정보 표시
             document.getElementById('mtrilOrderPlanCode').value = selected.mtrilOrderPlanCode ? selected.mtrilOrderPlanCode : selected.mtrilOrderCode;
@@ -62,7 +84,8 @@ class CustomBtnRender {
             document.getElementById('rgsde').value = dateFormatter(selected.rgsde);
             dueDateBox.value = dateFormatter(selected.dueDate);
             remarkBox.value = selected.remark;
-          
+            
+            if(selected.status == '대기') cancelBtn.style.display = ''; // 발주서 상태가 대기인 경우에만 발주취소 표시
             loadPlanDetail(selected.mtrilOrderPlanCode ? selected.mtrilOrderPlanCode : selected.mtrilOrderCode);
         }
         if(type == 'mtr' || type == 'comp'){            
@@ -82,7 +105,7 @@ class CustomBtnRender {
 /******************** Tui Grid ********************/ 
 let planGrid = th != null ? null : new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
-    data: { api: { readData: { url: '/supply/orderPlanList', method: 'GET' }, initialRequest: false } },
+    data: { api: { readData: { url: '/mtr/orderPlanList', method: 'GET' }, initialRequest: false } },
     columns: [
         { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 120 },
         { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value) },
@@ -228,6 +251,7 @@ let planDetailGrid = th != null ? null : new Grid({
 // 모달 El
 let modalTitle = document.getElementById('modalTitle');
 let writeBtn = document.getElementById('writeBtn');
+let cancelBtn = document.getElementById('orderCancelBtn');
 let mtrListDiv = document.getElementById('materialList');
 let compListDiv = document.getElementById('companyList');
 let planDetailDiv = document.getElementById('planDetailList');
@@ -274,12 +298,12 @@ function orderSearch(){
         rgsdeMax: document.getElementById('rgsdeMax').value,
         chargerName: document.getElementById('scChargerName').value,        
     };
-    if(th == null) loadPlanList(dto, '/supply/orderPlanList');
+    if(th == null) loadPlanList(dto, '/mtr/orderPlanList');
 }
 
 // 선택한 발주계획서의 상세내역 조회
 function loadPlanDetail(mtrilOrderPlanCode){
-  fetch(`/supply/orderPlan/${mtrilOrderPlanCode}`)
+  fetch(`/mtr/orderPlan/${mtrilOrderPlanCode}`)
   .then(response => response.json())
   .then(result => {
     let data = result;
@@ -297,7 +321,7 @@ function loadPlanDetail(mtrilOrderPlanCode){
 function loadModalGrid(type, obj){ // type: 'material' or 'company'
   let query = new URLSearchParams(obj);
     
-    fetch(`/supply/${type}List?${query}`)
+    fetch(`/mtr/${type}List?${query}`)
     .then(response => response.json())
     .then(result => {
     let data = result.data.contents;
@@ -356,7 +380,7 @@ document.getElementById('comSearchBtn').addEventListener('click', () => {
 
 // 발주계획서 => 발주서 작성 이동
 writeBtn.addEventListener('click', () => {
-    location.href = '/supply/mtrOrder?mtrilOrderPlanCode=' + selected.mtrilOrderPlanCode 
+    location.href = '/mtr/mtrOrder?mtrilOrderPlanCode=' + selected.mtrilOrderPlanCode 
                   + '&dueDate=' + dateFormatter(selected.dueDate);
 });
 
@@ -384,15 +408,22 @@ modifyConfirmBtn.addEventListener('click', () => {
         remark: remarkBox.value
     };
     
-    fetch('/supply/mtrOrderPlan', {
+    fetch('/mtr/mtrOrderPlan', {
         method: 'PUT',
         headers: {...headers, 'Content-Type': 'application/json'},
         body: JSON.stringify({headerObj, detailArr})
     })
     .then(response => response.json())
     .then(result => {
-        if(result == true) successToast('저장되었습니다.');
-        // 수정사항 목록에 반영
+        if(result == true){ 
+          successToast('저장되었습니다.');
+          // 변경사항 반영
+          selected.updateDate = dateFormatter();
+          selected.remark = remarkBox.value;
+          selected.dueDate = dueDateBox.value;
+          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
+          planGrid.setRow(selected.rowKey, selected);
+        }
         else failToast('알 수 없는 오류로 실패했습니다.');
     });
     
@@ -421,4 +452,5 @@ function closeAll(){
     compListDiv.style.display = 'none';
     planDetailDiv.style.display = 'none';
     writeBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
 }

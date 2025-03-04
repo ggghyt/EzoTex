@@ -4,6 +4,7 @@ function createModal(options){
 			header: '제목 null 시 기본 멘트 적용',
 			title: '소제목 null 시 기본 멘트 적용',
 			content: '짧은 메세지 null 시 기본 멘트 적용',
+      buttonText: '확인버튼 이름'.
 			confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
 			denyMsg: '취소 클릭 시 출력할 토스트 메세지',
 		}
@@ -38,7 +39,7 @@ function createModal(options){
           </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
-          <button type="button" class="btn btn-outline-${btnColor} confirmBtn" data-bs-dismiss="modal">${typeNm}</button>
+          <button type="button" class="btn btn-outline-${btnColor} confirmBtn" data-bs-dismiss="modal">${options.buttonText != null ? options.buttonText : typeNm}</button>
           <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
         </div>
       </div>

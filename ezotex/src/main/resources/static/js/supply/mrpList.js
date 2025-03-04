@@ -4,6 +4,25 @@ document.addEventListener('DOMContentLoaded', () => {
   makeQuantityTag();
 });
 
+// 엑셀 내보내기 버튼 이벤트
+document.getElementById('xlsx').addEventListener('click', () => {
+  if(mrpGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+  let selIdx = document.getElementById('season').selectedIndex;
+  
+  let monthVal = ('0' + document.getElementById('scSupplyMonth').value).slice(-2);
+  
+  let fileNm = [
+    document.getElementById('scSupplyYear').value,
+    monthVal,
+    document.getElementById('season')[selIdx].innerText ];
+  let filtered = fileNm.filter(nm => nm != '' && nm != '0'); // 공백은 제외
+  
+  mrpGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: '자재소요계획_' + filtered.join('_')
+  });
+});
+
 /******************** Tui Grid ********************/
 // 자재소요계획 그리드
 const mrpGrid = new Grid({

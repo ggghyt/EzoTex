@@ -23,7 +23,7 @@
 	<body>
 	  <div class="d-flex justify-content-between">
 		<h3 class="fs-3 fw-bold m-0">| 발주계획서 조회</h3>
-		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	  </div>
 	  <div th:fragment="materialOrderPlanList(th)">
 	    <script th:inline="javascript">  let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 </script>
@@ -178,7 +178,7 @@
 		                
 		                <!-- 제품 목록 -->
 		                <div class="d-flex justify-content-end align-items-center mb-2">
-		                  <button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		                  <button id="xlsxDetail" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 		                </div>
 		                <div id="planDetailGrid"></div>
 		                
@@ -202,8 +202,9 @@
 	             </div>
 	              <div class="modal-footer">
 	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-	                <button type="button" id="modifyBtn" class="btn btn-warning">수정</button>
+	                <button type="button" id="modifyBtn" class="btn btn-warning" th:style="${th != null ? 'display: none;' : ''}">수정</button>
 	                <button type="button" id="modifyConfirmBtn" class="btn btn-success" style="display: none">수정완료</button>
+	                <button type="button" id="orderCancelBtn" class="btn btn-danger" style="display: none;">발주취소</button>
 	                <button type="button" id="writeBtn" class="btn btn-success" data-bs-dismiss="modal" style="display: none">발주서 작성</button>
 	              </div>
 	           </div>
