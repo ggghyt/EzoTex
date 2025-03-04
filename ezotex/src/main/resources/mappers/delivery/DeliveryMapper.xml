@@ -423,25 +423,130 @@
               	</where>      
 	</select>
 	
-	<select id="allcharger">	
-		--구분, 담당자코드, 담당자, 등록일
-		SELECT de.charger_code AS delivery_charger_code,
-		       de.charger_name AS delivery_charger_name,
-		       TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS delivery_rgsde,
-		       pa.charger_code AS packing_charger_code,
-		       pa.charger_name AS packing_charger_name,
-		       TO_CHAR(pa.rgsde, 'yyyy-MM-dd') AS packing_rgsde,
-		       ds.charger_code AS driver_charger_code,
-		       ds.charger_name AS driver_charger_name,
-		       TO_CHAR(ds.rgsde, 'yyyy-MM-dd') AS driver_rgsde,
-		       ds.driver_code AS driver_code,
-		       ds.driver_name AS driver_name,
-		       TO_CHAR(ds.start_time, 'yyyy-MM-dd') AS drive_start_time
-		FROM   delivery de LEFT JOIN packing pa
-		                          ON (de.delivery_code = pa.delivery_code)
-		                   LEFT JOIN delivery_schedule ds
-		                          ON (de.delivery_code = ds.delivery_code)
-		WHERE  de.delivery_code = #{deliveryCode}
+	<!-- 포장할 리스트 조회(제조업체) -->
+	<select id="packingList">
+		SELECT *
+		FROM (
+		    SELECT *
+		    FROM (
+		            SELECT  /*+ INDEX_DESC(de PK_DELIVERY)*/
+		                    ROWNUM AS rn,
+		                    de.delivery_code AS delivery_code,
+		                    de.company_code AS company_code,
+		                    de.company_name AS company,
+		                    de.order_date AS order_date,
+		                    de.dedt AS dedt,
+		                    product_summary('delivery_details', de.delivery_code)  AS summary,
+		                    de.time AS time,
+		                    get_comm(de.delivery_status) AS delivery_status,
+		                    de.remark AS remark,
+		                    de.storage_name AS storage_name,
+		                    de.dedt_address AS dedt_address,
+		                    de.delivery_status AS comm_status,
+		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date,
+		                    de.charger_code AS delivery_charger_code,
+		                    de.charger_name AS delivery_charger
+		            FROM    delivery de
+				    WHERE   de.delivery_status = 'DS01'        	
+		            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
+		                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
+		            </if>
+		            <if test="cri.productName != null and cri.productName != null">		    
+		                AND  de.delivery_code IN (SELECT dd.delivery_code 
+                                						   FROM delivery_details dd JOIN product_info pi 
+                                                        						   ON (dd.product_code = pi.product_code)
+                                						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
+		            </if>
+		            <if test="cri.productCode != null and cri.productCode != null">		    
+		                AND de.delivery_code IN (SELECT  delivery_code 
+                                					 FROM 	  delivery_details
+                                					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
+		            </if>
+		            <if test='cri.companyName != null and cri.companyName != ""'>
+		                AND de.company_name LIKE '%' || #{cri.companyName} || '%'                          --업체명
+		            </if>
+		            <if test='cri.companyCode != null and cri.companyCode != ""'>
+		                AND de.company_code LIKE '%' || UPPER(#{cri.companyCode}) || '%'                --업체코드
+		            </if>
+		            <if test='cri.deliveryChargerCode != null and cri.deliveryChargerCode != ""'>		    
+		                AND de.charger_code LIKE '%' || #{cri.deliveryChargerCode} || '%'                          --주문 담당자
+		            </if>
+		            <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>		    
+		                AND de.charger_name LIKE '%' || #{cri.deliveryCharger} || '%'                          --주문 담당자
+		            </if>
+		            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+		                AND de.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+		            </if>
+		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+		                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+		            </if>
+			                 
+		            )info
+		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
+		WHERE page.rn <![CDATA[ >= ]]>#{cri.start}
+	</select>
+	
+	<!-- 포장할 리스트 조회 -->
+	<select id="packingListCnt">
+		   SELECT   COUNT(*)
+            FROM    delivery de 
+			WHERE   de.delivery_status = 'DS01'        	
+            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
+                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
+            </if>
+            <if test="cri.productName != null and cri.productName != null">		    
+                AND  de.delivery_code IN (SELECT dd.delivery_code 
+                              						   FROM delivery_details dd JOIN product_info pi 
+                                                      						   ON (dd.product_code = pi.product_code)
+                              						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
+            </if>
+            <if test="cri.productCode != null and cri.productCode != null">		    
+                AND de.delivery_code IN (SELECT  delivery_code 
+                              					 FROM 	  delivery_details
+                              					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
+            </if>
+            <if test='cri.companyName != null and cri.companyName != ""'>
+                AND de.company_name LIKE '%' || #{cri.companyName} || '%'                          --업체명
+            </if>
+            <if test='cri.companyCode != null and cri.companyCode != ""'>
+                AND de.company_code LIKE '%' || UPPER(#{cri.companyCode}) || '%'                --업체코드
+            </if>
+            <if test='cri.deliveryChargerCode != null and cri.deliveryChargerCode != ""'>		    
+                AND de.charger_code LIKE '%' || #{cri.deliveryChargerCode} || '%'                          --주문 담당자
+            </if>
+            <if test='cri.deliveryCharger != null and cri.deliveryCharger != ""'>		    
+                AND de.charger_name LIKE '%' || #{cri.deliveryCharger} || '%'                          --주문 담당자
+            </if>
+            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
+                AND de.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+            </if>
+            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
+                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+            </if>    
+	</select>
+	<select id="allcharger">
+		SELECT * 
+		FROM   (
+		        SELECT ROWNUM AS rn,
+		               de.charger_code AS delivery_charger_code,
+		               de.charger_name AS delivery_charger_name,
+		               TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS delivery_rgsde,
+		               pa.charger_code AS packing_charger_code,
+		               pa.charger_name AS packing_charger_name,
+		               TO_CHAR(pa.rgsde, 'yyyy-MM-dd') AS packing_rgsde,
+		               ds.charger_code AS driver_charger_code,
+		               ds.charger_name AS driver_charger_name,
+		               TO_CHAR(ds.rgsde, 'yyyy-MM-dd') AS driver_rgsde,
+		               ds.driver_code AS driver_code,
+		               ds.driver_name AS driver_name,
+		               TO_CHAR(ds.start_time, 'yyyy-MM-dd') AS drive_start_time
+		        FROM   delivery de LEFT JOIN packing pa 
+		        						  ON de.delivery_code = pa.delivery_code
+		               			   LEFT JOIN delivery_schedule ds 
+		               			   		  ON de.delivery_code = ds.delivery_code
+		        WHERE  de.delivery_code = #{deliveryCode}) info
+		WHERE info.rn = 1
+		
 	</select>
 	
 	<select id="deliveryProductList">
@@ -502,4 +607,24 @@
 		FROM   storage
 	</select>
 	
+	<!-- 포장 정보 등록 -->
+	<insert id="insertPackingInfo">
+		INSERT INTO packing(delivery_code, box_size, qy, packing_no, rgsde, updde, charger_code, charger_name)
+		VALUES(#{info.deliveryCode}, #{info.boxSize}, #{info.boxQy}, packing_seq.nextVal, sysdate, sysdate, #{info.chargerCode}, #{info.chargerName})
+	</insert>
+	
+	<!-- 출고 창고 업데이트 -->
+	<update id="updateStorageName">
+		UPDATE delivery
+		SET storage_name = #{info.storageName}
+		WHERE delivery_code = #{info.deliveryCode}
+	</update>
+	
+	<!-- 출고 창고 등록 -->
+	<insert id="insertDivySchedule">
+		INSERT INTO delivery_schedule(delivery_no, delivery_code, delivery_date, prearnge_time, start_time, compet_time, rgsde, updde, 
+									   charger_code, charger_name)
+		VALUES (de_schedule_seq.nextVal, #{info.deliveryCode}, sysdate, 'TI01', sysdate, sysdate, sysdate, sysdate, 
+				#{info.chargerCode}, #{info.chargerName})
+	</insert>
 </mapper>

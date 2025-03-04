@@ -7,9 +7,11 @@ import java.util.Set;
 import org.apache.ibatis.annotations.Param;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.PackingDTO;
 import com.ezotex.delivery.dto.DeliveryAllCharger;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.DeliveryScheduleDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 
@@ -63,6 +65,12 @@ public interface DeliveryMapper {
     //납품조회 카운트
     public int deliveryListCnt(@Param("cri") DeliveryRegistSearchDTO searchDTO);
     
+	//포장 조회
+	public List<OrderProductDeliveryDTO> packingList(@Param("cri") DeliveryRegistSearchDTO searchDTO);
+	
+	//포장 조회 카운트
+	public int packingListCnt(@Param("cri") DeliveryRegistSearchDTO searchDTO);
+	
     //납품 관련 모든 담당자
     public DeliveryAllCharger allcharger(@Param("deliveryCode")String deliveryCode);
     
@@ -80,5 +88,16 @@ public interface DeliveryMapper {
     //상자 정보
     public List<OrderInsertDTO> getBoxInfo();
     
+    //창고 리스트 가져오기
     public List<String> getStorageInfo();
+    
+    //포장 정보 등록하기
+    public int insertPackingInfo(@Param("info")PackingDTO info);
+    
+    //창고명 업데이트
+    public int updateStorageName(@Param("info")PackingDTO info);
+    
+    //배송 스케줄등록하기
+    public int insertDivySchedule(@Param("info")DeliveryScheduleDTO info);
+    
 }

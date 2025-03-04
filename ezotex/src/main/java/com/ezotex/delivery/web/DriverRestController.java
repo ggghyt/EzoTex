@@ -70,21 +70,24 @@ public class DriverRestController {
 	//String file_img;
 	
 	// 배송완료
-	@PostMapping("/completeDelivery")
-	public String completeDelivery(DriverDeliveryDTO insertInfo) throws Exception {
+	@GetMapping("/completeDelivery")
+	public String completeDelivery(String deliveryCode) throws Exception {
 		
-		log.info("=================================================");
-		log.info(insertInfo.toString());
+		//log.info("=================================================");
+		//log.info(insertInfo.toString());
 		
-		MultipartFile file = insertInfo.getImgFile();
-		UUID uuid = UUID.randomUUID();
+		//MultipartFile file = insertInfo.getImgFile();
+		//UUID uuid = UUID.randomUUID();
 		
 		//이미지 url + 파일 이름 변경(중복방지)
-		String uuidFileName = uuid + "_" + file.getOriginalFilename();
-		file.transferTo(new File("c:\\images\\" + uuidFileName));
-		insertInfo.setImgUrl(uuidFileName);
+		//String uuidFileName = uuid + "_" + file.getOriginalFilename();
+		//file.transferTo(new File("c:\\images\\" + uuidFileName));
+		//insertInfo.setImgUrl(uuidFileName);
+		
+		
 		
 		//return service.insertDeliver(insertInfo);
-		return null;
+		service.updateDeliveryState(deliveryCode);
+		return "success";
 	}
 }

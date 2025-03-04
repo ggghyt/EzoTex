@@ -29,7 +29,7 @@
 			                        AND de.delivery_status = #{search.deliveryStatus}
 			              </when>
 			              <otherwise> 
-			                       AND de.delivery_status IN ('DS01', 'DS02', 'DS03', 'DS04', 'DS05')
+			                       AND de.delivery_status IN ('DS03', 'DS05')
 			              </otherwise>
 			        </choose>
 		        )info
@@ -53,17 +53,23 @@
 	                        AND de.delivery_status = #{search.deliveryStatus}
 	              </when>
 	              <otherwise> 
-	                       AND de.delivery_status IN ('DS01', 'DS02', 'DS03', 'DS04', 'DS05')
+	                       AND de.delivery_status IN ('DS03', 'DS05')
 	              </otherwise>
 	        </choose>
 	</select>
 	
 	<insert id="insertDeliveryInfo">
-		INSERT INTO delivewry_schedule(delivery_no, delivery_code, delivery_date, prearnge_time, start_time, compet_time, rgsde, updde, driver_code, 
+		INSERT INTO delivery_schedule(delivery_no, delivery_code, delivery_date, prearnge_time, start_time, compet_time, rgsde, updde, driver_code, 
 										driver_name, charger_code, charger_name, delivery_img)
 		VALUES (driver_schedule_seq.nextval, #{deliverCode}, sysdate, 'TI01', sysdate, sysdate, sysdate, sysdate, #{chargerCode}, #{chargerName},
 				#{chargerCode}, #{chargerName}, #{imgUrl})
 	</insert>
+	
+	<update id="updateDriverInfo">
+		UPDATE delivery_schedule
+		SET    driver_code = #{info.chargerCode}, driver_name = #{info.chargerName}
+		WHERE  delivery_code = #{info.deliveryCode}
+	</update>
 	
 	<update id="updateDeliveryState">
 		UPDATE delivery

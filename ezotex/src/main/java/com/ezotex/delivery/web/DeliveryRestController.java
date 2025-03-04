@@ -18,9 +18,11 @@ import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.DeliveryScheduleDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.PackingDTO;
 import com.ezotex.delivery.service.DeliveryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -94,9 +96,6 @@ public class DeliveryRestController {
 	//출고 등록
 	@PostMapping("deliveryRegist")
 	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
-		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		log.info(insertData.toString());
 		log.info(((Integer)insertData.size()).toString());
 		Map<String, String> map = new HashMap<>();
 		map.put("state", service.insertDelivery(insertData));
@@ -110,6 +109,10 @@ public class DeliveryRestController {
 											            @RequestParam(name = "page", defaultValue = "1")int page,
 											            DeliveryRegistSearchDTO searchDTO) {
 		
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		log.info(searchDTO.toString());
 		PagingDTO paging = new PagingDTO();
 		
@@ -125,9 +128,31 @@ public class DeliveryRestController {
 		return GridUtil.grid(paging.getPage(), service.deliveryListCnt(searchDTO), service.deliveryList(searchDTO));
 	}
 	
+	//포장목록 조회
+	@GetMapping("getPackingList")
+	public Map<String, Object> getPackingList(@RequestParam(name = "perPage", defaultValue = "1", required = false) int perPage,
+											            @RequestParam(name = "page", defaultValue = "1")int page,
+											            DeliveryRegistSearchDTO searchDTO) {
+		
+		log.info(searchDTO.toString());
+		PagingDTO paging = new PagingDTO();
+		
+		paging.setPageUnit(perPage);	//페이지당 최대 건수
+		paging.setPage(page);			//현재 페이지
+
+		// 페이징 조건
+		searchDTO.setStart(paging.getFirst());	//시작
+		searchDTO.setEnd(paging.getLast());		//끝번호
+		
+		paging.setTotalRecord(service.packingListCnt(searchDTO));
+
+		return GridUtil.grid(paging.getPage(), service.packingListCnt(searchDTO), service.packingList(searchDTO));
+	}
+	
 	//출고건 담당자, 제품 리스트
 	@GetMapping("deliveryInfo")
 	public Map<String, Object> deliveryInfo(@RequestParam(name="deliveryCode")String deliveryCode) {
+		log.info(deliveryCode);
 		Map<String, Object> info = service.deliveryInfo(deliveryCode);
 		return info;
 	}
@@ -160,4 +185,18 @@ public class DeliveryRestController {
 		return service.packingSTDInfo();
 	}
 	
+	//포장등록
+	@PostMapping("packingInsert")
+	public String packingInsert(@RequestBody List<PackingDTO> info) {
+		log.info(info.toString());
+		//포장정보 등록
+		service.insertPackingInfo(info);
+		
+		//배송스케줄 등록 --> 구현 안될것 같아 함께 넣고 트리거로 상태변경
+		DeliveryScheduleDTO deSchedule = new DeliveryScheduleDTO();
+		deSchedule.setDeliveryCode(info.get(0).getDeliveryCode());
+		
+		service.insertDivySchedule(deSchedule);
+		return "success";
+	}
 }

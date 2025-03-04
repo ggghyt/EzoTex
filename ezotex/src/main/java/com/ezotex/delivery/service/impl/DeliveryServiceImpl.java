@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.delivery.dto.OrderProductDeliveryDTO;
+import com.ezotex.delivery.dto.PackingDTO;
 import com.ezotex.comm.ezoTexCustomException.LotNotFoundException;
 import com.ezotex.delivery.dto.DeliveryAllCharger;
 import com.ezotex.delivery.dto.DeliveryProductInfo;
 import com.ezotex.delivery.dto.DeliveryRegistSearchDTO;
+import com.ezotex.delivery.dto.DeliveryScheduleDTO;
 import com.ezotex.delivery.dto.OrderInfoDTO;
 import com.ezotex.delivery.dto.OrderInsertDTO;
 import com.ezotex.delivery.mappers.DeliveryMapper;
@@ -252,6 +254,47 @@ public class DeliveryServiceImpl implements DeliveryService {
 		map.put("box", mapper.getBoxInfo());			//상자 리스트
 		
 		return map;
+	}
+
+	//포장 등록
+	@Override
+	@Transactional
+	public String insertPackingInfo(List<PackingDTO> info) {
+		
+		//포장내용 등록
+		for(int i=0; i<info.size(); i++) {			
+			mapper.insertPackingInfo(info.get(i));
+		}
+		mapper.updateStorageName(info.get(0));
+		return "success";
+	}
+	
+	//출고 스케줄등록
+	@Override
+	@Transactional
+	public String insertDivySchedule(DeliveryScheduleDTO info) {
+		String name = (String) session.getAttribute("name");
+		String code = (String) session.getAttribute("code");
+		
+		info.setChargerCode(code);
+		info.setChargerName(name);
+		
+		log.info("+++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info(info.toString());
+		mapper.insertDivySchedule(info);
+		
+		
+		return "success";
+	}
+
+	@Override
+	public List<OrderProductDeliveryDTO> packingList(DeliveryRegistSearchDTO searchDTO) {
+		return mapper.packingList(searchDTO);
+	}
+
+	@Override
+	public int packingListCnt(DeliveryRegistSearchDTO searchDTO) {
+		return mapper.packingListCnt(searchDTO);
 	}
 
 	

@@ -19,5 +19,8 @@ public interface DriverService {
 	
 	//배송완료
 	public String insertDeliver(DriverDeliveryDTO info);
-
+	
+	public int updateDeliveryState(String deliveryCode);
+	
+	//updateDeliveryState
 }
