@@ -74,6 +74,6 @@
 	<update id="updateDeliveryState">
 		UPDATE delivery
 		SET delivery_status = 'DS05'
-		WHERE delivery_code = #{delivery_code};
+		WHERE delivery_code = #{deliveryCode}
 	</update>
 </mapper>
