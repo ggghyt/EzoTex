@@ -7,6 +7,7 @@
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
@@ -80,8 +81,8 @@
 	</div>
 	<script>
 	document.getElementById('xlsx').addEventListener('click', () => {
-		  if(orderGrid.getRowCount() == 0) return; // 값이 없으면 미동작
-		  orderGrid.export('xlsx', {
+		  if(grid.getRowCount() == 0) return; // 값이 없으면 미동작
+		  grid.export('xlsx', {
 		    useFormattedValue: true,
 		    fileName: '주문 내역' + '_' + dateFormatter().replaceAll('-','')
 		  });

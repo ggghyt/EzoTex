@@ -122,7 +122,7 @@
 			// 전달된 데이터 확인 (콘솔에 출력)
 			console.log(deliProduct);
 			// Toast Grid 설정
-			// --- 제품 추가 그리드 ---
+			// --- 제품 목록 그리드 ---
 			const deliProductGrid = new tui.Grid({
 				el : document.getElementById('deliProductGrid'), // 그리드를 표시할 div
 				scrollX : false, // 가로 스크롤바 비활성화
@@ -504,25 +504,43 @@
 							});
 					});
 	
-	// 납품 등록된 수량보다 적게 입력할때 0으로 초기화
+	// 납품 등록된 수량보다 적게 입력할때 1으로 초기화
 	selectProductGrid.on('afterChange', function (ev) {
 	    ev.changes.forEach(change => {
-	        if (change.columnName === 'deliveryQy') { // 수량 입력 필드 변경 감지
-	            const rowKey = change.rowKey;
-	            const newQuantity = Number(change.value); // 입력된 새 수량
-	            const productName = selectProductGrid.getValue(rowKey, 'productName');
-
-	            // deliProductGrid에서 해당 제품코드의 최대 수량 찾기
-	            const deliRow = deliProductGrid.getData().find(row => row.productName === productName);
-	            const maxQuantity = deliRow ? Number(deliRow.deliveryQy) : 0; // 최대 수량 가져오기
-
-	            if (newQuantity > maxQuantity) { // 초과 검사
-	                alert(`수량은 ${maxQuantity} 이하로 입력해야 합니다.`);
-	                selectProductGrid.setValue(rowKey, 'deliveryQy', 0); // 최대 수량으로 되돌리기
-	            }
+	        if (change.columnName === 'deliveryQy') {
+	            validateQuantity(change.rowKey, change.value);
 	        }
 	    });
 	});
+
+	function validateQuantity(rowKey, newValue) {
+	    const selectRow = selectProductGrid.getRow(rowKey); // 변경된 행 가져오기
+	    const deliData = deliProductGrid.getData(); // 원본 데이터 가져오기
+	
+	    const productCode = selectRow.productCode;
+	    const productColor = selectRow.productColor;
+	    const productSize = selectRow.productSize;
+	
+	    // deliProductGrid에서 제품코드, 색상, 사이즈가 모두 일치하는 데이터 찾기
+	    const matchingDeliRow = deliData.find(row => 
+	        row.productCode === productCode &&
+	        row.productColor === productColor &&
+	        row.productSize === productSize
+	    );
+	
+	    if (!matchingDeliRow) {
+	        alert('일치하는 데이터가 없습니다.');
+	        selectProductGrid.setValue(rowKey, 'deliveryQy', 0); // 잘못된 입력 초기화
+	        return;
+	    }
+	
+	    const maxQy = matchingDeliRow.deliveryQy;
+	
+	    if (Number(newValue) > Number(maxQy)) {
+	        alert(`${maxQy}을 초과할 수 없습니다.`);
+	        selectProductGrid.setValue(rowKey, 'deliveryQy', maxQy); // 최대 수량으로 조정
+	    }
+	}
 	
 	// 등록버튼 모달 띄워주기
 	function insertReturn(returnCode){
