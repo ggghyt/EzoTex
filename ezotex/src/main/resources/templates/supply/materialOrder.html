@@ -23,7 +23,7 @@
 	        문법: ${th?.orderQy ?: '발주량'} => th가 null일 때도, th.orderQy가 null일 때도 기본값 반영-->
 	      <script th:inline="javascript"> 
 		      let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 
-		      let selectedPlanCode = /*[[${selectedPlanCode}]]*/null;
+		      let selectedPlan = /*[[${selectedPlan}]]*/null;
 	      </script>
 				<form class="card card-body mt-4" id="orderForm">
 					<!-- 발주할 자재, 업체 선택 -->

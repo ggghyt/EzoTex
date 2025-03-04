@@ -13,7 +13,7 @@ public class DeliverySearchDTO {
 	String startUnitPrice;
 	String endUnitPrice;
 	String se;
-	String  color;
+	String color;
 	String sizeCode;
 	
 	String deliveryCode;
@@ -27,6 +27,13 @@ public class DeliverySearchDTO {
 	String requestor;
 	String startRequestDate;
 	String endRequestDate;
+	
+	String startStoreDate;
+	String endStoreDate;
+	
+	String location;
+	String searchLot;
+	String searchColor;
 	
 	
 }

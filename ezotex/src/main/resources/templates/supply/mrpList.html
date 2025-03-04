@@ -15,7 +15,8 @@
         visibility: visible;
       }
       
-      td.tui-grid-cell-summary[data-column-name="totalQy"] {
+      td.tui-grid-cell-summary[data-column-name="totalQy"],
+      td.tui-grid-cell-summary[data-column-name="supplyQy"] {
         text-align: right;
       }
     </style>
@@ -23,7 +24,7 @@
 	<body>
 	  <div class="d-flex justify-content-between">
 		<h3 class="fs-3 fw-bold m-0">| 자재소요계획 조회</h3>
-		<button class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
+		<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	  </div>
 		<div class="card card-body mt-4">
 			<form class="row ms-3 pe-0">
@@ -72,7 +73,7 @@
            <div class="modal-dialog modal-xl mt-4">
                <div class="modal-content">
                  <div class="modal-header" style="height: 20px;">
-                    <h5 class="modal-title" id="modalTitle" style="font-size: 15px;">연관된 제품 조회</h5>
+                    <h5 class="modal-title fs-6 fw-bolder" id="modalTitle" style="font-size: 15px;">연관된 제품</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                  </div>
                  <div class="modal-body p-3 pt-2">
@@ -82,7 +83,7 @@
                     
                     <hr>
                     <!-- 제품 상세 정보 -->
-                    <p class="fs-6 fw-bolder mb-3 me-3">선택한 제품</p>
+                    <p class="fs-6 fw-bolder mb-3 me-3">제품 상세</p>
                     <div class="row">
                       <label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
                       <div class="col-8 col-lg-4 d-flex mb-2">

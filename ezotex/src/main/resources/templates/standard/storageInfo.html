@@ -306,6 +306,7 @@
 	}
 	
 	function storageInfoModal() {
+		document.getElementById('storageInfoModalGrid').replaceChildren()
 		fetch('http://localhost:80/standard/StorageProductList?storageCode=' + document.querySelector("#storageSelect").value + 
                                                              '&selectRow=' + select_row + 
                                                              '&selectCol=' + select_col + 

@@ -89,7 +89,7 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 			MaterialOrderPlanDTO planDto = new MaterialOrderPlanDTO();
 			planDto.setStatus("MO02");
 			planDto.setMtrilOrderPlanCode(planCode);
-			updateResult = mapper.updatePlanState(planDto);
+			updateResult = mapper.updatePlan(planDto);
 		}
 		
 		return companyCnt == 0 && planCode == null || 
@@ -108,15 +108,36 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
 		for(Object detail : detailList) {
 			MaterialOrderPlanDTO dto = objMapper.convertValue(detail, MaterialOrderPlanDTO.class); // DTO로 변환
-			mapper.insertMaterialOrderPlanDetail(dto);
-			dtlResult--;
+			int result = mapper.insertMaterialOrderPlanDetail(dto);
+			dtlResult = dtlResult - result;
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}
 	
+
 	@Override
-	public boolean updatePlanState(MaterialOrderPlanDTO dto) {
-		return mapper.updatePlanState(dto) > 0 ? true : false;
+	public boolean updateOrderStatus(String mtrilOrderCode, String status) {
+		return mapper.updateOrderStatus(mtrilOrderCode, status) > 0 ? true : false;
+	}
+	
+	@Override
+	@Transactional
+	public boolean updatePlan(Map<String, Object> map) {
+		MaterialOrderPlanDTO header = objMapper.convertValue(map.get("headerObj"), MaterialOrderPlanDTO.class); // DTO로 변환
+		int headerResult = mapper.updatePlan(header);
+		
+		List<Object> detailList = (List<Object>) map.get("detailArr");
+		log.info("-----------------------------");
+		log.info(header.toString());
+		
+		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
+		for(Object detail : detailList) {
+			MaterialOrderPlanDTO dto = objMapper.convertValue(detail, MaterialOrderPlanDTO.class); // DTO로 변환
+			dto.setMtrilOrderPlanCode(header.getMtrilOrderPlanCode());
+			int result = mapper.updatePlanDetail(dto);
+			dtlResult = dtlResult - result;
+		}
+		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}
 
 	@Override

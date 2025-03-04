@@ -158,7 +158,8 @@
 		             WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
 		            p.remark,
 		            p.charger_name,
-		            NVL(p.update_date, p.rgsde) update_date,
+                    p.rgsde,
+                    p.update_date,
 		            get_comm(p.status) status
 		     FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
 		    <where>
@@ -178,8 +179,8 @@
 	      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if> 
 	      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if> 
 	      
-	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
-	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
 		</where>
 			ORDER  BY mtril_order_plan_code DESC
 	  </select>
@@ -194,7 +195,8 @@
 	                 WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
 	                p.remark,
 	                p.charger_name,
-	                NVL(p.update_date, p.rgsde) update_date,
+	                p.rgsde,
+	                p.update_date,
 	                get_comm(p.status) status
 	         FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
 	        <where>
@@ -214,8 +216,8 @@
 	      <if test='remark != null and remark != ""'> AND UPPER(remark) LIKE '%' || UPPER(#{remark}) || '%' </if> 
 	      <if test='chargerName != null and chargerName != ""'> AND UPPER(charger_name) LIKE '%' || UPPER(#{chargerName}) || '%' </if> 
 	      
-	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(update_date 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
-	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(update_date, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
+	      <if test='rgsdeMin != null and rgsdeMin != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') >= #{rgsdeMin} </if> 
+	      <if test='rgsdeMax != null and rgsdeMax != ""'> AND  TO_CHAR(rgsde, 'yyyy-mm-dd') <![CDATA[<= #{rgsdeMax}]]> </if> 
 	    </where>
     </select>
   
@@ -335,15 +337,29 @@
             #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor})
   </insert>
   
-  <update id="updatePlanState" parameterType="MaterialOrderPlanDTO">
+  <update id="updateOrderStatus" parameterType="String">
+    UPDATE material_order
+    SET status = #{status}
+    WHERE mtril_order_code = #{mtrilOrderCode}
+  </update>
+  
+  <update id="updatePlan" parameterType="MaterialOrderPlanDTO">
     UPDATE material_order_plan
     <trim prefix="SET" suffixOverrides=",">
       update_date = SYSDATE,
-      <if test="dueDate != null">dueDate = #{dueDate},</if>
+      <if test="dueDate != null">due_date = #{dueDate},</if>
       <if test="remark != null">remark = #{remark},</if>
       <if test="status != null">status = #{status},</if>
    </trim>
    WHERE mtril_order_plan_code = #{mtrilOrderPlanCode}
+  </update>
+  
+  <update id="updatePlanDetail" parameterType="MaterialOrderPlanDTO">
+    UPDATE material_order_plan_details
+    SET    order_qy = #{orderQy}
+    WHERE  mtril_order_plan_code = #{mtrilOrderPlanCode}
+      AND  product_code = #{productCode}
+      <if test="productColor != null">AND product_color = #{productColor}</if>
   </update>
 	
 </mapper>

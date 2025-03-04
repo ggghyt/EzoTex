@@ -7,6 +7,7 @@
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
@@ -17,34 +18,40 @@
 			<tbody>
 				<!-- 첫 번째 줄 -->
 				<tr>
-					<td><label class="col-form-label">주문코드</label></td>
-					<td><input type="text" id="productOrderCode"
+					<td class="tdpadding"><label class="col-form-label">주문코드</label></td>
+					<td class="tdpadding"><input type="text"
+						id="productOrderCode2" class="form-control"></td>
+					<td class="tdpadding"><label class="col-form-label">주문일</label></td>
+					<td class="tdpadding"><input type="date" id="startOrderDate"
 						class="form-control"></td>
-					<td><label class="col-form-label">주문일</label></td>
-					<td><input type="date" id="startOrderDate"
+					<td class="tdpadding-separator">~</td>
+					<td class="tdpadding"><input type="date" id="endOrderDate"
 						class="form-control"></td>
-					<td>~</td>
-					<td><input type="date" id="endOrderDate" class="form-control"></td>
 
 				</tr>
 				<!-- 두 번째 줄 -->
 				<tr>
-					<td><label class="col-form-label">업체명</label></td>
-					<td><input type="text" id="company" class="form-control"></td>
-
-					<td><label class="col-form-label">납기일</label></td>
-					<td><input type="date" id="startReturnDate"
+					<td class="tdpadding"><label class="col-form-label">업체명</label></td>
+					<td class="tdpadding"><input type="text" id="company2"
 						class="form-control"></td>
-					<td>~</td>
-					<td><input type="date" id="endReturnDate" class="form-control"></td>
+
+					<td class="tdpadding"><label class="col-form-label">납기일</label></td>
+					<td class="tdpadding"><input type="date" id="startReturnDate"
+						class="form-control"></td>
+					<td class="tdpadding-separator">~</td>
+					<td class="tdpadding"><input type="date" id="endReturnDate"
+						class="form-control"></td>
 				</tr>
 				<tr>
-					<td><label class="col-form-label">주문상태</label></td>
-					<td><input type="text" id="orderStatus" class="form-control"></td>
-					<td><label class="col-form-label">주문금액</label></td>
-					<td><input type="text" id="startMoney" class="form-control"></td>
-					<td>~</td>
-					<td><input type="text" id="endMoney" class="form-control"></td>
+					<td class="tdpadding"><label class="col-form-label">주문상태</label></td>
+					<td class="tdpadding"><input type="text" id="orderStatus2"
+						class="form-control"></td>
+					<td class="tdpadding"><label class="col-form-label">주문금액</label></td>
+					<td class="tdpadding"><input type="text" id="startMoney"
+						class="form-control"></td>
+					<td class="tdpadding-separator">~</td>
+					<td class="tdpadding"><input type="text" id="endMoney"
+						class="form-control"></td>
 				</tr>
 			</tbody>
 		</table>
@@ -62,14 +69,27 @@
 
 	<div class="card card-body mt-3">
 		<div class="row">
-			<!-- Toast Grid를 표시할 div 추가 -->
-			<div class="col-12 card card-body m-2">
-				<p class="fs-5 fw-bolder">주문 목록</p>
-				<!-- 그리드를 표시할 div -->
-				<div id="orderGrid"></div>
+			<!-- 주문 목록 제목과 버튼을 한 줄에 정렬 -->
+			<div class="d-flex justify-content-between align-items-center">
+				<p class="fs-5 fw-bolder m-0">주문 목록</p>
+				<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
 			</div>
+			<p>
+				<!-- 그리드를 표시할 div -->
+			<div id="orderGrid"></div>
 		</div>
 	</div>
+	<script>
+	document.getElementById('xlsx').addEventListener('click', () => {
+		  if(grid.getRowCount() == 0) return; // 값이 없으면 미동작
+		  grid.export('xlsx', {
+		    useFormattedValue: true,
+		    fileName: '주문 내역' + '_' + dateFormatter().replaceAll('-','')
+		  });
+		});
+	</script>
+
+
 
 	<script th:inline="javascript">
 		// Thymeleaf에서 getOrderList 데이터를 JSON으로 변환해서 JavaScript로 전달
@@ -237,6 +257,15 @@
 					</div>
 					<div id="orderDetailGrid" style="width: 100%;"></div>
 					<script th:inline="javascript">
+					
+					// 사이즈 매핑
+					const sizeMap = {
+					    "SI01": "FREE", "SI02": "XS", "SI03": "S", "SI04": "M", "SI05": "L", "SI06": "XL", "SI07": "XXL",
+					    "SI25": "25", "SI26": "26", "SI27": "27", "SI28": "28", "SI29": "29", "SI30": "30", "SI31": "31", "SI32": "32",
+					    "SI33": "33", "SI34": "34", "SI35": "35", "SI36": "36", "SI37": "37", "SI38": "38",
+					    "SI44": "44", "SI55": "55", "SI66": "66", "SI77": "77", "SI88": "88", "SI90": "90"
+					};
+					
 						const orderDeltailList = /*[[${getOrderList}]]*/[];
 						const orderDetailGrid = new tui.Grid({
 							el : document.getElementById('orderDetailGrid'), // 그리드를 표시할 엘리먼트
@@ -244,7 +273,7 @@
 							scrollY : true, // 세로 스크롤바 비활성화
 							bodyHeight : 400,
 							//rowHeight : 'auto', // 행 높이를 자동으로 조정
-							rowHeaders : [ 'checkbox', {
+							rowHeaders : [  {
 								type : 'rowNum',
 								header : 'NO'
 							} ],
@@ -264,6 +293,10 @@
 								header : '사이즈',
 								name : 'productSize',
 								align : 'center',
+								formatter: (value) => {
+									const size = value && value.value ? value.value : value;
+									return sizeMap[size] || size;
+								},
 							}, {
 								header : '수량',
 								name : 'qy',
@@ -361,8 +394,18 @@ document.getElementById('AllDelete').addEventListener('click', function() {
         },
         body: JSON.stringify({ productOrderCode:selectedOrderCode })
     })
-    .then(req => req.json())
-    .then(result => console.log('삭제 성공:', result))
+    .then(req => {
+        const contentType = req.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return req.json(); // JSON이면 파싱
+        } else {
+            return req.text(); // 텍스트라면 그대로 반환
+        }
+    })
+    .then(result => {
+        console.log('삭제 성공:', result);
+        location.reload() // 페이지 새로고침
+    })
     .catch(error => console.log('삭제 실패! ', error));
 });
 
@@ -412,9 +455,9 @@ function updateProductDetails(products) {
 
 // 검색 함수
 function searchOrder() {
-	let productOrderCode = document.querySelector('#productOrderCode').value;
-    let company = document.querySelector('#company').value;
-    let orderStatus = document.querySelector('#orderStatus').value;
+	let productOrderCode = document.querySelector('#productOrderCode2').value;
+    let company = document.querySelector('#company2').value;
+    let orderStatus = document.querySelector('#orderStatus2').value;
     let startOrderDate = document.querySelector('#startOrderDate').value;
     let endOrderDate = document.querySelector('#endOrderDate').value;
     let startReturnDate = document.querySelector('#startReturnDate').value;
@@ -483,6 +526,23 @@ function resetCondition() {
 
 .regibtn {
 	text-align: right;
+}
+
+.tdpadding {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}
+
+.tdpadding-separator {
+	padding-left: 2px;
+	padding-right: 2px;
+	text-align: center;
+	width: 10px;
+}
+
+table.table td {
+	text-align: center;
+	vertical-align: middle;
 }
 </style>
 

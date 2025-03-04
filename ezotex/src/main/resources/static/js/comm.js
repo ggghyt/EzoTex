@@ -34,6 +34,42 @@ function getSizeCommonCode(size) {
     return sizeMap[size] || null; // 입력한 사이즈가 없으면 null
 }
 
+// 검색조건 등 최소값-최대값 제한 적용
+function updateRange(startEleId, endEleId) {
+    let startEle = document.getElementById(startEleId);
+    let endEle = document.getElementById(endEleId);
+    
+    // 시작값/끝값이 입력되었을 때 동적으로 최소값 최대값 상호적용
+    // 날짜일 때
+    if(startEle.type == 'date' && endEle.type == 'date'){
+        startEle.addEventListener('change', e => {
+            if(e.target.value != '') endEle.setAttribute("min", e.target.value);
+        });
+        endEle.addEventListener('change', e => {
+            if(e.target.value != '') startEle.setAttribute("max", e.target.value);
+        });
+    } else { // 숫자일 때
+        let validNumberListener = function(e) {
+            let startVal = startEle.value !== '' ? Number(startEle.value) : '';
+            let endVal = endEle.value !== '' ? Number(endEle.value) : '';
+            let val = e.target == startEle ? startVal : endVal;
+            
+            if(isNaN(val)){ // 숫자가 아닌 경우
+              failToast('입력값은 문자가 들어갈 수 없습니다.');
+              val = '';
+            } else if(val < 0){
+              val = val * -1; // 입력값이 음수면 양수로 변환
+            }
+            // 최소값/최대값 검사
+            if(val !== '' && startVal !== '' && e.target == endEle && startVal > val) val = startVal;
+            else if(val !== '' && endVal !== '' && e.target == startEle && val > endVal) val = endVal;
+            e.target.value = val;
+        }
+        startEle.addEventListener('change', validNumberListener);
+        endEle.addEventListener('change', validNumberListener);      
+    }
+}
+
 
 
 

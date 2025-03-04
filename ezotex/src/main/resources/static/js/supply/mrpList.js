@@ -4,6 +4,25 @@ document.addEventListener('DOMContentLoaded', () => {
   makeQuantityTag();
 });
 
+// 엑셀 내보내기 버튼 이벤트
+document.getElementById('xlsx').addEventListener('click', () => {
+  if(mrpGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+  let selIdx = document.getElementById('season').selectedIndex;
+  
+  let monthVal = ('0' + document.getElementById('scSupplyMonth').value).slice(-2);
+  
+  let fileNm = [
+    document.getElementById('scSupplyYear').value,
+    monthVal,
+    document.getElementById('season')[selIdx].innerText ];
+  let filtered = fileNm.filter(nm => nm != '' && nm != '0'); // 공백은 제외
+  
+  mrpGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: '자재소요계획_' + filtered.join('_')
+  });
+});
+
 /******************** Tui Grid ********************/
 // 자재소요계획 그리드
 const mrpGrid = new Grid({
@@ -12,15 +31,15 @@ const mrpGrid = new Grid({
       api: { readData: { url: '/supply/listMrp', method: 'GET' }, initialRequest: false }
     },
     columns: [
-        { header: '자재코드', name: 'productCode', width: 100, sortable: true, rowSpan: true, align: 'center', className: 'pointer bg-light' },
-        { header: '자재명', name: 'productName', sortable: true, rowSpan: true, align: 'center', className: 'pointer bg-light' },
-        { header: '색상', name: 'productColor', sortable: true, align: 'center' },
-        { header: '수량', name: 'supplyQy', width: 150, sortable: true, align: 'right',
+        { header: '자재코드', name: 'productCode', width: 100, rowSpan: true, align: 'center', className: 'pointer bg-light' },
+        { header: '자재명', name: 'productName', rowSpan: true, align: 'center', className: 'pointer bg-light' },
+        { header: '색상', name: 'productColor', align: 'center', rowSpan: true },
+        { header: '수량', name: 'supplyQy', width: 150, align: 'right',
            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-        { header: '단위', name: 'unitName', width: 80, sortable: true },
+        { header: '단위', name: 'unitName', width: 80 },
         { header: '합계', name: 'totalQy', width: 150, align: 'right', rowSpan: true,
            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-        { header: '날짜', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value), align: 'center' }
+        { header: '날짜', name: 'supplyDate', formatter: (row) => dateFormatterNull(row.value), align: 'center' }
     ],
     scrollX: false, // 가로 스크롤
     scrollY: false, // 세로 스크롤
@@ -33,8 +52,9 @@ const mrpGrid = new Grid({
                        return `총 ${valueMap.cnt}건`
                    }
             },
-            totalQy: { // 컬럼명
+            supplyQy: { // 컬럼명
                    template: (valueMap) => {
+                       console.log(valueMap);
                        return `총계: ${numberFormatter(valueMap.sum)}`
                    }
             }
@@ -154,7 +174,7 @@ planDetailGrid.on('focusChange', async ev => {
   planDetailGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
   
   // 선택한 정보 가져오기
-  selectedPrd = planDetailGrid.getRow(ev.rowKey);  
+  let selectedPrd = planDetailGrid.getRow(ev.rowKey);  
   document.getElementById('selectedPrdCode').value = selectedPrd.productCode;
   document.getElementById('selectedPrdName').value = selectedPrd.productName;
   
@@ -223,4 +243,6 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
+    document.getElementById('selectedPrdCode').value = '';
+    document.getElementById('selectedPrdName').value = '';
 }

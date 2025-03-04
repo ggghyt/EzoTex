@@ -7,6 +7,7 @@ import com.ezotex.standard.dto.AddressListDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.EmpDTO;
+import com.ezotex.standard.dto.InfomationDTO;
 import com.ezotex.standard.dto.PositionDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
@@ -47,4 +48,8 @@ public interface StandardService {
 	List<StorageProductDTO> StorageProductList(StorageDTO storageDTO);
 	List<SafetyStockDTO> SafetyStockList(String productCode);
 	int updateSafety(SafetyStockDTO safetyStockDTO);
+	List<Map<String, Object>> infomationList();
+	int getInfomationCount();
+	InfomationDTO infomationNum(int num);
+	int infomationUpdate(int num, String title, String content);
 }

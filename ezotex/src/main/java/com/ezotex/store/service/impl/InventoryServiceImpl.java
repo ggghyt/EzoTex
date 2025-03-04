@@ -34,10 +34,16 @@ public class InventoryServiceImpl implements InventoryService {
 
 	// 제품별 총 수량
 	@Override
-	public List<InventoryDTO> productList() {
-		return mapper.productList();
+	public List<InventoryDTO> productList(DeliverySearchDTO searchDTO) {
+		return mapper.productList(searchDTO);
 	}
 
+	// 제품목록 카운터
+	@Override
+	public int productListCount(DeliverySearchDTO searchDTO) {
+		return mapper.productListCount(searchDTO);
+	}
+	
 	// 제품별 옵션 리스트
 	@Override
 	public Map<String, Object> productInfoList(String productCode) {
@@ -74,7 +80,6 @@ public class InventoryServiceImpl implements InventoryService {
 	public boolean InsertErrorProduct(ErrorProductDTO edto) {
 		
 		String name = (String)session.getAttribute("name");
-		System.out.println("왜또 지랄임?" + edto);
 		mapper.InsertErrorProduct(edto, name);
 		mapper.InventoryUpdate(edto);
 		return true;
@@ -94,7 +99,16 @@ public class InventoryServiceImpl implements InventoryService {
 		});
 		return true;
 	}
-
 	
+	// 불량 재고 조회
+	@Override
+	public List<ErrorProductDTO> errorProductList(DeliverySearchDTO searchDTO) {
+		return mapper.errorProductList(searchDTO);
+	}
+
+	@Override
+	public int errorProductCount(DeliverySearchDTO searchDTO) {
+		return mapper.errorProductCount(searchDTO);
+	}
 
 }

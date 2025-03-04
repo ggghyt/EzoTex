@@ -28,9 +28,12 @@ public interface MaterialOrderService {
 	
 	// 발주계획서 등록
 	boolean insertMaterialOrderPlan(Map<String, Object> map);
+	
+	// 발주서 상태 수정
+	boolean updateOrderStatus(String mtrilOrderCode, String status);
 
 	// 발주계획서 수정
-	boolean updatePlanState(MaterialOrderPlanDTO dto);
+	boolean updatePlan(Map<String, Object> map);
 	
 	// 발주계획서 조회
 	List<MaterialOrderPlanDTO> listOrderPlan(Map<String, Object> map);

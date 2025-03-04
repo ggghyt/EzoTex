@@ -1,3 +1,9 @@
+let lclasBox = document.getElementById('lclas');
+let sclasBox = document.getElementById('sclas');
+let prdCodeBox = document.getElementById('scProductCode');
+let prdNameBox = document.getElementById('scProductName');
+let productList = document.getElementById('productList');
+let detailList = document.getElementById('detailList');
 
 // 선택한 공급계획서의 상세조회 내용
 let supplyPlanCode = document.getElementById('supplyPlanCode');
@@ -10,8 +16,42 @@ let rgsde = document.getElementById('rgsde');
 let remark = document.getElementById('remark');
 
 document.addEventListener('DOMContentLoaded', () => {
+  changeClas(lclasBox, sclasBox);
   makeQuantityTag();
+  updateRange('supplyQyMin', 'supplyQyMax');
+  updateRange('supplyDateMin', 'supplyDateMax');
+  updateRange('rgsdeMin', 'rgsdeMax');
 });
+
+// 엑셀 내보내기 버튼 이벤트
+document.getElementById('xlsx').addEventListener('click', () => {
+  if(supplyGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+  supplyGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: '공급계획전체_' + dateFormatter().replaceAll('-','')
+  });
+});
+
+// 엑셀 내보내기(디테일)
+document.getElementById('xlsxDetail').addEventListener('click', () => {
+  planDetailGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: '공급계획_' + document.getElementById('supplyPlanCode').value
+  });
+});
+
+// 대분류 onChange 이벤트 등록 함수
+const changeClas = function(lclasEle, sclasEle){
+    lclasEle.addEventListener('change', () => {
+        createOptions(sclasEle, `/product/category/${lclasEle.value}`);     
+    });
+}
+
+prdCodeBox.onclick = () => { // 제품코드 input 클릭 시 모달 호출
+  productList.style.display = '';
+  $('#myModal').modal('show');
+  prdGrid.refreshLayout(); 
+};
 
 /******************** Tui Grid Custom Renderer ********************/  
 let selected;
@@ -24,7 +64,15 @@ class CustomBtnRender {
     el.innerText = '선택';
     
     el.addEventListener('click', () => {
-
+      if(props.columnInfo.className == 'prd'){
+        let prdData = prdGrid.getRow(props.rowKey);
+        prdCodeBox.value = prdData.productCode;
+        prdNameBox.value = prdData.productName;
+        $('#myModal').modal('hide');
+        productList.style.display = 'none';
+        return;
+      }
+      
       selected = supplyGrid.getRow(props.rowKey);
       console.log(selected);
       
@@ -37,7 +85,6 @@ class CustomBtnRender {
       remark.value = selected.remark;
       
       loadPlanDetail(selected.supplyPlanCode);
-
     });
     this.el = el;
     this.render(props);
@@ -49,8 +96,40 @@ class CustomBtnRender {
 }
 
 /******************** Tui Grid ********************/
-// 공급계획 목록 그리드
+// 제품 그리드 (검색)
+const prdData = {
+  api: { readData: { url: '/supply/productList', method: 'GET' } }
+};
+  
+const prdGrid = new Grid({
+    el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
+    data: prdData,
+    columns: [
+        { header: '제품코드', name: 'productCode', width: 100, sortable: true },
+        { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
+        { header: '', name: '', className: 'prd', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
+    ],
+    rowHeaders: ['rowNum'],
+    pageOptions: {
+        useClient: true, // 페이징을 위해 필요
+        perPage: 5
+    },
+    scrollX: false, // 가로 스크롤
+    scrollY: false, // 세로 스크롤
+    summary: {
+       height: 30,
+       position: 'bottom', // or 'top'
+       columnContent: {
+          productCode: { // 컬럼명
+               template: (valueMap) => {
+                   return `총 ${valueMap.cnt}건`
+               }
+           }
+       }
+     }
+});
 
+// 공급계획 목록 그리드
 const supplyGrid = new Grid({
     el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
     data: {
@@ -67,7 +146,7 @@ const supplyGrid = new Grid({
         { header: '담당자', name: 'chargerName', width: 100, sortable: true },
         { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
         { header: '최종수정일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
-        { header: '', name: '', className: 'mtr', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
+        { header: '', name: '', className: 'plan', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
@@ -133,14 +212,26 @@ const optionGrid = new Grid({
 });
 
 /******************** Tui Grid 출력 ********************/ 
-// 검색 적용 
+// 제품 목록 검색 적용
+document.getElementById('prdSearchBtn').addEventListener('click', () => {
+  let dto = {
+    productCode: document.getElementById('productCode').value,
+    productName: document.getElementById('productName').value,
+    lclas: document.getElementById('lclas').value,
+    sclas: document.getElementById('sclas').value
+  };
+  prdGrid.setRequestParams(dto); // 조회 조건 전달
+  prdGrid.reloadData(); // 그리드 재출력 (readData)
+});
+
+// 공급계획 검색 적용 
 document.getElementById('planSearchBtn').addEventListener('click', () => {
   let checkedSeasons = document.querySelectorAll('input[name="season"]:checked');
   checkedSeasons = Array.from(checkedSeasons).map(ele => ele.value); // 가상의 노드들을 복사하여 배열처리
   
   let dto = {
-    productCode: document.getElementById('productCode').value,
-    productName: document.getElementById('productName').value,
+    productCode: document.getElementById('scProductCode').value,
+    productName: document.getElementById('scProductName').value,
     supplyDateMin: document.getElementById('supplyDateMin').value,
     supplyDateMax: document.getElementById('supplyDateMax').value,
     supplyPlanCode: document.getElementById('scSupplyPlanCode').value,
@@ -155,7 +246,6 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   };
   loadPlan(dto);
 });
-
 
 // 공급계획서 목록 조회
 function loadPlan(obj){
@@ -183,6 +273,7 @@ function loadPlanDetail(supplyPlanCode){
     console.log('상세내역', data);
     planDetailGrid.resetData(data);
     
+    detailList.style.display = '';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
   });
@@ -255,6 +346,7 @@ function loadPrdPivot(selectedPrd){
     
     optionGrid.resetData(data); // 데이터 입력
     optionGrid.setColumns(columns); // 컬럼 입력
+    optionGrid.refreshLayout(); 
   });
 }
 
@@ -263,6 +355,10 @@ document.getElementById('closeBtn').addEventListener('click', () => closeAll());
 document.querySelector('.btn-close').addEventListener('click', () => closeAll());
 
 function closeAll(){
+    detailList.style.display = 'none';
+    productList.style.display = 'none';
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
+    document.getElementById('selectedPrdCode').value = '';
+    document.getElementById('selectedPrdName').value = '';
 }
