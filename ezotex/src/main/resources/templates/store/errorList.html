@@ -77,7 +77,7 @@
 			        </select>
 			    </div>
 			</div>
-
+			<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
 			<div id="grid">
 				<div id="pagination" class="tui-pagination"></div>
 			</div>
@@ -85,6 +85,16 @@
 	</div>
 	
 	<script>
+	
+		document.getElementById('xlsx').addEventListener('click', () => {
+			  if(errorGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+			  selectedMtrGrid.export('xlsx', {
+			    useFormattedValue: true,
+			    fileName: '자재명세서' + '_' + dateFormatter().replaceAll('-','')
+			  });
+			});
+	
+	
 	
 			function searchErrorProductList(){
 				errorGrid.readData(1,{
