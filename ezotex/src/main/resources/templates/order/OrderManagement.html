@@ -111,7 +111,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 							class="form-control inputbold" readonly></td>
 						<td class="col-auto"><label class="col-form-label">업체
 								전화번호</label> <input type="tel" id="companyTel"
-							class="form-control inputbold"></td>
+							class="form-control inputbold" readonly></td>
 						<td class="col-auto"><label class="col-form-label"></label> <input
 							type="text" id="orderStatus" class="form-control inputbold"
 							readonly hidden=true></td>
@@ -144,6 +144,30 @@ let clickedData = ""; // 클릭한 행의 데이터
 		<!-- //제품 목록 그리드 -->
 		<div id="grid" style="width: 100%;"></div>
 		<script>
+		document.getElementById('companyTel').addEventListener('input', function () {
+		    let phoneValue = this.value.replace(/\D/g, ''); // 숫자 외의 문자는 제거
+
+		    // 길이가 11을 넘으면 11자리까지만 입력 받도록 자르기
+		    if (phoneValue.length > 11) {
+		        phoneValue = phoneValue.substring(0, 11);
+		    }
+
+		    // 하이픈을 자동으로 추가
+		    if (phoneValue.length <= 3) {
+		        this.value = phoneValue;
+		    } else if (phoneValue.length <= 7) {
+		        this.value = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+		    } else {
+		        this.value = phoneValue.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+		    }
+
+		    // 전화번호가 완성되지 않았거나 길이가 13자 미만일 때 경고만 표시
+		    if (this.value.length === 13 && !/^(\d{3}-\d{4}-\d{4})$/.test(this.value)) {
+		        alert("전화번호 형식이 잘못되었습니다. 올바른 형식: 000-0000-0000");
+		    }
+		});
+		
+		
     // 기본 옵션 설정
     const grid = new tui.Grid({
       el: document.getElementById('grid'), // 그리드를 표시할 엘리먼트
@@ -376,6 +400,17 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    bodyHeight: 100, 
 				    autoWidth: true  // 자동 너비 조절
 				});
+		optionGrid.on('editingFinish', ev => {
+		    const { rowKey, columnName, value } = ev;
+
+		    // 입력값이 0보다 작은 경우 처리
+		    if (Number(value) < 1) {
+		        alert("1보다 적은 수는 입력할 수 없습니다.");
+
+		        // 값을 0으로 변경하여 음수 입력 방지
+		        optionGrid.setValue(rowKey, columnName, 1);
+		    }
+		});
 		// 제품별로 입력된 수량을 저장할 배열
 		let savedProductData = [];
 
@@ -697,6 +732,9 @@ let clickedData = ""; // 클릭한 행의 데이터
 			    })
 			    .then(rep => rep.json())
 			    .then(result => {
+			        if (!result || !result.productOrderCode) {
+			            throw new Error("주문 코드가 없습니다.");
+			        }
 			    	// 주문코드 추가
 			    	orderProductData.productOrderCode = result.productOrderCode;
 		        	fetch(`http://localhost:80/order/insertProductOrder`, {
@@ -709,17 +747,17 @@ let clickedData = ""; // 클릭한 행의 데이터
 				    })
 				    .then(rep => rep.json())
 				    .then(data => {
-				        if (data === true) {
-				            console.log("주문 등록 성공:", data);
-				        } else {
-				        	console.log(data);
+				        if (data !== true) {
 				            throw new Error("주문 등록 실패");
 				        }
+				        console.log("주문 등록 성공:", data);
+				        location.reload();
 				    })
 			    })
 			    .catch(error => {
 			        console.error("주문 등록 오류:", error);
 			        alert("주문 등록 중 오류가 발생했습니다.");
+			        return;
 			    });
 			    
 				})
@@ -949,10 +987,11 @@ function filterCompanyGrid() {
 		companyGrid.on('click', function(ev) {
 		    const clickedRowKey = ev.rowKey; // 클릭된 행의 키
 		    const clickedData = companyGrid.getRow(clickedRowKey); // 클릭된 행의 데이터
-		    // '주문 등록' 섹션의 입력 필드에 값 설정
+		    // '주문 정보' 섹션의 입력 필드에 값 설정
 		    document.getElementById('companyCode').value = clickedData.companyCode;
 		    document.getElementById('company').value = clickedData.companyName;
 		    document.getElementById('companyCharger').value = clickedData.companyCharger;
+		    document.getElementById('companyTel').value = clickedData.companyPhone;
 		    // 모달 닫기
 		    $('#companyCodeModal').modal('hide');
 		});
@@ -1005,8 +1044,7 @@ function filterCompanyGrid() {
 
 /* 헤더 체크박스 */
 #grid .tui-grid-cell input[type="checkbox"]:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
-
 </style>
 </html>

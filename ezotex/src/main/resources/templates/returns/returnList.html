@@ -49,8 +49,14 @@
 		</div>
 	</div>
 	<br>
-	<div id="returnGrid"></div>
-	<div id="returnProductGrid"></div>
+	<div class="card card-body mt-3">
+		<h3>반품 목록</h3>
+		<div id="returnGrid"></div>
+	</div>
+	<div class="card card-body mt-3">
+		<h3>반품 제품</h3>
+		<div id="returnProductGrid"></div>
+	</div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
 		const returnList = /*[[${getReturnList}]]*/[];
