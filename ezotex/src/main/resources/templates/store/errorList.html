@@ -5,6 +5,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 	</head>
 	<body>
 		<div class="d-flex align-items-center">
@@ -88,7 +89,7 @@
 	
 		document.getElementById('xlsx').addEventListener('click', () => {
 			  if(errorGrid.getRowCount() == 0) return; // 값이 없으면 미동작
-			  selectedMtrGrid.export('xlsx', {
+			  errorGrid.export('xlsx', {
 			    useFormattedValue: true,
 			    fileName: '자재명세서' + '_' + dateFormatter().replaceAll('-','')
 			  });

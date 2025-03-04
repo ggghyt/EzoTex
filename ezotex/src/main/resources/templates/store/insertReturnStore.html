@@ -118,7 +118,7 @@
 				<div id="grid4"></div> -->
 
 				<div class="d-flex justify-content-end mt-2">
-					<button type="button" class="btn btn-primary registBtn"
+					<button type="button" id="" class="btn btn-primary registBtn"
 						data-bs-toggle="modal" data-bs-target="#registModal"
 						style="height: 45px; margin-top: 10px;">등록</button>
 					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
@@ -367,6 +367,15 @@
 	    //저장
 	     InsertTest.addEventListener("click", function () {
 	    	
+	    	 
+	    	 let check = storeGrid2.getData();
+			 console.log('check',check);
+				if(check.length == 0){
+					alert('선택된 제품이 없습니다.')
+					return ;
+				} 
+	    	 
+	    	 
 	    	//storeGrid3.blur();
 	    	//storeGrid3.request('modifyData');
 	    	console.log('데이터확인', obj);

@@ -474,19 +474,8 @@
 	   	*========================================================================
 	   	*/
 	   	
-	   	
-	   	
-	   	
-	   	
-	   	/*
-	   	*========================================================================
-	   	* 제품등록 처리
-	   	*========================================================================
-	   	*/
-	   	
 	   	productInsert.addEventListener('click', function(){
-	   		
-	   		let check = storeProduct.getData();
+			let check = storeProduct.getData();
 	   		
 	   		if(check.length == 0){
 	   			alert('선택된 제품이 없습니다. 제품을 추가해주세요.');
@@ -503,6 +492,21 @@
 	   	            return; 
 	   	        }
 	   	    }
+	   		let modal = new bootstrap.Modal(document.getElementById('registModal'));
+	        modal.show();
+	   	})
+	   	
+	   	
+	   	
+	   	/*
+	   	*========================================================================
+	   	* 제품등록 처리
+	   	*========================================================================
+	   	*/
+	   	
+	   	InsertTest.addEventListener('click', function(){
+	   		
+	   		
 	   		
 	   		// 데이터에서 사이즈 값 변환
 	   	   let transformedData = check.map(item => {

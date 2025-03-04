@@ -76,8 +76,7 @@
 				<div id="mtGrid2"></div>
 				
 				<div class="d-flex justify-content-end mt-2">
-					<button type="button" class="btn btn-primary registBtn"
-						data-bs-toggle="modal" data-bs-target="#registModal"
+					<button id="InsertTest" type="button" class="btn btn-primary registBtn"
 						style="height: 45px; margin-top: 10px;">등록</button>
 					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
 				</div>
@@ -284,7 +283,23 @@
    			    })
 			}
 		})
+		
+		
+		
+		InsertTest.addEventListener('click', function(){
 			
+			let check = mtGrid2.getData();
+			
+			if(check.length == 0){
+				alert('선택된 제품이 없습니다.')
+				return ;
+			}
+			
+			let modal = new bootstrap.Modal(document.getElementById('registModal'));
+		        modal.show();
+		})
+		
+		
 		productMtInsert.addEventListener('click', function(){
 			fetch(`http://localhost:80/store/productMtInsert`, {
 				method: 'POST',
