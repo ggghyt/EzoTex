@@ -25,6 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 });
 
+// 엑셀 내보내기 버튼 이벤트
+document.getElementById('xlsx').addEventListener('click', () => {
+  if(selectedMtrGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+  selectedMtrGrid.export('xlsx', {
+    useFormattedValue: true,
+    fileName: '자재명세서_' + selectedPrd.PRODUCT_CODE + '_' + document.getElementById('rgsde').value.replaceAll('-','')
+  });
+});
+
+// 카테고리 변경 이벤트
 const changeClas = function(lclasEle, sclasEle){
 	lclasEle.addEventListener('change', () => {
 		createOptions(sclasEle, `/product/category/${lclasEle.value}`);		
@@ -42,7 +52,7 @@ const createOptions = async function(ele, uri){
 	.then(response => response.json())
 	.then(data => {		
 		for(let value of data){	
-            if(value.productSize == null && value.productColor == null) continue; // null은 무시
+      if(value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
 			
 			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우
@@ -240,7 +250,7 @@ let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
-prdGrid.on('focusChange', async ev => {
+prdGrid.on('focusChange', ev => {
 	// 배경색 클래스 적용
 	prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -250,7 +260,7 @@ prdGrid.on('focusChange', async ev => {
 	selectedPrd = prdGrid.getRow(ev.rowKey);
 	document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
 	document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
-	let colorData = await createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	let colorData = createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
 	if(colorData.length > 0 && colorData[0].productColor == null) createOptions(sizeBox, `/supply/optionSize/${selectedPrd.PRODUCT_CODE}`); // 색상 없으면 사이즈 목록 불러오기
 	loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
 });

@@ -337,11 +337,17 @@
             #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor})
   </insert>
   
+  <update id="updateOrderStatus" parameterType="String">
+    UPDATE material_order
+    SET status = #{status}
+    WHERE mtril_order_code = #{mtrilOrderCode}
+  </update>
+  
   <update id="updatePlan" parameterType="MaterialOrderPlanDTO">
     UPDATE material_order_plan
     <trim prefix="SET" suffixOverrides=",">
       update_date = SYSDATE,
-      <if test="dueDate != null">dueDate = #{dueDate},</if>
+      <if test="dueDate != null">due_date = #{dueDate},</if>
       <if test="remark != null">remark = #{remark},</if>
       <if test="status != null">status = #{status},</if>
    </trim>

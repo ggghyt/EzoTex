@@ -114,6 +114,12 @@ public class MaterialOrderServiceImpl implements MaterialOrderService {
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
 	}
 	
+
+	@Override
+	public boolean updateOrderStatus(String mtrilOrderCode, String status) {
+		return mapper.updateOrderStatus(mtrilOrderCode, status) > 0 ? true : false;
+	}
+	
 	@Override
 	@Transactional
 	public boolean updatePlan(Map<String, Object> map) {
