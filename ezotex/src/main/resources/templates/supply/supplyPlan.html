@@ -5,12 +5,17 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
+		<style>
+          #prdGrid {
+              height: 622px;
+          }
+        </style>
 	</head>
 	<body>
 		<h3 class="fs-3 fw-bold">| 공급계획서 등록</h3>
 		<div class="row">
 			<div class="col-5">
-				<form class="card card-body mt-3">
+				<form id="prdForm" class="card card-body mt-3">
 					<p class="fs-5 fw-bolder mb-3">제품 목록</p>
 					<!-- 제품 목록 및 검색 -->
 					<div th:replace="supply/bomManagement :: productList"></div>

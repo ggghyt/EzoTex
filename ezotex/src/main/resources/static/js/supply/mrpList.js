@@ -117,6 +117,11 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   mrpGrid.reloadData(); // 그리드 재출력 (readData)
 });
 
+// 엔터키로 검색
+document.getElementById('mrpForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('planSearchBtn').dispatchEvent(new Event('click'));
+});
+
 // 제품코드별 합계 출력
 let loadSuccess = false; // reloadData 이후 합계 입력하기 위함.
 mrpGrid.on('successResponse', () => loadSuccess = true);

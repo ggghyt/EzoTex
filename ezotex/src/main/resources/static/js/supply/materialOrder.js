@@ -92,6 +92,7 @@ mtrCodeBox.onclick = () => { // 자재코드 input 클릭 시 현재 값으로 �
 
 // 발주계획서 불러오기
 document.getElementById('loadPlanBtn').addEventListener('click', () => loadModalGrid('orderPlan', {}));
+let isModifying = false;
 
 /******************** Tui Grid Custom Renderer ********************/	
 // 행 삭제버튼 커스텀 렌더링
@@ -424,6 +425,17 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   };
   loadModalGrid('orderPlan', dto);
 });
+
+// 엔터키 즉시 검색
+document.getElementById('materialList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('companyList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('comSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('planList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('planSearchBtn').dispatchEvent(new Event('click'));
+});
 	
 let colorInfo; // 옵션별 정보 저장
 // 자재/업체 선택 시 색상옵션 생성 및 옵션별 재고+단가 불러오기
@@ -595,7 +607,6 @@ document.getElementById('modifyCancelBtn').addEventListener('click', () => {
 });
 
 // 수정버튼 토글기능
-let isModifying = false;
 function modifyMode(boolean){
 	isModifying = boolean;
 	if(isModifying){
@@ -703,7 +714,7 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
-  planListDiv.style.display = 'none';
+    planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
 }
