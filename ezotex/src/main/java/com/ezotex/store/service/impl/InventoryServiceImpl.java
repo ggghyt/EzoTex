@@ -80,7 +80,6 @@ public class InventoryServiceImpl implements InventoryService {
 	public boolean InsertErrorProduct(ErrorProductDTO edto) {
 		
 		String name = (String)session.getAttribute("name");
-		System.out.println("왜또 지랄임?" + edto);
 		mapper.InsertErrorProduct(edto, name);
 		mapper.InventoryUpdate(edto);
 		return true;
