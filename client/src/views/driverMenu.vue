@@ -317,7 +317,7 @@ const submitFormBtn = async() => {
     */
 
   console.log('작동');
-  console.log({deliveryCode: readDeliveryCode.value, dedtAddress: readAddress.value, companyName: readCompanyName.value, dedt: readDedt.value, image: fileInput.value})
+  console.log('서버로 보낼 데이터',{deliveryCode: readDeliveryCode.value, dedtAddress: readAddress.value, companyName: readCompanyName.value, dedt: readDedt.value, image: fileInput.value})
   
 
   axios({method: 'get',
