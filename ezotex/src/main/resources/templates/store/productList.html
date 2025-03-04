@@ -154,10 +154,17 @@
 			  data: []
 		    });
 	   	
+	   	let lastClicked = null
+	   	
 	   	productListGrid.on('click', ev => {
 	   	    let data = productListGrid.getRow(ev.rowKey);
 	   	    productCode = data.productCode;
 	   	 	productName = data.productName;
+	   	 	
+	   	 	productListGrid.removeRowClassName(lastClicked, 'bg-blue');
+	   		productListGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
+	   	 	
 	   	 	
 	   	 	document.querySelector('#prdCode').value = productCode;
 	   	 	document.querySelector('#prdName').value = productName;

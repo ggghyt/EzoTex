@@ -325,6 +325,8 @@
 	   	*========================================================================
 	   	*/
 	    
+	   	let lastClicked = null;
+	   	
 	    storeGrid.on('click', ev => {
 
 	    	let data = storeGrid.getRow(ev.rowKey);
@@ -333,6 +335,10 @@
 	    	
 	    	productCode = data.productCode;
 	    	productName = data.productName;
+	    	
+	    	storeGrid.removeRowClassName(lastClicked, 'bg-blue');
+	    	storeGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
 	    	
 	    	 // 색상 옵션 가져오기
 	        fetch(`http://localhost:80/store/productColor?productCode=${data.productCode}`)

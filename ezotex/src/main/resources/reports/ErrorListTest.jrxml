@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.2.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ErrorListTest" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5c761f97-63f3-476f-81f0-59a7bb49b577">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter "/>
+	<style name="malgum" fontName="malgum"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT e.product_code,
+                   i.product_name,
+                   e.product_color,
+                   get_comm(e.product_size) as product_size,
+                   e.lot,
+                   e.process_date,
+                   e.error_charger,
+                   e.error_info
+            FROM inventory_error e join product_info i
+            on e.product_code = i.product_code
+            ORDER BY e.process_date desc]]>
+	</queryString>
+	<field name="PRODUCT_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_CODE"/>
+	</field>
+	<field name="PRODUCT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_NAME"/>
+	</field>
+	<field name="PRODUCT_COLOR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_COLOR"/>
+	</field>
+	<field name="PRODUCT_SIZE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="PRODUCT_SIZE"/>
+	</field>
+	<field name="LOT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="LOT"/>
+	</field>
+	<field name="PROCESS_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.label" value="PROCESS_DATE"/>
+	</field>
+	<field name="ERROR_CHARGER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ERROR_CHARGER"/>
+	</field>
+	<field name="ERROR_INFO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ERROR_INFO"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement style="malgum" x="230" y="10" width="100" height="30" uuid="fd6cea67-2e67-4087-b6a3-31d6fea1671d"/>
+				<text><![CDATA[불량 재고 리스트]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="50" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="82" splitType="Stretch">
+			<staticText>
+				<reportElement key="" style="malgum" x="-8" y="0" width="70" height="30" backcolor="#B0A6A5" uuid="581cba4c-3f4f-45cf-b557-eada2a1399c5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7c5dd315-b174-4995-a84c-8777ef6c6085"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[제품코드]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="" style="malgum" x="61" y="0" width="130" height="30" backcolor="#B0A6A5" uuid="52aeaece-c3dd-4ee4-8d18-ee7def74c2fa">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="524c3a2d-1448-4df2-8bcd-0380a517a209"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[제품명]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="-8" y="30" width="70" height="30" uuid="e3958fc1-d5fd-41f7-99bf-4f9b9b51ce58">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7c5dd315-b174-4995-a84c-8777ef6c6085"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_CODE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" x="61" y="30" width="130" height="30" uuid="efe75b77-6aae-4a12-98fd-0306128cb262">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="524c3a2d-1448-4df2-8bcd-0380a517a209"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="" style="malgum" x="192" y="0" width="40" height="30" backcolor="#B0A6A5" uuid="1c15e48c-580d-4711-9637-cca277128018">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9144980a-3c39-40cb-a2e5-af4adc8b81e2"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[색상]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="192" y="30" width="40" height="30" uuid="738f4283-2785-4c4b-893f-fa7d982cce1a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9144980a-3c39-40cb-a2e5-af4adc8b81e2"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_COLOR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="" style="malgum" x="234" y="0" width="39" height="30" backcolor="#B0A6A5" uuid="9f177076-f95b-4ce4-8080-11a5a2efd441">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4172b835-32e1-4feb-be65-3cb8412397c5"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[사이즈]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="234" y="30" width="39" height="30" uuid="f47dc34e-ac18-48f9-9a1e-01d8ae0c7f28">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4172b835-32e1-4feb-be65-3cb8412397c5"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PRODUCT_SIZE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="" style="malgum" x="274" y="0" width="100" height="30" backcolor="#B0A6A5" uuid="fd37705a-df52-4303-97c9-d3fbf2c37e5c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1948f295-ca57-45cc-9903-2e05667d3082"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[LOT번호]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="274" y="30" width="100" height="30" uuid="8c72aec0-a1c6-4696-bead-25cd32acf37c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1948f295-ca57-45cc-9903-2e05667d3082"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{LOT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" x="374" y="30" width="100" height="30" uuid="f0ab979d-65a4-4fb9-a19d-67c2838e8e8c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="301130aa-3ecd-4a37-ab07-1c91bac1e168"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{PROCESS_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="" style="malgum" x="374" y="0" width="100" height="30" backcolor="#B0A6A5" uuid="ddee4473-6636-400e-b4e6-976f29470022">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="301130aa-3ecd-4a37-ab07-1c91bac1e168"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[처리일]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="" style="malgum" x="476" y="0" width="37" height="30" backcolor="#B0A6A5" uuid="ab3b6e00-e0bb-4906-81c6-864a3718e7cf">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c2d5f831-02ee-488d-b3e7-2a5e20be51ed"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[처리담당자]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="476" y="30" width="37" height="30" uuid="15d96f9a-e5b9-41ea-b69e-a004a2860ca5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c2d5f831-02ee-488d-b3e7-2a5e20be51ed"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ERROR_CHARGER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="" style="malgum" x="512" y="0" width="50" height="30" backcolor="#B0A6A5" uuid="0a318985-310e-4293-ba08-b19dc39b4382">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2e5e5ab2-0f70-42dc-8663-38cf330b99d0"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[사유]]></text>
+			</staticText>
+			<textField>
+				<reportElement key="" x="512" y="30" width="50" height="30" uuid="15f832f6-0e2f-4015-9b6f-1b615be3e2af">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2e5e5ab2-0f70-42dc-8663-38cf330b99d0"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{ERROR_INFO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

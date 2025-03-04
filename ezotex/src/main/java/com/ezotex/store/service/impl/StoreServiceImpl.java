@@ -94,7 +94,7 @@ public class StoreServiceImpl implements StoreService {
 //		return mapper.deliveryQy();
 //	}
 
-	// 입고 예정 리스트(제품)
+	// 입고 예정 리스트(반품 제품)
 	@Override
 	public List<StoreReturnDTO> DeliveryList(DeliverySearchDTO searchDTO) {
 		//mapper.deliveryQy();
@@ -181,11 +181,11 @@ public class StoreServiceImpl implements StoreService {
 		
 		String name = (String) session.getAttribute("name");
 		
-		System.out.println(list);
 		
 		list.forEach(data -> {
-			System.out.println(data);
-			mapper.MtInsertProduct(data, name);
+			if(data.getProductInsertQy() > 0) {
+				mapper.MtInsertProduct(data, name);
+			}
 		});
 		
 		 String deliveryCode = list.get(0).getDeliveryCode();
@@ -194,7 +194,6 @@ public class StoreServiceImpl implements StoreService {
 		 
 		 if(check == 0) {
 			 mapper.deliveryProcessing(deliveryCode);
-			 System.out.println("상태변환 업데이트 진행");
 		 }
 		
 		return false;

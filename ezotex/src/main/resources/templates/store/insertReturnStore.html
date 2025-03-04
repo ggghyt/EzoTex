@@ -92,7 +92,7 @@
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchReturnList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -121,7 +121,7 @@
 					<button type="button" id="" class="btn btn-primary registBtn"
 						data-bs-toggle="modal" data-bs-target="#registModal"
 						style="height: 45px; margin-top: 10px;">등록</button>
-					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+					<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn" >초기화</button>
 				</div>
 
 			</div>
@@ -171,6 +171,12 @@
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
 	
+		//초기화 화면 새로고침
+		document.getElementById('resetBtn').addEventListener('click', function() {
+		    window.location.reload();  // 페이지 새로 고침
+		 });
+	
+	
 		function searchReturnList() {
 			storeGrid.readData(1, {
 	    	    returnCode: document.querySelector('#searchReturnCode').value,
@@ -180,6 +186,14 @@
 	    	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
 	    }
 	
+		inputReset.addEventListener('click', function(){
+			  document.querySelector('#searchReturnCode').value = '';
+	    	  document.querySelector('#requestor').value = '';
+	    	  document.querySelector('#startRequestDate').value = '';
+	    	  document.querySelector('#endRequestDate').value = '';
+	    	  searchReturnList();
+		})
+		
 	
 		// obj 배열에 변경된 사이즈 정보 저장
 	    let obj = [];
@@ -280,6 +294,8 @@
 			  data: []
 		    });
 	    
+	    let lastClicked = null;
+	    
 	    // 클릭 이벤트 후 클릭 행 데이터 기반 상세조회
 	    storeGrid.on('click', ev => {
 	    	
@@ -287,6 +303,11 @@
 	    	// 납품코드 재정의
 	    	returnCode = data.returnCode;
 	    	deliveryCode = data.deliveryCode;
+	    	
+	    	storeGrid.removeRowClassName(lastClicked, 'bg-blue');
+	    	storeGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
+	    	
 	    	
 	    	productChanges = {};  // 변경된 제품 정보 초기화
 		    obj = [];  // 입고 수량 관련 배열 초기화
@@ -824,9 +845,6 @@
 
 	    
 	    </script>
-
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#exampleModal">ModalTest2</button>
 
 </body>
 </html>
