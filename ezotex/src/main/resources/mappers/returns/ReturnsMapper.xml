@@ -197,6 +197,7 @@
 		from returns r
 		join return_product rp on rp.return_code = r.return_code
 		where rp.show = 'on'
+		ORDER BY r.return_code DESC
 	</select>
 	<select id="getReturnProductList">
 		select *
