@@ -34,6 +34,9 @@
 	<div class="col" style="padding: 10px">
 		<div class="row">
 			<!-- 제품 검색 조건 -->
+			<div class="card">
+			<div class="card-body">
+			<div class="search">
 			<div class="row me-2">
 				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">코드</label>
 				<div class="col-2 col-lg-2 d-flex mb-2">
@@ -81,8 +84,9 @@
 					<input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="이하" value="">
 				</div>
 			</div>
-
-			<div class="d-flex justify-content-center mt-2 mb-4">
+			</div>
+			
+			<div class="d-flex justify-content-center">
 				<button type="button" id="searchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchBtn()">
 					<i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i>
 				</button>
@@ -90,8 +94,10 @@
 					<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
 				</button>
 			</div>
+			</div>
+			</div>
 			
-			<div id="searchGrid" style="height: 525px">
+			<div id="searchGrid" style="height: 525px; margin-top: 20px">
 			</div>
 			<div class="col me-2">
 			<div class="row me-2">
@@ -121,7 +127,7 @@
 	</div>
 	
 	<script>
-	fetch('http://localhost:80/standard/categoryLclas')
+	fetch('/standard/categoryLclas')
 	.then((response) => response.json())
 	.then((data) => {
 			let select_lclas = document.querySelector("#lclas");
@@ -143,7 +149,7 @@
 			o.innerText = "전체"
 			select_sclas.appendChild(o);
 		} else {
-			fetch('http://localhost:80/standard/categorySclas?lclas=' + select_lclas.value)
+			fetch('/standard/categorySclas?lclas=' + select_lclas.value)
 			.then((response) => response.json())
 			.then((data) => {
 				select_sclas.innerHTML = ""
@@ -177,8 +183,11 @@
 	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 150, sortable: true, align: 'center' }, 
 	        { header: '대분류', name: 'LCLAS', width: 150, sortable: true, align: 'center' }, 
 	        { header: '소분류', name: 'SCLAS', width: 150, sortable: true, align: 'center' }, 
-	        { header: '단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }
+	        { header: '단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'right', formatter: row => numberFormatter(row.value) }
 	    ],
+	    columnOptions: {
+	        resizable: true
+	    },
 	    pageOptions: {
 	        useClient: true, // 페이징을 위해 필요
 	        perPage: 10
@@ -347,6 +356,14 @@
 		      options: chartOptions
 		    });
 	}
+	
+	document.querySelectorAll(".search input").forEach((ele) => {
+	    ele.addEventListener('keydown', (event) => {				
+	        if (event.keyCode === 13) {
+	        	searchBtn();
+	        }
+	    });
+	});
 	</script>
 </body>
 </html>

@@ -274,7 +274,7 @@
 		function id_unique() {
 			let id = document.querySelector("#emp_id").value;
 			let result = 0
-			fetch('http://localhost:80/login/searchId?id=' + id)
+			fetch('/login/searchId?id=' + id)
 			.then((response) => response.json())
 			.then((data) => {
 				result = data
@@ -294,7 +294,7 @@
 			})
 		}
 		
-		fetch('http://localhost:80/login/deptList')
+		fetch('/login/deptList')
 		.then((response) => response.json())
 		.then((data) => {
 			let select_dept = document.querySelector("#dept_code");
@@ -306,7 +306,7 @@
 			}
 		})
 		
-		fetch('http://localhost:80/login/positionList')
+		fetch('/login/positionList')
 		.then((response) => response.json())
 		.then((data) => {
 			let select_dept = document.querySelector("#position_code");

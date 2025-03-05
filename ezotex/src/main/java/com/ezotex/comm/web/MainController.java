@@ -52,7 +52,7 @@ public class MainController {
 	public void infomationInsert(@RequestParam(name="userCode") String userCode, 
 			                     @RequestParam(name="title") String title, 
 			                     @RequestParam(name="content") String content) {
-		//작성중
+		service.infomationInsert(userCode, title, content);
 	}
 	
 	@GetMapping("/sample")

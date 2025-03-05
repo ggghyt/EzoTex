@@ -244,5 +244,10 @@ public class StandardServiceImpl implements StandardService {
 		return mapper.infomationUpdate(num, title, content);
 	}
 
+	@Override
+	public int infomationInsert(String userCode, String title, String content) {
+		return mapper.infomationInsert(userCode, title, content);
+	}
+
 	
 }
