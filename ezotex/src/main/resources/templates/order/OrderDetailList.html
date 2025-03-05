@@ -168,6 +168,14 @@
 								header : '주문금액합계',
 								name : 'amount',
 								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            }								
 							},
 							{
 								header : '상세보기',
@@ -300,11 +308,27 @@
 							}, {
 								header : '수량',
 								name : 'qy',
-								align : 'center',
+								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            },
 							}, {
 								header : '단가',
 								name : 'unitPrice',
-								align : 'center',
+								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            },
 							}, ],
 						    pageOptions: {
 						        useClient: true, // 페이징을 위해 필요
