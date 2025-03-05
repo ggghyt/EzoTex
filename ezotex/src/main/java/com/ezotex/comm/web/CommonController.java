@@ -50,7 +50,7 @@ public class CommonController {
     // 로그인 메인 페이지
 	@GetMapping("/main")
 	public String login() {
-		return "/login/login";
+		return "login/login";
 	}
 
     // 회원가입 메인 페이지
