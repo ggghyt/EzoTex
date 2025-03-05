@@ -166,12 +166,18 @@
 				{
 					header : '수량',
 					name : 'deliveryQy',
-					align : 'center',
+					align : 'right',
+			        formatter: function({ value }) {
+			            return value ? value.toLocaleString() : '0';
+			        }
 				},
 				{
 					header : '단가',
 					name : 'unitPrice',
-					align : 'center',
+					align : 'right',
+			        formatter: function({ value }) {
+			            return value ? value.toLocaleString() : '0';
+			        },
 				},
 				],
 				pageOptions : {
@@ -282,13 +288,18 @@
 				{
 					header : '수량',
 					name : 'deliveryQy',
-					align : 'center',
-					editor : 'text',
+					align : 'right',
+			        formatter: function({ value }) {
+			            return value ? value.toLocaleString() : '0';
+			        },
 				},
 				{
 					header : '단가',
 					name : 'unitPrice',
-					align : 'center',
+					align : 'right',
+			        formatter: function({ value }) {
+			            return value ? value.toLocaleString() : '0';
+			        },
 				},
 			    {
 				      header : '처리상태',

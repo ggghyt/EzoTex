@@ -65,6 +65,7 @@
 	<div class="card card-body mt-3">
 	<h3>반품목록</h3>
 		<div id="lossAmountGrid"></div>
+	<h3>제품별 일일 손실액</h3>
 		<div id="totalAmountGrid"></div>
 	</div>
 
@@ -72,6 +73,7 @@
 	<script th:inline="javascript">
 	<!-- 그리드에 넣어줄 데이터 -->
 	const returnProductList = /*[[${getReturnProductList}]]*/[];	
+	const totalAmountList = /*[[${getTotalReturnProduct}]]*/[];	
 	// 토스트 그리드 사용
 	// 반품 제품 그리드 설정
 	const returnProductGrid = new tui.Grid(
@@ -180,6 +182,56 @@
 	
 	
 	)
+	const totalAmountGrid = new tui.Grid({
+		el : document.getElementById('totalAmountGrid'),
+		scrollX : false, // 가로 스크롤바 비활성화
+		scrollY : false, // 세로 스크롤바 비활성화
+		data : totalAmountList,
+		bodyHeight : 200,
+		rowHeaders : [{
+			type : 'rowNum',
+			header : 'NO'
+		}],
+		columns : [{
+			header : '반품등록일',
+			name : 'returnRequestDate',
+			align : 'center',
+		},{
+			header : '제품코드',
+			name : 'productCode',
+			align : 'center',
+		},{
+			header : '제품명',
+			name : 'productName',
+			align : 'center',
+		},{
+			header : '총 수량',
+			name : 'totalQy',
+			align : 'right',
+	        formatter: function({ value }) {
+	            return value ? value.toLocaleString() : '0';
+	        },
+		},{
+			header : '단가',
+			name : 'totalUnitPrice',
+			align : 'right',
+	        formatter: function({ value }) {
+	            return value ? value.toLocaleString() : '0';
+	        },
+		},{
+			header : '총 손실액',
+			name : 'lossAmount',
+			align : 'right',
+	        formatter: function({ value }) {
+	            return value ? value.toLocaleString() : '0';
+	        },
+		}],
+	    pageOptions: {
+	        useClient: true, // 페이징을 위해 필요
+	        perPage: 5
+      	},
+		
+	})
 	
 	// 손실액 검색 함수
 	function searchLossAmount() {
