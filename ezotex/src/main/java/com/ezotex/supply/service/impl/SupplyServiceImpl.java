@@ -68,8 +68,8 @@ public class SupplyServiceImpl implements SupplyService {
 	}
 	
 	@Override
-	public List<SupplyDTO> infoSupplyPlan(String supplyPlanCode, String productCode) {
-		return mapper.infoSupplyPlan(supplyPlanCode, productCode);
+	public List<SupplyDTO> infoSupplyPlan(Map<String, String> map) {
+		return mapper.infoSupplyPlan(map);
 	}
 	
 	@Override
@@ -93,8 +93,8 @@ public class SupplyServiceImpl implements SupplyService {
 	@Override
 	@Transactional
 	public boolean updateSupplyPlan(Map<String, Object> supplies) {
-		String supplyPlanCode = (String) supplies.get("supplyPlanCode");
-		int headerResult = mapper.updateSupplyPlan(supplyPlanCode);
+		SupplyDTO header = objMapper.convertValue(supplies.get("headerObj"), SupplyDTO.class);
+		int headerResult = mapper.updateSupplyPlan(header.getSupplyPlanCode(), header.getDiscontinued());
 		
 		List<Object> detailList = (List<Object>) supplies.get("detailArr");
 		
@@ -102,6 +102,7 @@ public class SupplyServiceImpl implements SupplyService {
 		for(Object detail : detailList) {
 			// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
 			SupplyDTO dto = objMapper.convertValue(detail, SupplyDTO.class); // DTO로 변환
+			dto.setSupplyPlanCode(header.getSupplyPlanCode());
 			int result = mapper.updateSupplyPlanDetail(dto);
 			dtlResult = dtlResult - result;
 		}

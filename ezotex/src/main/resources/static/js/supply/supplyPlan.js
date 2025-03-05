@@ -121,7 +121,7 @@ const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: prdData,
     columns: [
-        { header: '제품코드', name: 'productCode', width: 100, sortable: true },
+        { header: '제품코드', name: 'productCode', width: 100, sortable: true, align: 'center' },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
         { header: ' ', name: 'inserted', renderer: { type: CustomCheckRender, options: {}}, width: 50, align: 'center' }
     ],
@@ -163,9 +163,9 @@ const supplyGrid = new Grid({
 	el: document.getElementById('supplyGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '제품코드', name: 'productCode', width: 100, sortable: true },
+        { header: '제품코드', name: 'productCode', width: 100, sortable: true, align: 'center' },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
-        { header: '공급계획일자', name: 'supplyDate', width: 100, sortable: true, editor: 'datePicker' },
+        { header: '공급계획일자', name: 'supplyDate', width: 100, sortable: true, editor: 'datePicker', align: 'center' },
         { header: '총 수량', name: 'totalQy', width: 100, sortable: true, align: 'right',
 				  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 		{ header: '', name: '', renderer: { type: CustomBtnRender, options: {}}, width: 70, align: 'center' },
@@ -246,8 +246,8 @@ async function loadBlankList(productCode){
 			};
 			
 			// 컬럼, 데이터 반영
-			if(sizeCnt > 0) columns.push({ header: "사이즈", name: "sizeName" });
-			else columns.push({ header: "색상", name: "productColor" });
+			if(sizeCnt > 0) columns.push({ header: "사이즈", name: "sizeName", align: 'center' });
+			else columns.push({ header: "색상", name: "productColor", align: 'center' });
 			data.forEach(obj => obj.qy = 0); // null과 구분하기 위해 기본값 넣음.
 			optionGrid.resetData(data);
 		} else {

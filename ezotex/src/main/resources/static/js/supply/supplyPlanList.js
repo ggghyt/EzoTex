@@ -108,7 +108,7 @@ const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: prdData,
     columns: [
-        { header: '제품코드', name: 'productCode', width: 100, sortable: true },
+        { header: '제품코드', name: 'productCode', width: 100, sortable: true, align: 'center' },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
         { header: '', name: '', className: 'prd', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
@@ -141,16 +141,25 @@ const supplyGrid = new Grid({
       api: { readData: { url: '/supply/supplyPlanList', method: 'GET', initParams : {supplyYear: new Date().getFullYear()} } }
     },
     columns: [
-        { header: '공급계획코드', name: 'supplyPlanCode', width: 120, sortable: true },
-        { header: '공급년도', name: 'supplyYear', width: 80, sortable: true },
-        { header: '시즌', name: 'season', width: 50, sortable: true },
+        { header: '공급계획코드', name: 'supplyPlanCode', width: 120, sortable: true, align: 'center' },
+        { header: '공급년도', name: 'supplyYear', width: 80, sortable: true, align: 'center' },
+        { header: '시즌', name: 'season', width: 50, sortable: true, align: 'center' },
         { header: '요약', name: 'summary', whiteSpace: 'pre-line', sortable: true },
         { header: '공급량합계', name: 'supplyQy', width: 150, sortable: true, align: 'right',
            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
         { header: '비고', name: 'remark', whiteSpace: 'pre-line', sortable: true, elipsis: true },
-        { header: '담당자', name: 'chargerName', width: 100, sortable: true },
-        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
-        { header: '최종수정일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '담당자', name: 'chargerName', width: 100, sortable: true, align: 'center' },
+        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
+        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value), align: 'center' },
+        { header: '상태', name: 'discontinued', align: 'center', width: 50,
+          renderer: {
+            styles: {
+              fontWeight: 'bold',
+              color: props => props.value == 'Y' ? 'red' : null
+            }
+          },
+          formatter: row => row.value == 'Y' ? '중단' : null // 중단인 것만 표시
+         },
         { header: '', name: '', className: 'plan', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
     ],
     columnOptions: { resizable: true },
@@ -181,9 +190,9 @@ const planDetailGrid = new Grid({
     el: document.getElementById('planDetailGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '제품코드', name: 'productCode', sortable: true },
+        { header: '제품코드', name: 'productCode', sortable: true, align: 'center' },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
-        { header: '공급계획일자', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '공급계획일자', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value), align: 'center' },
         { header: '공급계획량', name: 'supplyQy', sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) }
     ],
     rowHeaders: ['rowNum'],
@@ -289,9 +298,11 @@ function loadPlanDetail(supplyPlanCode){
     planDetailGrid.resetData(data);
     
     detailList.style.display = '';
+    if(validSeason(selected)) disconBtn.style.display = ''; // 중단버튼 표시
     modalTitle.innerText = '공급계획서 상세조회';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
+    optionGrid.refreshLayout(); 
   });
 }
 
@@ -314,12 +325,13 @@ let isModify;
 let modifyBtn = document.getElementById('modifyBtn');
 let modifyConfirmBtn = document.getElementById('modifyConfirmBtn');
 let modifyCancelBtn = document.getElementById('modifyCancelBtn');
+let disconBtn = document.getElementById('disconBtn'); 
 
 // 선택한 공급계획서-제품의 옵션별 집계 조회
 function loadPrdPivot(selectedPrd){
   let query = new URLSearchParams({
     productCode: selectedPrd.productCode, 
-    supplyPlanCode: supplyPlanCode.value
+    supplyPlanCode: selected.supplyPlanCode
   });
   
   fetch(`/supply/supplyPlanPivot?${query}`)
@@ -327,7 +339,7 @@ function loadPrdPivot(selectedPrd){
   .then(result => {
     let data = result.data.contents;
     let columns = [];
-    let qyColumn = { header: "수량", name: "SUPPLY_QY", align: "right", 
+    let qyColumn = { header: "수량", name: "SUPPLY_QY", align: "right", editor: 'text', disabled: true,
                      formatter: (row) => row.value == 0 || row.value == null ? null : numberFormatter(row.value) };
     
     if(data == null){ 
@@ -359,17 +371,49 @@ function loadPrdPivot(selectedPrd){
       sizeNmArr.sort((current, next) => { // 공통코드 기준 오름차순 정렬
         return getSizeCommonCode(current).substr(2,3) - getSizeCommonCode(next).substr(2,3);
       }).forEach((nm) => { // 컬럼 생성
-        let newCol = { header: nm, name: getSizeCommonCode(nm), align: 'right', 
+        let newCol = { header: nm, name: getSizeCommonCode(nm), align: 'right', editor: 'text', disabled: true,
                        formatter: (row) => row.value == 0 || row.value == null ? null : numberFormatter(row.value) };
         columns.push(newCol);     
       });
     }
     
-    if(true) modifyBtn.style.display = '';
+    if(isModify) modifyMode(false); // 수정중에 클릭 시 중복 실행 방지
+    if(validSeason(selected)) modifyBtn.style.display = ''; // 수정버튼 표시
     optionGrid.resetData(data); // 데이터 입력
     optionGrid.setColumns(columns); // 컬럼 입력
-    optionGrid.refreshLayout(); 
   });
+}
+
+// 시즌 비교용 숫자 변환
+// 월 => 숫자
+function convertMonth(month){
+    if(month >= 3 && month <= 5) return 1; // 봄
+    else if(month >= 6 && month <= 8) return 2; // 여름
+    else if(month >= 9 && month <= 11) return 3; // 가을
+    else if(month == 12 || month <= 2)return 4; // 겨울
+    else return 0; // 상시
+}
+
+// 시즌 => 숫자
+function convertSeason(str){
+    switch(str){
+        case '봄': return 1;
+        case '여름': return 2;
+        case '가을': return 3;
+        case '겨울': return 4;
+        default: return 0;
+    }
+}
+
+// 수정/중단 가능 여부 (시즌 비교)
+function validSeason(row){
+    let today = new Date();
+    let year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    
+    // 공급년도가 오지 않았거나, 올해라면 시즌이 도래하지 않았는지 판단
+    let isValid = convertMonth(month) < convertSeason(row.season);
+    return (isValid && row.supplyYear == year) || row.supplyYear < year;
 }
 
 // 공급계획서 수정
@@ -378,31 +422,51 @@ modifyCancelBtn.addEventListener('click', () => modifyMode(false));
 
 modifyConfirmBtn.addEventListener('click', () => {
     let updated = optionGrid.getModifiedRows().updatedRows;
-    let detailArr = updated.map(data => {
-        return {
-            productCode: data.productCode,
-            productColor: data.productColor,
-            productSize: data.productSize,
-            supplyQy: data.orderQy
-        };
-    });
-    let supplyPlanCode = selected.supplyPlanCode;
+    if(updated.length == 0){
+      failToast('변경된 값이 없습니다.');
+      modifyMode(false);
+      return;
+    }
     
-    fetch('/mtr/mtrOrderPlan', {
+    let differ = 0; // 전체 수량 계산용
+    let detailArr = [];
+    editableCells.forEach(obj => {
+        updated.forEach(data => {
+            if(data.rowKey == obj.rowKey){
+                let supplyQy = data[obj.columnName];
+                if(supplyQy == obj.qy) return; // 저장된 원본값과 달라진 게 없으면 건너뛰기
+                else differ = differ + (supplyQy - obj.qy); // 수량 차이 저장
+                
+                let productColor = data['PRODUCT_COLOR'] ? data['PRODUCT_COLOR'] : 'null';
+                let productSize = 'null';                
+                if(data['PRODUCT_SIZE']) productSize = data['PRODUCT_SIZE']; // 사이즈코드가 있으면 넣음.
+                else if(obj.columnName.substr(0,2) == 'SI') productSize = obj.columnName;
+
+                let productCode = selectedPrd.productCode;
+                detailArr.push({productCode, supplyQy, productColor, productSize});                
+            }
+        })
+    });
+    let headerObj = {supplyPlanCode: selected.supplyPlanCode};
+    
+    fetch('/supply/plan', {
         method: 'PUT',
         headers: {...headers, 'Content-Type': 'application/json'},
-        body: JSON.stringify({ supplyPlanCode, detailArr})
+        body: JSON.stringify({ headerObj, detailArr})
     })
     .then(response => response.json())
     .then(result => {
         if(result == true){ 
           successToast('작업이 완료되었습니다.');
           // 변경사항 반영
+          selectedPrd.supplyQy = selectedPrd.supplyQy + differ;
+          planDetailGrid.setRow(selectedPrd.rowKey, selectedPrd);
+          
+          optionGrid.resetData(optionGrid.getData());
+          
           selected.updateDate = dateFormatter();
-          selected.remark = remarkBox.value;
-          selected.dueDate = dueDateBox.value;
-          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
-          planGrid.setRow(selected.rowKey, selected);
+          selected.supplyQy = planDetailGrid.getSummaryValues('supplyQy').sum;
+          supplyGrid.setRow(selected.rowKey, selected);
         }
         else failToast('작업을 실패했습니다.');
     });
@@ -410,14 +474,103 @@ modifyConfirmBtn.addEventListener('click', () => {
     modifyMode(false);
 })
 
+let editableCells = []; // 수정 가능한 위치 저장
 // 수정모드 전환
 function modifyMode(boolean){
     isModify = boolean;
     modifyBtn.style.display = isModify ? 'none' : '';
     modifyConfirmBtn.style.display = isModify ? '' : 'none';
     modifyCancelBtn.style.display = isModify ? '' : 'none';
-    isModify ? optionGrid.enable() : optionGrid.disable();
+    disconBtn.style.display = isModify ? 'none' : '';
+    
+    editableCells = getEditableCells();
+    if(isModify){ // 입력 가능한 셀만 해제
+        editableCells.forEach(obj => {
+            optionGrid.enableCell(obj.rowKey, obj.columnName);
+        });        
+    } else {
+        editableCells.forEach(obj => {
+            console.log(obj);
+            optionGrid.disableCell(obj.rowKey, obj.columnName);
+        });  
+    }
 }
+
+// 입력 가능한 셀 확인
+function getEditableCells(){
+    let gridData = optionGrid.getData();
+    let columnNames = optionGrid.getColumns().map(col => col.name); // 컬럼명만 수집
+    // 행-열을 순회하며 0이 아닌 셀을 찾고, [{rowKey, columnName, qy},..] 형식으로 반환
+    let resultArr = [];
+    gridData.forEach(data => {
+        let obj = {};
+        columnNames.forEach(nm => {
+            if(data[nm] != 0 && data[nm] != null && !isNaN(data[nm])){
+                obj.rowKey = data.rowKey;
+                obj.columnName = nm;
+                obj.qy = data[nm];
+            }
+        });
+        resultArr.push(obj);
+    });
+    return resultArr;
+}
+
+// 입력값 유효성검사
+optionGrid.on('afterChange', ev => {
+  let changed = ev.changes[0];
+  let rowKey = changed.rowKey;
+  console.log('ev',ev);
+  let row = optionGrid.getRow(rowKey);
+  let val = changed.value;
+  if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
+    failToast('입력값은 문자가 들어갈 수 없습니다.');
+    // 이전 값이 있으면 이전 값으로, 없으면 0으로 전환
+    val = changed.prevValue == null ? 0 : changed.prevValue;
+  } else if (val < 0){ // 음수면 양수로 전환 
+    val = val * -1;
+    failToast('입력값은 음수가 될 수 없습니다.');
+  }
+  row[changed.columnName] = val;
+  optionGrid.setRow(rowKey, row);
+});
+
+// 계획중단 버튼 동작 (시즌이 지나지 않은 공급계획에만 수정/중단표시)  
+document.addEventListener('DOMContentLoaded', () => {
+    createModal({ 
+      type: 'delete',
+      header: '계획중단 확인',
+      content: '해당 공급계획서를 중단하시겠습니까?',
+      buttonText: '확인',
+      confirm: () => {
+        let headerObj = {
+            supplyPlanCode: selected.supplyPlanCode,
+            discontinued: 'YN01'
+        }
+        
+        fetch('/supply/plan', {
+            method: 'PUT',
+            headers: {...headers, 'Content-Type': 'application/json'},
+            body: JSON.stringify({headerObj, detailArr: []})
+        })
+        .then(response => response.json())
+        .then(result => {
+            if(result == true){
+                successToast('작업이 완료되었습니다.');
+                selected.discontinued = 'Y';
+                selected.updateDate = dateFormatter();
+                supplyGrid.setRow(selected.rowKey, selected);
+                disconBtn.style.display = 'none';
+            }
+            else failToast('작업을 실패했습니다.');
+        });
+      }
+  }); 
+});
+
+disconBtn.addEventListener('click', () => {
+    $('#simpleModal').modal('show');
+});
 
 // 모달 내부 닫기버튼 동작 (모두 숨김)
 document.getElementById('closeBtn').addEventListener('click', () => closeAll());
@@ -428,10 +581,12 @@ function closeAll(){
     detailList.style.display = 'none';
     productList.style.display = 'none';
     modifyBtn.style.display = 'none';
+    disconBtn.style.display = 'none';
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
     document.getElementById('selectedPrdCode').value = '';
     document.getElementById('selectedPrdName').value = '';
+    $('#myModal').modal('hide');
 }
 
 // 모달 숨김 시 닫기 버튼과 동일한 효과

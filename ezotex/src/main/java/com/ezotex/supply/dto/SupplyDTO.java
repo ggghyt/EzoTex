@@ -20,6 +20,7 @@ public class SupplyDTO {
 	private String remark;
 	private Date rgsde;
 	private Date updateDate;
+	private String discontinued;
 	
 	private String supplyPlanDetailCode;
 	//private String supplyPlanCode;

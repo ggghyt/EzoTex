@@ -117,13 +117,11 @@ public class SupplyRestController {
 		Map<String, Object> map = GridUtil.grid(1, totalCnt, service.listSupplyPlan(params));
 		return map;
 	}
-	
 
 	// 공급계획서 상세조회
 	@GetMapping("supplyPlan")
-	public Map<String, Object> supplyPlanPivot(@RequestParam(value="supplyPlanCode", required=false) String planCode,
-			                                   @RequestParam(value="productCode", required=false) String productCode) {
-		return GridUtil.grid(0, 0, service.infoSupplyPlan(planCode, productCode));
+	public Map<String, Object> supplyPlanInfo(@RequestParam Map<String, String> params) {
+		return GridUtil.grid(0, 0, service.infoSupplyPlan(params));
 	}
 	
 	// 공급계획서에 등록된 제품의 옵션 집계

@@ -85,7 +85,11 @@ class CustomBtnRender {
             dueDateBox.value = dateFormatter(selected.dueDate);
             remarkBox.value = selected.remark;
             
-            if(selected.status == '대기') cancelBtn.style.display = ''; // 발주서 상태가 대기인 경우에만 발주취소 표시
+             // 발주서 상태가 대기인 경우에만 발주취소/수정 표시
+            if(selected.status == '대기'){
+                cancelBtn.style.display = '';
+                modifyBtn.style.display = '';
+            } 
             loadPlanDetail(selected.mtrilOrderPlanCode ? selected.mtrilOrderPlanCode : selected.mtrilOrderCode);
         }
         if(type == 'mtr' || type == 'comp'){            
@@ -107,15 +111,15 @@ let planGrid = th != null ? null : new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
     data: { api: { readData: { url: '/mtr/orderPlanList', method: 'GET' }, initialRequest: false } },
     columns: [
-        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 120 },
-        { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value) },
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 120, align: 'center' },
+        { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
         { header: '요약', name: 'summary' },
         { header: '발주계획량', name: 'orderQy', align: 'right', width: 120, 
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
         { header: '비고', name: 'remark', whiteSpace: 'pre-line' },
-        { header: '담당자', name: 'chargerName', width: 100 },
-        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
-        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '담당자', name: 'chargerName', width: 100, align: 'center' },
+        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
+        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value), align: 'center' },
         { header: '상태', name: 'status', align: 'center', width: 80,
           renderer: {
             styles: {
@@ -153,7 +157,7 @@ const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '자재코드', name: 'PRODUCT_CODE', width: 150, sortable: true },
+        { header: '자재코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' },
         { header: '자재명', name: 'PRODUCT_NAME', minWidth: 250, whiteSpace: 'pre-line', sortable: true },
         { header: '단위', name: 'UNIT_NAME', width: 150, sortable: true },
         { header: '기본단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'right',
@@ -187,11 +191,11 @@ const companyGrid = new Grid({
     el: document.getElementById('companyGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '업체코드', name: 'companyCode', width: 100, sortable: true },
+        { header: '업체코드', name: 'companyCode', width: 100, sortable: true, align: 'center' },
         { header: '업체명', name: 'companyName', width: 150, ellipsis: true, sortable: true },
         { header: '소재지', name: 'addressInfo', minWidth: 250, ellipsis: true, sortable: true },
-        { header: '담당자', name: 'companyCharger', width: 100, sortable: true },
-        { header: '연락처', name: 'companyPhone', width: 100, sortable: true },
+        { header: '담당자', name: 'companyCharger', width: 100, sortable: true, align: 'center' },
+        { header: '연락처', name: 'companyPhone', width: 100, sortable: true, align: 'center' },
         { header: '', name: '', className: 'comp', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
     ],
     columnOptions: { resizable: true },
@@ -222,13 +226,13 @@ let planDetailGrid = th != null ? null : new Grid({
     el: document.getElementById('planDetailGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '자재코드', name: 'productCode', sortable: true },
+        { header: '자재코드', name: 'productCode', sortable: true, align: 'center' },
         { header: '자재명', name: 'productName', sortable: true },
         { header: '색상', name: 'productColor', sortable: true, formatter: (row) => row.value == 'null' ? '' : row.value },
         { header: '발주계획량', name: 'orderQy', sortable: true, align: 'right', editor: 'text', disabled: true,
           formatter: (row) => numberFormatter(row.value) },
         { header: '단위', name: 'unitName', sortable: true },
-        { header: '업체코드', name: 'companyCode', sortable: true },
+        { header: '업체코드', name: 'companyCode', sortable: true, align: 'center' },
         { header: '업체명', name: 'companyName', sortable: true },
     ],
     rowHeaders: ['rowNum'],
@@ -428,6 +432,11 @@ function modifyRows(){
       modifyMode(false);
       return;
     }
+    if(dueDateBox.value == ''){
+        failToast('납기일이 입력되지 않았습니다.');
+        dueDateBox.value = prevDueDate;
+        return;
+    }
     
     let detailArr = updated.map(data => {
         return {
@@ -440,11 +449,11 @@ function modifyRows(){
         dueDate: dueDateBox.value,
         remark: remarkBox.value
     };
-    if(th != null){
+    if(th == null){
       headerObj.mtrilOrderPlanCode = selected.mtrilOrderPlanCode;
     } else headerObj.mtrilOrderCode = selected.mtrilOrderCode;
     
-    let uri = th != null ? '/mtr/mtrOrderPlan' : 'mtr/mtrOrder'; 
+    let uri = th == null ? '/mtr/mtrOrderPlan' : '/mtr/mtrOrder'; 
     
     fetch(uri, {
         method: 'PUT',
@@ -462,7 +471,8 @@ function modifyRows(){
           selected.updateDate = dateFormatter();
           selected.remark = remarkBox.value;
           selected.dueDate = dueDateBox.value;
-          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum; // 합계 재계산
+          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum; // 수량합계 재계산
+          if(selected.amount) selected.amount = planDetailGrid.getSummaryValues('amount').sum; // 금액합계 재계산
           planGrid.setRow(selected.rowKey, selected);
         }
         else failToast('작업을 실패했습니다.');
@@ -472,7 +482,7 @@ function modifyRows(){
     modifyMode(false);
 }
 
-// 입력값 유효성 검사
+// 입력값 유효성검사
 const afterChangeListener = ev => {
   let changed = ev.changes[0];
   let rowKey = changed.rowKey;
@@ -498,7 +508,8 @@ function modifyMode(boolean){
     isModify = boolean;
     modifyBtn.style.display = isModify ? 'none' : '';
     modifyConfirmBtn.style.display = isModify ? '' : 'none';
-    writeBtn.style.display = isModify ? 'none' : '';
+    if(th == null) writeBtn.style.display = isModify ? 'none' : '';
+    else cancelBtn.style.display = isModify ? 'none' : '';
     dueDateBox.readOnly = !isModify;
     remarkBox.readOnly = !isModify;
     isModify ? planDetailGrid.enableColumn('orderQy') : planDetailGrid.disableColumn('orderQy');

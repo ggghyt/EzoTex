@@ -67,10 +67,10 @@ const planDetailGrid = new Grid({
     el: document.getElementById('planDetailGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '제품코드', name: 'productCode', sortable: true },
+        { header: '제품코드', name: 'productCode', sortable: true, align: 'center' },
         { header: '제품명', name: 'productName', whiteSpace: 'pre-line', sortable: true },
-        { header: '공급계획코드', name: 'supplyPlanCode', sortable: true },
-        { header: '공급계획일자', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '공급계획코드', name: 'supplyPlanCode', sortable: true, align: 'center' },
+        { header: '공급계획일자', name: 'supplyDate', sortable: true, formatter: (row) => dateFormatterNull(row.value), align: 'center' },
         { header: '공급계획량', name: 'supplyQy', sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) }
     ],
     rowHeaders: ['rowNum'],
@@ -150,17 +150,24 @@ function getTotalQy(){
 
 /******************** 모달 동작 ********************/ 
 // 제품코드 or 제품명 클릭 시 공급계획서 조회
-mrpGrid.on('focusChange', async ev => {
+mrpGrid.on('click', async ev => {
   if(ev.columnName == 'productCode' || ev.columnName == 'productName'){
     let prdCode = mrpGrid.getRow(ev.rowKey).productCode;
     loadPlanDetail(prdCode);
   }
 })
     
-    
 // 선택한 공급계획서의 상세내역 조회
 function loadPlanDetail(productCode){
-  fetch(`/supply/supplyPlan?productCode=${productCode}`)
+  let dto = {
+    productCode: productCode,
+    supplyYear: document.getElementById('scSupplyYear').value,
+    supplyMonth: document.getElementById('scSupplyMonth').value,
+    season: document.getElementById('season').value
+  };
+  let query = new URLSearchParams(dto);
+    
+  fetch(`/supply/supplyPlan?${query}`)
   .then(response => response.json())
   .then(result => {
     let data = result.data.contents;
