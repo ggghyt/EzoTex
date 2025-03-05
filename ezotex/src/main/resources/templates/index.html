@@ -19,16 +19,21 @@
 	<h3 class="fs-3 fw-bold">
 		| Ezo<span class="text-primary">Tex</span> Main
 	</h3>
+	<div>
 	이조텍스를 이용해주셔서 감사합니다.
-	<div class="card card-body mt-3">
+	</div>
+	<div class="card card-body mt-3" style="width: 60%; float: left">
 		<p class="fs-5 fw-bolder">공지사항</p>
 		<div id="announcementGrid" style="height: 525px"></div>
 		<div>
 			<button class="btn btn-primary" style="margin: 10px; float: right;" onclick="addInfomation()">작성</button>
 		</div>
 	</div>
+	<div class="card card-body mt-3" style="width: 38%; height: 600px; float: right">
+		<h1>넣을꺼 추천 좀</h1>
+	</div>
 	<div class="modal fade" id="infomationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-xl">
+		<div class="modal-dialog modal-xl" style="width: 50%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="productCodeModalLabel">공지사항 상세보기</h5>
@@ -37,39 +42,39 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">글 번호</div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">글 번호</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
 								<span id="infoNo"></span>
 							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">작성일</div>
+							<div class="col-2 col-lg-2 d-flex mb-2">작성일</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
 								<span id="writeDate"></span>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">작성자</div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">작성자</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
 								<span id="writerName"></span>
 							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">수정일</div>
+							<div class="col-2 col-lg-2 d-flex mb-2">수정일</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
 								<span id="editDate"></span>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">제목</div>
-							<div class="col-5 col-lg-5 d-flex mb-2" style="text-align: center;">
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">제목</div>
+							<div class="col-6 col-lg-6 d-flex mb-2" style="text-align: center;">
 								<input type="text" class="form-control" id="title" name="title" value="" readonly>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div style="display: flex; justify-content: center;">
-							<div class="row me-2" style="text-align: center; width: 60%; height: 500px">
+							<div class="row me-2" style="text-align: center; width: 80%; height: 500px">
 								<textarea class="form-control" id="content" name="content" wrap="hard" style="height: 500px; width: 100%; white-space: pre-wrap; line-height: 1.5;" readonly></textarea>
 							</div>
 						</div>
@@ -110,8 +115,10 @@
 	        	useClient: true, // 페이징을 위해 필요
 	        	perPage: 10
 	  		},
-	  		scrollX: false, // 가로 스크롤
-	  		scrollY: false // 세로 스크롤
+	  		showDummyRows: true, //더미로우 추가
+		    bodyHeight: 417, //모달 높이 고정
+		  	//scrollX: false, // 가로 스크롤
+		  	//scrollY: false // 세로 스크롤
 		})
 		let lastClicked = null
 		announcementGrid.on('click', ev => {

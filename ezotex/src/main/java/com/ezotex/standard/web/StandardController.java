@@ -48,7 +48,7 @@ public class StandardController {
 	// 제품 조회 페이지
 	@GetMapping("/productInfo")
 	public String productInfo() {
-		return "/standard/productInfo";
+		return "standard/productInfo";
 	}
 	
 	// 제품 전체 조회
@@ -125,7 +125,7 @@ public class StandardController {
 		
 		
 		service.ProductInfoInsert(productListInfoDTO);
-		return "redirect:/standard/productInfo";
+		return "redirect:standard/productInfo";
 	}
 	
 	// 제품 카테고리 조회
@@ -173,7 +173,7 @@ public class StandardController {
 	// 창고 조회 페이지
 	@GetMapping("/storageInfo")
 	public String storageInfo() {
-		return "/standard/storageInfo";
+		return "standard/storageInfo";
 	}
 	
 	@ResponseBody
