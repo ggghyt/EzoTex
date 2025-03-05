@@ -50,25 +50,25 @@ public class CommonController {
     // 로그인 메인 페이지
 	@GetMapping("/main")
 	public String login() {
-		return "/login/login";
+		return "login/login";
 	}
 
     // 회원가입 메인 페이지
 	@GetMapping("/register_main")
 	public String register_main() {
-		return "/login/register_main";
+		return "login/register_main";
 	}
 
     // 공급업체 회원가입 페이지
 	@GetMapping("/register_supply")
 	public String register_supply() {
-		return "/login/register_supply";
+		return "login/register_supply";
 	}
 
 	// 공급업체 회원가입 페이지
 	@GetMapping("/register_emp")
 	public String register_emp() {
-		return "/login/register_emp";
+		return "login/register_emp";
 	}
 	
 	// 로그인 중복 확인 메세지
@@ -114,6 +114,9 @@ public class CommonController {
 		return service.positionList();
 	}
 	
+	@Value("${file_img}")
+	String file_img;
+	
 	// emp 회원 가입
 	@PostMapping("/emp_submit")
 	public String emp_submit(EmpDTO empDTO, RedirectAttributes attr) throws Exception {
@@ -121,7 +124,7 @@ public class CommonController {
 		UUID uuid = UUID.randomUUID();
 		
 		String uuidFileName = uuid + "_" + file.getOriginalFilename();
-		file.transferTo(new File("c:\\images\\" + uuidFileName));
+		file.transferTo(new File(file_img + uuidFileName));
 		empDTO.setEmpImg(uuidFileName);
 		
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
@@ -137,11 +140,8 @@ public class CommonController {
 		service.insertEmp(empDTO, addDTO);
 		attr.addFlashAttribute("result", true);
 		
-		return "redirect:/login/main";
+		return "redirect:login/main";
 	}
-	
-	@Value("${file_img}")
-	String file_img;
 	
 	// company 회원 가입
 	@PostMapping("/company_submit")
@@ -152,6 +152,8 @@ public class CommonController {
 		String uuidFileName = uuid + "_" + file.getOriginalFilename();
 		file.transferTo(new File(file_img + uuidFileName));
 		companyDTO.setCompanyImg(uuidFileName);
+		
+		System.out.println("파일저장경로확인" + file_img);
 		
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 		String result = encoder.encode(companyDTO.getCompanyPassword());
@@ -170,7 +172,7 @@ public class CommonController {
 		
 		attr.addFlashAttribute("result", true);
 		
-		return "redirect:/login/main";
+		return "redirect:login/main";
 	}
 	
 	// 인증 여부 확인
@@ -183,7 +185,7 @@ public class CommonController {
 	// 비밀번호 재설정
 	@GetMapping("/password_reset")
 	public String password_reset() {
-		return "/login/password_reset";
+		return "login/password_reset";
 	}
 	
 	// 번경 메일 전송
@@ -213,16 +215,16 @@ public class CommonController {
 			if (update_result == 1) {
 				attr.addFlashAttribute("reset", true);
 			
-				return "redirect:/login/main";
+				return "redirect:login/main";
 			} else {
 				attr.addFlashAttribute("reset", true);
 				
-				return "redirect:/login/password_reset";
+				return "redirect:login/password_reset";
 			}
 		} else {
 			attr.addFlashAttribute("reset", true);
 			
-			return "redirect:/login/password_reset";
+			return "redirect:login/password_reset";
 		}
 		
 	}

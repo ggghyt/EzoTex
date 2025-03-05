@@ -19,16 +19,21 @@
 	<h3 class="fs-3 fw-bold">
 		| Ezo<span class="text-primary">Tex</span> Main
 	</h3>
+	<div>
 	이조텍스를 이용해주셔서 감사합니다.
-	<div class="card card-body mt-3">
+	</div>
+	<div class="card card-body mt-3" style="width: 60%; float: left">
 		<p class="fs-5 fw-bolder">공지사항</p>
 		<div id="announcementGrid" style="height: 525px"></div>
 		<div>
 			<button class="btn btn-primary" style="margin: 10px; float: right;" onclick="addInfomation()">작성</button>
 		</div>
 	</div>
+	<div class="card card-body mt-3" style="width: 38%; height: 600px; float: right">
+		<h1>넣을꺼 추천 좀</h1>
+	</div>
 	<div class="modal fade" id="infomationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-xl">
+		<div class="modal-dialog modal-xl" style="width: 50%">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="productCodeModalLabel">공지사항 상세보기</h5>
@@ -37,40 +42,40 @@
 				<div class="card">
 					<div class="card-body">
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">글 번호</div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">글 번호</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="infoNo" name="infoNo" value="" readonly>
+								<span id="infoNo"></span>
 							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">작성일</div>
+							<div class="col-2 col-lg-2 d-flex mb-2">작성일</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="writeDate" name="writeDate" value="" readonly>
+								<span id="writeDate"></span>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">작성자</div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">작성자</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="writerName" name="writerName" value="" readonly>
+								<span id="writerName"></span>
 							</div>
-							<div class="col-1 col-lg-1 d-flex mb-2">수정일</div>
+							<div class="col-2 col-lg-2 d-flex mb-2">수정일</div>
 							<div class="col-2 col-lg-2 d-flex mb-2" style="text-align: center;">
-								<input type="text" class="form-control" id="editDate" name="editDate" value="" readonly>
+								<span id="editDate"></span>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div class="row me-2">
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
-							<div class="col-1 col-lg-1 d-flex mb-2">제목</div>
-							<div class="col-5 col-lg-5 d-flex mb-2" style="text-align: center;">
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2">제목</div>
+							<div class="col-6 col-lg-6 d-flex mb-2" style="text-align: center;">
 								<input type="text" class="form-control" id="title" name="title" value="" readonly>
 							</div>
-							<div class="col-3 col-lg-3 d-flex mb-2"></div>
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
 						</div>
 						<div style="display: flex; justify-content: center;">
-							<div class="row me-2" style="text-align: center; width: 60%; height: 500px">
-								<textarea class="form-control" id="content" name="content" wrap="hard" style="height: 500px; width: 100%; white-space: pre-wrap;" readonly></textarea>
+							<div class="row me-2" style="text-align: center; width: 80%; height: 500px">
+								<textarea class="form-control" id="content" name="content" wrap="hard" style="height: 500px; width: 100%; white-space: pre-wrap; line-height: 1.5;" readonly></textarea>
 							</div>
 						</div>
 						
@@ -87,80 +92,99 @@
 </body>
 
 <script>
-	document.getElementById('announcementGrid').replaceChildren()
-	let gridData = {
-		api: {
-			readData: { url: '/infomation_list', method: 'GET' }
-		},
-		contentType : 'application/json' // 데이터 전달 시 인코딩 필요
-	}
-	let announcementGrid = new Grid({
-		el: document.getElementById('announcementGrid'), // 해당 위치에 그리드 출력
-	    data: gridData,
-	    columns: [
-	        { header: '번호', name: 'INFO_NO', width: 100, sortable: true, align: 'center' }, 
-	        { header: '제목', name: 'TITLE', whiteSpace: 'pre-line', sortable: true }, 
-	        { header: '작성자', name: 'WRITER_NAME', width: 100, sortable: true, align: 'center' }, 
-	        { header: '작성일', name: 'WRITE_DATE', width: 100, sortable: true, align: 'center', formatter: row => dateFormatter(row.value)}
-	    ],
-	    pageOptions: {
-	        useClient: true, // 페이징을 위해 필요
-	        perPage: 10
-	  	},
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: false // 세로 스크롤
-	})
-	
 	let writer = null;
-	announcementGrid.on('click', ev => {
-		fetch('http://localhost:80/infomationNum?num=' + announcementGrid.getRow(ev.rowKey).INFO_NO)
-		.then((response) => response.json())
-		.then((data) => {
-			writer = data.writer
-			$('#infomationModal').modal('show');
-			document.querySelector("#infoNo").value = data.infoNo
-			document.querySelector("#writerName").value = data.writerName
-			document.querySelector("#title").value = data.title
-			document.querySelector("#content").innerHTML = data.content.replace(/<br>/g, "\n")
-			let [wdate, wtime] = data.writeDate.split("T");
-			document.querySelector("#writeDate").value = wdate
-			if (data.editDate != null) {
-				let [edate, etime] = data.editDate.split("T");
-				document.querySelector("#editDate").value = edate
-			} else {
-				document.querySelector("#editDate").value = ""
-			}
-			
-			
+	gridShow()
+	function gridShow() {
+		document.getElementById('announcementGrid').replaceChildren()
+		let gridData = {
+			api: {
+				readData: { url: '/infomation_list', method: 'GET' }
+			},
+			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+		}
+		let announcementGrid = new Grid({
+			el: document.getElementById('announcementGrid'), // 해당 위치에 그리드 출력
+	    	data: gridData,
+	    	columns: [
+	        	{ header: '번호', name: 'INFO_NO', width: 100, sortable: true, align: 'center' }, 
+		        { header: '제목', name: 'TITLE', whiteSpace: 'pre-line', sortable: true }, 
+		        { header: '작성자', name: 'WRITER_NAME', width: 100, sortable: true, align: 'center' }, 
+	    	    { header: '작성일', name: 'WRITE_DATE', width: 100, sortable: true, align: 'center', formatter: row => dateFormatter(row.value)}
+	    	],
+	    	pageOptions: {
+	        	useClient: true, // 페이징을 위해 필요
+	        	perPage: 10
+	  		},
+	  		showDummyRows: true, //더미로우 추가
+		    bodyHeight: 417, //모달 높이 고정
+		  	//scrollX: false, // 가로 스크롤
+		  	//scrollY: false // 세로 스크롤
 		})
-	})
+		let lastClicked = null
+		announcementGrid.on('click', ev => {
+			announcementGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			announcementGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			lastClicked = ev.rowKey; 
+			fetch('/infomationNum?num=' + announcementGrid.getRow(ev.rowKey).INFO_NO)
+			.then((response) => response.json())
+			.then((data) => {
+				document.getElementById("title").setAttribute("readonly", true);
+				document.getElementById("content").setAttribute("readonly", true);
+				writer = data.writer
+				$('#infomationModal').modal('show');
+				document.querySelector("#infoNo").innerText = data.infoNo
+				document.querySelector("#writerName").innerText = data.writerName
+				document.querySelector("#title").value = data.title
+				document.querySelector("#content").value = data.content.replace(/<br>/g, "\n")
+				let [wdate, wtime] = data.writeDate.split("T");
+				document.querySelector("#writeDate").innerText = wdate
+				if (data.editDate != null) {
+					let [edate, etime] = data.editDate.split("T");
+					document.querySelector("#editDate").innerText = edate
+				} else {
+					document.querySelector("#editDate").innerText = ""
+				}
+				document.querySelector("#infoBtn").innerText = "수정"
+			})
+		})
+	}
 	
 	function infomationSubmit() {
 		console.log(session_user_code)
 		console.log(writer)
-		if (session_user_code == writer) {
-			if (document.querySelector("#infoBtn").innerText == "수정") {
+		if (document.querySelector("#infoBtn").innerText == "수정") {
+			if (session_user_code == writer) {
 				document.querySelector("#infoBtn").innerText = "저장"
 				document.getElementById("title").removeAttribute("readonly");
 				document.getElementById("content").removeAttribute("readonly");
 			} else {
-				let today = new Date();
-				let year = today.getFullYear();
-				let month = String(today.getMonth() + 1).padStart(2, '0');
-				let day = String(today.getDate()).padStart(2, '0');
-				document.querySelector("#editDate").value = year + "-" + month + "-" + day
-				let text = document.getElementById("content").value;
-				text = text.replace(/\n/g,"<br>");
-				document.querySelector("#infoBtn").innerText = "수정"
-				document.getElementById("title").setAttribute("readonly", true);
-				document.getElementById("content").setAttribute("readonly", true);
-				
-				fetch('http://localhost:80/infomationUpdate?num=' + document.querySelector("#infoNo").value
-						                              + '&title=' + document.querySelector("#title").value
-						                            + '&content=' + text)
+				failToast("작성자가 아니라서 수정 권한이 없습니다.");
 			}
-		} else {
-			failToast("작성자가 아니라서 수정 권한이 없습니다.");
+		} else if (document.querySelector("#infoBtn").innerText == "저장") {
+			let today = new Date();
+			let year = today.getFullYear();
+			let month = String(today.getMonth() + 1).padStart(2, '0');
+			let day = String(today.getDate()).padStart(2, '0');
+			document.querySelector("#editDate").innerText = year + "-" + month + "-" + day
+			let text = document.getElementById("content").value;
+			text = text.replace(/\n/g,"<br>");
+			document.querySelector("#infoBtn").innerText = "수정"
+			document.getElementById("title").setAttribute("readonly", true);
+			document.getElementById("content").setAttribute("readonly", true);
+			
+			fetch('/infomationUpdate?num=' + document.querySelector("#infoNo").innerText
+					           + '&title=' + document.querySelector("#title").value
+					         + '&content=' + text)
+		} else if (document.querySelector("#infoBtn").innerText == "작성") {
+			let text = document.getElementById("content").value;
+			text = text.replace(/\n/g,"<br>");
+			fetch('/infomationInsert?userCode=' + session_user_code
+                                    + '&title=' + document.querySelector("#title").value
+                                  + '&content=' + text)
+            .then(() => {
+            	$('#infomationModal').modal('hide');
+            	gridShow()
+            })
 		}
 	}
 	
@@ -168,18 +192,19 @@
 		console.log(session_user_code)
 		console.log(writer)
 		$('#infomationModal').modal('show');
-		document.querySelector("#writerName").value = session_user_name
+		document.querySelector("#writerName").innerText = session_user_name
 		let today = new Date();
 		let year = today.getFullYear();
 		let month = String(today.getMonth() + 1).padStart(2, '0');
 		let day = String(today.getDate()).padStart(2, '0');
-		document.querySelector("#writeDate").value = year + "-" + month + "-" + day
+		document.querySelector("#writeDate").innerText = year + "-" + month + "-" + day
 		document.getElementById("title").removeAttribute("readonly");
 		document.getElementById("content").removeAttribute("readonly");
-		document.querySelector("#infoNo").value = ""
-		document.querySelector("#editDate").value = ""
+		document.querySelector("#infoNo").innerText = ""
+		document.querySelector("#editDate").innerText = ""
 		document.querySelector("#title").value = ""
 		document.querySelector("#content").value = ""
+		document.querySelector("#infoBtn").innerText = "작성"
 	}
 	
 	</script>

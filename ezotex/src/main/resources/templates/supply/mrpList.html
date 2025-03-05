@@ -15,7 +15,11 @@
         visibility: visible;
       }
       
-      td.tui-grid-cell-summary[data-column-name="totalQy"],
+      #mrpGrid td.tui-grid-cell-summary[data-column-name="productCode"],
+      #mrpGrid td.tui-grid-cell-summary[data-column-name="productCode"] ~ td.tui-grid-cell-summary {
+        background-color: #eee;
+      }
+      
       td.tui-grid-cell-summary[data-column-name="supplyQy"] {
         text-align: right;
       }
@@ -27,7 +31,7 @@
 		<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button><!-- 아직 미구현 -->
 	  </div>
 		<div class="card card-body mt-4">
-			<form class="row ms-3 pe-0">
+			<form id="mrpForm" class="row ms-3 pe-0">
 			
 				 <!-- 검색조건 -->
 				 <label for="scSupplyYear" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">공급년도</label>
@@ -57,8 +61,8 @@
                  </div>
 		         
 		         <div class="col-12 col-sm-6 col-lg-3 d-flex mb-2 align-items-center justify-content-center wbreak">
-		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+		           <button type="button" id="planSearchBtn" class="btn btn-warning mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+		           <button type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 		         </div>
          
 			</form>

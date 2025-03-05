@@ -24,7 +24,6 @@
 	    <p class="fs-5 fw-bolder">제품 정보</p>
 	
 	    <div class="row ps-2">
-					
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
 					<input type="text" class="form-control pointer bg-white" id="searchDeliveryCode" placeholder="찾기" >
@@ -56,7 +55,7 @@
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchDeliveryList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -78,7 +77,7 @@
 				<div class="d-flex justify-content-end mt-2">
 					<button id="InsertTest" type="button" class="btn btn-primary registBtn"
 						style="height: 45px; margin-top: 10px;">등록</button>
-					<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+					<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn">초기화</button>
 				</div>
 				
 			</div>
@@ -156,11 +155,54 @@
 			</div>
 		</div>
 	</div>
-		
+	
+	
+	<!-- 경고 모달 -->
+      <div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header" style="height: 20px;">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+              <div>
+                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+              </div>
+              <div>
+                <p style="margin-top: 12px;
+                font-size: 21px;
+                font-weight: bold;">알림</p>
+                <p id="warning">내용을 수정하시겠습니까?</p>
+              </div>
+            </div>
+            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+              <!---->
+              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
+              <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+            </div>
+          </div>
+        </div>
+      </div>
 		
 		
 		
 		<script>
+		
+		inputReset.addEventListener('click', function(){
+			document.getElementById('searchDeliveryCode').value = '';  // 납품코드 초기화
+		    document.getElementById('startOrderDate').value = '';  // 납품 요청일 시작일 초기화
+		    document.getElementById('endOrderDate').value = '';  // 납품 요청일 종료일 초기화
+		    document.getElementById('startDedt').value = '';  // 입고 예정일 시작일 초기화
+		    document.getElementById('endDedt').value = '';  // 입고 예정일 종료일 초기화
+		    searchDeliveryList();
+		})
+		
+		
+		 //초기화 화면 새로고침
+		document.getElementById('resetBtn').addEventListener('click', function() {
+		    window.location.reload();  // 페이지 새로 고침
+		 });
 		
 			function searchDeliveryList() {
 				mtGrid.readData(1, {
@@ -179,7 +221,7 @@
 	
 		const mtDataSource = {
 				api: {
-					readData: { url: 'http://localhost:80/store/mtDeliveryList', method: 'GET' }
+					readData: { url: '/store/mtDeliveryList', method: 'GET' }
 				},
 				contentType: 'application/json',
 		};
@@ -201,18 +243,30 @@
 		})
 		
 		
+		let lastClicked = null;
+		
 		mtGrid.on('click', ev => {
 			
 			let data = mtGrid.getRow(ev.rowKey);
 			deliveryCode = data.deliveryCode;
 			console.log(deliveryCode);
-			fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+			mtGrid.removeRowClassName(lastClicked, 'bg-blue');
+			mtGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
+			fetch(`/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
 			     .then(rep => rep.json())
 			     .then(data => {
 			    	 data.forEach(item => item.deliveryCode = deliveryCode); 
 			    	 mtGrid2.resetData(data);
 			     })
 		})
+		
+		/* 
+		mtGrid.on('focusChange', ev => {
+			// 배경색 클래스 적용
+			prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+		}); */
 		
 		
 		const mtGrid2 = new Grid({
@@ -254,17 +308,17 @@
 		    ev.changes.forEach(change => {
 		        let data = mtGrid2.getRow(change.rowKey);
 		        if (change.columnName === 'productInsertQy' || change.columnName === 'location') {
+		        	
 		            insertData = insertData.filter(item => {
 		                return !(item.productCode === data.productCode &&
-		                         item.sizeCode === data.sizeCode &&
+		                         item.productColor === data.productColor &&
 		                         item.productName === data.productName);
 		            });
-
+		            
 		            insertData.push(data);
 		        }
 
 		        if (data.qy < data.productInsertQy) {
-		            console.log('수량확인');
 		            mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
 		        }
 		    });
@@ -276,7 +330,7 @@
 				let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
 		        
-		        fetch(`http://localhost:80/store/storageInfoList`)
+		        fetch(`/store/storageInfoList`)
    			    .then(rep => rep.json())
    			    .then(data => {
    			    	modalGrid.resetData(data);
@@ -287,27 +341,48 @@
 		
 		
 		InsertTest.addEventListener('click', function(){
-			
+			let modal = new bootstrap.Modal(document.getElementById('registModal'));
+			let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 			let check = mtGrid2.getData();
 			
 			if(check.length == 0){
-				alert('선택된 제품이 없습니다.')
+				document.querySelector("#warning").innerText = "선택된 제품이 없습니다.";
+				modifyMOdal.show();
 				return ;
 			}
 			
-			let modal = new bootstrap.Modal(document.getElementById('registModal'));
+		     let Insertcheck = insertData.find(item => {
+					return !item.productInsertQy || !item.location;
+				})
+				
+				if(Insertcheck){
+					document.querySelector("#warning").innerText = "값을 모두 입력하세요.";
+					modifyMOdal.show();
+					return
+				}
+			
+			
+			
 		        modal.show();
 		})
 		
 		
 		productMtInsert.addEventListener('click', function(){
-			fetch(`http://localhost:80/store/productMtInsert`, {
+			
+			fetch(`/store/productMtInsert`, {
 				method: 'POST',
 				headers: {...headers, 'Content-Type': 'application/json'},
 				body: JSON.stringify(insertData)
 			}).then(rep => rep.json())
 			  .then(result => {
 				  console.log(result);
+				  fetch(`/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+				     .then(rep => rep.json())
+				     .then(data => {
+				    	 data.forEach(item => item.deliveryCode = deliveryCode); 
+				    	 mtGrid2.resetData(data);
+				     })
+				  
 			  })
 		})
 			

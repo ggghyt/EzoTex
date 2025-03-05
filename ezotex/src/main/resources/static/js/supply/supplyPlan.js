@@ -71,7 +71,7 @@ class CustomBtnRender {
 		const el = document.createElement('button');
 		el.classList = 'btn btn-outline-danger btn-sm';
 		el.id = props.rowKey; // 태그 자체에 rowKey 저장
-		el.innerText = 'X';
+		el.innerText = '삭제';
 		
 		el.addEventListener('click', (e) => {
 	      let rowKey = e.target.id;
@@ -126,6 +126,8 @@ const prdGrid = new Grid({
         { header: ' ', name: 'inserted', renderer: { type: CustomCheckRender, options: {}}, width: 50, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 483,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 12
@@ -166,7 +168,7 @@ const supplyGrid = new Grid({
         { header: '공급계획일자', name: 'supplyDate', width: 100, sortable: true, editor: 'datePicker' },
         { header: '총 수량', name: 'totalQy', width: 100, sortable: true, align: 'right',
 				  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-		{ header: '', name: '', renderer: { type: CustomBtnRender, options: {}}, width: 50, align: 'center' },
+		{ header: '', name: '', renderer: { type: CustomBtnRender, options: {}}, width: 70, align: 'center' },
 		{ header: '데이터', name: 'allData', hidden: true },
 		{ header: '컬럼정보', name: 'allColumn', hidden: true }
     ],
@@ -296,6 +298,11 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 	};
 	prdGrid.setRequestParams(dto); // 조회 조건 전달
 	prdGrid.reloadData(); // 그리드 재출력 (readData)
+});
+
+// 엔터키 즉시 검색
+document.getElementById('prdForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
 });
 
 /******************** 제품별 공급계획 입력 ********************/	
@@ -567,8 +574,8 @@ function insertPlan(){
 	.then(result => {
 		console.log(result);
 		if(result == true){
-			successToast('공급계획서가 등록되었습니다.');
+			successToast('작업이 완료되었습니다.');
 			supplyGrid.resetData([]); // 등록 이후 처리 어떻게 할지? 
-		} else failToast('알 수 없는 오류로 실패했습니다.');
+		} else failToast('작업을 실패했습니다.');
 	});
 }

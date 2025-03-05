@@ -57,7 +57,7 @@
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -90,6 +90,14 @@
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
 		
+	
+		inputReset.addEventListener('click', function(){
+			document.querySelector('#searchProductCode').value = '';
+			document.querySelector('#searchProductName').value = '';
+			searchProductList();
+		})
+	
+	
 		function searchProductList(){
 			productListGrid.readData(1, {
 				productCode: document.querySelector('#searchProductCode').value,
@@ -108,7 +116,7 @@
 	   	*/
 	   	const productData = {
 	   		    api: {
-	   		        readData: { url: 'http://localhost:80/store/productQyList', method: 'GET' }
+	   		        readData: { url: '/store/productQyList', method: 'GET' }
 	   		    },
 	   		    contentType: 'application/json'
 	   		};
@@ -154,15 +162,22 @@
 			  data: []
 		    });
 	   	
+	   	let lastClicked = null
+	   	
 	   	productListGrid.on('click', ev => {
 	   	    let data = productListGrid.getRow(ev.rowKey);
 	   	    productCode = data.productCode;
 	   	 	productName = data.productName;
 	   	 	
+	   	 	productListGrid.removeRowClassName(lastClicked, 'bg-blue');
+	   		productListGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
+	   	 	
+	   	 	
 	   	 	document.querySelector('#prdCode').value = productCode;
 	   	 	document.querySelector('#prdName').value = productName;
 
-	   	    fetch(`http://localhost:80/store/productListInfo?productCode=${productCode}`)
+	   	    fetch(`/store/productListInfo?productCode=${productCode}`)
 	   	        .then(rep => rep.json())
 	   	        .then(data => {
 	   	            // 헤더 컬럼 설정
@@ -267,7 +282,7 @@
 	   	        { header: "색상", name: "productColor" },
 	   	        { header: "재고량", name: "inventoryQy" },
 	   	        { header: "입고 담당자", name: "storeCharger" },
-	   	        { header: "적재위치", name: "storageLocation" }
+	   	        { header: "창고위치", name: "storageLocation" }
 	   	    ],
 	   	    data: []
 	   	});
@@ -288,7 +303,7 @@
 	   	*========================================================================
 	   	*/
 	   	function productInfo(productCode,color,sizeCode){
-   	    	fetch(`http://localhost:80/store/inventoryList?productCode=${productCode}&color=${color}&sizeCode=${sizeCode}`,{
+   	    	fetch(`/store/inventoryList?productCode=${productCode}&color=${color}&sizeCode=${sizeCode}`,{
    	    		method: 'GET',
    	    		headers: headers,
    	    	}).then(req => req.json())

@@ -66,6 +66,8 @@
 		        { header: '', name: '', className: 'plan', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
 		    ],
 		    rowHeaders: ['rowNum'],
+		    showDummyRows: true,
+		    bodyHeight: 400,
 		    pageOptions: {
 		        useClient: true, // 페이징을 위해 필요
 		        perPage: 10
@@ -105,7 +107,7 @@
 	        rowHeaders: ['rowNum'],
 	        scrollX: false, // 가로 스크롤
 	        scrollY: true, // 세로 스크롤
-	        bodyHeight: 100,
+	        bodyHeight: 200,
 	        summary: {
 	             height: 30,
 	             position: 'bottom', // or 'top'
@@ -132,7 +134,7 @@
 	    /******************** Tui Grid 출력 ********************/
 	    // 검색 적용
 	    document.getElementById('orderSearchBtn').removeEventListener('click', orderSearch);
-		  document.getElementById('orderSearchBtn').addEventListener('click', () => {
+		document.getElementById('orderSearchBtn').addEventListener('click', () => {
 		    let checkedStatus = document.querySelectorAll('input[name="status"]:checked');
 		    checkedStatus = Array.from(checkedStatus).map(ele => ele.value); // 가상의 노드들을 복사하여 배열처리
 		    
@@ -141,13 +143,13 @@
 		        companyName: compNameBox.value,
 		        productCode: mtrCodeBox.value,
 		        productName: mtrNameBox.value,
-		        mtrilOrderPlanCode: document.getElementById('orderPlanCode').value,
+		        mtrilOrderCode: document.getElementById('orderPlanCode').value,
 		        remark: document.getElementById('scRemark').value,
 		        status: checkedStatus,
 		        qyMin: document.getElementById('qyMin').value,
 		        qyMax: document.getElementById('qyMax').value,
 		        amountMin: document.getElementById('amountMin').value,
-            amountMax: document.getElementById('amountMax').value,
+                amountMax: document.getElementById('amountMax').value,
 		        dueMin: document.getElementById('dueMin').value,
 		        dueMax: document.getElementById('dueMax').value,
 		        rgsdeMin: document.getElementById('rgsdeMin').value,

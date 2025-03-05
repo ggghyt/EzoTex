@@ -129,20 +129,20 @@
 			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
 			        </if>
 			        <if test='requestor != null and requestor != ""'>
-					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					    AND r.requestor LIKE '%' || #{requestor} || '%'
 					</if>
 	                <if test='startRequestDate != null and startRequestDate != ""'>
-					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					    AND TRUNC(r.request_date) >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
 					</if>
 					<if test='endRequestDate != null and endRequestDate != ""'>
-					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					    AND TRUNC(r.request_date) <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
 					</if>
 			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
-	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                    AND TRUNC(r.request_date) BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
 	                </if>
 			        </where>
 		            GROUP BY r.return_code, r.delivery_code, r.company_code, r.company_name, r.requestor, r.request_date
-		            ORDER BY r.request_date
+		            ORDER BY r.request_date desc
 		        ) a
 		    WHERE ROWNUM <![CDATA[ <= ]]> #{end} )page
 		WHERE page.rn <![CDATA[ >= ]]> #{start}
@@ -179,17 +179,17 @@
 		                    AND d.order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
 		                </if>
 		                <if test='startDedt != null and startDedt != ""'>
-						    AND d.date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+						    AND d.dedt >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
 						</if>
 						<if test='endDedt != null and endDedt != ""'>
-						    AND d.date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+						    AND d.dedt <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
 						</if>
 				        <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
-		                    AND d.date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		                    AND d.dedt BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
 		                </if>
 				        </where>
                         GROUP BY d.delivery_code, d.order_date, d.dedt
-                        ORDER BY d.delivery_code 
+                        ORDER BY d.delivery_code  
                )a
     		WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
 		WHERE page.rn <![CDATA[ >= ]]> #{start}
@@ -218,16 +218,16 @@
 			           	AND r.return_code LIKE '%' || UPPER(#{returnCode}) || '%'
 			        </if>
 			        <if test='requestor != null and requestor != ""'>
-					    AND r.requestor >= TO_DATE(#{requestor}, 'yyyy-mm-dd')
+					    AND r.requestor LIKE '%' || #{requestor} || '%'
 					</if>
 	                <if test='startRequestDate != null and startRequestDate != ""'>
-					    AND r.request_date >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
+					    AND TRUNC(r.request_date) >= TO_DATE(#{startRequestDate}, 'yyyy-mm-dd')
 					</if>
 					<if test='endRequestDate != null and endRequestDate != ""'>
-					    AND r.request_date <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+					    AND TRUNC(r.request_date) <![CDATA[ <= ]]> TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
 					</if>
 			        <if test='startRequestDate != null and startRequestDate != "" and endRequestDate != null and endRequestDate != ""'>
-	                    AND r.request_date BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
+	                    AND TRUNC(r.request_date) BETWEEN TO_DATE(#{startRequestDate}, 'yyyy-mm-dd') AND TO_DATE(#{endRequestDate}, 'yyyy-mm-dd')
 	                </if>
 			        </where>
 	</select>
@@ -252,13 +252,13 @@
              AND order_date BETWEEN TO_DATE(#{startOrderDate}, 'yyyy-mm-dd') AND TO_DATE(#{endOrderDate}, 'yyyy-mm-dd')
          </if>
          <if test='startDedt != null and startDedt != ""'>
-		     AND date >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
+		     AND dedt >= TO_DATE(#{startDedt}, 'yyyy-mm-dd')
 		 </if>
 		 <if test='endDedt != null and endDedt != ""'>
-		     AND date <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+		     AND dedt <![CDATA[ <= ]]> TO_DATE(#{endDedt}, 'yyyy-mm-dd')
 		 </if>
 	     <if test='startDedt != null and startDedt != "" and endDedt != null and endDedt != ""'>
-             AND date BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
+             AND dedt BETWEEN TO_DATE(#{startDedt}, 'yyyy-mm-dd') AND TO_DATE(#{endDedt}, 'yyyy-mm-dd')
          </if>
 	     </where>
 	</select>
@@ -268,8 +268,8 @@
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
 		SELECT  r.product_code,
 			    r.product_name,
-			    SUM(r.qy) AS qy,
-			    SUM(r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
+			    SUM(distinct r.qy) AS qy,
+			    SUM(distinct r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
 			    NVL(SUM(i.store_qy), 0) AS store_qy
 			FROM 
 			    return_product r
@@ -296,6 +296,7 @@
 		       SUM(i.store_qy) as totalQy
 		FROM delivery_details d LEFT join inventory i
 		on d.delivery_code = i.delivery_code
+		        AND d.product_color = i.product_color
 		left join product_info p
 		on d.product_code = p.product_code
 		WHERE d.product_se = 'PT01'
@@ -502,7 +503,7 @@
 		       #{list.productInsertQy},
 		       #{list.productColor},
 		       #{name},
-		       'test',
+		       #{list.location},
 		       sysdate,
 		       'PT01',
 		       #{list.deliveryCode})  

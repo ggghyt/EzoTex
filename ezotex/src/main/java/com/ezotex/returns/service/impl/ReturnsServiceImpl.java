@@ -112,5 +112,11 @@ public class ReturnsServiceImpl implements ReturnsService {
 	public List<ReturnsProductDTO> selectReturnProductList(String returnCode) {
 		return mapper.selectReturnProductList(returnCode);
 	}
+	
+	// 일별 제품별 조회
+	@Override
+	public List<ReturnsProductDTO> getTotalReturnProduct() {
+		return mapper.getTotalReturnProduct();
+	}
 
 }

@@ -151,7 +151,8 @@ select product_info.product_code,
        vl, 
        img, 
        product_info.unit_name,
-       common_code_details_2.code_name as unit_name_name
+       common_code_details_2.code_name as unit_name_name, 
+       nvl(qy, 0) as qy
 from product_info
 left join product_category
 on product_info.product_code = product_category.product_code
@@ -159,6 +160,15 @@ join common_code_details
 on product_info.product_type = common_code_details.comm_detail_code
 join common_code_details common_code_details_2
 on product_info.unit_name = common_code_details_2.comm_detail_code
+left join( select product_code as safety_product_code, 
+                  qy
+           from ( select product_code, 
+                         qy, 
+                         row_number() over (partition by product_code 
+                                            order by safety_stock_month desc) as rn
+                  from safety_stock )
+           where rn = 1 )
+on safety_product_code = product_info.product_code
 where product_info.product_code like '%' || upper(#{productCode}) || '%'
 <if test='productName != null and productName != ""'> and product_name like '%' || #{productName} || '%' </if>
 <if test='productType != null and productType != ""'> and product_info.product_type like '%' || #{productType} || '%' </if>
@@ -406,6 +416,7 @@ select info_no,
 from infomation
 join emp
 on infomation.writer = emp.emp_code
+order by 1 desc
 </select>
 
 <select id="getInfomationCount">

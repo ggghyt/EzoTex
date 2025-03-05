@@ -44,6 +44,9 @@ visibility: visible;
 	<div class="col" style="padding: 10px">
 		<div class="row">
 			<!-- 제품 검색 조건 -->
+			<div class="card">
+			<div class="card-body">
+			<div class="search">
 			<div class="row me-2">
 				<label class="col-1 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">코드</label>
 				<div class="col-2 col-lg-2 d-flex mb-2">
@@ -91,8 +94,9 @@ visibility: visible;
 					<input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="이하" value="">
 				</div>
 			</div>
+			</div>
 
-			<div class="d-flex justify-content-center mt-2 mb-4">
+			<div class="d-flex justify-content-center">
 				<button type="button" id="searchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchBtn()">
 					<i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i>
 				</button>
@@ -100,13 +104,15 @@ visibility: visible;
 					<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
 				</button>
 			</div>
+			</div>
+			</div>
 			
-			<div class="col me-2">
+			<div class="col me-2" style="margin-top: 20px">
 				<div id="searchGrid" style="height: 525px">
 				</div>
 			</div>
-			<div class="col me-2" style="height: 525px; text-align: center;">
-				<img id="preview" style="width: 90%; height: 90%;" />
+			<div class="col me-2" style="height: 525px; text-align: center; margin-top: 20px">
+				<img id="preview" style="width: 90%; height: 90%;" onerror="this.src='/images/no_img.png'"/>
 			</div>
 			<form action="/standard/productInsert" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -320,7 +326,7 @@ visibility: visible;
 	document.querySelector("#categoryBtn").style.display = "none"
 	document.querySelector("#optionBtn").style.display = "none"
 	
-	fetch('http://localhost:80/standard/unitName')
+	fetch('/standard/unitName')
 	.then((response) => response.json())
 	.then((data) => {
 		let select_unit = document.querySelector("#unitName");
@@ -344,7 +350,7 @@ visibility: visible;
 		}
 	}
 	
-	fetch('http://localhost:80/standard/categoryLclas')
+	fetch('/standard/categoryLclas')
 	.then((response) => response.json())
 	.then((data) => {
 			let select_lclas = document.querySelector("#lclas");
@@ -366,7 +372,7 @@ visibility: visible;
 			o.innerText = "전체"
 			select_sclas.appendChild(o);
 		} else {
-			fetch('http://localhost:80/standard/categorySclas?lclas=' + select_lclas.value)
+			fetch('/standard/categorySclas?lclas=' + select_lclas.value)
 			.then((response) => response.json())
 			.then((data) => {
 				select_sclas.innerHTML = ""
@@ -400,14 +406,19 @@ visibility: visible;
 	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
 	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
 	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
-	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }
+	        { header: '단가', name: 'UNIT_PRICE', width: 100, sortable: true, align: 'right', formatter: row => numberFormatter(row.value) }
 	    ],
+	    columnOptions: {
+	        resizable: true
+	    },
 	    pageOptions: {
 	        useClient: true, // 페이징을 위해 필요
 	        perPage: 10
 	  	},
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: false // 세로 스크롤
+	    showDummyRows: true, //더미로우 추가
+	    bodyHeight: 417, //모달 높이 고정
+	  	//scrollX: false, // 가로 스크롤
+	  	//scrollY: false // 세로 스크롤
 	})
 
 	
@@ -492,6 +503,8 @@ visibility: visible;
 			failToast("유형을 선택하세요");
 		} else if (document.querySelector("#selectVl").value == 0) {
 			failToast("부피를 입력하세요");
+		} else if (document.querySelector("#selectProductImg").value == 0) {
+			failToast("사진을 첨부하세요");
 		} else {
 			return true;
 		}
@@ -506,7 +519,7 @@ visibility: visible;
 		document.querySelector("#categoryModalProductCode").value = document.querySelector("#selectProductCode").value
 		document.querySelector("#categoryModalProductName").value = document.querySelector("#selectProductName").value
 		
-		fetch('http://localhost:80/standard/categoryLclas')
+		fetch('/standard/categoryLclas')
 		.then((response) => response.json())
 		.then((data) => {
 			let modal_select_lclas = document.querySelector("#modalLclas");
@@ -547,7 +560,7 @@ visibility: visible;
 	function modal_lclas_change() {
 		let modal_select_lclas = document.querySelector("#modalLclas");
 		let modal_select_sclas = document.querySelector("#modalSclas");
-		fetch('http://localhost:80/standard/categorySclas?lclas=' + modal_select_lclas.value)
+		fetch('/standard/categorySclas?lclas=' + modal_select_lclas.value)
 		.then((response) => response.json())
 		.then((data) => {
 			modal_select_sclas.innerHTML = ""
@@ -597,7 +610,7 @@ visibility: visible;
 		if (product_category_arr.length == 0) {
 			failCategoryModalToast("저장할 카테고리가 없습니다");
 		} else {
-			fetch('http://localhost:80/standard/categorySubmit', {
+			fetch('/standard/categorySubmit', {
 				method : 'POST', 
 				headers : {
 					...headers, 'Content-Type': 'application/json'
@@ -606,7 +619,7 @@ visibility: visible;
 			})
 		
 			$('#categoryModal').modal('hide');
-			successToast("저장되었습니다")
+			successToast("작업이 완료되었습니다")
 		}
 		
 	}
@@ -618,8 +631,10 @@ visibility: visible;
 		$('#optionModal').modal('show');
 		document.querySelector("#optionModalProductCode").value = document.querySelector("#selectProductCode").value
 		document.querySelector("#optionModalProductName").value = document.querySelector("#selectProductName").value
+		document.querySelector("#modalColor").value = ""
+		document.querySelector("#modalSize").value = ""
 		
-		fetch('http://localhost:80/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
+		fetch('/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
 		.then((response) => response.json())
 		.then((data) => {
 			option_columns = [{ header: '색상', name: 'color', align: 'center' }]
@@ -638,7 +653,7 @@ visibility: visible;
 			}
 			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
 			for (let i = 0 ; i < option_size.length ; i++) {
-				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text' })
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', formatter: row => numberFormatter(row.value) })
 			}
 			
 			let option_color = []
@@ -684,7 +699,7 @@ visibility: visible;
 	/*
 	modalOptionComChange()
 	function modalOptionComChange() {
-		fetch('http://localhost:80/standard/searchCom?companyName=' + document.querySelector("#optionModalComInput").value)
+		fetch('/standard/searchCom?companyName=' + document.querySelector("#optionModalComInput").value)
 		.then((response) => response.json())
 		.then((data) => {
 			document.querySelector("#optionModalComSelect").innerHTML = ""
@@ -697,7 +712,7 @@ visibility: visible;
 		})
 	}
 	*/
-	fetch('http://localhost:80/standard/optionSizeList')
+	fetch('/standard/optionSizeList')
 	.then((response) => response.json())
 	.then((data) => {
 		let modalSize = document.querySelector("#modalSize");
@@ -757,7 +772,7 @@ visibility: visible;
 		if (option_columns.length < 2 || optionGrid.getData().length == 0) {
 			failOptionModalToast("저장할 옵션이 없습니다");
 		} else {
-			fetch('http://localhost:80/standard/optionSubmit', {
+			fetch('/standard/optionSubmit', {
 				method : 'POST', 
 				headers : {
 					...headers, 'Content-Type': 'application/json'
@@ -766,15 +781,11 @@ visibility: visible;
 			})
 		
 			$('#optionModal').modal('hide');
-			successToast("저장되었습니다")
+			successToast("작업이 완료되었습니다")
 			
 		}
 		
 	}
-	
-	
-	
-	
 	
 	
 	function failCategoryModalToast(message) {
@@ -812,6 +823,14 @@ visibility: visible;
 	        setTimeout(() => toast.remove(), 500);
 	    }, 2000);
 	}
+	
+	document.querySelectorAll(".search input").forEach((ele) => {
+	    ele.addEventListener('keydown', (event) => {				
+	        if (event.keyCode === 13) {
+	        	searchBtn();
+	        }
+	    });
+	});
 	</script>
 </body>
 </html>

@@ -100,7 +100,7 @@
 				<div class="col-8 col-lg-8 d-flex mb-2" style="justify-content: center; align-items: center; text-align: center;">
 					<input type="text" class="form-control" id="seledtedRestPercentVL" name="seledtedRestPercentVL" value="" readonly>
 				</div>
-				<div style="text-align: center;">
+				<div style="text-align: center; display: none;">
 				<button type="button" class="btn btn-primary" id="storageInfoModalBtn" onclick="storageInfoModal()" style="margin: 15px auto; display: none">상세정보 보기</button>
 				</div>
 			</div>
@@ -130,7 +130,7 @@
 			</div>
 		</div>
 		<div style="margin: 0px auto; width: 300px">
-			<div id="categoryToast" style="width: 300px; text-align: center;">
+			<div id="storageToast" style="width: 300px; text-align: center;">
 			</div>
 		</div>
 	</div>
@@ -150,7 +150,7 @@
 		document.getElementById('storageGrid').replaceChildren()
 		storage_data = []
 		storage_columns = null
-		fetch('http://localhost:80/standard/storageList')
+		fetch('/standard/storageList')
 		.then((response) => response.json())
 		.then((data) => {
 			document.querySelector('#storage_title').innerText = "| 창고 조회 (" +  $("#storageSelect option:selected").text() + ")"
@@ -169,7 +169,7 @@
 				storage_data.push({"storage_row" : i + 1})
 			}
 		
-			fetch('http://localhost:80/standard/storageInfoList?storageCode=' + document.querySelector("#storageSelect").value)
+			fetch('/standard/storageInfoList?storageCode=' + document.querySelector("#storageSelect").value)
 			.then((response) => response.json())
 			.then((data) => {
 				for (let i = 0 ; i < data.length ; i++) {
@@ -205,7 +205,7 @@
 								document.querySelector('#selectedVl').value = data[i].vl
 								document.querySelector('#selectedInfoVl').value = data[i].vl
 							
-								fetch('http://localhost:80/standard/storageVl?storageInfoCode=' + data[i].storageInfoCode)
+								fetch('/standard/storageVl?storageInfoCode=' + data[i].storageInfoCode)
 								.then((response) => response.json())
 								.then((total_vl) => {
 									if (typeof(total_vl) != "number") {
@@ -215,7 +215,7 @@
 									} else {
 										document.querySelector('#seledtedNowVL').value = total_vl
 										document.querySelector('#seledtedRestVL').value = data[i].vl - total_vl
-										document.querySelector('#seledtedRestPercentVL').value = total_vl / data[i].vl * 100 + "%"
+										document.querySelector('#seledtedRestPercentVL').value = Math.round(total_vl / data[i].vl * 10000) / 100 + "%"
 									} 
 								})
 							}
@@ -233,12 +233,15 @@
 						document.querySelector('#seledtedRestPercentVL').value = ""
 					}
 				})
+				storageGrid.on('dblclick', ev => {
+					storageInfoModal();
+				})
 			})	
 		})
 	}
 	
 	function storage_option() {
-		fetch('http://localhost:80/standard/storageList')
+		fetch('/standard/storageList')
 		.then((response) => response.json())
 		.then((data) => {
 			let select_unit = document.querySelector("#storageSelect");
@@ -257,9 +260,11 @@
 	}
 	
 	function insertStorageBtn() {
-		fetch('http://localhost:80/standard/insertStorage?storageName=' + document.querySelector("#storageNameInput").value)
+		fetch('/standard/insertStorage?storageName=' + document.querySelector("#storageNameInput").value)
 		.then(() => {
 			storage_option()
+			document.querySelector("#storageNameInput").value = "";
+			successToast("작업이 완료되었습니다");
 		})
 	}
 	
@@ -277,29 +282,29 @@
 	}
 	
 	function updateStorage(updateStorageCode, updateStorageName, updateMaxRow, updateMaxCol) {
-		fetch('http://localhost:80/standard/updateStorage?storageCode=' + updateStorageCode + 
-				                                        '&storageName=' + updateStorageName + 
-				                                        '&maxRow=' + updateMaxRow + 
-				                                        '&maxCol=' + updateMaxCol)
+		fetch('/standard/updateStorage?storageCode=' + updateStorageCode + 
+				                     '&storageName=' + updateStorageName + 
+				                          '&maxRow=' + updateMaxRow + 
+				                          '&maxCol=' + updateMaxCol)
 	}
 	
 	function insertStorageInfoBtn() {
-		fetch('http://localhost:80/standard/insertStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
-                                                            '&selectRow=' + select_row + 
-                                                            '&selectCol=' + select_col + 
-                                                            '&storageInfoName=' + document.querySelector("#selectedName").value + 
-                                                            '&vl=' + document.querySelector("#selectedVl").value)
+		fetch('/standard/insertStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
+                                           '&selectRow=' + select_row + 
+                                           '&selectCol=' + select_col + 
+                                     '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                  '&vl=' + document.querySelector("#selectedVl").value)
         .then(()=> {
         	storageSelect()
         })
 	}
 	
 	function updateStorageInfoBtn() {
-		fetch('http://localhost:80/standard/updateStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
-                                                            '&selectRow=' + select_row + 
-                                                            '&selectCol=' + select_col + 
-                                                            '&storageInfoName=' + document.querySelector("#selectedName").value + 
-                                                            '&vl=' + document.querySelector("#selectedVl").value)
+		fetch('/standard/updateStorageInfo?storageCode=' + document.querySelector("#storageSelect").value + 
+                                           '&selectRow=' + select_row + 
+                                           '&selectCol=' + select_col + 
+                                     '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                  '&vl=' + document.querySelector("#selectedVl").value)
         .then(()=> {
             storageSelect()
         })
@@ -307,30 +312,42 @@
 	
 	function storageInfoModal() {
 		document.getElementById('storageInfoModalGrid').replaceChildren()
-		fetch('http://localhost:80/standard/StorageProductList?storageCode=' + document.querySelector("#storageSelect").value + 
-                                                             '&selectRow=' + select_row + 
-                                                             '&selectCol=' + select_col + 
-                                                             '&storageInfoName=' + document.querySelector("#selectedName").value + 
-                                                             '&vl=' + document.querySelector("#selectedVl").value)
+		console.log(document.querySelector("#storageSelect").value);
+		console.log(select_row);
+		console.log(select_col);
+		console.log(document.querySelector("#selectedName").value);
+		console.log(document.querySelector("#selectedVl").value);
+		fetch('/standard/StorageProductList?storageCode=' + document.querySelector("#storageSelect").value + 
+                                            '&selectRow=' + select_row + 
+                                            '&selectCol=' + select_col + 
+                                      '&storageInfoName=' + document.querySelector("#selectedName").value + 
+                                                   '&vl=' + document.querySelector("#selectedVl").value)
         .then((response) => response.json())
 		.then((data) => {
-        	$('#storageInfoModal').modal('show');
-        	document.querySelector('#optionCodeModalLabel').innerText = document.querySelector('#selectColRowName').innerText + " 상세보기"
-        	let storageModalGrid = new Grid({
-				el: document.getElementById('storageInfoModalGrid'), // 해당 위치에 그리드 출력
-		    	data: data,
-		    	columns: [
-		        	{ header: 'Lot', name: 'lot', sortable: true, align: 'center' }, 
-		        	{ header: '제품 이름', name: 'productName', sortable: true, align: 'center' }, 
-		        	{ header: '색상', name: 'productColor', sortable: true, align: 'center' }, 
-		        	{ header: '사이즈', name: 'productSize', sortable: true, align: 'center' }, 
-		        	{ header: '수량', name: 'qy', sortable: true, align: 'center' }, 
-		        	{ header: '입고 날짜', name: 'storeDate', sortable: true, align: 'center' }, 
-		        	{ header: '입고자', name: 'storeChargerName', sortable: true, align: 'center' }
-		    	],
-		  	scrollX: false, // 가로 스크롤
-		  	scrollY: false // 세로 스크롤
-			})
+			if (data.length > 0) {
+				$('#storageInfoModal').modal('show');
+	        	document.querySelector('#optionCodeModalLabel').innerText = document.querySelector('#selectColRowName').innerText + " 상세보기"
+	        	let storageModalGrid = new Grid({
+					el: document.getElementById('storageInfoModalGrid'), // 해당 위치에 그리드 출력
+			    	data: data,
+			    	columns: [
+			        	{ header: 'Lot', name: 'lot', sortable: true, align: 'center' }, 
+			        	{ header: '제품 이름', name: 'productName', sortable: true, align: 'left' }, 
+			        	{ header: '색상', name: 'productColor', sortable: true, align: 'center' }, 
+			        	{ header: '사이즈', name: 'productSize', sortable: true, align: 'center' }, 
+			        	{ header: '수량', name: 'qy', sortable: true, align: 'center' }, 
+			        	{ header: '입고 날짜', name: 'storeDate', sortable: true, align: 'center' }, 
+			        	{ header: '입고자', name: 'storeChargerName', sortable: true, align: 'center' }
+			    	],
+			    	columnOptions: {
+				        resizable: true
+				    },
+			  		scrollX: false, // 가로 스크롤
+			  		scrollY: false // 세로 스크롤
+				})
+			} else {
+				failToast("아무것도 없습니다");
+			}
         })
 	}
 	</script>

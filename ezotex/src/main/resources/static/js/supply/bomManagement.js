@@ -149,6 +149,8 @@ const prdGrid = new Grid({
         }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 600,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 15
@@ -180,6 +182,7 @@ const mtrGrid = new Grid({
     rowHeaders: ['checkbox'],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
+    showDummyRows: true,
   	bodyHeight: 150
 });
 
@@ -199,6 +202,7 @@ const selectedMtrGrid = new Grid({
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
+    showDummyRows: true,
   	bodyHeight: 155,
   	summary: {
   		 height: 37,
@@ -324,6 +328,14 @@ document.getElementById('mtrSearchBtn').addEventListener('click', () => {
 	rowEventOn = true;
 });
 
+// 엔터키 즉시 검색
+document.getElementById('prdForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('mtrForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('mtrSearchBtn').dispatchEvent(new Event('click'));
+});
+
 // 자재 선택 시 그리드 추가/삭제
 // ** appendRow(), removeRow() 메소드 사용 시 동기화에 문제 있음
 function addRow(row){ // grid.getRow(ev.rowKey)를 인수로 받음.
@@ -352,7 +364,6 @@ function removeRow(rowKey){ // ev.rowKey를 인수로 받음.
 };
 
 mtrGrid.on('check', ev => {
-	//addRow(mtrGrid.getRow(ev.rowKey));
 	addRow(mtrData[ev.rowKey]);
 });
 
@@ -364,7 +375,6 @@ mtrGrid.on('uncheck', ev => {
 mtrGrid.on('checkAll', () => {
 	let gridData = mtrGrid.getData();
 	gridData.forEach((data) => {
-		//addRow(data);		
 		addRow(mtrData[data.rowKey]);
 	});
 });
@@ -456,14 +466,14 @@ function insertBom(){
 	.then(async result => {
 		console.log(result);
 		if(result == true){ // 등록 성공 시
-			successToast('자재명세서가 등록되었습니다.');
+			successToast('작업이 완료되었습니다.');
 			originBomData = selectedBom; // 비교값을 입력한 값으로 업데이트 (중복 등록 방지)
 			
 			await fetch('/supply/bomAllInserted/' + selectedPrd.PRODUCT_CODE) // 모든 옵션 등록됐는지 확인
 			.then(response => response.json())
 			.then(allInserted => selectedPrd.STATUS = allInserted == true ? '완료' : '등록중');
 			prdGrid.setRow(selectedPrd.rowKey, selectedPrd);
-		} else failToast('알 수 없는 오류로 실패했습니다.');
+		} else failToast('작업을 실패했습니다.');
 	});
 };
 

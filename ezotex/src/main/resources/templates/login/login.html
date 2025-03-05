@@ -110,7 +110,7 @@
 
 	    try {
 	        // fetch 요청을 보내고, 결과를 기다림
-	        let response = await fetch('http://localhost:80/login/idApproval?id=' + id);
+	        let response = await fetch('/login/idApproval?id=' + id);
 	        let data = await response.json();
 
 	        let result = data.approval;

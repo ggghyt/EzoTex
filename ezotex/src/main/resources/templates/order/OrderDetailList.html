@@ -168,6 +168,14 @@
 								header : '주문금액합계',
 								name : 'amount',
 								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            }								
 							},
 							{
 								header : '상세보기',
@@ -300,11 +308,27 @@
 							}, {
 								header : '수량',
 								name : 'qy',
-								align : 'center',
+								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            },
 							}, {
 								header : '단가',
 								name : 'unitPrice',
-								align : 'center',
+								align : 'right',
+					            formatter: (value) => {
+					                // 객체인 경우 value.value로 접근
+					                const val = value && value.value ? value.value : value;
+					                if (typeof val === 'number') {
+					                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+					                }
+					                return val; // 숫자가 아니면 그대로 반환
+					            },
 							}, ],
 						    pageOptions: {
 						        useClient: true, // 페이징을 위해 필요
@@ -380,7 +404,7 @@ grid.on('click', function(ev) {
 // 삭제버튼 이벤트
 /* document.getElementById('AllDelete').addEventListener('click', function() {
     console.log("삭제버튼 클릭됨. 선택된 주문코드: " + selectedOrderCode); // 선택된 주문코드 출력
-    fetch(`http://localhost:80/order/orderDelete?productOrderCode=${selectedOrderCode}`,{
+    fetch(`/order/orderDelete?productOrderCode=${selectedOrderCode}`,{
     	method:'DELETE',
     	headers:headers,
     }).then(req => req.json())
@@ -390,7 +414,7 @@ grid.on('click', function(ev) {
 
 document.getElementById('AllDelete').addEventListener('click', function() {
     console.log("삭제버튼 클릭됨. 선택된 주문코드: " + selectedOrderCode); // 선택된 주문코드 출력
-    fetch(`http://localhost:80/order/orderDelete`, {
+    fetch(`/order/orderDelete`, {
         method: 'POST',  // DELETE 대신 POST 사용
         headers: {
         	...headers,
@@ -418,7 +442,7 @@ document.getElementById('AllDelete').addEventListener('click', function() {
 // 서버 통신
 function orderDetails(orderCode) {
 	console.log("통신시작",orderCode);
-	fetch(`http://localhost:80/order/orderProductList?productOrderCode=${orderCode}`,{
+	fetch(`/order/orderProductList?productOrderCode=${orderCode}`,{
 		method:'GET',
 		headers:headers,
 	}).then(req => req.json())

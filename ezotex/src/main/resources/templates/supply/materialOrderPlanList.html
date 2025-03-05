@@ -28,7 +28,7 @@
 	  <div th:fragment="materialOrderPlanList(th)">
 	    <script th:inline="javascript">  let th = /*[[${th}]]*/null; // 타임리프로 받은 변수 저장 </script>
 		<div class="card card-body mt-4">
-			<form class="row ms-3 pe-0">
+			<form id="planForm" class="row ms-3 pe-0">
 			
 				 <!-- 검색조건 -->
 				 <div class="row col-12 col-lg-6 pe-0">
@@ -105,8 +105,8 @@
                        <input type="text" class="form-control" id="scChargerName">
                      </div>
 			         <div class="col-12 col-sm-5 d-flex justify-content-end mt-2">
-			           <button type="button" id="orderSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-			           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+			           <button type="button" id="orderSearchBtn" class="btn btn-warning mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+			           <button type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 			         </div>
 		         </div>
 		         
@@ -149,8 +149,8 @@
 	                            <input type="text" class="form-control" id="address">
 	                        </div>
 	                        <div class="col-12 col-sm-6 col-lg-3 d-flex justify-content-center">
-	                            <button type="button" id="comSearchBtn" class="btn btn-secondary mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-	                            <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+	                            <button type="button" id="comSearchBtn" class="btn btn-warning mag-glass-btn me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+	                            <button type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 	                        </div>
 	                    </div>
 	                    <div id="companyGrid"></div>
@@ -202,7 +202,7 @@
 	             </div>
 	              <div class="modal-footer">
 	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-	                <button type="button" id="modifyBtn" class="btn btn-warning" th:style="${th != null ? 'display: none;' : ''}">수정</button>
+	                <button type="button" id="modifyBtn" class="btn btn-warning" style="display: none">수정</button>
 	                <button type="button" id="modifyConfirmBtn" class="btn btn-success" style="display: none">수정완료</button>
 	                <button type="button" id="orderCancelBtn" class="btn btn-danger" style="display: none;">발주취소</button>
 	                <button type="button" id="writeBtn" class="btn btn-success" data-bs-dismiss="modal" style="display: none">발주서 작성</button>

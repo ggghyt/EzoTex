@@ -67,9 +67,10 @@
 							</label> <input type="text" id="deliveryCode"
 								class="form-control inputbold w-50" readonly>
 							<button type="button" class="btn btn-info" data-bs-toggle="modal"
-								data-bs-target="#deliveryViewModal" style="padding: 8px">납품 내역 조회</button>
-								
-			<!-- 				<div class="input-group mb-3">
+								data-bs-target="#deliveryViewModal" style="padding: 8px">납품
+								내역 조회</button>
+
+							<!-- 				<div class="input-group mb-3">
 								<input type="text" class="form-control"
 									placeholder="Recipient's username"
 									aria-label="Recipient's username"
@@ -172,22 +173,6 @@
 					name : 'unitPrice',
 					align : 'center',
 				},
-			    {
-				      header : '처리상태',
-				      name : 'status',
-				      align : 'center',
-				      editor: {
-				          type: 'select',
-				          options: {
-				              listItems: [
-				                  { text: '반품', value: 'ER03' },
-				                  { text: '교환', value: 'ER02' },
-				                  { text: '폐기', value: 'ER01' }
-				              ]
-				          }
-				      }
-
-			    },
 				],
 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
@@ -203,37 +188,19 @@
 			    const clickedData = deliProductGrid.getData()[clickedRow]; // 클릭된 행의 데이터
 			    const clickedColumn = ev.columnName;  // 클릭된 열
 			    
-			    if (clickedColumn === 'status') {
-			        deliProductGrid.startEditing(clickedRow, clickedColumn);
-			    }
-			    
-			    // status 클릭해도 데이터 밑에 그리드로 안넘어감
-			    if (clickedColumn === 'status') {
-			        return;
-			    }
-
 			    console.log("선택된 제품:", clickedData);
-			    
-			    // 처리상태 저장
-			    const status = deliProductGrid.getValue(clickedRow, 'status');
 			    
 			    console.log(clickedData.productCode);
 			    
-			        // 처리상태를 포함한 데이터 객체를 처리할 제품 목록에 추가
+			        // 데이터 객체를 처리할 제품 목록에 추가
 		            const newProduct = {
 				        productCode : clickedData.productCode,
 				        productName : clickedData.productName,
 				        productColor : clickedData.productColor,
 				        productSize : clickedData.productSize,
 				        unitPrice : clickedData.unitPrice,
-				        status: status   // 처리상태 포함
+				        deliveryQy: clickedData.deliveryQy,
 				    };
-
-			    // 선택된 제품 목록을 갱신
-			    if(!status){
-			    	console.log("처리상태 비었음");
-			    	return;
-			    }
 			        
 		        // selectProductGrid의 기존 데이터 가져오기
 		        const existingData = selectProductGrid.getData();
@@ -323,28 +290,37 @@
 					name : 'unitPrice',
 					align : 'center',
 				},
-				{
-					header : '처리상태',
-					name : 'status',
-					align : 'center',
-		            formatter: ({ value }) => {
-		                switch (value) {
-		                    case 'ER03':
-		                        return '반품';
-		                    case 'ER02':
-		                        return '교환';
-		                    case 'ER01':
-		                        return '폐기';
-		                    default:
-		                        return '알 수 없음';
-		                }
-		            }
-				}
+			    {
+				      header : '처리상태',
+				      name : 'status',
+				      align : 'center',
+				      editor: {
+				          type: 'select',
+				          options: {
+				              listItems: [
+				                  { text: '반품', value: '반품' },
+				                  { text: '교환', value: '교환' },
+				                  { text: '폐기', value: '폐기' }
+				              ]
+				          },
+				      },
+			    },
 				],
+
 /* 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
 					perPage : 1
 				}, */
+			});
+			
+			// 행 클릭
+			selectProductGrid.on('click', (event) => {
+			    const { rowKey, columnName } = event;
+
+			    // 컬럼명이 'status'이면 편집 모드 시작
+			    if (columnName === 'status') {
+			    	selectProductGrid.startEditing(rowKey, columnName);
+			    }
 			});
 			
 		    // 수량이 0 이하일 경우 입력 제한
@@ -359,13 +335,13 @@
 		    });
 			
 			</script>
-			
+
 	</div>
 </body>
 <!-- 납품 내역 조회 모달 -->
 <div class="modal fade" id="deliveryViewModal" tabindex="-1"
 	aria-labelledby="deliveryViewModalLabel" aria-hidden="true">
-	<div class="modal-dialog" style="width: 50%; max-width: 1200px;">
+	<div class="modal-dialog" style="width: 70%; max-width: 1200px;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="deliveryViewModalLabel">납품내역</h5>
@@ -373,14 +349,45 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+				<!-- 제품 검색창 -->
+				<div class="card card-body mt-3 bg-secondary">
+					<h3>검색</h3>
+					<table class="table mt-3">
+						<tbody>
+							<tr>
+								<td class="col-auto"><label class="col-form-label">납품코드</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchDeliveryCode" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">업체명</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchCompanyName" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">납기일</label></td>
+								<td class="col-auto"><input type="date"
+									id="startDeliveryDate" class="form-control"></td>
+								<td>~</td>
+								<td class="col-auto"><input type="date"
+									id="endDeliveryDate" class="form-control"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="text-center mt-3">
+						<button class="btn btn-warning mag-glass-btn"
+							onclick="searchReturnList()">
+							<i class="fa-solid fa-magnifying-glass icon-left"
+								style="color: #ffffff;"></i>
+						</button>
+						<button class="btn btn-secondary mag-glass-btn"
+							onclick="resetCondition()">
+							<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+						</button>
+					</div>
+				</div>
 				<div class="card card-body mt-3">
 					<div class="row">
 						<!-- Toast Grid를 표시할 div 추가 -->
-						<div class="col-12 card card-body m-2">
-							<p class="fs-5 fw-bolder">납품내역 선택 모달</p>
-							<!-- 그리드를 표시할 div -->
-							<div id="deliveryGrid" style="width: 100%;"></div>
-						</div>
+						<p class="fs-5 fw-bolder">납품내역 선택 모달</p>
+						<!-- 그리드를 표시할 div -->
+						<div id="deliveryGrid" style="width: 100%;"></div>
 					</div>
 				</div>
 				<script th:inline="javascript">
@@ -389,7 +396,7 @@
 					// 전달된 데이터 확인 (콘솔에 출력)
 					console.log(deliveryList);
 					// Toast Grid 설정
-					// --- 제품 추가 그리드 ---
+					// --- 납품내역 모달 그리드 ---
 					const deliveryGrid = new tui.Grid({
 						el : document.getElementById('deliveryGrid'), // 그리드를 표시할 div
 						scrollX : false, // 가로 스크롤바 비활성화
@@ -496,7 +503,7 @@
 
 						$('#deliveryViewModal').modal('hide');
 						
-						fetch(`http://localhost:80/returns/returnsProduct?deliveryCode=${clickedData.deliveryCode}`)
+						fetch(`/returns/returnsProduct?deliveryCode=${clickedData.deliveryCode}`)
 							.then(response => response.json())
 							.then(data => {
 								console.log("코드 데이터 확인",data);
@@ -550,16 +557,10 @@
 	        alert("납품 내역 조회하여 납품건을 선택해주세요.");
 	        return;
 	    }
-	    
-	    // 처리상태가 하나라도 선택되었는지 확인
-	    const hasStatus = deliProductData.some(item => item.status); // 하나라도 있으면 true
-	    if (!hasStatus) {
-	        alert("처리 상태를 선택하고 제품을 선택해 주세요.");
-	        return;
-	    }
 
 	    // selectProductGrid 데이터 가져오기
 	    let rows = selectProductGrid.getData(); // 그리드 데이터 가져오기
+	    
 	    for (let i = 0; i < rows.length; i++) {
 	        const row = rows[i];
 	        if (!row.deliveryQy || row.deliveryQy === '') {
@@ -578,7 +579,15 @@
 	            return false;
 	        }
 	    }
+	    
+	    // 처리상태가 모두 비어있는지 확인
+	    const allStatusEmpty = rows.every(row => !row.status || row.status.trim() === '');
+	    if (allStatusEmpty) {
+	        alert("모든 처리상태가 비어 있습니다. 처리상태를 선택해주세요.");
+	        return;
+	    }
 		
+	    // 모두 통과하면 등록 모달 띄워주기
 		let resiModal = new bootstrap.Modal(document.getElementById('registModal'));
 			resiModal.show();
 		}
@@ -624,6 +633,12 @@
 		const formattedReturnDate = returnDate.toISOString().split('T')[0];
 		
 		
+		const statusMap = {
+			    "반품": "ER03",
+			    "교환": "ER02",
+			    "폐기": "ER01"
+		};
+		
 		// 반품 등록 제품 데이터에 selectProductGrid 데이터 넣기
 		const returnProductData = selectedProducts.map(row => ({
 			
@@ -636,17 +651,23 @@
 		    requestor: document.getElementById("requestor").value,  // 요청자
 		    requestDate: requestDate,
 		    returnDate: formattedReturnDate,
-		    processingStatus: row.status,  // 처리 상태
+		    processingStatus: statusMap[row.status] || row.status,  // 상태값 변환
 		    unitPrice: row.unitPrice  // 단가
-		}));
+		}))
+		.filter(item => item.processingStatus && item.processingStatus.trim() !== '');
 		
-		console.log(returnProductData);  // 확인용 콘솔 출력
+/* 	    // processingStatus가 모두 비어있는 경우
+	    const allProcessingStatusEmpty = returnProductData.every(item => !item.processingStatus || item.processingStatus.trim() === '');
+	    if (allProcessingStatusEmpty) {
+	        alert("처리상태를 선택해주세요.");
+	        return;  // 처리가 완료되지 않도록 중지
+	    } */
 		
 		console.log("returnData",returnData);
 		console.log("returnProductData",returnProductData);
 		
 		// 등록 실행 fetch
-		fetch(`http://localhost:80/returns/insertReturn`, {
+		fetch(`/returns/insertReturn`, {
 			method : 'POST',
 			headers : {
 				...headers,
@@ -665,7 +686,7 @@
 			console.log("리턴코드 넘어오는지",result.returnCode);
 			console.log("returnProductData 출력",returnProductData);
 			// 반품 헤더 등록 성공시 반품 제품 등록 실행
-			fetch(`http://localhost:80/returns/insertProductReturn`,{
+			fetch(`/returns/insertProductReturn`,{
 				method : 'POST',
 				headers : {
 					...headers,
@@ -683,14 +704,52 @@
 			    console.log("반품 등록 성공:", data);
 
 			    // 성공 시 페이지 리로드
-			    alert("반품이 성공적으로 등록되었습니다!");
-			    location.reload();
+ 			        setTimeout(function() {
+				        location.reload();  // 페이지 새로 고침
+				    }, 1200);  // 1000ms = 1초
 			})
 		})
 		.catch(error =>{
 			console.error("반품 등록 오류:",error);
 		});
 	})
+	
+		// 검색 함수
+		function searchReturnList() {
+	        const deliveryCode = document.querySelector('#searchDeliveryCode').value;
+	        const companyName = document.querySelector('#searchCompanyName').value;
+	        const startDeliveryDate = document.querySelector('#startDeliveryDate').value;
+	        const endDeliveryDate = document.querySelector('#endDeliveryDate').value;
+	        
+	        const filteredData = deliveryList.filter(item => {
+	            return (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
+	                   (!companyName || item.companyName.includes(companyName)) &&
+	                   (!startDeliveryDate || item.dedt >= startDeliveryDate) &&
+	                   (!endDeliveryDate || item.dedt <= endDeliveryDate);
+	        });
+	
+		    // 필터링된 데이터를 다시 설정
+		    deliveryGrid.resetData(filteredData);
+		}
+
+		// 검색 엔터 이벤트 추가
+		document.querySelectorAll(".card-body input").forEach((ele) => {
+		    ele.addEventListener('keydown', (event) => {				
+		        if (event.keyCode === 13) {
+		        	searchReturnList();
+		        }
+		    });
+		});
+
+		// 검색 조건 초기화 함수
+		function resetCondition() {
+		    document.querySelectorAll('.card-body input').forEach((e) => {
+		        e.value = null;
+		    });
+		    searchReturnList();
+		}
+	
+	
 </script>
 
 <style>

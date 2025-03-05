@@ -40,4 +40,7 @@ public interface ReturnsService {
 	
 	// 반품 제품 조회
 	List<ReturnsProductDTO> selectReturnProductList(String returnCode);
+	
+	// 일별 제품별 손실액
+	List<ReturnsProductDTO> getTotalReturnProduct();
 }

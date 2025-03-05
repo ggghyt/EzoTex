@@ -107,7 +107,7 @@
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -170,7 +170,7 @@
 						<div class="d-flex justify-content-end mt-2">
 							<button id="productInsert" type="button" class="btn btn-primary"
 								style="height: 45px; margin-top: 10px;">등록</button>
-							<button class="btn btn-secondary" style="margin: 10px;">초기화</button>
+							<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn" >초기화</button>
 						</div>
 				</div>
 
@@ -223,6 +223,11 @@
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
 	
+		//초기화 화면 새로고침
+		document.getElementById('resetBtn').addEventListener('click', function() {
+		    window.location.reload();  // 페이지 새로 고침
+		 });
+	
 		function searchProductList() {
 	    	storeGrid.readData(1, {
         		productCode: document.querySelector('#searchProductCode').value,
@@ -233,6 +238,16 @@
         }
 	
 	
+		inputReset.addEventListener('click', function(){
+			console.log('클릭')
+			document.querySelector('#searchProductCode').value = '';
+       		document.querySelector('#searchProductName').value = '';
+       		document.querySelector('#startUnitPrice').value = '';
+       		document.querySelector('#endUnitPrice').value = '';
+       		searchProductList();
+		})
+		
+		
 		let productCode = "";
 		let productColor = "";
 		let productName = "";
@@ -247,7 +262,7 @@
 		
 	    const dataSource = {
 	      api: {
-	          readData: { url: 'http://localhost:80/store/productInfoList', method: 'GET' },
+	          readData: { url: '/store/productInfoList', method: 'GET' },
 	        },
 	      contentType: 'application/json',
 	    };  
@@ -325,6 +340,8 @@
 	   	*========================================================================
 	   	*/
 	    
+	   	let lastClicked = null;
+	   	
 	    storeGrid.on('click', ev => {
 
 	    	let data = storeGrid.getRow(ev.rowKey);
@@ -334,8 +351,12 @@
 	    	productCode = data.productCode;
 	    	productName = data.productName;
 	    	
+	    	storeGrid.removeRowClassName(lastClicked, 'bg-blue');
+	    	storeGrid.addRowClassName(ev.rowKey, 'bg-blue');
+			lastClicked = ev.rowKey;
+	    	
 	    	 // 색상 옵션 가져오기
-	        fetch(`http://localhost:80/store/productColor?productCode=${data.productCode}`)
+	        fetch(`/store/productColor?productCode=${data.productCode}`)
 	            .then(response => response.json())
 	            .then(colors => {
 					
@@ -379,7 +400,7 @@
 	    	productColor = this.value;
 	    	productCode = document.querySelector('#productCode').value;
 	    	
-			fetch(`http://localhost:80/store/productSize?productCode=${productCode}&productColor=${productColor}`)
+			fetch(`/store/productSize?productCode=${productCode}&productColor=${productColor}`)
 			     .then(req => req.json())
 			     .then(data => {
 			    	let sizeSelect = document.querySelector('#size');
@@ -506,12 +527,12 @@
 	   	
 	   	InsertTest.addEventListener('click', function(){
 	   		
-	   		
+	   	   let check = storeProduct.getData();
 	   		
 	   		// 데이터에서 사이즈 값 변환
 	   	   let transformedData = check.map(item => {
-	   	        // 사이즈 값 변환
-	   	        item.sizeCode = getSizeCommonCode(item.sizeCode);
+	   	     // 사이즈 값 변환
+	   	     item.sizeCode = getSizeCommonCode(item.sizeCode);
 	   	        
 	   	     console.log(item.sizeCode);
 	   	        
@@ -519,14 +540,13 @@
 	   	    });
 	   		
 	   		console.log("서버 통신 데이터 : ", transformedData);
-	   		fetch(`http://localhost:80/store/InsertProduct`,{
+	   		fetch(`/store/InsertProduct`,{
 	   			method: 'POST',
 	   			headers: {...headers, 'Content-Type': 'application/json'},
 	    		body: JSON.stringify(transformedData)
 	   		}).then(rep => rep.json())
 	   		  .then(result => {
-	   			  location.reload();
-	   			  console.log(result);
+	   			 storeProduct.resetData([]);
 	   		  })
 	   		
 	   	})
@@ -558,7 +578,7 @@
 	   			let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
 		        
-	   			fetch(`http://localhost:80/store/storageInfoList`)
+	   			fetch(`/store/storageInfoList`)
 	   			    .then(rep => rep.json())
 	   			    .then(data => {
 	   			    	modalGrid.resetData(data);

@@ -106,43 +106,6 @@
 	      	},
 		})
 		
-		// 검색 함수
-		function searchReturnList() {
-	        const returnCode = document.querySelector('#returnCode').value;
-	        const deliveryCode = document.querySelector('#deliveryCode').value;
-	        const companyName = document.querySelector('#companyName').value;
-	        const startRequestDate = document.querySelector('#startRequestDate').value;
-	        const endRequestDate = document.querySelector('#endRequestDate').value;
-	        
-	        const filteredData = returnList.filter(item => {
-	            return (!returnCode || item.returnCode.includes(returnCode)) &&
-	                   (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
-	                   (!companyName || item.companyName.includes(companyName)) &&
-	                   (!startRequestDate || item.requestDate >= startRequestDate) &&
-	                   (!endRequestDate || item.requestDate <= endRequestDate);
-	        });
-	
-		    // 필터링된 데이터를 다시 설정
-		    returnGrid.resetData(filteredData);
-		}
-
-		// 검색 엔터 이벤트 추가
-		document.querySelectorAll(".card-body input").forEach((ele) => {
-		    ele.addEventListener('keydown', (event) => {				
-		        if (event.keyCode === 13) {
-		        	searchReturnList();
-		        }
-		    });
-		});
-
-		// 검색 조건 초기화 함수
-		function resetCondition() {
-		    document.querySelectorAll('.card-body input').forEach((e) => {
-		        e.value = null;
-		    });
-		    searchReturnList();
-		}
-		
 		// returnGrid 클릭 이벤트 추가
 		returnGrid.on('click', function(ev) {
 		    const clickedRow = ev.rowKey; // 클릭된 행 인덱스
@@ -152,7 +115,7 @@
 		    console.log("클릭된 행 데이터:", clickedData);
 		    console.log("클릭된 반품코드:", returnCode);
 		    
-		    fetch(`http://localhost:80/returns/selectReturn?returnCode=${returnCode}`)
+		    fetch(`/returns/selectReturn?returnCode=${returnCode}`)
 			    .then(response => response.json())
 			    .then(data => {
 			    	console.log("조회 할 returnCode" , returnCode);
@@ -210,12 +173,28 @@
 				{
 					header : "수량",
 					name : "qy",
-					align : 'center',
+					align : 'right',
+		            formatter: (value) => {
+		                // 객체인 경우 value.value로 접근
+		                const val = value && value.value ? value.value : value;
+		                if (typeof val === 'number') {
+		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		                }
+		                return val; // 숫자가 아니면 그대로 반환
+		            },
 				},
 				{
 					header : "단가",
 					name : "unitPrice",
-					align : 'center',
+					align : 'right',
+		            formatter: (value) => {
+		                // 객체인 경우 value.value로 접근
+		                const val = value && value.value ? value.value : value;
+		                if (typeof val === 'number') {
+		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		                }
+		                return val; // 숫자가 아니면 그대로 반환
+		            },
 				},
 				{
 					header : "처리상태",
@@ -240,6 +219,46 @@
 	      	},
 		})
 		
+		
+		// 검색 함수
+		function searchReturnList() {
+	        const returnCode = document.querySelector('#returnCode').value;
+	        const deliveryCode = document.querySelector('#deliveryCode').value;
+	        const companyName = document.querySelector('#companyName').value;
+	        const startRequestDate = document.querySelector('#startRequestDate').value;
+	        const endRequestDate = document.querySelector('#endRequestDate').value;
+	        
+	        const filteredData = returnList.filter(item => {
+	            return (!returnCode || item.returnCode.includes(returnCode)) &&
+	                   (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
+	                   (!companyName || item.companyName.includes(companyName)) &&
+	                   (!startRequestDate || item.requestDate >= startRequestDate) &&
+	                   (!endRequestDate || item.requestDate <= endRequestDate);
+	        });
+	
+		    // 필터링된 데이터를 다시 설정
+		    returnGrid.resetData(filteredData);
+		}
+
+		// 검색 엔터 이벤트 추가
+		document.querySelectorAll(".card-body input").forEach((ele) => {
+		    ele.addEventListener('keydown', (event) => {				
+		        if (event.keyCode === 13) {
+		        	searchReturnList();
+		        }
+		    });
+		});
+
+		// 검색 조건 초기화 함수
+		function resetCondition() {
+		    document.querySelectorAll('.card-body input').forEach((e) => {
+		        e.value = null;
+		    });
+		    searchReturnList();
+			
+		    // returnProductGrid 데이터 초기화 (빈 배열로 설정)
+		    returnProductGrid.clear();
+		}
 	</script>
 </body>
 </html>

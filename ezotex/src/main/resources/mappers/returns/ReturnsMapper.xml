@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.returns.mappers.ReturnsMapper">
+	<!-- 자재가 아닌 제품이 있는 납품건 조회 -->
 	<select id="getDeliveryList">
 		SELECT
 		D.DELIVERY_CODE,
@@ -41,9 +42,13 @@
 		ON DD.PRODUCT_CODE = P.PRODUCT_CODE
 		WHERE P.PRODUCT_TYPE
 		= 'PT02'
+		AND D.DELIVERY_STATUS = 'DS05'
 		GROUP BY D.DELIVERY_CODE
-		ORDER BY D.DELIVERY_CODE DESC
+		ORDER BY
+		D.DELIVERY_CODE DESC
 	</select>
+
+	<!-- 자재가 아닌 제품 -->
 	<select id="getDeliProduct"
 		resultType="DeliveryDetailsReturnsDTO">
 		SELECT P.PRODUCT_NAME ,
@@ -75,20 +80,23 @@
 		GROUP BY
 		P.PRODUCT_NAME,D.PRODUCT_COLOR,D.PRODUCT_SIZE
 	</select>
-	
+
 	<!-- 반품 헤더 등록 -->
 	<insert id="insertReturn" parameterType="ReturnsDTO">
-		<selectKey resultType="String"
-			keyProperty="returnCode" order="BEFORE">
+		<selectKey resultType="String" keyProperty="returnCode"
+			order="BEFORE">
 			SELECT COALESCE(
 			(SELECT CASE
-			WHEN LENGTH('RTN' || TO_CHAR(SYSDATE, 'YYMMDD') ||
+			WHEN LENGTH('RTN' ||
+			TO_CHAR(SYSDATE, 'YYMMDD') ||
 			LPAD((TO_NUMBER(SUBSTR(MAX(RETURN_CODE), 10)) + 1), 4, 0)) = 9
-			THEN null
+			THEN
+			null
 			ELSE 'RTN' || TO_CHAR(SYSDATE, 'YYMMDD') ||
 			LPAD((TO_NUMBER(SUBSTR(MAX(RETURN_CODE), 10)) + 1), 4, 0)
 			END
-			FROM RETURNS
+			FROM
+			RETURNS
 			WHERE TO_CHAR(REQUEST_DATE, 'YY/MM/DD') = (SELECT
 			TO_CHAR(SYSDATE,
 			'YY/MM/DD') FROM DUAL)),
@@ -98,110 +106,116 @@
 		</selectKey>
 		INSERT INTO RETURNS
 		(
-			return_code,
-			delivery_code,
-			company_code,
-			company_name,
-			requestor,
-			request_date
+		return_code,
+		delivery_code,
+		company_code,
+		company_name,
+		requestor,
+		request_date
 		)
 		VALUES(
-			#{returnCode},
-			#{deliveryCode},
-			#{companyCode},
-			#{companyName},
-			#{requestor},
-			sysdate
+		#{returnCode},
+		#{deliveryCode},
+		#{companyCode},
+		#{companyName},
+		#{requestor},
+		sysdate
 		)
 	</insert>
-	
+
 	<!-- 반품 제품 등록 -->
-	<insert id="insertProductReturn" parameterType="ReturnsProductDTO">
+	<insert id="insertProductReturn"
+		parameterType="ReturnsProductDTO">
 		INSERT INTO RETURN_PRODUCT
 		(
-			return_product_no,
-			return_code,
-			product_code,
-			product_name,
-			product_color,
-			product_size,
-			faulty_reason,
-			qy,
-			requestor,
-			request_date,
-			return_date,
-			processing_status,
-			unit_price
+		return_product_no,
+		return_code,
+		product_code,
+		product_name,
+		product_color,
+		product_size,
+		faulty_reason,
+		qy,
+		requestor,
+		request_date,
+		return_date,
+		processing_status,
+		unit_price
 		)
 		VALUES(
-			RETURN_PRODUCT_SEQ.NEXTVAL,
-			#{returnCode},
-			#{productCode},
-			#{productName},
-			#{productColor},
-			#{productSize},
-			#{faultyReason},
-			#{qy},
-			#{requestor},
-			#{requestDate},
-			#{returnDate},
-			#{processingStatus},
-			#{unitPrice}
+		RETURN_PRODUCT_SEQ.NEXTVAL,
+		#{returnCode},
+		#{productCode},
+		#{productName},
+		#{productColor},
+		#{productSize},
+		#{faultyReason},
+		#{qy},
+		#{requestor},
+		#{requestDate},
+		#{returnDate},
+		#{processingStatus},
+		#{unitPrice}
 		)
 	</insert>
-	
+
 	<!-- 교환 조회 -->
 	<select id="getChangeList">
-		SELECT 
-		    r.RETURN_CODE,
-		    r.DELIVERY_CODE,
-		    r.COMPANY_CODE,
-		    r.COMPANY_NAME,
-		    c.COMPANY_CHARGER,
-		    c.COMPANY_PHONE,
-		    r.REQUESTOR,
-		    r.REQUEST_DATE
+		SELECT
+		r.RETURN_CODE,
+		r.DELIVERY_CODE,
+		r.COMPANY_CODE,
+		r.COMPANY_NAME,
+		c.COMPANY_CHARGER,
+		c.COMPANY_PHONE,
+		r.REQUESTOR,
+		r.REQUEST_DATE
 		FROM RETURNS r
 		JOIN RETURN_PRODUCT rp ON r.RETURN_CODE = rp.RETURN_CODE
 		JOIN COMPANY c ON r.COMPANY_CODE = c.COMPANY_CODE
-		WHERE rp.PROCESSING_STATUS = 'ER02'
+		WHERE
+		rp.PROCESSING_STATUS = 'ER02'
 		AND rp.SHOW = 'on'
-		GROUP BY r.RETURN_CODE, r.DELIVERY_CODE, r.COMPANY_CODE, r.COMPANY_NAME, 
-		         c.COMPANY_CHARGER, c.COMPANY_PHONE, r.REQUESTOR, r.REQUEST_DATE
+		GROUP BY r.RETURN_CODE,
+		r.DELIVERY_CODE, r.COMPANY_CODE, r.COMPANY_NAME,
+		c.COMPANY_CHARGER, c.COMPANY_PHONE, r.REQUESTOR, r.REQUEST_DATE
 	</select>
 	<select id="getChangeProductList">
-		SELECT 
-		    rp.RETURN_PRODUCT_NO,
-		    rp.RETURN_CODE,
-		    rp.PRODUCT_CODE,
-		    rp.PRODUCT_NAME,
-		    rp.PRODUCT_COLOR,
-		    rp.PRODUCT_SIZE,
-		    rp.FAULTY_REASON,
-		    rp.QY,
-		    rp.REQUESTOR,
-		    rp.REQUEST_DATE,
-		    rp.RETURN_DATE,
-		    rp.PROCESSING_STATUS,
-		    rp.UNIT_PRICE
+		SELECT
+		rp.RETURN_PRODUCT_NO,
+		rp.RETURN_CODE,
+		rp.PRODUCT_CODE,
+		rp.PRODUCT_NAME,
+		rp.PRODUCT_COLOR,
+		rp.PRODUCT_SIZE,
+		rp.FAULTY_REASON,
+		rp.QY,
+		rp.REQUESTOR,
+		rp.REQUEST_DATE,
+		rp.RETURN_DATE,
+		rp.PROCESSING_STATUS,
+		rp.UNIT_PRICE
 		FROM RETURN_PRODUCT rp
 		JOIN RETURNS r ON rp.RETURN_CODE = r.RETURN_CODE
 		WHERE r.RETURN_CODE = #{returnCode}
 		AND rp.PROCESSING_STATUS = 'ER02'
 		AND rp.SHOW = 'on'
 	</select>
-	
+
 	<!-- 반품 전체 조회 -->
 	<select id="getReturnList">
 		SELECT DISTINCT r.return_code, r.*
 		from returns r
-		join return_product rp on rp.return_code = r.return_code
-		where rp.show = 'on'
+		join
+		return_product rp on rp.return_code = r.return_code
+		where rp.show =
+		'on'
 		ORDER BY r.return_code DESC
 	</select>
 	<select id="getReturnProductList">
 		select *
-		from return_product	
+		from return_product
+		order by return_date desc
 	</select>
 	<!-- 교환 주문 헤더 등록 -->
 	<insert id="insertOrder" parameterType="OrderDTO">
@@ -253,7 +267,7 @@
 		#{amount}
 		)
 	</insert>
-	
+
 	<!-- 교환 주문 제품 등록 -->
 	<insert id="insertProductOrder" parameterType="OrderDTO">
 		INSERT INTO
@@ -278,21 +292,40 @@
 		#{unitPrice}
 		)
 	</insert>
-	
+
 	<!-- 교환 제품 show값 변경 -->
 	<update id="showChange" parameterType="showDTO">
-        UPDATE RETURN_PRODUCT
-        SET SHOW = 'off'
-        WHERE return_product_no IN #{returnProductNo}
+		UPDATE RETURN_PRODUCT
+		SET SHOW = 'off'
+		WHERE return_product_no IN #{returnProductNo}
 	</update>
-	
+
 	<!-- 반품 제품 조회 -->
 	<select id="selectReturnProductList">
 		SELECT *
 		FROM RETURN_PRODUCT
-		WHERE return_code = #{returnCode}
+		WHERE return_code =
+		#{returnCode}
 	</select>
-	
-	<!--  -->
-	
+
+	<!-- 일별 제품별 손실액 조회 -->
+	<select id="getTotalReturnProduct">
+		SELECT
+		REQUEST_DATE,
+		PRODUCT_CODE,
+		PRODUCT_NAME,
+		SUM(QY) AS TOTAL_QY,
+		SUM(UNIT_PRICE) AS TOTAL_UNIT_PRICE,
+		SUM(QY * UNIT_PRICE) AS LOSS_AMOUNT
+		FROM
+		RETURN_PRODUCT
+		GROUP BY
+		REQUEST_DATE,
+		PRODUCT_CODE,
+		PRODUCT_NAME
+		ORDER BY
+		REQUEST_DATE,
+		PRODUCT_CODE
+	</select>
+
 </mapper>

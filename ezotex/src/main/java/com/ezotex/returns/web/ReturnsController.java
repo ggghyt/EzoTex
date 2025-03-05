@@ -60,6 +60,9 @@ public class ReturnsController {
 		model.addAttribute("getReturnList", returnList);
 		List<ReturnsProductDTO> returnProductList = service.getReturnProductList();
 		model.addAttribute("getReturnProductList", returnProductList);
+		// 일별 제품별 손실액
+		List<ReturnsProductDTO> totalReturnProduct = service.getTotalReturnProduct();
+		model.addAttribute("getTotalReturnProduct", totalReturnProduct);
 	}
 
 }

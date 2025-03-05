@@ -330,7 +330,7 @@
 		function id_unique() {
 			let id = document.querySelector("#company_id").value;
 			let result = 0
-			fetch('http://localhost:80/login/searchId?id=' + id)
+			fetch('/login/searchId?id=' + id)
 			.then((response) => response.json())
 			.then((data) => {
 				result = data

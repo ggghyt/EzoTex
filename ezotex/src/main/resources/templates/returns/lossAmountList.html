@@ -65,6 +65,7 @@
 	<div class="card card-body mt-3">
 	<h3>반품목록</h3>
 		<div id="lossAmountGrid"></div>
+		<div id="totalAmountGrid"></div>
 	</div>
 
 
@@ -102,12 +103,28 @@
 				{
 					header : '수량',
 					name : 'qy',
-					align : 'center',
+					align : 'right',
+		            formatter: (value) => {
+		                // 객체인 경우 value.value로 접근
+		                const val = value && value.value ? value.value : value;
+		                if (typeof val === 'number') {
+		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		                }
+		                return val; // 숫자가 아니면 그대로 반환
+		            },
 				},
 				{
 					header : '단가',
 					name : 'unitPrice',
-					align : 'center',
+					align : 'right',
+		            formatter: (value) => {
+		                // 객체인 경우 value.value로 접근
+		                const val = value && value.value ? value.value : value;
+		                if (typeof val === 'number') {
+		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		                }
+		                return val; // 숫자가 아니면 그대로 반환
+		            },
 				},
 				{
 					header : '처리상태',
@@ -136,11 +153,11 @@
 				{
 					header : '손실액',
 					name : 'lossAmount',
-					align : 'center',
+					align : 'right',
 		            formatter: ({ row }) => {
 		                const unitPrice = parseFloat(row.unitPrice) || 0;
 		                const quantity = parseInt(row.qy) || 0;
-		                return (unitPrice * quantity).toLocaleString() + "￦";
+		                return (unitPrice * quantity).toLocaleString();
 		            }
 				},
 				{

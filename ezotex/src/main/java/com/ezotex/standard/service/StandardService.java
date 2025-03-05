@@ -52,4 +52,5 @@ public interface StandardService {
 	int getInfomationCount();
 	InfomationDTO infomationNum(int num);
 	int infomationUpdate(int num, String title, String content);
+	int infomationInsert(String userCode, String title, String content);
 }

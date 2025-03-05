@@ -103,6 +103,7 @@ public class InventoryServiceImpl implements InventoryService {
 	// 불량 재고 조회
 	@Override
 	public List<ErrorProductDTO> errorProductList(DeliverySearchDTO searchDTO) {
+		System.out.println("ERROR searchDTO 데이터확인 " + searchDTO);
 		return mapper.errorProductList(searchDTO);
 	}
 

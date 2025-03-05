@@ -55,7 +55,7 @@ td.tui-grid-cell select {
 	width: 90% !important;
 }
 
-.modal::-webkit-scrollbar{
+.modal::-webkit-scrollbar {
     display:none;
 }
 

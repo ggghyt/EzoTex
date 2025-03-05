@@ -76,7 +76,8 @@ const planDetailGrid = new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    showDummyRows: true,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'
@@ -115,6 +116,11 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   };
   mrpGrid.setRequestParams(dto); // 조회 조건 전달
   mrpGrid.reloadData(); // 그리드 재출력 (readData)
+});
+
+// 엔터키로 검색
+document.getElementById('mrpForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('planSearchBtn').dispatchEvent(new Event('click'));
 });
 
 // 제품코드별 합계 출력

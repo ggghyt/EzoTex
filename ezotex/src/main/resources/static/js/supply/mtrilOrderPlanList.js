@@ -60,13 +60,13 @@ let selected;
 // 모달 선택버튼 커스텀 렌더링
 class CustomBtnRender {
   constructor(props) {
+    let type = props.columnInfo.className; // className으로 자재/업체선택 구분
     const el = document.createElement('button');
     el.type = 'button';
     el.classList = 'btn btn-outline-light btn-sm';
-    el.innerText = '선택';
+    el.innerText = type == 'plan' ? '상세조회' : '선택';
     
     el.addEventListener('click', () => {
-        let type = props.columnInfo.className; // className으로 자재/업체선택 구분
         if(type == 'mtr'){ 
             let selectedMtr = prdGrid.getRow(props.rowKey); // 자재 기본정보 저장
             mtrCodeBox.value = selectedMtr.PRODUCT_CODE;
@@ -131,6 +131,8 @@ let planGrid = th != null ? null : new Grid({
         useClient: true, // 페이징을 위해 필요
         perPage: 10
     },
+    showDummyRows: true,
+    bodyHeight: 400,
     scrollX: false, // 가로 스크롤
     scrollY: false, // 세로 스크롤
     summary: {
@@ -159,6 +161,8 @@ const prdGrid = new Grid({
         { header: '', name: '', className: 'mtr', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -192,6 +196,8 @@ const companyGrid = new Grid({
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -228,7 +234,8 @@ let planDetailGrid = th != null ? null : new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    showDummyRows: true,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'
@@ -311,6 +318,7 @@ function loadPlanDetail(mtrilOrderPlanCode){
     planDetailGrid.resetData(data);
     
     planDetailDiv.style.display = '';
+    modifyBtn.style.display = '';
     writeBtn.style.display = '';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
@@ -372,10 +380,20 @@ document.getElementById('comSearchBtn').addEventListener('click', () => {
         companyCode: document.getElementById('scCompanyCode').value,
         companyName: document.getElementById('scCompanyName').value,
         address: document.getElementById('address').value,
-        productCode: mtrCodeBox.value,
-        productColor: colorBox.value
+        productCode: mtrCodeBox.value
     };
     loadModalGrid('company', dto);
+});
+
+// 엔터키 즉시 검색
+document.getElementById('materialList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('companyList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('comSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('planForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('orderSearchBtn').dispatchEvent(new Event('click'));
 });
 
 // 발주계획서 => 발주서 작성 이동
@@ -416,7 +434,7 @@ modifyConfirmBtn.addEventListener('click', () => {
     .then(response => response.json())
     .then(result => {
         if(result == true){ 
-          successToast('저장되었습니다.');
+          successToast('작업이 완료되었습니다.');
           // 변경사항 반영
           selected.updateDate = dateFormatter();
           selected.remark = remarkBox.value;
@@ -424,7 +442,7 @@ modifyConfirmBtn.addEventListener('click', () => {
           selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
           planGrid.setRow(selected.rowKey, selected);
         }
-        else failToast('알 수 없는 오류로 실패했습니다.');
+        else failToast('작업을 실패했습니다.');
     });
     
     modifyMode(false);
@@ -452,5 +470,6 @@ function closeAll(){
     compListDiv.style.display = 'none';
     planDetailDiv.style.display = 'none';
     writeBtn.style.display = 'none';
+    modifyBtn.style.display = 'none';
     cancelBtn.style.display = 'none';
 }

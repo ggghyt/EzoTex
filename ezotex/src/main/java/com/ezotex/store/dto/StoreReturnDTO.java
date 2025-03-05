@@ -1,6 +1,6 @@
 package com.ezotex.store.dto;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -18,7 +18,7 @@ public class StoreReturnDTO {
 	private String requestor;
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date requestDate;
+	private LocalDate requestDate;
 	
 	// 제품코드
 	private String productCode;

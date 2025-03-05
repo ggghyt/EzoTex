@@ -47,8 +47,10 @@ const changeClas = function(lclasEle, sclasEle){
     });
 }
 
+let modalTitle = document.getElementById('modalTitle');
 prdCodeBox.onclick = () => { // 제품코드 input 클릭 시 모달 호출
   productList.style.display = '';
+  modalTitle.innerText = '제품 선택';
   $('#myModal').modal('show');
   prdGrid.refreshLayout(); 
 };
@@ -58,13 +60,14 @@ let selected;
 // 선택버튼 커스텀 렌더링
 class CustomBtnRender {
   constructor(props) {
+    let classNm = props.columnInfo.className;
     const el = document.createElement('button');
     el.type = 'button';
     el.classList = 'btn btn-outline-light btn-sm';
-    el.innerText = '선택';
+    el.innerText = classNm == 'plan' ? '상세조회' : '선택';
     
     el.addEventListener('click', () => {
-      if(props.columnInfo.className == 'prd'){
+      if(classNm == 'prd'){
         let prdData = prdGrid.getRow(props.rowKey);
         prdCodeBox.value = prdData.productCode;
         prdNameBox.value = prdData.productName;
@@ -110,6 +113,8 @@ const prdGrid = new Grid({
         { header: '', name: '', className: 'prd', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -150,6 +155,8 @@ const supplyGrid = new Grid({
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 400,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 10
@@ -182,7 +189,7 @@ const planDetailGrid = new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'
@@ -247,6 +254,14 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
   loadPlan(dto);
 });
 
+// 엔터키 즉시 검색
+document.getElementById('productList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('planForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('planSearchBtn').dispatchEvent(new Event('click'));
+});
+
 // 공급계획서 목록 조회
 function loadPlan(obj){
   let {season, ...others} = obj;
@@ -274,6 +289,7 @@ function loadPlanDetail(supplyPlanCode){
     planDetailGrid.resetData(data);
     
     detailList.style.display = '';
+    modalTitle.innerText = '공급계획서 상세조회';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
   });
