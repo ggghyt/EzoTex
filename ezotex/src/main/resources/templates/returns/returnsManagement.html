@@ -173,22 +173,6 @@
 					name : 'unitPrice',
 					align : 'center',
 				},
-			    {
-				      header : '처리상태',
-				      name : 'status',
-				      align : 'center',
-				      editor: {
-				          type: 'select',
-				          options: {
-				              listItems: [
-				                  { text: '반품', value: 'ER03' },
-				                  { text: '교환', value: 'ER02' },
-				                  { text: '폐기', value: 'ER01' }
-				              ]
-				          }
-				      }
-
-			    },
 				],
 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
@@ -204,6 +188,7 @@
 			    const clickedData = deliProductGrid.getData()[clickedRow]; // 클릭된 행의 데이터
 			    const clickedColumn = ev.columnName;  // 클릭된 열
 			    
+			    // 처리상태 한번클릭해도 박스 나옴
 			    if (clickedColumn === 'status') {
 			        deliProductGrid.startEditing(clickedRow, clickedColumn);
 			    }
@@ -215,26 +200,16 @@
 
 			    console.log("선택된 제품:", clickedData);
 			    
-			    // 처리상태 저장
-			    const status = deliProductGrid.getValue(clickedRow, 'status');
-			    
 			    console.log(clickedData.productCode);
 			    
-			        // 처리상태를 포함한 데이터 객체를 처리할 제품 목록에 추가
+			        // 데이터 객체를 처리할 제품 목록에 추가
 		            const newProduct = {
 				        productCode : clickedData.productCode,
 				        productName : clickedData.productName,
 				        productColor : clickedData.productColor,
 				        productSize : clickedData.productSize,
 				        unitPrice : clickedData.unitPrice,
-				        status: status   // 처리상태 포함
 				    };
-
-			    // 선택된 제품 목록을 갱신
-			    if(!status){
-			    	console.log("처리상태 비었음");
-			    	return;
-			    }
 			        
 		        // selectProductGrid의 기존 데이터 가져오기
 		        const existingData = selectProductGrid.getData();
@@ -324,23 +299,22 @@
 					name : 'unitPrice',
 					align : 'center',
 				},
-				{
-					header : '처리상태',
-					name : 'status',
-					align : 'center',
-		            formatter: ({ value }) => {
-		                switch (value) {
-		                    case 'ER03':
-		                        return '반품';
-		                    case 'ER02':
-		                        return '교환';
-		                    case 'ER01':
-		                        return '폐기';
-		                    default:
-		                        return '알 수 없음';
-		                }
-		            }
-				}
+			    {
+				      header : '처리상태',
+				      name : 'status',
+				      align : 'center',
+				      editor: {
+				          type: 'select',
+				          options: {
+				              listItems: [
+				                  { text: '반품', value: 'ER03' },
+				                  { text: '교환', value: 'ER02' },
+				                  { text: '폐기', value: 'ER01' }
+				              ]
+				          }
+				      }
+
+			    },
 				],
 /* 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
@@ -580,13 +554,6 @@
 	    const deliProductData = deliProductGrid.getData();
 	    if (deliProductData.length === 0) {
 	        alert("납품 내역 조회하여 납품건을 선택해주세요.");
-	        return;
-	    }
-	    
-	    // 처리상태가 하나라도 선택되었는지 확인
-	    const hasStatus = deliProductData.some(item => item.status); // 하나라도 있으면 true
-	    if (!hasStatus) {
-	        alert("처리 상태를 선택하고 제품을 선택해 주세요.");
 	        return;
 	    }
 
