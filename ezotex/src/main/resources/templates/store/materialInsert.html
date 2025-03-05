@@ -221,7 +221,7 @@
 	
 		const mtDataSource = {
 				api: {
-					readData: { url: 'http://localhost:80/store/mtDeliveryList', method: 'GET' }
+					readData: { url: '/store/mtDeliveryList', method: 'GET' }
 				},
 				contentType: 'application/json',
 		};
@@ -253,7 +253,7 @@
 			mtGrid.removeRowClassName(lastClicked, 'bg-blue');
 			mtGrid.addRowClassName(ev.rowKey, 'bg-blue');
 			lastClicked = ev.rowKey;
-			fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+			fetch(`/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
 			     .then(rep => rep.json())
 			     .then(data => {
 			    	 data.forEach(item => item.deliveryCode = deliveryCode); 
@@ -330,7 +330,7 @@
 				let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
 		        
-		        fetch(`http://localhost:80/store/storageInfoList`)
+		        fetch(`/store/storageInfoList`)
    			    .then(rep => rep.json())
    			    .then(data => {
    			    	modalGrid.resetData(data);
@@ -369,14 +369,14 @@
 		
 		productMtInsert.addEventListener('click', function(){
 			
-			fetch(`http://localhost:80/store/productMtInsert`, {
+			fetch(`/store/productMtInsert`, {
 				method: 'POST',
 				headers: {...headers, 'Content-Type': 'application/json'},
 				body: JSON.stringify(insertData)
 			}).then(rep => rep.json())
 			  .then(result => {
 				  console.log(result);
-				  fetch(`http://localhost:80/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
+				  fetch(`/store/mtDeliveryDetailsList?deliveryCode=${deliveryCode}`)
 				     .then(rep => rep.json())
 				     .then(data => {
 				    	 data.forEach(item => item.deliveryCode = deliveryCode); 

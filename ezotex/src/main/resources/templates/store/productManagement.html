@@ -66,6 +66,10 @@
 .custom-dropdown-item:hover {
 	background: #f0f0f0;
 }
+.storage-location-cell {
+  background-color: #D1E7DD; /* 연한 초록 */
+  color: #0F5132;
+}
 </style>
 
 
@@ -181,6 +185,42 @@
 		</div>
 	</div>
 	<!-- 위치이동 모달 END -->
+	
+	
+	
+	<!-- 등록 모달 -->
+	<div class="modal fade" id="registModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">등록 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/regist.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">알림</p>
+						<p>내용을 등록하시겠습니까?</p>
+					</div>
+				</div>
+				<div class="modal-footer regist"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" id="InsertTest"
+						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+					<button type="button" class="btn btn-secondary denyBtn"
+						data-bs-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
 
@@ -234,7 +274,7 @@
 			    <!-- 버튼 -->
 			    <div class="d-flex justify-content-center mt-2">
 		           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductManagementList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-		           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+		           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 		         </div>
 			  </div>
 			</div>
@@ -242,20 +282,20 @@
 
 
 	<div class="row">
-		<div class="col-6 card card-body m-2">
+		<div class="col-7 card card-body m-2">
 			<p class="fs-5 fw-bolder mt-2">재고 현황</p>
 			<div class="modal-footer regist"
 				style="display: flex; justify-content: flex-end; border-top: none;">
 				<button class="btn btn-warning" id="productLocation"
 					style="width: 110px">위치이동</button>
 				<button class="btn btn-danger" id="productError"
-					style="width: 110px">불량처리이동</button>
+					style="width: 110px">불량선택</button>
 			</div>
 			<div id="Management"></div>
 		</div>
 
 
-		<div class="col-4 card card-body m-2">
+		<div class="col-3 card card-body m-2">
 			<p class="fs-5 fw-bolder mt-2">재고조정 불량처리</p>
 			<div class="form-group" style="margin-top: 37px;">
 				<p class="fs-5 fw-bolder mt-2">선택 재고</p>
@@ -308,19 +348,38 @@
 		<div class="modal-footer regist"
 			style="display: flex; justify-content: flex-end; border-top: none;">
 			<button id="InsertError" class="btn btn-danger" style="width: 110px">불량처리</button>
-			<button type="reset" class="btn btn-secondary" style="width: 110px">초기화</button>
+			<button type="reset" class="btn btn-secondary" style="width: 110px" id="resetBtn">초기화</button>
 		</div>
 	</div>
 
 	<script>
 	
+	
+		//초기화 화면 새로고침
+		document.getElementById('resetBtn').addEventListener('click', function() {
+		    window.location.reload();  // 페이지 새로 고침
+		 });
+	
+	
+		inputReset.addEventListener('click', function(){
+			document.querySelector('#searchProductCode').value = '';
+			document.querySelector('#searchProductName').value = '';
+			document.querySelector('#searchLot').value = '';
+			document.querySelector('#location').value = '';
+			document.querySelector('#searchColor').value = '';
+			document.querySelector('#sizeCode').value = '';
+			document.querySelector('#startStoreDate').value = '';
+			document.querySelector('#endStoreDate').value = '';
+			searchProductManagementList();
+		})
+	
 			function searchProductManagementList(){
 				ManagementGrid.readData(1,{
 					productCode: document.querySelector('#searchProductCode').value,
 					productName: document.querySelector('#searchProductName').value,
-					lot: document.querySelector('#searchLot').value,
+					searchLot: document.querySelector('#searchLot').value,
 					location: document.querySelector('#location').value,
-					color: document.querySelector('#searchColor').value,
+					searchColor: document.querySelector('#searchColor').value,
 					sizeCode: getSizeCommonCode(document.querySelector('#sizeCode').value.toUpperCase()),
 					startStoreDate: document.querySelector('#startStoreDate').value,
 					endStoreDate: document.querySelector('#endStoreDate').value,
@@ -332,7 +391,7 @@
 		
 			const ManagementData = {
 				api: {
-						readData: { url: 'http://localhost:80/store/Management', method: 'GET'}
+						readData: { url: '/store/Management', method: 'GET'}
 					 },
 				contentType: 'application/json'
 			}
@@ -359,7 +418,7 @@
 					{ header: "LOT번호", name: "lot", align: "center" },
 					{ header: "창고위치", name: "storageLocation", align: "center" },
 					{ header: "입고일", name: "storeDate", align: "center" },
-					{ header: "재고수량", name: "inventoryQy", align: "center" },
+					{ header: "재고수량", name: "inventoryQy", align: "center", },
 					/* { header: 'checkbox', name: 'checkbox', editor: 'checkbox'}, */ 
 				],
 				data: ManagementData
@@ -487,7 +546,7 @@
 					{ header: "LOT번호", name: "lot", align: "center" },
 					{ header: "입고일", name: "storeDate", align: "center" },
 					{ header: "이동가능수량", name: "inventoryQy", align: "center" },
-					{ header: "창고위치", name: "storageLocation", align: "center" },
+					{ header: "창고위치", name: "storageLocation", align: "center", className: 'storage-location-cell' },
 					/* { header: "이동수량", name: "qy", align: "center", editor: 'text' } */
 				],
 				data: [],
@@ -525,7 +584,7 @@
 			        modal2.show();
 			        
 			        
-			        fetch(`http://localhost:80/store/storageInfoList`)
+			        fetch(`/store/storageInfoList`)
 	   			    .then(rep => rep.json())
 	   			    .then(data => {
 	   			    	modalGrid2.resetData(data);
@@ -596,7 +655,7 @@
 		   locationUpdate.addEventListener("click", function() {
 		       let emptyQyRows = changedRows.filter(row => row.storageLocation && (!row.qy || row.qy === '' || row.qy === null));
 
-		       fetch(`http://localhost:80/store/locationUpdate`, {
+		       fetch(`/store/locationUpdate`, {
 		    	   method: 'POST',
 				   headers: {...headers, 'Content-Type': 'application/json'},
 				   body: JSON.stringify(emptyQyRows)
@@ -667,7 +726,7 @@
 
 				
 			    // 서버에서 데이터 가져오기
-			    fetch(`http://localhost:80/store/storageInfoList`, {
+			    fetch(`/store/storageInfoList`, {
 			        method: 'GET',
 			    })
 			    .then(req => req.json())
@@ -733,6 +792,11 @@
 				modal.show();				
 				document.querySelector('#errorQy').value = '';
 			}
+			if(errorQy <= 0){
+				modalText.innerHTML = '처리할 수량을 확인해주세요.'
+				modal.show();				
+				document.querySelector('#errorQy').value = '';
+			}
 			
 		})
 		
@@ -752,6 +816,9 @@
 	   *========================================================================
 	   */ 
 	    InsertError.addEventListener('click', function(){
+	    	
+	    	let modal = new bootstrap.Modal(document.getElementById('registModal'));
+	    	
 	    	
 	    	obj = {
 	    			productCode: document.querySelector("#productCode").value,
@@ -776,20 +843,7 @@
 				let modifyModal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 				modifyModal.show();
 	    	}else{
-		    	fetch(`http://localhost:80/store/InsertProductError`, {
-					method: 'POST',
-					headers: {...headers, 'Content-Type': 'application/json'},
-		    		body: JSON.stringify(obj)
-				}).then(req => req.json())
-				  .then(result => {
-					  
-					  document.querySelector("#productQy").value = productQy - errorQy
-					  
-					  ManagementGrid.readData({
-		    	          url: 'http://localhost:80/store/Management',
-		    	          method: 'GET',
-					    })
-				  })
+	    		modal.show();
 	    	}
 	    	
 	    });
@@ -799,8 +853,36 @@
 	   * 등록 처리 이벤트 END
 	   *========================================================================
 	   */ 
-			
-		
+	   InsertTest.addEventListener('click', function(){
+		   fetch(`/store/InsertProductError`, {
+				method: 'POST',
+				headers: {...headers, 'Content-Type': 'application/json'},
+	   		body: JSON.stringify(obj)
+			}).then(req => req.json())
+			  .then(result => {
+				  
+				  document.querySelector("#productQy").value = productQy - errorQy
+				  let check = document.querySelector("#productQy").value = productQy - errorQy
+				  
+				  
+				  if(check == 0 || check == null || check == NaN){
+					  document.querySelector("#productCode").value = '';
+					  document.querySelector("#productName").value = '';
+					  document.querySelector("#lot").value = '';
+					  document.querySelector("#productQy").value = '';
+					  document.querySelector("#color").value = '';
+					  document.querySelector("#size").value = '';
+					  document.querySelector("#errorQy").value = '';
+				  }
+				  
+				  
+				  ManagementGrid.readData({
+	   	          url: 'http://localhost:80/store/Management',
+	   	          method: 'GET',
+				    })
+			  })
+	   })	
+	   
 			
 	   let modalElement = document.getElementById('exampleModal');
 	   modalElement.addEventListener('show.bs.modal', function () {

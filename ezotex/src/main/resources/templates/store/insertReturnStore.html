@@ -284,7 +284,7 @@
 	   	*/
 	    const dataSource = {
 	      api: {
-	          readData: { url: 'http://localhost:80/store/deliveryList', method: 'GET' },
+	          readData: { url: '/store/deliveryList', method: 'GET' },
 	        },
 	      contentType: 'application/json',
 	    };  
@@ -364,7 +364,7 @@
 	    	
 	    	console.log(productName);
 	    	console.log(returnCode);
-	    	fetch(`http://localhost:80/store/deliveryDetailsList?returnCode=${data.returnCode}`)
+	    	fetch(`/store/deliveryDetailsList?returnCode=${data.returnCode}`)
 	    		.then(rep => rep.json())
 	    		.then(data => {
 	    				storeGrid2.resetData(data);
@@ -442,7 +442,7 @@
 	    	
 	    	console.log('데이터확인', obj);
 	    	// 변경 데이터 등록 처리
-	    	fetch(`http://localhost:80/store/InsertTest`,{
+	    	fetch(`/store/InsertTest`,{
 	    		method: 'POST',
 	    		headers: {...headers, 'Content-Type': 'application/json'},
 	    		body: JSON.stringify(obj)
@@ -450,13 +450,13 @@
 	    	  .then(result =>
 	    	      {
 	    	    	  
-	    	    	  fetch(`http://localhost:80/store/deliveryDetailsList?returnCode=${returnCode}`)
+	    	    	  fetch(`/store/deliveryDetailsList?returnCode=${returnCode}`)
 		  	    		.then(rep => rep.json())
 		  	    		.then(data => {
 		  	    				storeGrid2.resetData(data);
 		  	    			})
 	    	    		// 옵션 그리드 변경 데이터 수정 처리
-	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
+	    		        fetch(`/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
 	    		            .then(rep => rep.json())
 	    		            .then(data => {
 	    		            	let size = []
@@ -538,7 +538,7 @@
 	        let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 	        modal.show();
 	
-	        fetch(`http://localhost:80/store/storageInfoList`)
+	        fetch(`/store/storageInfoList`)
 	            .then(rep => rep.json())
 	            .then(data => {
 	                modalGrid.resetData(data);
@@ -555,7 +555,7 @@
 	        // 선택한 제품코드 저장
 	        productCode = data.productCode;
 	        // 서버에서 해당 제품 코드에 대한 옵션 목록을 받아오기
-	        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
+	        fetch(`/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
 	            .then(rep => rep.json())
 	            .then(data => {
 	                let size = [];
