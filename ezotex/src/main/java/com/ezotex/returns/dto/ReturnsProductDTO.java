@@ -31,4 +31,12 @@ public class ReturnsProductDTO {
 	private String processingStatus;
 	private int unitPrice;
 	private String show;
+	
+	// 일별 제품별 손실액 조회
+	private int totalQy;
+	private int totalUnitPrice;
+	private int lossAmount;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date returnRequestDate;
 }
