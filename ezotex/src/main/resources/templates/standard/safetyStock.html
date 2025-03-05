@@ -167,34 +167,99 @@
 		}
 	}
 	
-	document.getElementById('searchGrid').replaceChildren()
-	let gridData = {
-		api: {
-			readData: { url: '/standard/productListAll', method: 'GET' }
-		},
-		contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+	let chart_data = null
+	let lastClicked = null
+	let safety_labels = []
+	let safety_data = []
+	safety_grid();
+	function safety_grid() {
+		document.getElementById('searchGrid').replaceChildren()
+		let gridData = {
+			api: {
+				readData: { url: '/standard/productListAll', method: 'GET' }
+			},
+			contentType : 'application/json' // 데이터 전달 시 인코딩 필요
+		}
+		let searchListGrid = new Grid({
+			el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
+		    data: gridData,
+		    columns: [
+		        { header: '코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' }, 
+		        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
+		        { header: '안전재고', name: 'QY', width: 150, sortable: true, align: 'right' }, 
+		        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 150, sortable: true, align: 'center' }, 
+		        { header: '대분류', name: 'LCLAS', width: 150, sortable: true, align: 'center' }, 
+		        { header: '소분류', name: 'SCLAS', width: 150, sortable: true, align: 'center' }, 
+		        { header: '단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'right', formatter: row => numberFormatter(row.value) }
+		    ],
+		    columnOptions: {
+		        resizable: true
+		    },
+		    pageOptions: {
+		        useClient: true, // 페이징을 위해 필요
+		        perPage: 10
+		  	},
+		  	showDummyRows: true, //더미로우 추가
+		    bodyHeight: 417, //모달 높이 고정
+		  	//scrollX: false, // 가로 스크롤
+		  	//scrollY: false // 세로 스크롤
+		})
+		
+		searchListGrid.on('focusChange', ev => {
+			searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			lastClicked = ev.rowKey; 
+			
+			selectedRow = searchListGrid.getRow(ev.rowKey);
+			
+			fetch('/standard/safetyStockList?productCode=' + selectedRow.PRODUCT_CODE)
+			.then(response => response.json())
+		    .then(data => {
+		    	console.log(data)
+		    	console.log(data.length)
+		    	chart_data = data
+		    	
+		    	if (data.length > 0) {
+		    		document.querySelector("#nowSafetyStock").value = data[0].qy
+		    	} else {
+		    		document.querySelector("#nowSafetyStock").value = 0
+		    	}
+		    	
+		    	if (data.length > 11) {
+		    		document.querySelector("#nextSafetyStock").value = parseInt((data[11].qy + data[0].qy)/2)
+		    	} else if (data.length > 1) {
+		    		document.querySelector("#nextSafetyStock").value = parseInt((data[1].qy + data[0].qy)/2)
+		    	} else {
+		    		document.querySelector("#nextSafetyStock").value = data[0].qy
+		    	}
+		    	
+		    	
+		    	
+		    	safety_labels = []
+		    	let today = new Date();
+		    	let yyyy = today.getFullYear()
+	    		let mm = today.getMonth() + 1
+		    	for (let i = 11 ; i >= 0 ; i--) {
+		    		if (mm - i > 0) {
+		    			safety_labels.push(yyyy + "/" + ((mm - i) < 10 ? "0" : "") + (mm - i))
+		    		} else {
+		    			safety_labels.push((yyyy - 1) + "/" + ((mm - i + 12) < 10 ? "0" : "") + (mm - i + 12))
+		    		}
+		    	}
+		    	
+		    	safety_data = []
+		    	for (let i = 11 ; i >= 0 ; i--) {
+		    		if (data.length > i) {
+		    			safety_data.push(data[i].qy)
+		    		} else {
+		    			safety_data.push(0)
+		    		}
+		    	}
+		    	
+		    	make_chart(safety_labels, safety_data)
+		    })
+		});
 	}
-	let searchListGrid = new Grid({
-		el: document.getElementById('searchGrid'), // 해당 위치에 그리드 출력
-	    data: gridData,
-	    columns: [
-	        { header: '코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' }, 
-	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
-	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 150, sortable: true, align: 'center' }, 
-	        { header: '대분류', name: 'LCLAS', width: 150, sortable: true, align: 'center' }, 
-	        { header: '소분류', name: 'SCLAS', width: 150, sortable: true, align: 'center' }, 
-	        { header: '단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'right', formatter: row => numberFormatter(row.value) }
-	    ],
-	    columnOptions: {
-	        resizable: true
-	    },
-	    pageOptions: {
-	        useClient: true, // 페이징을 위해 필요
-	        perPage: 10
-	  	},
-	  	scrollX: false, // 가로 스크롤
-	  	scrollY: false // 세로 스크롤
-	})
 	
 	function searchBtn() {
 		fetch('/standard/productListSearch?productCode=' + document.querySelector("#productCode").value
@@ -225,64 +290,6 @@
 		document.querySelector("#maxPrice").value = ""
 	}
 	
-	let chart_data = null
-	let lastClicked = null
-	let safety_labels = []
-	let safety_data = []
-	searchListGrid.on('focusChange', ev => {
-		searchListGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
-		searchListGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
-		lastClicked = ev.rowKey; 
-		
-		selectedRow = searchListGrid.getRow(ev.rowKey);
-		
-		fetch('/standard/safetyStockList?productCode=' + selectedRow.PRODUCT_CODE)
-		.then(response => response.json())
-	    .then(data => {
-	    	console.log(data)
-	    	chart_data = data
-	    	
-	    	if (data.length > 0) {
-	    		document.querySelector("#nowSafetyStock").value = data[0].qy
-	    	} else {
-	    		document.querySelector("#nowSafetyStock").value = 0
-	    	}
-	    	
-	    	if (data.length > 11) {
-	    		document.querySelector("#nextSafetyStock").value = parseInt((data[11].qy + data[0].qy)/2)
-	    	} else if (data.length > 0) {
-	    		document.querySelector("#nextSafetyStock").value = data[1].qy
-	    	} else {
-	    		document.querySelector("#nextSafetyStock").value = 0
-	    	}
-	    	
-	    	
-	    	
-	    	safety_labels = []
-	    	let today = new Date();
-	    	let yyyy = today.getFullYear()
-    		let mm = today.getMonth() + 1
-	    	for (let i = 11 ; i >= 0 ; i--) {
-	    		if (mm - i > 0) {
-	    			safety_labels.push(yyyy + "/" + ((mm - i) < 10 ? "0" : "") + (mm - i))
-	    		} else {
-	    			safety_labels.push((yyyy - 1) + "/" + ((mm - i + 12) < 10 ? "0" : "") + (mm - i + 12))
-	    		}
-	    	}
-	    	
-	    	safety_data = []
-	    	for (let i = 11 ; i >= 0 ; i--) {
-	    		if (data.length > i) {
-	    			safety_data.push(data[i].qy)
-	    		} else {
-	    			safety_data.push(0)
-	    		}
-	    	}
-	    	
-	    	make_chart(safety_labels, safety_data)
-	    })
-	});
-	
 	function updateSafety() {
 		let today = new Date();
     	let yyyy = today.getFullYear()
@@ -304,9 +311,10 @@
     			document.querySelector("#nextSafetyStock").value = nextSafetyStock
     		}
     		
-    		safety_data[11] = nextSafetyStock
+    		safety_data[11] = document.querySelector("#nowSafetyStock").value
     		
     		make_chart(safety_labels, safety_data)
+    		safety_grid()
     	})
     	
 	}

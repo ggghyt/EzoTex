@@ -215,7 +215,7 @@
 									} else {
 										document.querySelector('#seledtedNowVL').value = total_vl
 										document.querySelector('#seledtedRestVL').value = data[i].vl - total_vl
-										document.querySelector('#seledtedRestPercentVL').value = total_vl / data[i].vl * 100 + "%"
+										document.querySelector('#seledtedRestPercentVL').value = Math.round(total_vl / data[i].vl * 10000) / 100 + "%"
 									} 
 								})
 							}

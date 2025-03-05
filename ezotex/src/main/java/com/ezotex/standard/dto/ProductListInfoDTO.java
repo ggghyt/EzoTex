@@ -20,6 +20,7 @@ public class ProductListInfoDTO {
 	private String unitNameName;
 	private String img;
 	private MultipartFile imgFile;
+	private int qy;
 	
 	private int maxPrice;
 	private int minPrice;
