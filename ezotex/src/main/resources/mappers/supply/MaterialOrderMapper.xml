@@ -337,17 +337,35 @@
             #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor})
   </insert>
   
-  <update id="updateOrderStatus" parameterType="String">
+  <!-- 발주서 수정 -->
+  <update id="updateOrder" parameterType="MaterialOrderDTO">
     UPDATE material_order
-    SET status = #{status}
+    <trim prefix="SET" suffixOverrides=",">
+      update_date = SYSDATE,
+      <if test="dueDate != null">due_date = #{dueDate},</if>
+      <if test="remark != null">remark = #{remark},</if>
+      <if test="status != null">status = #{status},</if>
+   </trim>
     WHERE mtril_order_code = #{mtrilOrderCode}
   </update>
   
+  <update id="updateOrderDetail" parameterType="MaterialOrderDTO">
+    UPDATE material_order
+    SET    order_qy = #{orderQy}
+    WHERE  mtril_order_code = #{mtrilOrderCode}
+      AND  product_code = #{productCode}
+      AND  <choose>
+              <when test='productColor == "null"'>product_color IS NULL</when>
+              <otherwise>product_color = #{productColor}</otherwise>
+           </choose>
+  </update>
+  
+  <!-- 발주계획서 수정 -->
   <update id="updatePlan" parameterType="MaterialOrderPlanDTO">
     UPDATE material_order_plan
     <trim prefix="SET" suffixOverrides=",">
       update_date = SYSDATE,
-      <if test="dueDate != null">due_date = #{dueDate},</if>
+      <if test='dueDate != null'>due_date = #{dueDate},</if>
       <if test="remark != null">remark = #{remark},</if>
       <if test="status != null">status = #{status},</if>
    </trim>
@@ -359,7 +377,10 @@
     SET    order_qy = #{orderQy}
     WHERE  mtril_order_plan_code = #{mtrilOrderPlanCode}
       AND  product_code = #{productCode}
-      <if test="productColor != null">AND product_color = #{productColor}</if>
+      AND  <choose>
+              <when test='productColor == "null"'>product_color IS NULL</when>
+              <otherwise>product_color = #{productColor}</otherwise>
+           </choose>
   </update>
 	
 </mapper>

@@ -211,6 +211,29 @@
 		        (SELECT MAX(supply_plan_code) FROM supply_plan), #{productCode}, #{productColor}, #{productSize}, #{supplyQy}, #{supplyDate})
 	</insert>
 	
+	<!-- 공급계획 수정(헤더) -->
+  <update id="updateSupplyPlan" parameterType="String">
+    UPDATE supply_plan
+    SET    update_date = SYSDATE
+    WHERE  supply_plan_code = #{supplyPlanCode}
+  </update>
+  
+  <!-- 공급계획 수정(디테일) -->
+  <update id="updateSupplyPlanDetail" parameterType="SupplyDTO">
+    UPDATE supply_plan_details
+    SET    supply_qy = #{supplyQy}
+    WHERE  supply_plan_code = #{supplyPlanCode}
+      AND  product_code = #{productCode}
+      AND  <choose>
+              <when test='productColor == "null"'>product_color IS NULL</when>
+              <otherwise>product_color = #{productColor}</otherwise>
+           </choose>
+      AND  <choose>
+              <when test='productSize == "null"'>product_size IS NULL</when>
+              <otherwise>product_size = #{productSize}</otherwise>
+           </choose>
+  </update>
+	
 	<!-- 자재소요계획 조회 -->
 	<select id="listMrp" resultType="SupplyDTO" parameterType="SupplyDTO">
 	    SELECT bd.mtril_code product_code, 

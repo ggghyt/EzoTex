@@ -96,7 +96,7 @@
 	            { header: '자재명', name: 'productName', sortable: true },
 	            { header: '색상', name: 'productColor', sortable: true, 
 	            	formatter: (row) => row.value == 'null' ? '' : row.value },
-	            { header: '발주량', name: 'orderQy', sortable: true, align: 'right', 
+	            { header: '발주량', name: 'orderQy', sortable: true, align: 'right', editor: 'text', disabled: true,
 	            	formatter: (row) => numberFormatter(row.value) },
 	            { header: '단위', name: 'unitName', sortable: true },
 	            { header: '단가', name: 'unitPrice', sortable: true, align: 'right',
@@ -130,11 +130,12 @@
 	             }
 	        }
 	    });
+	    planDetailGrid.on('afterChange', afterChangeListener)
 	    
 	    /******************** Tui Grid 출력 ********************/
 	    // 검색 적용
 	    document.getElementById('orderSearchBtn').removeEventListener('click', orderSearch);
-		document.getElementById('orderSearchBtn').addEventListener('click', () => {
+		  document.getElementById('orderSearchBtn').addEventListener('click', () => {
 		    let checkedStatus = document.querySelectorAll('input[name="status"]:checked');
 		    checkedStatus = Array.from(checkedStatus).map(ele => ele.value); // 가상의 노드들을 복사하여 배열처리
 		    
@@ -168,6 +169,8 @@
 		    console.log('상세내역', data);
 		    planDetailGrid.resetData(data);
 		    
+		    modalTitle.innerText = '발주서 상세조회';
+		    modifyBtn.style.display = '';
 		    planDetailDiv.style.display = '';
 		    $('#myModal').modal('show');
 		    planDetailGrid.refreshLayout(); 

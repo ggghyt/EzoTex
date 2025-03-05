@@ -406,13 +406,29 @@ writeBtn.addEventListener('click', () => {
 let isModify;
 let modifyBtn = document.getElementById('modifyBtn');
 let modifyConfirmBtn = document.getElementById('modifyConfirmBtn');
+let closeBtn = document.getElementById('closeBtn');
+
+// 수정되었는지 값 확인용
+let prevDueDate;
+let prevRemark;
 
 modifyBtn.addEventListener('click', () => {
+    closeBtn.innerText = '취소';
+    prevDueDate = dueDateBox.value;
+    prevRemark = remarkBox.value;
     modifyMode(true);
 })
 
-modifyConfirmBtn.addEventListener('click', () => {
+modifyConfirmBtn.addEventListener('click', modifyRows);
+
+function modifyRows(){
     let updated = planDetailGrid.getModifiedRows().updatedRows;
+    if(updated.length == 0 && dueDateBox.value == prevDueDate && remarkBox.value == prevRemark){
+      failToast('변경된 값이 없습니다.');
+      modifyMode(false);
+      return;
+    }
+    
     let detailArr = updated.map(data => {
         return {
             productCode: data.productCode,
@@ -421,12 +437,16 @@ modifyConfirmBtn.addEventListener('click', () => {
         };
     });
     let headerObj = {
-        mtrilOrderPlanCode: selected.mtrilOrderPlanCode,
         dueDate: dueDateBox.value,
         remark: remarkBox.value
     };
+    if(th != null){
+      headerObj.mtrilOrderPlanCode = selected.mtrilOrderPlanCode;
+    } else headerObj.mtrilOrderCode = selected.mtrilOrderCode;
     
-    fetch('/mtr/mtrOrderPlan', {
+    let uri = th != null ? '/mtr/mtrOrderPlan' : 'mtr/mtrOrder'; 
+    
+    fetch(uri, {
         method: 'PUT',
         headers: {...headers, 'Content-Type': 'application/json'},
         body: JSON.stringify({headerObj, detailArr})
@@ -436,17 +456,42 @@ modifyConfirmBtn.addEventListener('click', () => {
         if(result == true){ 
           successToast('작업이 완료되었습니다.');
           // 변경사항 반영
+          let updatedData = planDetailGrid.getData();
+          planDetailGrid.resetData(updatedData);
+          // 헤더 변경사항 반영
           selected.updateDate = dateFormatter();
           selected.remark = remarkBox.value;
           selected.dueDate = dueDateBox.value;
-          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
+          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum; // 합계 재계산
           planGrid.setRow(selected.rowKey, selected);
         }
         else failToast('작업을 실패했습니다.');
     });
     
+    closeBtn.innerText = '닫기';
     modifyMode(false);
-})
+}
+
+// 입력값 유효성 검사
+const afterChangeListener = ev => {
+  let changed = ev.changes[0];
+  let rowKey = changed.rowKey;
+  
+  let row = planDetailGrid.getRow(rowKey);
+  let val = changed.value;
+  if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
+    failToast('입력값은 문자가 들어갈 수 없습니다.');
+    // 이전 값이 있으면 이전 값으로, 없으면 0으로 전환
+    val = changed.prevValue == null ? 0 : changed.prevValue;
+  } else if (val < 0){ // 음수면 양수로 전환 
+    val = val * -1;
+    failToast('입력값은 음수가 될 수 없습니다.');
+  }
+  row.orderQy = val;
+  if(row.amount) row.amount = row.unitPrice * row.orderQy; // 금액 있으면 재계산
+  planDetailGrid.setRow(rowKey, row);
+}
+if(th == null) planDetailGrid.on('afterChange', afterChangeListener)
 
 // 수정모드 전환
 function modifyMode(boolean){
@@ -461,15 +506,23 @@ function modifyMode(boolean){
 }
 
 // 모달 내부 닫기버튼 동작 (모두 숨김)
-document.getElementById('closeBtn').addEventListener('click', () => closeAll());
+closeBtn.addEventListener('click', () => closeAll());
 document.querySelector('.btn-close').addEventListener('click', () => closeAll());
 
 function closeAll(){
-    if(isModify) modifyMode(false);
+    if(isModify){
+      modifyMode(false);
+      closeBtn.innerText = '닫기';
+      return;
+    }
     mtrListDiv.style.display = 'none';
     compListDiv.style.display = 'none';
     planDetailDiv.style.display = 'none';
     writeBtn.style.display = 'none';
     modifyBtn.style.display = 'none';
     cancelBtn.style.display = 'none';
+    $('#myModal').modal('hide');
 }
+
+// 모달 숨김 시 닫기 버튼과 동일한 효과
+document.addEventListener('hide.bs.modal', () => closeAll());

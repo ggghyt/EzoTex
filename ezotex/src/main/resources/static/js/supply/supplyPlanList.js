@@ -310,6 +310,11 @@ planDetailGrid.on('focusChange', async ev => {
   loadPrdPivot(selectedPrd);
 });
 
+let isModify;
+let modifyBtn = document.getElementById('modifyBtn');
+let modifyConfirmBtn = document.getElementById('modifyConfirmBtn');
+let modifyCancelBtn = document.getElementById('modifyCancelBtn');
+
 // 선택한 공급계획서-제품의 옵션별 집계 조회
 function loadPrdPivot(selectedPrd){
   let query = new URLSearchParams({
@@ -360,10 +365,58 @@ function loadPrdPivot(selectedPrd){
       });
     }
     
+    if(true) modifyBtn.style.display = '';
     optionGrid.resetData(data); // 데이터 입력
     optionGrid.setColumns(columns); // 컬럼 입력
     optionGrid.refreshLayout(); 
   });
+}
+
+// 공급계획서 수정
+modifyBtn.addEventListener('click', () => modifyMode(true));
+modifyCancelBtn.addEventListener('click', () => modifyMode(false));
+
+modifyConfirmBtn.addEventListener('click', () => {
+    let updated = optionGrid.getModifiedRows().updatedRows;
+    let detailArr = updated.map(data => {
+        return {
+            productCode: data.productCode,
+            productColor: data.productColor,
+            productSize: data.productSize,
+            supplyQy: data.orderQy
+        };
+    });
+    let supplyPlanCode = selected.supplyPlanCode;
+    
+    fetch('/mtr/mtrOrderPlan', {
+        method: 'PUT',
+        headers: {...headers, 'Content-Type': 'application/json'},
+        body: JSON.stringify({ supplyPlanCode, detailArr})
+    })
+    .then(response => response.json())
+    .then(result => {
+        if(result == true){ 
+          successToast('작업이 완료되었습니다.');
+          // 변경사항 반영
+          selected.updateDate = dateFormatter();
+          selected.remark = remarkBox.value;
+          selected.dueDate = dueDateBox.value;
+          selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
+          planGrid.setRow(selected.rowKey, selected);
+        }
+        else failToast('작업을 실패했습니다.');
+    });
+    
+    modifyMode(false);
+})
+
+// 수정모드 전환
+function modifyMode(boolean){
+    isModify = boolean;
+    modifyBtn.style.display = isModify ? 'none' : '';
+    modifyConfirmBtn.style.display = isModify ? '' : 'none';
+    modifyCancelBtn.style.display = isModify ? '' : 'none';
+    isModify ? optionGrid.enable() : optionGrid.disable();
 }
 
 // 모달 내부 닫기버튼 동작 (모두 숨김)
@@ -371,10 +424,15 @@ document.getElementById('closeBtn').addEventListener('click', () => closeAll());
 document.querySelector('.btn-close').addEventListener('click', () => closeAll());
 
 function closeAll(){
+    if(isModify) modifyMode(false);
     detailList.style.display = 'none';
     productList.style.display = 'none';
+    modifyBtn.style.display = 'none';
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
     document.getElementById('selectedPrdCode').value = '';
     document.getElementById('selectedPrdName').value = '';
 }
+
+// 모달 숨김 시 닫기 버튼과 동일한 효과
+document.addEventListener('hide.bs.modal', () => closeAll());

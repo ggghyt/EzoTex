@@ -39,6 +39,10 @@ public interface SupplyMapper {
 	int insertSupplyPlan(Object supply);
 	int insertSupplyPlanDetail(Object supply);
 	
+	// 공급계획서 수정
+	int updateSupplyPlan(String supplyPlanCode);
+	int updateSupplyPlanDetail(SupplyDTO dto);
+	
 	// 자재소요계획 조회
 	List<SupplyDTO> listMrp(SupplyDTO dto);
 }
