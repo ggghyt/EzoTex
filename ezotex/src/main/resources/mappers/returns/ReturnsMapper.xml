@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ezotex.returns.mappers.ReturnsMapper">
+	<!-- 자재가 아닌 제품이 있는 납품건 조회 -->
 	<select id="getDeliveryList">
 		SELECT
 		D.DELIVERY_CODE,
@@ -41,9 +42,12 @@
 		ON DD.PRODUCT_CODE = P.PRODUCT_CODE
 		WHERE P.PRODUCT_TYPE
 		= 'PT02'
+		AND D.DELIVERY_STATUS = 'DS05'
 		GROUP BY D.DELIVERY_CODE
 		ORDER BY D.DELIVERY_CODE DESC
 	</select>
+	
+	<!-- 자재가 아닌 제품 -->
 	<select id="getDeliProduct"
 		resultType="DeliveryDetailsReturnsDTO">
 		SELECT P.PRODUCT_NAME ,

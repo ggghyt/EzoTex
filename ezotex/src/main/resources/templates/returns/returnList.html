@@ -152,7 +152,7 @@
 		    console.log("클릭된 행 데이터:", clickedData);
 		    console.log("클릭된 반품코드:", returnCode);
 		    
-		    fetch(`http://localhost:80/returns/selectReturn?returnCode=${returnCode}`)
+		    fetch(`/returns/selectReturn?returnCode=${returnCode}`)
 			    .then(response => response.json())
 			    .then(data => {
 			    	console.log("조회 할 returnCode" , returnCode);

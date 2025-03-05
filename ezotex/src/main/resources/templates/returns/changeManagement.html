@@ -138,7 +138,7 @@
 		                console.log("이미 클릭된 행입니다. 서버 통신을 건너뜁니다.");
 		            }else{
 					    // 서버 통신
-					    fetch(`http://localhost:80/returns/changeProductList?returnCode=${returnCode}`)
+					    fetch(`/returns/changeProductList?returnCode=${returnCode}`)
 					    	.then(response => response.json())
 					    	.then(data => {
 					    		console.log("returnCode 출력" , returnCode);
@@ -288,7 +288,7 @@
 		console.log("registerData",registerData);
 		console.log("registerProductData",registerProductData);
 		// 등록 연결
-		fetch(`http://localhost:80/returns/insertOrder`, {
+		fetch(`/returns/insertOrder`, {
 			method: 'POST',
 			headers: {
 				...headers,
@@ -303,7 +303,7 @@
 		            option: registerProductData // 기존 선택된 제품 목록을 option 배열로 설정
 		        };
 			/* registerProductData.productOrderCode = result.productOrderCode; */
-			fetch(`http://localhost:80/returns/insertProductOrder`, {
+			fetch(`/returns/insertProductOrder`, {
 				method : 'POST',
 				headers : {
 					...headers,
@@ -317,7 +317,7 @@
 					console.log("주문 등록 성공:", data);
 						console.log("returnProductNoreturnProductNoreturnProductNo",returnProductNo);
 					
-					fetch(`http://localhost:80/returns/showChange`, {
+					fetch(`/returns/showChange`, {
 						method : 'POST',
 						headers : {
 							...headers,
