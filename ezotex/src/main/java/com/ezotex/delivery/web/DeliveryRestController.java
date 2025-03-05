@@ -187,8 +187,8 @@ public class DeliveryRestController {
 	
 	//포장등록
 	@PostMapping("packingInsert")
-	public String packingInsert(@RequestBody List<PackingDTO> info) {
-		log.info(info.toString());
+	public Map<String, String> packingInsert(@RequestBody List<PackingDTO> info) {
+		Map<String, String> result = new HashMap<>();
 		//포장정보 등록
 		service.insertPackingInfo(info);
 		
@@ -197,6 +197,8 @@ public class DeliveryRestController {
 		deSchedule.setDeliveryCode(info.get(0).getDeliveryCode());
 		
 		service.insertDivySchedule(deSchedule);
-		return "success";
+		
+		result.put("result", "success");
+		return result;
 	}
 }

@@ -303,10 +303,10 @@
 			<div class="completeBtn-section">
 				<!-- 배송 번호 -->
 				<input type="hidden" class="deliveryCode">
-				<button type="button" class="btn btn-success openIsRegist" data-bs-toggle="modal">
+				<button type="button" class="btn btn-primary openIsRegist" data-bs-toggle="modal">
 		    		등록
 		  		</button>
-				<button class="btn btn-outline-secondary resetBtn">초기화</button>
+				<button class="btn btn-secondary resetBtn">초기화</button>
 				
 			</div>
 		</div>
@@ -336,9 +336,9 @@
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!-- -->
 					<button type="button"
-						class="btn btn-outline-success packingRegistBtn"
+						class="btn btn-primary packingRegistBtn"
 						data-bs-dismiss="modal">등록</button>
-					<button type="button" class="btn btn-outline-secondary denyBtn"
+					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
@@ -346,6 +346,18 @@
 	</div>
 	
 	<script>
+		function numberFormat(value){ 
+			
+			if(value == 0) {
+				return value;
+			} else if(value == null || value == '') {
+				return null;
+			} else {
+				return Number(value).toLocaleString();
+			}
+	
+		};
+		
 		addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
 				//바로넣으니 undifined로 나와서 살짝 지연해서 입력.
@@ -409,12 +421,12 @@
 			scrollY: true,
 			scrollX: false,
             columns: [
-				{ header: "납품코드", name: "deliveryCode"},
-				{ header: "업체코드", name: "companyCode"},
-				{ header: "업체명", name: "company"},
-				{ header: "납기일", name: "dedt"},
-				{ header: "요약", name: "summary"},			
-				{ header: "출고등록일", name: "registDate"},
+				{ header: "납품코드", name: "deliveryCode", sortable: true, align: 'center', minWidth: 110},
+				{ header: "업체코드", name: "companyCode", sortable: true, align: 'center', minWidth: 80},
+				{ header: "업체명", name: "company", sortable: true, align: 'left', minWidth: 117},
+				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 224},			
+				{ header: "등록일", name: "registDate", sortable: true, align: 'center', minWidth: 80},
+				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 80},
 				{ header: "비고", name: "remark", hidden: true},
 				{ header: "출고담당자", name: "deliveryChargerCode", hidden: true},
 				{ header: "출고담당자코드", name: "deliveryCharger", hidden: true},
@@ -434,9 +446,9 @@
 			rowHeaders: ['rowNum'],
 			columns: [
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
-				{ header: "제품코드", name: "productCode"},
-				{ header: "제품명", name: "productName"},
-				{ header: "출고량합계", name: "qySum"},
+				{ header: "제품코드", name: "productCode", align: 'left', minWidth: 160},
+				{ header: "제품명", name: "productName", align: 'left', minWidth: 416},
+				{ header: "출고량합계", name: "qySum", align: 'right', minWidth: 174, formatter: row => numberFormat(row.value)},
 				{ header: "부피", name: "vl", hidden: true},
 			]
 		});
@@ -495,7 +507,7 @@
 			scrollX: false,
 			columns: [
 				{ header: "로트", name: "productLot"},
-				{ header: "출고수량", name: "deliveryQy"}
+				{ header: "출고수량", name: "deliveryQy", align: "right", formatter: row => numberFormat(row.value)}
 			]
 		});
 		
@@ -639,7 +651,7 @@
     		                minWidth: 150
     		             })
     		             
-    		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+    		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormat(row.value)})
     	            }
     	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
     	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
@@ -731,6 +743,8 @@
 			}	
 			
 			console.log("서버 보내기 전 배열", sendArr);
+
+			loading(400);
 			//포장등록
 			const response = fetch('/delivery/packingInsert', {
                 method: 'post',
@@ -743,8 +757,7 @@
             .then(res => res.json())
             .then(result => {
             	console.log('서버 통신결과:', result);
-            	if(result == 'success') {
-						loading(400);
+            	if(result.result == 'success') {
 						successToast("포장등록이 완료되었습니다.");
             		}
             	})

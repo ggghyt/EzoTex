@@ -408,7 +408,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 					<font fontName="malgum"/>
 					<paragraph spacingAfter="0"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{QY_SUM}) + " 개   "]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{QY_SUM}) + " 개\u00A0\u00A0 "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="380" y="246" width="169" height="30" uuid="5f330697-adf1-4dcf-9843-ba247f6fc4d9"/>
@@ -419,7 +419,7 @@ WHERE  de.delivery_code = $P{P_DELIVERY_CODE}]]>
 					<font fontName="malgum"/>
 					<paragraph spacingAfter="0"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{AMOUNT}) + " 원   "]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.DecimalFormat("#,##0").format($F{AMOUNT}) + " 원\u00A0\u00A0 "]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

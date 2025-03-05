@@ -80,6 +80,7 @@
 </head>
 <body>
 	<script>
+	
 	  let session_user_code;
 	  let session_user_id;
 	  let session_user_name;
@@ -112,7 +113,17 @@
 		  // fetch 이후에 접근해야 할 수 있는 커스텀이벤트 생성
 		  const loginEvent = new Event('login');
 		  document.dispatchEvent(loginEvent); // 이벤트 호출
+		  
+		  console.log("로그인 아이디", session_user_code.substring(0,3));
+		  if(session_user_code.substring(0,3) == "COM") {
+			  document.querySelector(".supplier-menu").classList.remove('supplier-menu');
+		  } else if(session_user_code.substring(0,3) == "EMP") {
+			  document.querySelectorAll(".manufacturing-menu").forEach(ele => ele.classList.remove('manufacturing-menu'));
+			  
+		  }
 	  })
+	  
+	  
   </script>
   <!-- Spinner 스피너 출력(최상단) -->
   <div class="loading-wrap">
@@ -138,6 +149,8 @@
           </a>
         </div>
       </div>
+      
+      <!--  -->
       <div class="navbar-menu-wrapper d-flex align-items-top"> 
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown d-none d-lg-block">
@@ -274,10 +287,7 @@
                 <p class="mb-1 mt-3 font-weight-semibold" id="Thumbnail_user_name">Allen Moreno</p>
                 <p class="fw-light text-muted mb-0" id="Thumbnail_user_email">allenmoreno@gmail.com</p>
               </div>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+              
               <a class="dropdown-item" href="javascript:logout();"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
             </div>
           </li>
@@ -286,6 +296,8 @@
           <span class="mdi mdi-menu"></span>
         </button>
       </div>
+      
+      
     </nav>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">

@@ -90,4 +90,12 @@ public class DriverRestController {
 		service.updateDeliveryState(deliveryCode);
 		return "success";
 	}
+	
+	@GetMapping("/boxList")
+	public List<DriverDeliveryDTO> boxList(@RequestParam(name = "deliveryCode")String deliveryCode) {
+		log.info("=================================================");
+		log.info(deliveryCode);
+		
+		return service.boxList(deliveryCode);
+	}
 }

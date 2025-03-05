@@ -263,8 +263,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 		
 		//포장내용 등록
 		for(int i=0; i<info.size(); i++) {			
+			log.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++인서트 반복문");
 			mapper.insertPackingInfo(info.get(i));
 		}
+		
 		mapper.updateStorageName(info.get(0));
 		return "success";
 	}

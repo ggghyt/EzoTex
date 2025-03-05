@@ -18,4 +18,6 @@ public class DriverDeliveryDTO {
 	private String chargerName;		//배송기사 이름
 	private String imgUrl;
 	private MultipartFile imgFile;
+	private String boxSize;
+	private Integer qy;
 }

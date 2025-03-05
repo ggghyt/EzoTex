@@ -187,19 +187,19 @@
 				<!-- 검색조건1: 발주코드, 자재코드, 자재명, 발주담당자 -->
 				<div>
 					<span class="search-unit">
-						<span>발주 코드</span>
+						<span>주문코드</span>
 						<input type="text" class="form-control search-order-code">
 					</span>
 					<span class="search-unit">
-						<span>발주담당자</span>
+						<span>주문담당자</span>
 						<input type="text" class="form-control search-charger"> 
 					</span>
 					<span class="search-unit">
-						<span>자재코드</span>
+						<span>제품코드</span>
 						<input type="text" class="form-control search-mtril-code">
 					</span>
 					<span class="search-unit">
-						<span>자재명</span>
+						<span>제품명</span>
 						<input type="text" class="form-control search-mtril-name"> 
 					</span>
 				</div>
@@ -208,7 +208,7 @@
 				<div>
 					
 					<span class="search-unit">
-						<span>발주일</span>
+						<span>주문일</span>
 						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
 						<input type="date" class="form-control search-date-end">
 					</span>
@@ -226,7 +226,7 @@
 						</select>
 					</span>
 					<div class="btn-section">						
-						<button class="btn btn-success mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
 						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 					</div>
 				</div>
@@ -244,13 +244,13 @@
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar read-bar ">
 				<div>				
 					<span class="search-unit info-unit">
-						<span>발주코드</span>
+						<span>주문코드</span>
 						<input type="text" class="form-control read-orderCode" readOnly> 
 					</span>
 				</div>
 				<div>
 					<span class="search-unit info-unit">
-						<span>발주일</span>
+						<span>주문일</span>
 						<input type="text" class="form-control read-order-date" readOnly> 
 					</span>
 				</div>
@@ -275,7 +275,7 @@
 						<input type="text" class="form-control read-dedt" readOnly> 
 					</span>
 					<span class="search-unit info-unit">
-						<span>발주담당자</span>
+						<span>주문담당자</span>
 						<input type="text" class="form-control read-order-charger" readOnly> 
 					</span>
 				</div>
@@ -285,10 +285,10 @@
 				</span>
 			</div>
 			<div class="completeBtn-section">
-				<button type="button" class="btn btn-success sendData" data-bs-toggle="modal">
+				<button type="button" class="btn btn-primary sendData" data-bs-toggle="modal">
 		    		등록
 		  		</button>
-				<button class="btn btn-outline-secondary resetBtn">초기화</button>
+				<button class="btn btn-secondary resetBtn">초기화</button>
 			</div>
 		</div>
 	</div>
@@ -314,8 +314,8 @@
           </div>
           <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
             <!-- -->
-            <button type="button" class="btn btn-outline-success deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
-            <button type="button" class="btn btn-outline-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+            <button type="button" class="btn btn-primary deliveryRegistBtn" data-bs-dismiss="modal">등록</button>
+            <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
           </div>
         </div>
       </div>
@@ -343,8 +343,8 @@
           </div>
           <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
             <!-- -->
-            <button type="button" class="btn btn-outline-success splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
-            <button type="button" class="btn btn-outline-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
+            <button type="button" class="btn btn-primary splitDeliveryBtn" data-bs-dismiss="modal">등록</button>
+            <button type="button" class="btn btn-secondary splitDenyBtn" data-bs-dismiss="modal">취소</button>
           </div>
         </div>
       </div>
@@ -366,15 +366,13 @@
            </div>
 
             <div style="text-align: center; margin: 20px;">
-               <button type="button" class="btn btn-outline-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
+               <button type="button" class="btn btn-secondary restQyModalClose" data-bs-dismiss="modal">닫기</button>
             </div>
          </div>
          </div>
       </div>
       
 	<script>
-		//session_user_code
-
 		/*
 			그리드 정의		
 		*/
@@ -405,20 +403,20 @@
     	      	},
 			rowHeaders: ['rowNum'],
 			columns: [
-				{ header: "발주코드", name: "mtrilOrderCode"},
-				{ header: "요약", name: "summary"},
-				{ header: "상태", name: "orderStatus"},
-				{ header: "발주담당자", name: "orderCharger"},
-				{ header: "발주일", name: "orderDate"},
-				{ header: "납기일", name: "dedt"},
+				{ header: "주문코드", name: "mtrilOrderCode", sortable: true, align: 'center', minWidth: 124},
+				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 248},
+				{ header: "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 71},
+				{ header: "주문담당자", name: "orderCharger", sortable: true, align: 'center', minWidth: 96},
+				{ header: "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 84},
+				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 84},
 				{ header: "비고", name: "remark", hidden: true},
 			],
             data: orderListdataSource,
             showDummyRows: true	//더미로우 추가
 		});
 		
-        
-        
+		
+		
 		//제품 목록
 		const productListGrid = new Grid({
 			el: document.getElementById('productListGrid'),
@@ -428,16 +426,20 @@
 			width: 807,
 			rowHeaders: ['rowNum'],
 			columns: [
-				{ header: "발주코드", name: "productOrderCode", hidden: true},
-				{ header: "자재코드", name: "productCode"},
-				{ header: "자재명", name: "productName"},
-				{ header: "색상", name: "productColor"},
-				{ header: "업체단가", name: "unitPrice", align: 'right', formatter:(row)=>numberFormat(row.value)},		//numberFormmatter로 함수명 변경됨. 바꾸기
-				{ header: "발주량", name: "reqQy", align: 'right', formatter:(row)=>numberFormat(row.value)},
-				{ header: "잔여량", name: "restQy", align: 'right', formatter:(row)=>numberFormat(row.value)},
-				{ header: "납품량", name: "deliveryQy", editor: 'text', align: 'right', formatter:(row)=>numberFormat(row.value)},
+				{ header: "주문코드", name: "productOrderCode", hidden: true},
+				{ header: "제품코드", name: "productCode", align: 'center', minWidth: 72},
+				{ header: "제품명", name: "productName", align: 'left', minWidth: 219},
+				{ header: "색상", name: "productColor", align: 'center', minWidth: 78},
+				{ header: "업체단가", name: "unitPrice", align: 'right', formatter:(row)=>numberFormat(row.value), align: 'right', minWidth: 84},
+				{ header: "주문량", name: "reqQy", align: 'right', formatter:(row)=>numberFormat(row.value), align: 'right', minWidth: 84},
+				{ header: "잔여량", name: "restQy", align: 'right', formatter:(row)=>numberFormat(row.value), align: 'right', minWidth: 84},
+				{ header: "납품량", name: "deliveryQy", editor: 'text', align: 'right', formatter:(row)=>numberFormat(row.value), align: 'right', minWidth: 84},
 			],
 			showDummyRows: true
+			,
+            columnOptions: {
+    	          resizable: true
+    	      	}
 		});
 		
 		/*출고 후 잔여량 출력 모달*/
@@ -452,12 +454,12 @@
 	  	          resizable: true
 	  	      	},
 			columns: [
-				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 180, align: 'center'},
-				{ header: "제품명", name: "productName", width: "auto", minWidth: 380},
-				{ header: "색상", name: "productColor", width: "auto", minWidth: 120, align: 'center'},
-				{ header: "요청수량", name: "restQy", width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormat(row.value)},
-				{ header: "출고수량", name: "deliveryQy", width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormat(row.value)},
-				{ header: "잔여량", name: "showQy", validation: {validatorFn: (value, row, columnName) => value <= 0}, width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormat(row.value)}
+				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 180, align: 'center', sortable: true},
+				{ header: "제품명", name: "productName", width: "auto", minWidth: 380, sortable: true},
+				{ header: "색상", name: "productColor", width: "auto", minWidth: 120, align: 'center', sortable: true},
+				{ header: "요청수량", name: "restQy", width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormat(row.value), sortable: true},
+				{ header: "출고수량", name: "deliveryQy", width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormat(row.value), sortable: true},
+				{ header: "잔여량", name: "showQy", validation: {validatorFn: (value, row, columnName) => value <= 0}, width: "auto", minWidth: 105, align: 'center', formatter:(row)=>numberFormatter(row.value), sortable: true}
 			],
 			showDummyRows: true	//더미로우 추가
 		});
@@ -559,7 +561,7 @@
     			})
     			
     			//출고해야될 수량 합계 출력
-    			document.querySelector('.read-orderTotalQy').value = restQySum;
+    			document.querySelector('.read-orderTotalQy').value = numberFormat(restQySum);
     			console.log(restQySum);
     			
     			//서버에서 가져온 데이터 넣기
@@ -624,7 +626,7 @@
     	        }
     	        
     	        //출고량 합께 화면에 출력
-    	        document.querySelector('.read-divyTotalQy').value = divyQySum;
+    	        document.querySelector('.read-divyTotalQy').value = numberFormat(divyQySum);
         	})
         })
         

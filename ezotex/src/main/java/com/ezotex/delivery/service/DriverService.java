@@ -22,5 +22,7 @@ public interface DriverService {
 	
 	public int updateDeliveryState(String deliveryCode);
 	
+	//상자 사이즈별 개수
+	public List<DriverDeliveryDTO> boxList(String deliveryCode);
 	//updateDeliveryState
 }
