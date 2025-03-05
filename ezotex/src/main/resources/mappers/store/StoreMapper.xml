@@ -268,8 +268,8 @@
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
 		SELECT  r.product_code,
 			    r.product_name,
-			    SUM(r.qy) AS qy,
-			    SUM(r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
+			    SUM(distinct r.qy) AS qy,
+			    SUM(distinct r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
 			    NVL(SUM(i.store_qy), 0) AS store_qy
 			FROM 
 			    return_product r
