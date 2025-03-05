@@ -150,3 +150,50 @@ td.tui-grid-cell select {
   bottom: -3px;
   right: 7px;
 }
+
+
+/*검색 초기화, 등록 내용 초기화, 모달 취소, 닫기 버튼*/
+.btn-secondary {
+    background: #d3d3d3 !important;
+    border-color: #d3d3d3 !important;
+    color: #ffffff !important;
+}
+.btn-secondary:hover, .btn-secondary:focus {
+    background: #d8d8d8 !important;
+    border-color: #f2f2f2 !important;
+    color: #ffffff !important;;
+}
+
+/*검색 버튼*/
+.btn-warning {
+    background: #ffaf00 !important;
+    border-color: #ffaf00 !important;
+    color: #ffffff;
+}
+.btn-warning:hover, .btn-warning:focus {
+    background: #cc8c00  !important;
+    color: #ffffff  !important;
+}
+
+/*등록버튼, 모달 확인 버튼*/
+.btn-primary {
+    background: #1F3BB3 !important;
+    color: #ffffff;
+}
+
+/*그리드 안 버튼*/
+.btn-outline-light {
+    color: #6c7383 !important;
+    border-color: #e3e3e3 !important;
+    border: 1px solid #afafaf !important;
+}
+.btn-outline-light:hover {
+    background: #fbfbfb !important;
+    border-color: #fbfbfb !important;
+}
+
+/*회색배경 공통 적용*/
+.bg-secondary {
+	-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0
+		rgba(167, 175, 183, 0) !important;
+}
