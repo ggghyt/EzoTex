@@ -149,6 +149,8 @@ const prdGrid = new Grid({
         }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 600,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 15
@@ -324,6 +326,14 @@ document.getElementById('mtrSearchBtn').addEventListener('click', () => {
 	rowEventOn = true;
 });
 
+// 엔터키 즉시 검색
+document.getElementById('prdForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('mtrForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('mtrSearchBtn').dispatchEvent(new Event('click'));
+});
+
 // 자재 선택 시 그리드 추가/삭제
 // ** appendRow(), removeRow() 메소드 사용 시 동기화에 문제 있음
 function addRow(row){ // grid.getRow(ev.rowKey)를 인수로 받음.
@@ -352,7 +362,6 @@ function removeRow(rowKey){ // ev.rowKey를 인수로 받음.
 };
 
 mtrGrid.on('check', ev => {
-	//addRow(mtrGrid.getRow(ev.rowKey));
 	addRow(mtrData[ev.rowKey]);
 });
 
@@ -364,7 +373,6 @@ mtrGrid.on('uncheck', ev => {
 mtrGrid.on('checkAll', () => {
 	let gridData = mtrGrid.getData();
 	gridData.forEach((data) => {
-		//addRow(data);		
 		addRow(mtrData[data.rowKey]);
 	});
 });

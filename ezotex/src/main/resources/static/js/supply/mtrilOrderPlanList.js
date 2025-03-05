@@ -60,13 +60,13 @@ let selected;
 // 모달 선택버튼 커스텀 렌더링
 class CustomBtnRender {
   constructor(props) {
+    let type = props.columnInfo.className; // className으로 자재/업체선택 구분
     const el = document.createElement('button');
     el.type = 'button';
     el.classList = 'btn btn-outline-light btn-sm';
-    el.innerText = '선택';
+    el.innerText = type == 'plan' ? '상세조회' : '선택';
     
     el.addEventListener('click', () => {
-        let type = props.columnInfo.className; // className으로 자재/업체선택 구분
         if(type == 'mtr'){ 
             let selectedMtr = prdGrid.getRow(props.rowKey); // 자재 기본정보 저장
             mtrCodeBox.value = selectedMtr.PRODUCT_CODE;
@@ -311,6 +311,7 @@ function loadPlanDetail(mtrilOrderPlanCode){
     planDetailGrid.resetData(data);
     
     planDetailDiv.style.display = '';
+    modifyBtn.style.display = '';
     writeBtn.style.display = '';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
@@ -372,10 +373,20 @@ document.getElementById('comSearchBtn').addEventListener('click', () => {
         companyCode: document.getElementById('scCompanyCode').value,
         companyName: document.getElementById('scCompanyName').value,
         address: document.getElementById('address').value,
-        productCode: mtrCodeBox.value,
-        productColor: colorBox.value
+        productCode: mtrCodeBox.value
     };
     loadModalGrid('company', dto);
+});
+
+// 엔터키 즉시 검색
+document.getElementById('materialList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('companyList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('comSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('planForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('orderSearchBtn').dispatchEvent(new Event('click'));
 });
 
 // 발주계획서 => 발주서 작성 이동
@@ -452,5 +463,6 @@ function closeAll(){
     compListDiv.style.display = 'none';
     planDetailDiv.style.display = 'none';
     writeBtn.style.display = 'none';
+    modifyBtn.style.display = 'none';
     cancelBtn.style.display = 'none';
 }

@@ -58,13 +58,14 @@ let selected;
 // 선택버튼 커스텀 렌더링
 class CustomBtnRender {
   constructor(props) {
+    let classNm = props.columnInfo.className;
     const el = document.createElement('button');
     el.type = 'button';
     el.classList = 'btn btn-outline-light btn-sm';
-    el.innerText = '선택';
+    el.innerText = classNm == 'plan' ? '상세조회' : '선택';
     
     el.addEventListener('click', () => {
-      if(props.columnInfo.className == 'prd'){
+      if(classNm == 'prd'){
         let prdData = prdGrid.getRow(props.rowKey);
         prdCodeBox.value = prdData.productCode;
         prdNameBox.value = prdData.productName;
@@ -245,6 +246,14 @@ document.getElementById('planSearchBtn').addEventListener('click', () => {
     season: checkedSeasons
   };
   loadPlan(dto);
+});
+
+// 엔터키 즉시 검색
+document.getElementById('productList').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
+});
+document.getElementById('planForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('planSearchBtn').dispatchEvent(new Event('click'));
 });
 
 // 공급계획서 목록 조회

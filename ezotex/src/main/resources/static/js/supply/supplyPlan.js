@@ -126,6 +126,8 @@ const prdGrid = new Grid({
         { header: ' ', name: 'inserted', renderer: { type: CustomCheckRender, options: {}}, width: 50, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 483,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 12
@@ -296,6 +298,11 @@ document.getElementById('prdSearchBtn').addEventListener('click', () => {
 	};
 	prdGrid.setRequestParams(dto); // 조회 조건 전달
 	prdGrid.reloadData(); // 그리드 재출력 (readData)
+});
+
+// 엔터키 즉시 검색
+document.getElementById('prdForm').addEventListener('keyup', e => {
+    if(e.key == 'Enter') document.getElementById('prdSearchBtn').dispatchEvent(new Event('click'));
 });
 
 /******************** 제품별 공급계획 입력 ********************/	
