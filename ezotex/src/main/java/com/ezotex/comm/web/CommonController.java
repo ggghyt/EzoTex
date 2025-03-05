@@ -183,7 +183,7 @@ public class CommonController {
 	// 비밀번호 재설정
 	@GetMapping("/password_reset")
 	public String password_reset() {
-		return "/login/password_reset";
+		return "login/password_reset";
 	}
 	
 	// 번경 메일 전송
