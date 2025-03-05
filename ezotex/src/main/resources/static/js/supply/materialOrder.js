@@ -719,10 +719,13 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
-    planListDiv.style.display = 'none';
+  planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
 }
+
+// 모달 숨김 시 닫기 버튼과 동일한 효과
+document.addEventListener('hide.bs.modal', () => closeAll());
 
 /******************** 발주계획 불러오기 ********************/ 
 function loadPlanData(planCode){  

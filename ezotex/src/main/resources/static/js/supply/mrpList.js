@@ -252,3 +252,6 @@ function closeAll(){
     document.getElementById('selectedPrdCode').value = '';
     document.getElementById('selectedPrdName').value = '';
 }
+
+// 모달 숨김 시 닫기 버튼과 동일한 효과
+document.addEventListener('hide.bs.modal', () => closeAll());

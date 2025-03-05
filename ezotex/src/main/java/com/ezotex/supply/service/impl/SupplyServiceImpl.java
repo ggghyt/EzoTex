@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("unchecked")
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -65,15 +66,12 @@ public class SupplyServiceImpl implements SupplyService {
 	public int countSupplyPlan(Map<String, Object> map) {
 		return mapper.countSupplyPlan(map);
 	}
-
 	
 	@Override
 	public List<SupplyDTO> infoSupplyPlan(String supplyPlanCode, String productCode) {
 		return mapper.infoSupplyPlan(supplyPlanCode, productCode);
 	}
-
-
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	@Transactional
 	public boolean insertSupplyPlan(Map<String, Object> supplies) {
@@ -87,6 +85,24 @@ public class SupplyServiceImpl implements SupplyService {
 		for(Object detail : detailList) {
 			SupplyDTO dto = objMapper.convertValue(detail, SupplyDTO.class); // DTO로 변환
 			int result = mapper.insertSupplyPlanDetail(dto);
+			dtlResult = dtlResult - result;
+		}
+		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단
+	}
+
+	@Override
+	@Transactional
+	public boolean updateSupplyPlan(Map<String, Object> supplies) {
+		String supplyPlanCode = (String) supplies.get("supplyPlanCode");
+		int headerResult = mapper.updateSupplyPlan(supplyPlanCode);
+		
+		List<Object> detailList = (List<Object>) supplies.get("detailArr");
+		
+		int dtlResult = detailList.size(); // 헤더를 제외한 사이즈를 추출해 비교
+		for(Object detail : detailList) {
+			// Object의 String타입을 Integer로 변환할 수 없으므로 DTO로 변환 필요
+			SupplyDTO dto = objMapper.convertValue(detail, SupplyDTO.class); // DTO로 변환
+			int result = mapper.updateSupplyPlanDetail(dto);
 			dtlResult = dtlResult - result;
 		}
 		return headerResult == 1 && dtlResult == 0 ? true : false; // 헤더 + 디테일 모두 성공 여부 판단

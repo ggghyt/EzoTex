@@ -80,10 +80,10 @@ public class MaterialOrderRestController {
 		return orderService.insertMaterialOrderPlan(orderPlanList); // true/false 반환
 	}
 	
-	// 발주서 상태 수정
+	// 발주서 수정
 	@PutMapping("mtrOrder")
-	public Boolean updateMaterialOrderStatus(@RequestBody Map<String,String> orderDetail) {
-		return orderService.updateOrderStatus(orderDetail.get("mtrilOrderCode"), orderDetail.get("status")); // true/false 반환
+	public Boolean updateMaterialOrderStatus(@RequestBody Map<String,Object> orderDetail) {
+		return orderService.updateOrder(orderDetail); // true/false 반환
 	}
 	
 	// 발주계획서 수정
