@@ -15,10 +15,39 @@
 	</div>
 	
 	
-	
+	<div class="modal fade" id="modifyMOdal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header" style="height: 20px;">
+					<h5 class="modal-title" id="exampleModalLabel"
+						style="font-size: 15px;">수정 확인</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; padding: 44px; padding-bottom: 10px;">
+					<div>
+						<img src="/images/modal/modify.png" alt="등록확인이미지"
+							style="width: 84px; height: 84px;">
+					</div>
+					<div>
+						<p style="margin-top: 12px; font-size: 21px; font-weight: bold;">경고</p>
+						<p id="warning"></p>
+					</div>
+				</div>
+				<div class="modal-footer modify"
+					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
+					<!---->
+					<button type="button" class="btn btn-outline-warning checkBtn"
+						data-bs-dismiss="modal">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<div class="row ps-2">
-	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	  <div class="col-12 card card-body m-2  bg-secondary">
 	    <p class="fs-5 fw-bolder">제품 정보</p>
 	
 	    <div class="row ps-2">
@@ -57,8 +86,8 @@
 		
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
-           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchErrorProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button type="button" id="planSearchBtn" class="btn btn-warning mag-glass-btn me-2" onclick="searchErrorProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -66,32 +95,30 @@
 	
 	<div class="row">
 		<div class="col-5 card card-body m-2">
-			<p class="fs-5 fw-bolder mt-2">불량 제품 목록</p>
-		    <!-- <div class="d-flex align-items-center">
-			    <button class="btn btn-dark btn-sm" style="width:150px" onclick="exportSelectedToPDF()">PDF 내보내기</button>
-			    <label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">출력할 제품 선택</label>
-			    <div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-			        <select class="form-control" id="se">
-			            <option value="null">전체</option>
-			            <option value="PT02">PRD0001</option>
-			            <option value="PT01">PRD0002</option>
-			        </select>
-			    </div>
-			</div> -->
-			<button id="xlsx" class="btn btn-dark btn-sm" style="width:200px;">EXCEL 내보내기</button>
-			<div id="grid">
-				<div id="pagination" class="tui-pagination"></div>
+			<div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+				<p class="fs-5 fw-bolder m-0">불량 제품 목록</p>
+				<button id="xlsx" class="btn btn-dark btn-sm" style="width: 200px;">EXCEL 내보내기</button>
 			</div>
+			<div id="grid"></div>
 		</div>
 	</div>
 	
 	<script>
 	
 		document.getElementById('xlsx').addEventListener('click', () => {
-			  if(errorGrid.getRowCount() == 0) return; // 값이 없으면 미동작
+			  const checkedRows = errorGrid.getCheckedRows(); // 체크된 데이터 가져오기
+			  if (checkedRows.length === 0){
+				  let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+				  document.querySelector("#warning").innerText = "선택된 제품이 없습니다.";
+					modifyMOdal.show();
+				  return; // 체크된 데이터가 없으면 미동작
+			  }
+	
+			  // 체크된 데이터만 내보내기
 			  errorGrid.export('xlsx', {
 			    useFormattedValue: true,
-			    fileName: '자재명세서' + '_' + dateFormatter().replaceAll('-','')
+			    fileName: '불량재고' + '_' + dateFormatter().replaceAll('-', ''),
+			    rows: checkedRows // 체크된 행만 내보내기
 			  });
 			});
 		
@@ -137,17 +164,19 @@
 		          useClient: false,
 		          perPage: 10
 		        },
+		      bodyHeight: 417,
 		      columns: [ 
-		        { header: "제품코드", name: "productCode", align: "center"},
-		        { header: "제품명", name: "productName", align: "center"},
-		        { header: "색상", name: "productColor", align: "center"},
-		        { header: "사이즈", name: "productSize", align: "center"},
-		        { header: "LOT번호", name: "lot", align: "center"},
-		        { header: "처리일", name: "processDate", align: "center"},
-		        { header: "처리담당자", name: "errorCharger", align: "center"},
+		        { header: "제품코드", name: "productCode", align: "center", sortable: true},
+		        { header: "제품명", name: "productName", sortable: true, width: 200},
+		        { header: "색상", name: "productColor", sortable: true},
+		        { header: "사이즈", name: "productSize", sortable: true},
+		        { header: "LOT번호", name: "lot", align: "center", sortable: true},
+		        { header: "처리일", name: "processDate", sortable: true, formatter: (row) => dateFormatterNull(row.value)},
+		        { header: "처리담당자", name: "errorCharger", align: "center", sortable: true},
 		        
 		      ],
 		      data: dataSource,
+		      showDummyRows: true
 		    });
 		    
 		    

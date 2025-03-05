@@ -37,9 +37,9 @@
 	<div class="d-flex align-items-center">
 		<h3 class="fs-3 fw-bold">| 재고 조회</h3>
 	</div>
-	<div class="card card-body mt-3">
+
 	<div class="row ps-2">
-	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
+	  <div class="col-12 card card-body m-2  bg-secondary">
 	    <p class="fs-5 fw-bolder">제품 정보</p>
 	
 	    <div class="row ps-2">
@@ -56,24 +56,26 @@
 	
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
-           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button type="button" id="planSearchBtn" class="btn btn-warning mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color:#ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
 
 
 		<div class="row">
-			<div class="col-5 card card-body m-2">
+			<div class="col-4 card card-body m-2">
+			<p class="fs-5 fw-bolder">제품 정보</p>
 				<div id="productGrid"></div>
 			</div>
 
-			<div class="col-5 card card-body m-2">
-				<p class="fs-5 fw-bolder mt-2">선택된 제품</p>
-				<div style="margin-bottom: 10px;">
-					<input type="text" class="form-control" id="prdCode" style="width: 200px; display: inline-block;">
-					<input type="text" class="form-control" id="prdName" style="width: 200px; display: inline-block;">
+			<div class="col-6 card card-body m-2">
+				<div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+				    <p class="fs-5 fw-bolder mt-2 mb-0">선택된 제품</p>
+				    <input type="text" class="form-control" id="prdCode" style="width: 200px;">
+				    <input type="text" class="form-control" id="prdName" style="width: 250px;">
 				</div>
+
 				<div id="productGrid2"></div>
 				<p class="fs-5 fw-bolder mt-2">LOT별 재고 현황</p>
 				<div id="productLot">
@@ -85,7 +87,6 @@
 			</div>
 		</div>
 
-	</div>
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
@@ -128,13 +129,15 @@
 			   useClient: false,
 				 perPage: 10
 			   },
+			   bodyHeight: 417,
 	   		   columnOptions: { resizable: true },
 	   		   columns: [
 	   		        { header: "제품 코드", name: "productCode", align: "center" },
-	   		        { header: "제품명", name: "productName", align: "center" },
-	   		        { header: "총 제품 수량", name: "inventoryQy", align: "center" }
+	   		        { header: "제품명", name: "productName", sortable: true },
+	   		        { header: "총 제품 수량", name: "inventoryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)}
 	   		   ],
-	   		   data: productData
+	   		   data: productData,
+	   		   showDummyRows: true
 	   		});
 	   	
 	   	/*
@@ -152,14 +155,22 @@
 	   	
 	   	const productGrid2 = new Grid({
 		      el: document.getElementById('productGrid2'), // 컨테이너 엘리먼트
+		      bodyHeight: 177,
+		      width: 930,
 		      columns: [ 
-			        { header: "색상/사이즈", name: "productColor", align: "center"},
-			        { header: "S", name: "s", align: "center"},
-			        { header: "M", name: "m", align: "center"},
-			        { header: "L", name: "l", align: "center"},
-			        { header: "XL", name: "xl", align: "center"},
+			        { header: "색상/사이즈", name: "productColor", width:80},
+			        { header: "S", name: "s",  align: 'right', formatter: (row) => numberFormatter(row.value)},
+			        { header: "M", name: "m",  align: 'right', formatter: (row) => numberFormatter(row.value)},
+			        { header: "L", name: "l",  align: 'right', formatter: (row) => numberFormatter(row.value)},
+			        { header: "XL", name: "xl", align: 'right', formatter: (row) => numberFormatter(row.value)},
 			  ],
-			  data: []
+			  data: [],
+	   		  showDummyRows: true,
+	   		columnOptions: {
+		        frozenCount: 1,
+		        frozenBorderWidth: 1,
+		        minWidth: 150
+		      }
 		    });
 	   	
 	   	let lastClicked = null
@@ -273,18 +284,19 @@
 	   	const productLot = new Grid({
 	   	    el: document.getElementById('productLot'),
 	   	    rowHeaders: ['rowNum'],
-	   	    height: 400, // 높이를 지정하여 세로 스크롤을 활성화
+	   	    bodyHeight: 217, // 높이를 지정하여 세로 스크롤을 활성화
 	   	    scrollY: true, // 세로 스크롤 활성화
 	   	    columns: [
-	   	        { header: "LOT", name: "lot" },
-	   	        { header: "제품명", name: "productName" },
-	   	        { header: "사이즈", name: "productSize" },
-	   	        { header: "색상", name: "productColor" },
-	   	        { header: "재고량", name: "inventoryQy" },
-	   	        { header: "입고 담당자", name: "storeCharger" },
-	   	        { header: "창고위치", name: "storageLocation" }
+	   	        { header: "LOT", name: "lot", align: "center", sortable: true, width: 200 },
+	   	        { header: "제품명", name: "productName", sortable: true, width: 200 },
+	   	        { header: "사이즈", name: "productSize", sortable: true },
+	   	        { header: "색상", name: "productColor", sortable: true },
+	   	        { header: "재고량", name: "inventoryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) },
+	   	        { header: "입고 담당자", name: "storeCharger", align: "center" },
+	   	        { header: "창고위치", name: "storageInfoName", sortable: true }
 	   	    ],
-	   	    data: []
+	   	    data: [],
+	   	    showDummyRows: true
 	   	});
 	   	
 	   	

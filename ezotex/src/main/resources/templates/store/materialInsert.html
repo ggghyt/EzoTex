@@ -11,6 +11,10 @@
 	height: 400px; /* 또는 원하는 높이 설정 */
 	overflow-y: scroll;
 }
+.storage-location-cell {
+  background-color: #DCEFFA; /* 연한 초록 */
+  color: #0F5132;
+}
 </style>
 </head>
 	<body>
@@ -19,53 +23,48 @@
 			<!-- <button class="btn btn-secondary" style="margin: 10px;">자재 입고</button>
 			<button class="btn btn-secondary" style="margin: 10px;">제품 입고</button> -->
 		</div>
-	<div class="row ps-2">
-	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
-	    <p class="fs-5 fw-bolder">제품 정보</p>
-	
-	    <div class="row ps-2">
-				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품코드</label>
-				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="searchDeliveryCode" placeholder="찾기" >
-				</div>
-				
-				
-				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품 요청일</label>
-				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-					<input type="date" class="form-control text-end" id="startOrderDate" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end" id="endOrderDate" style="margin-left: 10px;">
-				</div>
-				
-				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">입고 예정일</label>
-				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2">
-					<input type="date" class="form-control text-end" id="startDedt" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end" id="endDedt" style="margin-left: 10px;">
-				</div>
-				
-				<!-- <label  class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">구분</label>
-				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<select class="form-control" id="se">
-						<option value="null">제품/자재</option>
-						<option value="PT02">제품</option>
-						<option value="PT01">자재</option>
-					</select>
-				</div> -->
+		<div class="row ps-2">
+		  <div class="col-12 card card-body m-2  bg-secondary">
+		    <p class="fs-5 fw-bolder">제품 정보</p>
+		
+		    <div class="row ps-2 align-items-center">
+			<!-- 납품코드 -->
+			<label class="col-4 col-sm-2 col-lg-1 d-flex justify-content-center align-items-center mb-2 wbreak">납품코드</label>
+			<div class="col-8 col-sm-4 col-lg-2 mb-2">
+				<input type="text" class="form-control pointer bg-white" id="searchDeliveryCode" placeholder="찾기">
 			</div>
-	
-	    <!-- 버튼 -->
-	    <div class="d-flex justify-content-center mt-2">
-           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchDeliveryList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
-         </div>
-	  </div>
-	</div>
+		
+			<!-- 납품 요청일 -->
+			<label class="col-4 col-sm-2 col-lg-1 d-flex justify-content-center align-items-center mb-2 wbreak">납품 요청일</label>
+			<div class="col-8 col-sm-4 col-lg-3 mb-2 d-flex align-items-center">
+				<input type="date" class="form-control text-end me-2" id="startOrderDate">
+				<span class="mx-1">~</span>
+				<input type="date" class="form-control text-end ms-2" id="endOrderDate">
+			</div>
+		
+			<!-- 입고 예정일 -->
+			<label class="col-4 col-sm-2 col-lg-1 d-flex justify-content-center align-items-center mb-2 wbreak">입고 예정일</label>
+			<div class="col-8 col-sm-4 col-lg-3 mb-2 d-flex align-items-center">
+				<input type="date" class="form-control text-end me-2" id="startDedt">
+				<span class="mx-1">~</span>
+				<input type="date" class="form-control text-end ms-2" id="endDedt">
+			</div>
+		</div>
+
+		
+		    <!-- 버튼 -->
+		    <div class="d-flex justify-content-center mt-2">
+	           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchDeliveryList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+	           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+	         </div>
+		  </div>
+		</div>
 
 		
 		<div class="row">
 			<div class="col-5 card card-body m-2">
 				<p class="fs-5 fw-bolder mt-2">납품 목록</p>
 				<div id="grid">
-					<div id="pagination" class="tui-pagination"></div>
 				</div>
 			</div>
 			
@@ -86,40 +85,50 @@
 		
 		
 		
-	<!-- 창고모달 -->
-	<div class="modal fade" id="exampleModal" tabindex="-1"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-xl">
-			<div class="modal-content">
-				<div class="modal-header"></div>
-				<div class="card">
-					<div class="card-body">
-						<div class="mb-3 row">
-							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputPassword"
-									style="width: 200px;">
-							</div>
-						</div>
-						<div class="mb-3 row">
-							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputPassword"
-									style="width: 200px;">
-							</div>
-						</div>
-
-						<div id="modalGrid"></div>
-					</div>
-				</div>
-				<div style="text-align: center; margin: 20px;">
-					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
-					<button type="button" class="btn btn-inverse-dark btn-fw"
-						data-bs-dismiss="modal">취소</button>
-				</div>
-			</div>
+			<!-- 창고모달 -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		    <div class="modal-dialog modal-xl">
+		        <div class="modal-content">
+		            <div class="modal-header"></div>
+		            <div class="card">
+		                <div class="card-body">
+		                    <div class="col-12 card card-body m-2  bg-secondary">
+		                        <!-- 입력 박스 3개를 한 줄로 배치 -->
+		                        <div class="mb-3 row d-flex justify-content-between">
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 코드</label>
+		                                <input type="text" class="form-control" id="searchStorageCode" style="width: 150px;">
+		                            </div>
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageInfoCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 상세 코드</label>
+		                                <input type="text" class="form-control" id="searchStorageInfoCode" style="width: 150px;">
+		                            </div>
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageInfoName" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 이름</label>
+		                                <input type="text" class="form-control" id="searchStorageInfoName" style="width: 150px;">
+		                            </div>
+		                        </div>
+		
+		                        <!-- 버튼들을 한 줄로 중앙에 배치 -->
+		                        <div class="d-flex justify-content-center mb-3">
+		                            <button type="button" class="btn btn-warning mag-glass-btn me-2" onclick="searchLocation()">
+		                                <i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i>
+		                            </button>
+		                            <button type="reset" class="btn btn-secondary mag-glass-btn" onclick="searchLocationReset()">
+		                                <i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+		                            </button>
+		                        </div>
+		                    </div>
+		                    <!-- 그리드 영역 -->
+		                    <div id="modalGrid"></div>
+		                </div>
+		            </div>
+		            <div style="text-align: center; margin: 20px;">
+		                <button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
+		            </div>
+		        </div>
+		    </div>
 		</div>
-	</div>	
 		
 		
 	<!-- 등록 모달 -->
@@ -179,7 +188,6 @@
             <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
               <!---->
               <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
-              <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
             </div>
           </div>
         </div>
@@ -233,13 +241,15 @@
 				useClient: false,
 				perPage: 10
 			},
+			bodyHeight: 417,
 			columns: [
-				{ header: "납품코드", name: "deliveryCode", align: "center" },
-				{ header: "제품 종류 수", name: "deliveryQy", align: "center" },
-				{ header: "납품 요청일", name: "orderDate", align: "center" },
-				{ header: "입고 예정일", name: "dedt", align: "center" },
+				{ header: "납품코드", name: "deliveryCode", align: "center", sortable: true},
+				{ header: "제품 종류 수", name: "deliveryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
+				{ header: "납품 요청일", name: "orderDate", align: "center", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
+				{ header: "입고 예정일", name: "dedt", align: "center", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
 			],
 			data: mtDataSource,
+			showDummyRows: true
 		})
 		
 		
@@ -273,28 +283,56 @@
 			el: document.getElementById('mtGrid2'),
 			rowHeaders: ['rowNum'],
 			scrollY: true,
-			height: 500,
+			bodyHeight: 417,
 			columns: [
 				{ header: "제품코드", name: "productCode", align: "center" },
-				{ header: "제품명", name: "productName", align: "center" },
-				{ header: "색상", name: "productColor", align: "center" },
-				{ header: "납품수량", name: "productQy", align: "center" },
-				{ header: "미처리수량", name: "qy", align: "center" },
-				{ header: "입고수량", name: "productInsertQy", editor: "text" },
-				{ header: "창고위치", name: "location"  },
+				{ header: "제품명", name: "productName"},
+				{ header: "색상", name: "productColor"},
+				{ header: "납품수량", name: "productQy", align: "center", align: 'right', formatter: (row) => numberFormatter(row.value) },
+				{ header: "미처리수량", name: "qy", align: "center", align: 'right', formatter: (row) => numberFormatter(row.value) },
+				{ header: "입고수량", name: "productInsertQy", editor: "text", align: 'right', formatter: (row) => numberFormatter(row.value) },
+				{ header: "창고위치", name: "locationName", className: 'storage-location-cell'  },
+				{ header: "창고위치", name: "location", className: 'storage-location-cell', hidden:true  },
 				{ header: "납품코드", name: "deliveryCode", hidden: true },
 			],
-			data: []
+			data: [],
+		    showDummyRows: true
 		})
+		
+		
+		mtGrid2.on('afterChange', ev => {
+	   	    let changed = ev.changes[0];
+	   	    let rowKey = changed.rowKey;
+	   	    let row = mtGrid2.getRow(rowKey);
+	   	    let val = changed.value;
+	   	 	let columnName = changed.columnName;
+	   	    
+	   	 if (columnName === 'productInsertQy') {	   		 
+	   	    if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
+	   	        failToast('입력값은 문자가 들어갈 수 없습니다.');
+
+	   	        // 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
+	   	        row.productInsertQy = changed.prevValue == null ? 0 : changed.prevValue;
+	   	     mtGrid2.setRow(rowKey, row);
+	   	        return;
+	   	    } else if (val < 0){ // 음수면 양수로 전환 
+	   	        val = val * -1;
+	   	        row.productInsertQy = val;
+	   	     mtGrid2.setRow(rowKey, row);
+	   	        failToast('입력값은 음수가 될 수 없습니다.');
+	   	    }
+	   	 }
+
+	   	}); 
 		
 			
 		const modalGrid = new Grid({
 	    	el: document.getElementById('modalGrid'),
 	    	rowHeaders: ['rowNum'],
 	    	columns: [
-	    		{ header: "창고코드", name: "storageCode" },
-	    		{ header: "창고상세코드", name: "storageInfoCode" },
-	    		{ header: "창고이름", name: "storageInfoName" },
+	    		{ header: "창고코드", name: "storageCode", align: "center", sortable: true  },
+	    		{ header: "창고상세코드", name: "storageInfoCode", sortable: true },
+	    		{ header: "창고이름", name: "storageInfoName", sortable: true },
 	    	],
 	    	data: [],
 	    })
@@ -326,18 +364,40 @@
 
 			
 		mtGrid2.on('click', ev => {
-			if(ev.columnName == "location"){
+			if(ev.columnName == "locationName"){
 				let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
 		        
 		        fetch(`/store/storageInfoList`)
    			    .then(rep => rep.json())
    			    .then(data => {
+   			    	locationData = data;
    			    	modalGrid.resetData(data);
    			    })
 			}
 		})
 		
+		
+		let locationData = [];
+	    
+	   	function searchLocation() {
+	   	    let storageCode = document.querySelector('#searchStorageCode').value;
+	   	    let storageInfoCode = document.querySelector('#searchStorageInfoCode').value;
+	   	    let storageInfoName = document.querySelector('#searchStorageInfoName').value;
+	   	    
+	   	    const filteredData = locationData.filter(item => {
+	   	        return (!storageCode || String(item.storageCode).includes(storageCode)) &&
+	   	               (!storageInfoCode || String(item.storageInfoCode).includes(storageInfoCode)) &&
+	   	               (!storageInfoName || String(item.storageInfoName).includes(storageInfoName));
+	   	    });
+
+	   	    console.log(filteredData); // 필터링된 데이터 출력
+	   	    modalGrid.resetData(filteredData); // 그리드에 반영
+	   	}
+
+	    function searchLocationReset(){
+	    	modalGrid.resetData(locationData);
+	    }
 		
 		
 		InsertTest.addEventListener('click', function(){
@@ -351,16 +411,38 @@
 				return ;
 			}
 			
-		     let Insertcheck = insertData.find(item => {
-					return !item.productInsertQy || !item.location;
+			
+			// 수량과 창고위치 둘 다 입력되지 않은 행이 있는지 확인
+		    let checkValidRow = check.some(item => item.productInsertQy && item.location);
+		    
+		    
+			
+		     let checkIroductInsertQy = insertData.find(item => {
+					return !item.productInsertQy;
 				})
 				
-				if(Insertcheck){
-					document.querySelector("#warning").innerText = "값을 모두 입력하세요.";
+			let checkLocation = insertData.find(item => {
+					return !item.location;
+				})
+				
+				
+				if(checkIroductInsertQy){
+					document.querySelector("#warning").innerText = "수량을 입력하세요.";
 					modifyMOdal.show();
 					return
 				}
-			
+		     	if(checkLocation){
+					document.querySelector("#warning").innerText = "창고위치를 선택하세요.";
+					modifyMOdal.show();
+					return 
+				}
+		     	
+		     // 하나라도 유효한 행이 있으면 등록 가능
+			    if (!checkValidRow) {
+			        document.querySelector("#warning").innerText = "입고 정보를 입력하세요.";
+			        modifyMOdal.show();
+			        return;
+			    }
 			
 			
 		        modal.show();
@@ -395,6 +477,7 @@
 		    if (selectedRowKey !== null && selectedRowKey !== undefined) {
 		        // 창고 정보로 location 값 업데이트
 		        mtGrid2.setValue(selectedRowKey, 'location', data.storageInfoCode);
+		        mtGrid2.setValue(selectedRowKey, 'locationName', data.storageInfoName);
 		    }
 		
 		    // 모달 인스턴스 가져오기
