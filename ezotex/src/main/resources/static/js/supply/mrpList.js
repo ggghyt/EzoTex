@@ -76,7 +76,8 @@ const planDetailGrid = new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    showDummyRows: true,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'

@@ -131,6 +131,8 @@ let planGrid = th != null ? null : new Grid({
         useClient: true, // 페이징을 위해 필요
         perPage: 10
     },
+    showDummyRows: true,
+    bodyHeight: 400,
     scrollX: false, // 가로 스크롤
     scrollY: false, // 세로 스크롤
     summary: {
@@ -159,6 +161,8 @@ const prdGrid = new Grid({
         { header: '', name: '', className: 'mtr', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -192,6 +196,8 @@ const companyGrid = new Grid({
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -228,7 +234,8 @@ let planDetailGrid = th != null ? null : new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    showDummyRows: true,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'
@@ -427,7 +434,7 @@ modifyConfirmBtn.addEventListener('click', () => {
     .then(response => response.json())
     .then(result => {
         if(result == true){ 
-          successToast('저장되었습니다.');
+          successToast('작업이 완료되었습니다.');
           // 변경사항 반영
           selected.updateDate = dateFormatter();
           selected.remark = remarkBox.value;
@@ -435,7 +442,7 @@ modifyConfirmBtn.addEventListener('click', () => {
           selected.orderQy = planDetailGrid.getSummaryValues('orderQy').sum;
           planGrid.setRow(selected.rowKey, selected);
         }
-        else failToast('알 수 없는 오류로 실패했습니다.');
+        else failToast('작업을 실패했습니다.');
     });
     
     modifyMode(false);
