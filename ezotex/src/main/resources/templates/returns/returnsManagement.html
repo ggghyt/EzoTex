@@ -67,9 +67,10 @@
 							</label> <input type="text" id="deliveryCode"
 								class="form-control inputbold w-50" readonly>
 							<button type="button" class="btn btn-info" data-bs-toggle="modal"
-								data-bs-target="#deliveryViewModal" style="padding: 8px">납품 내역 조회</button>
-								
-			<!-- 				<div class="input-group mb-3">
+								data-bs-target="#deliveryViewModal" style="padding: 8px">납품
+								내역 조회</button>
+
+							<!-- 				<div class="input-group mb-3">
 								<input type="text" class="form-control"
 									placeholder="Recipient's username"
 									aria-label="Recipient's username"
@@ -359,13 +360,13 @@
 		    });
 			
 			</script>
-			
+
 	</div>
 </body>
 <!-- 납품 내역 조회 모달 -->
 <div class="modal fade" id="deliveryViewModal" tabindex="-1"
 	aria-labelledby="deliveryViewModalLabel" aria-hidden="true">
-	<div class="modal-dialog" style="width: 50%; max-width: 1200px;">
+	<div class="modal-dialog" style="width: 70%; max-width: 1200px;">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="deliveryViewModalLabel">납품내역</h5>
@@ -373,14 +374,45 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+				<!-- 제품 검색창 -->
+				<div class="card card-body mt-3 bg-secondary">
+					<h3>검색</h3>
+					<table class="table mt-3">
+						<tbody>
+							<tr>
+								<td class="col-auto"><label class="col-form-label">납품코드</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchDeliveryCode" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">업체명</label></td>
+								<td class="col-auto"><input type="text"
+									id="searchCompanyName" class="form-control"></td>
+								<td class="col-auto"><label class="col-form-label">납기일</label></td>
+								<td class="col-auto"><input type="date"
+									id="startDeliveryDate" class="form-control"></td>
+								<td>~</td>
+								<td class="col-auto"><input type="date"
+									id="endDeliveryDate" class="form-control"></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="text-center mt-3">
+						<button class="btn btn-warning mag-glass-btn"
+							onclick="searchReturnList()">
+							<i class="fa-solid fa-magnifying-glass icon-left"
+								style="color: #ffffff;"></i>
+						</button>
+						<button class="btn btn-secondary mag-glass-btn"
+							onclick="resetCondition()">
+							<i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i>
+						</button>
+					</div>
+				</div>
 				<div class="card card-body mt-3">
 					<div class="row">
 						<!-- Toast Grid를 표시할 div 추가 -->
-						<div class="col-12 card card-body m-2">
-							<p class="fs-5 fw-bolder">납품내역 선택 모달</p>
-							<!-- 그리드를 표시할 div -->
-							<div id="deliveryGrid" style="width: 100%;"></div>
-						</div>
+						<p class="fs-5 fw-bolder">납품내역 선택 모달</p>
+						<!-- 그리드를 표시할 div -->
+						<div id="deliveryGrid" style="width: 100%;"></div>
 					</div>
 				</div>
 				<script th:inline="javascript">
@@ -389,7 +421,7 @@
 					// 전달된 데이터 확인 (콘솔에 출력)
 					console.log(deliveryList);
 					// Toast Grid 설정
-					// --- 제품 추가 그리드 ---
+					// --- 납품내역 모달 그리드 ---
 					const deliveryGrid = new tui.Grid({
 						el : document.getElementById('deliveryGrid'), // 그리드를 표시할 div
 						scrollX : false, // 가로 스크롤바 비활성화
@@ -496,7 +528,7 @@
 
 						$('#deliveryViewModal').modal('hide');
 						
-						fetch(`http://localhost:80/returns/returnsProduct?deliveryCode=${clickedData.deliveryCode}`)
+						fetch(`/returns/returnsProduct?deliveryCode=${clickedData.deliveryCode}`)
 							.then(response => response.json())
 							.then(data => {
 								console.log("코드 데이터 확인",data);
@@ -646,7 +678,7 @@
 		console.log("returnProductData",returnProductData);
 		
 		// 등록 실행 fetch
-		fetch(`http://localhost:80/returns/insertReturn`, {
+		fetch(`/returns/insertReturn`, {
 			method : 'POST',
 			headers : {
 				...headers,
@@ -665,7 +697,7 @@
 			console.log("리턴코드 넘어오는지",result.returnCode);
 			console.log("returnProductData 출력",returnProductData);
 			// 반품 헤더 등록 성공시 반품 제품 등록 실행
-			fetch(`http://localhost:80/returns/insertProductReturn`,{
+			fetch(`/returns/insertProductReturn`,{
 				method : 'POST',
 				headers : {
 					...headers,
@@ -691,6 +723,43 @@
 			console.error("반품 등록 오류:",error);
 		});
 	})
+	
+		// 검색 함수
+		function searchReturnList() {
+	        const deliveryCode = document.querySelector('#searchDeliveryCode').value;
+	        const companyName = document.querySelector('#searchCompanyName').value;
+	        const startDeliveryDate = document.querySelector('#startDeliveryDate').value;
+	        const endDeliveryDate = document.querySelector('#endDeliveryDate').value;
+	        
+	        const filteredData = deliveryList.filter(item => {
+	            return (!deliveryCode || item.deliveryCode.includes(deliveryCode)) &&
+	                   (!companyName || item.companyName.includes(companyName)) &&
+	                   (!startDeliveryDate || item.dedt >= startDeliveryDate) &&
+	                   (!endDeliveryDate || item.dedt <= endDeliveryDate);
+	        });
+	
+		    // 필터링된 데이터를 다시 설정
+		    deliveryGrid.resetData(filteredData);
+		}
+
+		// 검색 엔터 이벤트 추가
+		document.querySelectorAll(".card-body input").forEach((ele) => {
+		    ele.addEventListener('keydown', (event) => {				
+		        if (event.keyCode === 13) {
+		        	searchReturnList();
+		        }
+		    });
+		});
+
+		// 검색 조건 초기화 함수
+		function resetCondition() {
+		    document.querySelectorAll('.card-body input').forEach((e) => {
+		        e.value = null;
+		    });
+		    searchReturnList();
+		}
+	
+	
 </script>
 
 <style>
