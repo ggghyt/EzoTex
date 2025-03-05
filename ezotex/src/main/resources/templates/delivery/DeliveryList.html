@@ -205,6 +205,9 @@
 		  word-wrap: break-word; /* 단어가 길 경우 줄바꿈 */
 		  overflow-wrap: break-word; /* 추가적인 줄바꿈 지원 */
 		}
+		.customspan-width {
+			width: 90px !important;
+		}
 	</style>
 </head>
 <body>
@@ -236,19 +239,19 @@
 				
 				<div>
 					<span class="search-unit">
-						<span>업체코드</span>
+						<span class="customspan-width">업체코드</span>
 						<input type="text" class="form-control search-company-code">
 					</span>
 					<span class="search-unit">
-						<span>업체명</span>
+						<span class="customspan-width">업체명</span>
 						<input type="text" class="form-control search-company-name"> 
 					</span>
 					<span class="search-unit">
-						<span>담당자코드</span>
+						<span class="customspan-width">담당자코드</span>
 						<input type="text" class="form-control search-delivery-chargerCode">
 					</span>
 					<span class="search-unit">
-						<span>담당자</span>
+						<span class="customspan-width">담당자</span>
 						<input type="text" class="form-control search-delivery-charger"> 
 					</span>
 				</div>
@@ -342,9 +345,15 @@
 									<td>비고</td>
 									<td><textarea class="form-control read-memo" disabled></textarea></td>
 								</tr>
+								<tr></tr>
 							</tbody>
 						</table>
-						<table class="table mt-3 chargerInfo">
+						
+						<br>
+						<br>
+						<br>
+						<b class="mb-3">담당자</b>
+						<table class="table chargerInfo">
 							<tbody>
 								<tr>
 									<td>구분</td>
@@ -393,13 +402,14 @@
 						<div id="productList"  class="mb-3"></div>
 						<b>상세 출고 수량</b>
 						<div id="productDetails"></div>
+						<div id="productLot"></div>
 
            			</div>
                  	
 	           </div>
 
 	            <div style="text-align: center; margin: 20px;">
-	               <button type="button" class="btn btn-outline-secondary deliveryDetailsModalClose" data-bs-dismiss="modal">닫기</button>
+	               <button type="button" class="btn btn-secondary deliveryDetailsModalClose" data-bs-dismiss="modal">닫기</button>
 	            </div>
 	         </div>
 	         </div>
@@ -443,14 +453,27 @@
 		           </div>
 	
 		            <div style="text-align: center; margin: 20px;">
-		               <button type="button" class="btn btn-outline-warning deliveryStatusModalClose" data-bs-dismiss="modal">이전</button>
-		               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+		               <button type="button" class="btn btn-warning deliveryStatusModalClose" data-bs-dismiss="modal">이전</button>
+		               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 		            </div>
 		         </div>
 		         </div>
 		      </div>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6eb87210b9b70bf039d7289fdb7bca97&libraries=services,clusterer"></script>
 	<script>
+		function numberFormat(value){ 
+			
+			if(value == 0) {
+				return value;
+			} else if(value == null || value == '') {
+				return null;
+			} else {
+				return Number(value).toLocaleString();
+			}
+	
+			
+		};
+	
 		//출고 목록
 		const dataSource = {
 		  	      api: {
@@ -473,16 +496,16 @@
 			scrollY: true,
 			scrollX: false,
             columns: [
-				{ header: "납품코드", name: "deliveryCode"},
-				{ header: "주문코드", name: "productOrderCode"},
-				{ header: "업체코드", name: "companyCode"},
-				{ header: "업체명", name: "company"},
-				{ header: "주문일", name: "orderDate"},
-				{ header: "납기일", name: "dedt"},
-				{ header: "요약", name: "summary"},
-				{ header: "회차", name: "time"},					
-				{ header: "상태", name: "deliveryStatus"},
-				{ header: "출고등록일", name: "registDate"},
+				{ header: "납품코드", name: "deliveryCode", sortable: true, align: 'center', minWidth: 135},
+				{ header: "주문코드", name: "productOrderCode", sortable: true, align: 'center', minWidth: 135},
+				{ header: "업체코드", name: "companyCode", sortable: true, align: 'center', minWidth: 90},
+				{ header: "업체명", name: "company", sortable: true, align: 'left', minWidth: 175},
+				{ header: "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 85},
+				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 85},
+				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 420},
+				{ header: "회차", name: "time", sortable: true, align: 'center', minWidth: 50},					
+				{ header: "상태", name: "deliveryStatus", sortable: true, align: 'center', minWidth: 69},
+				{ header: "출고등록일", name: "registDate", sortable: true, align: 'center', minWidth: 81},
 				{ header: "비고", name: "remark", hidden: true},
 				{ header: "출고창고", name: "storageName", hidden: true},
 				{ header: "납기주소", name: "dedtAddress", hidden: true},
@@ -496,7 +519,7 @@
         const productList = new Grid({
             el: document.getElementById('productList'),
             rowHeaders: ['rowNum'],
-            bodyHeight: 345,
+            bodyHeight: 230,
             width: 600,
             scrollY: true,
 			scrollX: false,
@@ -507,14 +530,14 @@
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
 				{ header: "제품코드", name: "productCode", width: "auto", minWidth: 69},
 				{ header: "제품명", name: "productName", width: "auto", minWidth: 311},
-				{ header: "출고량합계", name: "qySum", align: 'right', formatter:(row)=>numberFormatter(row.value)},
+				{ header: "출고량합계", name: "qySum", align: 'right', formatter:(row)=> numberFormat(row.value)},
             ],
 			showDummyRows: true	//더미로우 추가
         });
         
         const productDetails = new Grid({
             el: document.getElementById('productDetails'),
-            bodyHeight: 240,
+            bodyHeight: 160,
             width: 600,
   	        header: {
 	        	height: 70,
@@ -559,6 +582,43 @@
 			showDummyRows: true	//더미로우 추가
         });
         
+      //출고 로트 수량
+		const productLot = new Grid({
+			el: document.getElementById('productLot'),
+			bodyHeight: 70,
+			width: 600,
+			scrollY: true,
+			scrollX: false,
+			columns: [
+				{ header: "로트", name: "productLot"},
+				{ header: "출고수량", name: "deliveryQy", align: "right", formatter: row => numberFormat(row.value)}
+			]
+		});
+      
+      //제품 상세 선택 저장 변수
+        let lastClickedProductDetail = null;
+        productDetails.on('focusChange', ev => {
+        	productDetails.removeRowClassName(lastClickedProductDetail, 'bg-blue'); // 이전 선택 행 배경색 삭제
+        	productDetails.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+        	lastClickedProductDetail = ev.rowKey; // 선택된 행 기억
+			let data = productDetails.getRow(ev.rowKey);
+			console.log('제품 상세 선택:', data);
+			console.log("선택한 컬럼(검색할 사이즈)",ev.columnName);
+			
+			//사용자가 선택한 사이즈
+			let targetSize = getSizeCommonCode(ev.columnName.replace("DE", ""));
+			
+			//출고번호(data.deliveryCode), 제품코드(data.PRODUCT_CODE), 색상(data.PRODUCT_COLOR), 사이즈(ev.columnName)
+			
+			
+			fetch(`/delivery/deliveryLot?deliveryCode=${data.deliveryCode}&productCode=${data.PRODUCT_CODE}&productColor=${data.PRODUCT_COLOR}&productSize=${targetSize}`)
+    			.then(rep => rep.json())
+    			.then(res => {
+    				console.log(res);
+    				productLot.resetData(res);
+    			})
+			
+        })
         /*
         const chargerGrid = new Grid({
             el: document.getElementById('chargerGrid'),
@@ -721,14 +781,14 @@
 		                minWidth: 150
 		             })
 		             
-		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormatter(row.value)})
+		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormat(row.value)})
 	            }
 	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
 	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    
 	            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
 	            	if(productCode == deliveryDetails.qyList[i].PRODUCT_CODE) {	
 	            		//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
-						products.push({...deliveryDetails.qyList[i], productName : data.productName});
+						products.push({...deliveryDetails.qyList[i], productName : data.productName, deliveryCode : data.deliveryCode});
 						
 	            	}
 	            }

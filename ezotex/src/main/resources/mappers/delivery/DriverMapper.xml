@@ -58,6 +58,14 @@
 	        </choose>
 	</select>
 	
+	<!-- 배송기사 상자 개수 조회 -->
+	<select id="boxList">
+		SELECT box_size,
+		       qy
+		FROM   packing
+		WHERE  delivery_code = #{deliveryCode}
+	</select>
+	
 	<insert id="insertDeliveryInfo">
 		INSERT INTO delivery_schedule(delivery_no, delivery_code, delivery_date, prearnge_time, start_time, compet_time, rgsde, updde, driver_code, 
 										driver_name, charger_code, charger_name, delivery_img)

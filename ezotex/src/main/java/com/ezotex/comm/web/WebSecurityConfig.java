@@ -53,6 +53,19 @@ public class WebSecurityConfig {
 	}
 	
 	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(List.of("http://localhost:8081")); // Vue.js 실행 주소
+	    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    configuration.setAllowCredentials(true);
+	    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-XSRF-TOKEN"));
+
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;
+	}
+	
+	@Bean
 	public AccessDeniedHandler accessDeniedHander() {
 		return new CustomAccessDeniedHandler();
 	}

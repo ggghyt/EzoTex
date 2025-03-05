@@ -76,11 +76,13 @@
                         <td><input type="file" class="form-control" id="profile-upload" accept="image/*" @change="onChangeImg"/></td>
                       </tr>
                     -->
-                    </tbody>
+                    <!--박스 리스트-->
+                  </tbody>
                 </table>
+                <div id="boxList"></div>
                 <div class="modal-footer regist" style="display: flex; justify-content: center; border-top: none;">
-                  <button type="button" class="btn btn-primary" @click="submitFormBtn">등록</button>
-                  <button type="button" class="btn btn-outline-secondary denyBtn" @click="closeModal" data-bs-dismiss="modal">이전</button>
+                  <button type="button" class="btn btn-primary modal-btn" @click="submitFormBtn" v-bind:disabled="isRegist">완료</button>
+                  <button type="button" class="btn btn-outline-secondary denyBtn modal-btn" @click="closeModal" data-bs-dismiss="modal">이전</button>
                 </div>
               </form>
             </div>
@@ -95,6 +97,7 @@
 <script setup>
 import 'tui-grid/dist/tui-grid.css';
 import Grid from 'tui-grid';
+//import Grid2 from 'tui-grid';
 import { ref, onBeforeUnmount, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { ajaxUrl } from '@/utils/commons.js';
@@ -127,15 +130,18 @@ const showToastMessage = (message, type = "success") => {
   }, 2000);
 };
 
-
-// 성공 & 실패 토스트 호출 예제
-//const showSuccessToast = () => showToastMessage("성공적으로 처리되었습니다!", "success");
-//const showErrorToast = () => showToastMessage("오류가 발생했습니다!", "error");
-
 let modalCheck = ref(false);
 
-//그리드
+let isRegist = ref(true);
+
+
+//출고 리스트 그리드
 let gridInstance = ref();
+
+//상자 리스트 그리드
+let boxListGrid = ref();
+
+
 
 //선택된 행 키 번호
 let selectedDelivery = ref(null);
@@ -167,7 +173,8 @@ const deliveryList = async () => {
 const openModal = () => {
   modalCheck.value = true;
   let modalElement = document.getElementById('registModal');
-  
+
+
   let modal = new Modal(modalElement);
   modal.show();
 };
@@ -184,11 +191,9 @@ const closeModal = () => {
   }
 };
 
+
 // Toast UI Grid 초기화
 onMounted(() => {
-  if (gridInstance.value) {
-    gridInstance.value.destroy(); // 기존 Grid 제거
-  }
 
   gridInstance.value = new Grid({
     el: document.getElementById('deliveryList'),
@@ -217,11 +222,34 @@ onMounted(() => {
       },
     showDummyRows: true
   });
-
   Grid.applyTheme('striped');
 
+  
+  /*박스 사이즈 그리드 */
+  
+  Grid.applyTheme('striped');
+  boxListGrid.value = new Grid({
+    el: document.getElementById('boxList'),
+    scrollX: false,
+    scrollY: false,
+    bodyHeight: 160,
+    columns: [
+      { header: '박스사이즈', name: 'boxSize', align: 'center'},
+      { header: '수량', name: 'qy', align: 'center'}
+    ],
+    data: {
+      api: {
+        readData: { url: `${ajaxUrl}/driver/boxList`, method: 'GET' },
+      },
+      contentType: 'application/json',
+    },
+    showDummyRows: true
+  });
+  
+
+
   // 그리드 클릭 이벤트 (focusChange)
-  gridInstance.value.on('focusChange', ev => {
+  gridInstance.value.on('focusChange', async(ev) => {
 
     // 이전 선택된 행이 있으면 스타일 제거
     if (selectedDelivery.value !== null) {
@@ -242,11 +270,38 @@ onMounted(() => {
     readAddress.value = data.dedtAddress;
     readCompanyName.value = data.companyName;
     readDedt.value = data.dedt;
-    openModal();
+
+    if(data.deliveryStatus == "완료") {
+      isRegist.value = true;
+    } else {
+      isRegist.value = false;
+    }
+
+    //모달 열기
+    openModal(); 
+    
+    //데이터 가져오기
+    axios({method: 'get',
+         url: `${ajaxUrl}/driver/boxList?deliveryCode=${data.deliveryCode}`
+        })
+        .then(result => {
+          //그리드 데이터 초기화
+          boxListGrid.value.resetData(result.data);
+
+          setTimeout(() => {
+            boxListGrid.value.refreshLayout();
+          }, 300)
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      
+
+    
+    
   });
 
 })
-
 
 // 데이터를 다시 불러오는 함수
 const searchData = () => {
@@ -305,16 +360,6 @@ const onChangeImg = (e) => {
 
 //폼 제출 메소드
 const submitFormBtn = async() => {
-  //const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content") || "";
-  //const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content") || "X-XSRF-TOKEN"; // 기본값
-
-  /*
-  if(fileInput.value == '') {
-    console.log('안됨');
-    showToastMessage("사진을 업로드 해 주세요", "error");
-    return;
-  }
-    */
 
   console.log('작동');
   console.log('서버로 보낼 데이터',{deliveryCode: readDeliveryCode.value, dedtAddress: readAddress.value, companyName: readCompanyName.value, dedt: readDedt.value, image: fileInput.value})
@@ -328,6 +373,7 @@ const submitFormBtn = async() => {
           if(result.data == 'success') {
             showToastMessage("배송이 완료되었습니다", "success");
             gridInstance.value.readData();
+            isRegist.value = false;
             //gridInstance.value.removeRow(selectedDelivery.value);
           }
           
@@ -336,7 +382,18 @@ const submitFormBtn = async() => {
             console.error(error);
         });
 
-  /* formData보내기---시간없어서 사진 올리는거 뺄 예정
+  //const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content") || "";
+  //const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content") || "X-XSRF-TOKEN"; // 기본값
+
+  /*
+  if(fileInput.value == '') {
+    console.log('안됨');
+    showToastMessage("사진을 업로드 해 주세요", "error");
+    return;
+  }
+    */
+
+  /* formData보내기---시간없어서 사진 업로드 제거
   //const csrfTokkenVal = getCsrfToken();
   const formData = new FormData();
 
@@ -517,5 +574,13 @@ textarea {
 }
 input[type=file] {
   line-height: 1.1;
+}
+#boxList .tui-grid-rside-area{
+  height: 160px !important;
+}
+.modal-btn {
+    height: 30px;
+    line-height: 1 !important;
+    font-size: 12px !important;
 }
 </style>

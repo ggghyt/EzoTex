@@ -168,6 +168,13 @@ input[type=date] {
 .restQyModalHead {
 	margin-bottom: 30px;
 }
+.input-total-qy {
+	text-align: right;
+}
+.input-total-price {
+	text-align: right;
+}
+
 </style>
 
 </head>
@@ -210,11 +217,17 @@ input[type=date] {
 						type="date" class="form-control search-dedt-start"> <b
 						class="dash">-</b> <input type="date"
 						class="form-control search-dedt-end">
-					</span> <span class="search-unit"> <span>급액합계</span> <input
+					</span> 
+					
+					<!-- 
+					<span class="search-unit"> <span>급액합계</span> <input
 						type="number" class="form-control search-amount-start"> <b
 						class="dash">-</b> <input type="number"
 						class="form-control search-amount-end">
-					</span> <span class="search-unit"> <span>제품코드</span> <input
+					</span> 
+					 -->
+					
+					<span class="search-unit"> <span>제품코드</span> <input
 						type="text" class="form-control search-product-code">
 					</span> <span class="search-unit"> <span>제품명</span> <input
 						type="text" class="form-control search-product-name">
@@ -299,9 +312,9 @@ input[type=date] {
 				<div id="productDetailgrid"></div>
 			</div>
 			<div class="completeBtn-section">
-				<button type="button" class="btn btn-success sendData"
+				<button type="button" class="btn btn-primary sendData"
 					data-bs-toggle="modal">등록</button>
-				<button class="btn btn-outline-secondary resetBtn">초기화</button>
+				<button class="btn btn-secondary resetBtn">초기화</button>
 
 			</div>
 		</div>
@@ -333,9 +346,9 @@ input[type=date] {
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!-- -->
 					<button type="button"
-						class="btn btn-outline-success deliveryRegistBtn"
+						class="btn btn-primary deliveryRegistBtn"
 						data-bs-dismiss="modal">등록</button>
-					<button type="button" class="btn btn-outline-secondary denyBtn"
+					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
@@ -369,10 +382,10 @@ input[type=date] {
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!-- -->
 					<button type="button"
-						class="btn btn-outline-success splitDeliveryBtn"
+						class="btn btn-primary splitDeliveryBtn"
 						data-bs-dismiss="modal">등록</button>
 					<button type="button"
-						class="btn btn-outline-secondary splitDenyBtn"
+						class="btn btn-secondary splitDenyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
@@ -401,7 +414,7 @@ input[type=date] {
 
 				<div style="text-align: center; margin: 20px;">
 					<button type="button"
-						class="btn btn-outline-secondary restQyModalClose"
+						class="btn btn-secondary restQyModalClose"
 						data-bs-dismiss="modal">닫기</button>
 				</div>
 			</div>
@@ -454,14 +467,14 @@ input[type=date] {
 	  	          resizable: true
 	  	      	},
 	            columns: [
-	                { header : "주문코드", name: "productOrderCode", minWidth: 125},
-	                { header : "업체코드", name: "companyCode", align: 'center'},
-	                { header : "업체명", name: "company"},
-	                { header : "요약", name: "summary"},
-	                { header : "상태", name: "orderStatus"},
-	                { header : "주문담당자", name: "orderCharger"},
-	                { header : "주문일", name: "orderDate"},
-	                { header : "납기일", name: "dedt"}
+	                { header : "주문코드", name: "productOrderCode", sortable: true, align: 'center', minWidth: 110},
+	                { header : "업체코드", name: "companyCode", align: 'center', sortable: true, minWidth: 78},
+	                { header : "업체명", name: "company", sortable: true, align: 'left', minWidth: 85},
+	                { header : "요약", name: "summary", sortable: true, align: 'left', minWidth: 123},
+	                { header : "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 62},
+	                { header : "주문담당자", name: "orderCharger", sortable: true, align: 'center', minWidth: 95},
+	                { header : "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 79},
+	                { header : "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 79}
 	            ],
 	            data: dataSource,
 				showDummyRows: true	//더미로우 추가
@@ -545,34 +558,38 @@ input[type=date] {
 			              {
 			                header: 'S',
 			                name: 'stest',
-			                childNames: ['sizeS', 's']
+			                childNames: ['sizeS', 's', 'ins']
 			              },
 			              {
 				             header: 'M',
 				             name: 'mtest',
-				             childNames: ['sizeM', 'm']
+				             childNames: ['sizeM', 'm', 'inm']
 				          },
 				          {
 					         header: 'L',
 					         name: 'ltest',
-					         childNames: ['sizeL', 'l']
+					         childNames: ['sizeL', 'l', 'inl']
 					      },
 					      {
 						      header: 'XL',
 						      name: 'xltest',
-						      childNames: ['sizeXl', 'xl']
+						      childNames: ['sizeXl', 'xl', 'inxl']
 						  }
 			             ]},
 			        columns: [
 			            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
 			            { header: "출고수량", name: "sizeS", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "s", align: "center" },
+			            { header: "재고수량", name: "ins", align: "center" },
 			            { header: "출고수량", name: "sizeM", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "m", align: "center" },
+			            { header: "재고수량", name: "inm", align: "center" },
 			            { header: "출고수량", name: "sizeL", align: "center", editor: "text"},
 			            { header: "잔여수량", name: "l", align: "center" },
+			            { header: "재고수량", name: "inl", align: "center" },
 			            { header: "출고수량", name: "sizeXl", align: "center", editor: "text"},
-			            { header: "잔여수량", name: "xl", align: "center" }
+			            { header: "잔여수량", name: "xl", align: "center" },
+			            { header: "재고수량", name: "inxl", align: "center" }
 			        ],
 				  columnOptions: {
 				        frozenCount: 1,

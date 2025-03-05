@@ -284,6 +284,7 @@
 		SELECT dd.product_code AS product_code,
 		       pi.product_name AS product_name,
 		       dd.product_color AS product_color,
+		       0 AS order_qy,
 		       dd.request_qy AS req_qy,
 		       dd.delivery_qy AS delivery_qy
 		FROM   delivery_details dd JOIN product_info pi

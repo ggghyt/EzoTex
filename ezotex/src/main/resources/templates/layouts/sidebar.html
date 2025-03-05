@@ -13,7 +13,7 @@
 	  <hr>
 	  
 	  <!--------------------------------- 기준정보 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#standard" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-wrench"></i>
 	      <span class="menu-title">기준정보</span>
@@ -41,7 +41,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 공급 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#supply" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-timetable"></i>
 	      <span class="menu-title">공급</span>
@@ -58,7 +58,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 발주 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#mtr" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-subdirectory-arrow-left"></i>
 	      <span class="menu-title">발주</span>
@@ -75,7 +75,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 주문 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#order" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-tag-multiple"></i>
 	      <span class="menu-title">주문</span>
@@ -104,7 +104,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 입고 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#storeIn" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-printer-3d"></i>
 	      <span class="menu-title">입고</span>
@@ -138,7 +138,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 출고 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#delivery" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-truck"></i>
 	      <span class="menu-title">출고</span>
@@ -149,8 +149,6 @@
 	        <li class="nav-item"> <a class="nav-link" href="/delivery/DeliveryManagement">납품등록</a></li>
 	        <li class="nav-item"> <a class="nav-link" href="/delivery/packingManagement">포장관리</a></li>
 	        <li class="nav-item"> <a class="nav-link" href="/delivery/deliveryList">납품조회</a></li>
-	        <li class="nav-item"> <a class="nav-link" href="/delivery/SupplierManagement">공급업체 납품등록(이름 변경예정)</a></li>
-	        <li class="nav-item"> <a class="nav-link" href="/delivery/SupplyList">공급업체 납품조회(이름 변경예정)</a></li>
 	        
 	        
 	        
@@ -171,7 +169,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 재고 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#store" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-grid"></i>
 	      <span class="menu-title">재고</span>
@@ -206,7 +204,7 @@
 	  </li>
 	  
 	  <!--------------------------------- 반품 --------------------------------->
-	  <li class="nav-item">
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#return" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-tumblr-reblog"></i>
 	      <span class="menu-title">반품</span>
@@ -237,8 +235,8 @@
 	    </div>
 	  </li>
 	  
-	  <!--------------------------------- 통계 --------------------------------->
-	  <li class="nav-item">
+	  <!--------------------------------- 통계 
+	  <li class="nav-item manufacturing-menu">
 	    <a class="nav-link" data-bs-toggle="collapse" href="#chart" aria-expanded="false" aria-controls="ui-basic">
 	      <i class="menu-icon mdi mdi-chart-line"></i>
 	      <span class="menu-title">통계</span>
@@ -263,9 +261,37 @@
 	      </ul>
 	    </div>
 	  </li>
-	  
-	  <hr>
-	  
+	  --------------------------------->
+	  <!--------------------------------- 공급업체 출고 --------------------------------->
+	  <li class="nav-item supplier-menu">
+	    <a class="nav-link" data-bs-toggle="collapse" href="#delivery" aria-expanded="false" aria-controls="ui-basic">
+	      <i class="menu-icon mdi mdi-truck"></i>
+	      <span class="menu-title">출고</span>
+	      <i class="menu-arrow"></i> 
+	    </a>
+	    <div class="collapse" id="delivery">
+	      <ul class="nav flex-column sub-menu">
+	        <li class="nav-item"> <a class="nav-link" href="/delivery/SupplierManagement">납품등록</a></li>
+	        <li class="nav-item"> <a class="nav-link" href="/delivery/SupplyList">납품조회</a></li>
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	      </ul>
+	    </div>
+	  </li>
+
 	</ul>
 	
 </html>

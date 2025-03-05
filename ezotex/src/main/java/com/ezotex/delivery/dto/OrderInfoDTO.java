@@ -9,7 +9,8 @@ import lombok.Data;
 public class OrderInfoDTO {
 	private String charger;
 	private Integer deliveryQy;
-	private Integer reqQy;
+	private Integer orderQy;	//주문수량
+	private Integer reqQy;		//잔여수량
 	private Integer amount;
 	private String address;
 	private String productCode;

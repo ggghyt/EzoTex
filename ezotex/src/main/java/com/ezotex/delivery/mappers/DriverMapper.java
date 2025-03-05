@@ -23,4 +23,7 @@ public interface DriverMapper {
 	
 	//배송 담당자 이름 업데이트
 	public int updateDriverInfo(@Param("info")DriverDeliveryDTO info);
+	
+	//상자 사이즈별 개수
+	public List<DriverDeliveryDTO> boxList(String deliveryCode);
 }

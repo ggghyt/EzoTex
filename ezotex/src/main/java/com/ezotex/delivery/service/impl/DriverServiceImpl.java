@@ -68,6 +68,11 @@ public class DriverServiceImpl implements DriverService{
 		return mapper.updateDeliveryState(deliveryCode);
 	}
 
+	@Override
+	public List<DriverDeliveryDTO> boxList(String deliveryCode) {
+		return mapper.boxList(deliveryCode);
+	}
+
 
 	
 	
