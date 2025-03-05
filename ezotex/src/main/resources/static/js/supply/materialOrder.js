@@ -178,6 +178,8 @@ const prdGrid = new Grid({
 				{ header: '', name: '', className: 'mtr', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -188,7 +190,7 @@ const prdGrid = new Grid({
   		 height: 30,
 			 position: 'bottom', // or 'top'
 			 columnContent: {
-			 		productCode: { // 컬럼명
+			 		PRODUCT_CODE: { // 컬럼명
 			         template: (valueMap) => {
 			             return `총 ${valueMap.cnt}건`
 			         }
@@ -211,6 +213,8 @@ const companyGrid = new Grid({
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -323,6 +327,7 @@ const planGrid = new Grid({
     },
     scrollX: false, // 가로 스크롤
     scrollY: false, // 세로 스크롤
+    showDummyRows: true,
     bodyHeight: 200,
     summary: {
        height: 30,
@@ -699,11 +704,11 @@ confirmBtn.addEventListener('click', () => {
 	.then(result => {
 		console.log(result);
 		if(result == true){
-			successToast('발주서가 등록되었습니다.');
+			successToast('작업이 완료되었습니다.');
 			orderGrid.resetData([]);
 			getSum(); // 합계 초기화
 			closeAll();
-		} else failToast('알 수 없는 오류로 실패했습니다.');
+		} else failToast('작업을 실패했습니다.');
 	});
 });
 

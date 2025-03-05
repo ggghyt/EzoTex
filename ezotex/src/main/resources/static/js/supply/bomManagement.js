@@ -182,6 +182,7 @@ const mtrGrid = new Grid({
     rowHeaders: ['checkbox'],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
+    showDummyRows: true,
   	bodyHeight: 150
 });
 
@@ -201,6 +202,7 @@ const selectedMtrGrid = new Grid({
     ],
   	scrollX: false, // 가로 스크롤
   	scrollY: true, // 세로 스크롤
+    showDummyRows: true,
   	bodyHeight: 155,
   	summary: {
   		 height: 37,
@@ -464,14 +466,14 @@ function insertBom(){
 	.then(async result => {
 		console.log(result);
 		if(result == true){ // 등록 성공 시
-			successToast('자재명세서가 등록되었습니다.');
+			successToast('작업이 완료되었습니다.');
 			originBomData = selectedBom; // 비교값을 입력한 값으로 업데이트 (중복 등록 방지)
 			
 			await fetch('/supply/bomAllInserted/' + selectedPrd.PRODUCT_CODE) // 모든 옵션 등록됐는지 확인
 			.then(response => response.json())
 			.then(allInserted => selectedPrd.STATUS = allInserted == true ? '완료' : '등록중');
 			prdGrid.setRow(selectedPrd.rowKey, selectedPrd);
-		} else failToast('알 수 없는 오류로 실패했습니다.');
+		} else failToast('작업을 실패했습니다.');
 	});
 };
 

@@ -47,8 +47,10 @@ const changeClas = function(lclasEle, sclasEle){
     });
 }
 
+let modalTitle = document.getElementById('modalTitle');
 prdCodeBox.onclick = () => { // 제품코드 input 클릭 시 모달 호출
   productList.style.display = '';
+  modalTitle.innerText = '제품 선택';
   $('#myModal').modal('show');
   prdGrid.refreshLayout(); 
 };
@@ -111,6 +113,8 @@ const prdGrid = new Grid({
         { header: '', name: '', className: 'prd', renderer: { type: CustomBtnRender, options: {}}, width: 150, align: 'center' }
     ],
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 200,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 5
@@ -151,6 +155,8 @@ const supplyGrid = new Grid({
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
+    showDummyRows: true,
+    bodyHeight: 400,
     pageOptions: {
         useClient: true, // 페이징을 위해 필요
         perPage: 10
@@ -183,7 +189,7 @@ const planDetailGrid = new Grid({
     rowHeaders: ['rowNum'],
     scrollX: false, // 가로 스크롤
     scrollY: true, // 세로 스크롤
-    bodyHeight: 100,
+    bodyHeight: 200,
     summary: {
          height: 30,
          position: 'bottom', // or 'top'
@@ -283,6 +289,7 @@ function loadPlanDetail(supplyPlanCode){
     planDetailGrid.resetData(data);
     
     detailList.style.display = '';
+    modalTitle.innerText = '공급계획서 상세조회';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
   });

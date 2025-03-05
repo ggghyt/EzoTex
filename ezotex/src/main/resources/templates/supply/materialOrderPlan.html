@@ -80,11 +80,11 @@
 			  .then(result => {
 			    console.log(result);
 			    if(result == true){
-			      successToast('발주계획서가 등록되었습니다.');
+			      successToast('작업이 완료되었습니다.');
 			      orderGrid.resetData([]);
 			      getSum(); // 합계 초기화
 			      closeAll();
-			    } else failToast('알 수 없는 오류로 실패했습니다.');
+			    } else failToast('작업을 실패했습니다.');
 			  });
 			}
 		</script>
