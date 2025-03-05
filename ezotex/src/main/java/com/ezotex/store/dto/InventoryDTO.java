@@ -29,6 +29,10 @@ public class InventoryDTO {
 	private String productSe;
 	private String deliveryCode;
 	
+	
+	private String storageInfoName;
+	private String storageName;
+	
 	// 제품명
 	private String productName;
 	

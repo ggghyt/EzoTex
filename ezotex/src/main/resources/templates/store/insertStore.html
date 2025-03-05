@@ -28,48 +28,71 @@
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style type="text/css">
 #modalGrid {
-	width: 100%;
-	height: 400px; /* 또는 원하는 높이 설정 */
-	overflow-y: scroll;
+    width: 100%;
+    height: 400px; 
+    overflow-y: scroll;
+    position: sticky;
+    top: 0; 
+    z-index: 10; 
+}
+.storage-location-cell {
+  background-color: #DCEFFA;
+  color: #0F5132;
 }
 </style>
 </head>
 <body>
 
-	<!-- 창고모달 -->
-	<div class="modal fade" id="exampleModal" tabindex="-1"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-xl">
-			<div class="modal-content">
-				<div class="modal-header"></div>
-				<div class="card">
-					<div class="card-body">
-						<div class="mb-3 row">
-							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건1</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputPassword"
-									style="width: 200px;">
-							</div>
-						</div>
-						<div class="mb-3 row">
-							<label for="inputPassword" class="col-sm-2 col-form-label">검색조건2</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="inputPassword"
-									style="width: 200px;">
-							</div>
-						</div>
-
-						<div id="modalGrid"></div>
-					</div>
-				</div>
-				<div style="text-align: center; margin: 20px;">
-					<button type="button" class="btn btn-outline-primary btn-fw">수정</button>
-					<button type="button" class="btn btn-inverse-dark btn-fw"
-						data-bs-dismiss="modal">취소</button>
-				</div>
-			</div>
+		<!-- 창고모달 -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		    <div class="modal-dialog modal-xl">
+		        <div class="modal-content">
+		            <div class="modal-header"></div>
+		            <div class="card">
+		                <div class="card-body">
+		                    <div class="col-12 card card-body m-2  bg-secondary">
+		                        <!-- 입력 박스 3개를 한 줄로 배치 -->
+		                        <div class="mb-3 row d-flex justify-content-between">
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 코드</label>
+		                                <input type="text" class="form-control" id="searchStorageCode" style="width: 150px;">
+		                            </div>
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageInfoCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 상세 코드</label>
+		                                <input type="text" class="form-control" id="searchStorageInfoCode" style="width: 150px;">
+		                            </div>
+		                            <div class="col-sm-3 d-flex align-items-center">
+		                                <label for="searchStorageInfoName" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 이름</label>
+		                                <input type="text" class="form-control" id="searchStorageInfoName" style="width: 150px;">
+		                            </div>
+		                        </div>
+		
+		                        <!-- 버튼들을 한 줄로 중앙에 배치 -->
+		                        <div class="d-flex justify-content-center mb-3">
+		                            <button type="button" class="btn btn-warning mag-glass-btn me-2" onclick="searchLocation()">
+		                                <i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i>
+		                            </button>
+		                            <button type="reset" class="btn btn-secondary mag-glass-btn" onclick="searchLocationReset()">
+		                                <i class="fa-solid fa-repeat icon-left" style="color:#ffffff;"></i>
+		                            </button>
+		                        </div>
+		                    </div>
+		                    <!-- 그리드 영역 -->
+		                    <div id="modalGrid"></div>
+		                </div>
+		            </div>
+		            <div style="text-align: center; margin: 20px;">
+		                <button type="button" class="btn btn-inverse-dark btn-fw" data-bs-dismiss="modal">취소</button>
+		            </div>
+		        </div>
+		    </div>
 		</div>
-	</div>
+
+
+
+
+
+
 
 
 
@@ -83,8 +106,8 @@
 	
 	
 	<div class="row ps-2">
-	  <div class="col-12 card card-body m-2" style="background-color: #d3d3d3;">
-	    <p class="fs-5 fw-bolder">제품 정보</p>
+	  <div class="col-12 card card-body m-2  bg-secondary">
+	    <p class="fs-5 fw-bolder">검색</p>
 	
 	    <div class="row ps-2">
 					
@@ -106,8 +129,8 @@
 	
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
-           <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button type="button" id="planSearchBtn" class="btn btn-warning mag-glass-btn mag-glass-btn me-2" onclick="searchProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -123,22 +146,14 @@
 			<div class="col-5 card card-body m-2">
 				<p class="fs-5 fw-bolder mt-2">제품 목록</p>
 				<div id="grid">
-					<div id="pagination" class="tui-pagination"></div>
 				</div>
 			</div>
 
 			<div class="col-5 card card-body m-2">
-				<p class="fs-5 fw-bolder mt-2">입고 등록</p>
 				<div id="grid2"></div>
 
-				<div class="d-flex justify-content-end mt-2">
-					<div class="col">
-				<div class="card card-body mt-3">
-					
-					<!-- 제품 상세 정보 및 BOM 정보 -->
-					<div class="d-flex align-items-top">
-							<p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
-					</div>
+			<div class="col">
+				<p class="fs-5 fw-bolder mb-3 me-3">선택한 제품</p>
 					<div class="row">
 						<label class="col-4 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 						<div class="col-8 col-lg-4 d-flex mb-2">
@@ -172,10 +187,9 @@
 								style="height: 45px; margin-top: 10px;">등록</button>
 							<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn" >초기화</button>
 						</div>
-				</div>
 
 			</div>
-		</div>
+
 
 	</div>
 	
@@ -219,9 +233,40 @@
 	</div>
 
 
+	<!-- 경고 모달 -->
+      <div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header" style="height: 20px;">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+              <div>
+                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+              </div>
+              <div>
+                <p style="margin-top: 12px;
+                font-size: 21px;
+                font-weight: bold;">알림</p>
+                <p id="warning">내용을 수정하시겠습니까?</p>
+              </div>
+            </div>
+            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+              <!---->
+              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+	
+	
 	
 		//초기화 화면 새로고침
 		document.getElementById('resetBtn').addEventListener('click', function() {
@@ -239,7 +284,6 @@
 	
 	
 		inputReset.addEventListener('click', function(){
-			console.log('클릭')
 			document.querySelector('#searchProductCode').value = '';
        		document.querySelector('#searchProductName').value = '';
        		document.querySelector('#startUnitPrice').value = '';
@@ -277,12 +321,14 @@
 	          useClient: false,
 	          perPage: 10
 	        },
+	      bodyHeight: 417,
 	      columns: [ 
-	        { header: "제품코드", name: "productCode", align: "center"},
-	        { header: "제품명", name: "productName", align: "center"},
-	        { header: "단가", name: "unitPrice", align: "center"},
+	        { header: "제품코드", name: "productCode", align: "center", sortable: true},
+	        { header: "제품명", name: "productName", sortable: true},
+	        { header: "단가", name: "unitPrice", align: "center", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 	      ],
 	      data: dataSource,
+	      showDummyRows: true
 	    });
 	    
 	    /*
@@ -300,37 +346,89 @@
 	   	const storeProduct = new Grid({
 	   		el: document.getElementById('storeProduct'),
 	   		rowHeaders: ['rowNum'],
+	   		bodyHeight: 253,
 	   		columns: [
 	   			{ header: "제품코드", name: "productCode", align: "center" },
-	   			{ header: "제품명", name: "productName", align: "center" },
-	   			{ header: "색상", name: "color", align: "center" },
-	   			{ header: "사이즈", name: "sizeCode", align: "center" },
-	   			{ header: "수량", name: "productQy", editor: "text" },
-	   			{ header: "창고위치", name: "location" },
+	   			{ header: "제품명", name: "productName", width: 200},
+	   			{ header: "색상", name: "color" },
+	   			{ header: "사이즈", name: "sizeCode"},
+	   			{ header: "수량", name: "productQy", editor: "text", align: 'right', formatter: (row) => numberFormatter(row.value) },
+	   			{ header: "창고위치", name: "locationName", className: 'storage-location-cell' },
+	   			{ header: "창고위치", name: "location", className: 'storage-location-cell', hidden:true },
 	   		],
 	   		data: [],
+	   		showDummyRows: true
 	   	})
 	   	
+	    
+	   	storeProduct.on('afterChange', ev => {
+	   	    let changed = ev.changes[0];
+	   	    let rowKey = changed.rowKey;
+	   	    let row = storeProduct.getRow(rowKey);
+	   	    let val = changed.value;
+	   	 	let columnName = changed.columnName;
+	   	    
+	   	    if(columnName === 'productQy'){	   	    	
+		   	    if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
+		   	        failToast('입력값은 문자가 들어갈 수 없습니다.');
+	
+		   	        // 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
+		   	        row.productQy = changed.prevValue == null ? 0 : changed.prevValue;
+		   	     	storeProduct.setRow(rowKey, row);
+		   	       return;
+		   	    } else if (val < 0){ // 음수면 양수로 전환 
+		   	        val = val * -1;
+		   	        row.productQy = val;
+		   	        storeProduct.setRow(rowKey, row);
+		   	        failToast('입력값은 음수가 될 수 없습니다.');
+		   	    }
+	   	    }
+
+	   	}); 
+
+	    
+	    
 	   	
 	    const modalGrid = new Grid({
 	    	el: document.getElementById('modalGrid'),
 	    	rowHeaders: ['rowNum'],
 	    	columns: [
-	    		{ header: "창고코드", name: "storageCode" },
-	    		{ header: "창고상세코드", name: "storageInfoCode" },
-	    		{ header: "창고이름", name: "storageInfoName" },
+	    		{ header: "창고코드", name: "storageCode", align: "center", sortable: true  },
+	    		{ header: "창고상세코드", name: "storageInfoCode", sortable: true },
+	    		{ header: "창고이름", name: "storageInfoName", sortable: true },
 	    	],
 	    	data: [],
 	    })
 	    
+	    let locationData = [];
+	    
+	   	function searchLocation() {
+	   	    let storageCode = document.querySelector('#searchStorageCode').value;
+	   	    let storageInfoCode = document.querySelector('#searchStorageInfoCode').value;
+	   	    let storageInfoName = document.querySelector('#searchStorageInfoName').value;
+	   	    
+	   	    const filteredData = locationData.filter(item => {
+	   	        return (!storageCode || String(item.storageCode).includes(storageCode)) &&
+	   	               (!storageInfoCode || String(item.storageInfoCode).includes(storageInfoCode)) &&
+	   	               (!storageInfoName || String(item.storageInfoName).includes(storageInfoName));
+	   	    });
+
+	   	    console.log(filteredData); // 필터링된 데이터 출력
+	   	    modalGrid.resetData(filteredData); // 그리드에 반영
+	   	}
+
+	    function searchLocationReset(){
+	    	modalGrid.resetData(locationData);
+	    }
+	   	
+	   	
 	   	/*
 	   	*========================================================================
 	   	* 제품 입고 그리드 END
 	   	*========================================================================
 	   	*/
 	   	
-	   	
-	   	
+	
 	   	
 	    
 	    
@@ -443,10 +541,13 @@
 
 		// 제품 추가 버튼 클릭 시
 		addProduct.addEventListener('click', function () {
-		    console.log('클릭');
+			
 		    productCode = document.querySelector('#productCode').value;
+		    
 		    if (productCode == null || productCode == "") {
-		        console.log('제품을 선택하세요');
+		    	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+		    	document.querySelector("#warning").innerText = "제품을 선택하세요";
+		    	modifyMOdal.show();
 		    } else {
 		        // 이미 3번 그리드에 있는지 확인
 		        let isProductExist = false;
@@ -459,7 +560,9 @@
 		        });
 		
 		        if (isProductExist) {
-		            alert('이미 등록된 제품입니다.');
+		        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+			    	document.querySelector("#warning").innerText = "이미 등록된 제품입니다.";
+			    	modifyMOdal.show();
 		        } else {
 		            // 새로운 제품 추가
 		            let objInfo = {
@@ -499,7 +602,9 @@
 			let check = storeProduct.getData();
 	   		
 	   		if(check.length == 0){
-	   			alert('선택된 제품이 없습니다. 제품을 추가해주세요.');
+	   			let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+		    	document.querySelector("#warning").innerText = "선택된 제품이 없습니다. 제품을 추가해주세요.";
+		    	modifyMOdal.show();
 	   			return ;
 	   		}
 	   		
@@ -573,14 +678,14 @@
 	   	
 	   	storeProduct.on('click', ev => {
 	   		
-	   		if(ev.columnName == "location"){
-	   			console.log("창고위치 클릭시 발동")
+	   		if(ev.columnName == "locationName"){
 	   			let modal = new bootstrap.Modal(document.getElementById('exampleModal'));
 		        modal.show();
 		        
 	   			fetch(`/store/storageInfoList`)
 	   			    .then(rep => rep.json())
 	   			    .then(data => {
+	   			    	locationData = data;
 	   			    	modalGrid.resetData(data);
 	   			    })
 	   		}
@@ -600,7 +705,8 @@
 	   	    let selectedRowKey = storeProduct.getFocusedCell()?.rowKey; // 현재 선택된 storeProduct 행 가져오기
 	   	    
 	   	    if (selectedRowKey !== null && selectedRowKey !== undefined) {
-	   	        storeProduct.setValue(selectedRowKey, 'location', data.storageInfoCode); // location 값 업데이트
+	   	        storeProduct.setValue(selectedRowKey, 'location', data.storageInfoCode);
+	   	     	storeProduct.setValue(selectedRowKey, 'locationName', data.storageInfoName);
 	   	    }
 
 	   	    // 기존 모달 인스턴스 가져와서 닫기

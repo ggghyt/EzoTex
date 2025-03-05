@@ -72,9 +72,11 @@
 		       i.product_color,
 		       i.inventory_qy,
 		       i.store_charger,
-		       i.storage_location
+		       s.storage_info_name
 		FROM inventory i join product_info p
 		ON i.product_code = p.product_code
+		join storage_info s 
+        on i.storage_location = s.storage_info_code
 		WHERE i.product_size = #{sizeCode}
 		AND i.product_color = #{color}
 		AND i.product_code = #{productCode}
@@ -94,9 +96,12 @@
 		                       i.lot,
 		                       i.storage_location,
 		                       i.inventory_qy,
-		                       i.store_date
+		                       i.store_date,
+		                       s.storage_info_name as storageName
 		                FROM inventory i JOIN product_info p 
 		                ON i.product_code = p.product_code
+		                join storage_info s
+						on i.storage_location = s.storage_info_code
 		                <where>
 		                	AND product_se = 'PT02'
 		                	AND i.inventory_qy > 0
@@ -128,7 +133,8 @@
 		                	AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
 		                </if>
 		                </where>
-		                GROUP BY i.lot, p.product_name, i.product_color, get_comm(i.product_size), i.storage_location, i.inventory_qy, i.product_code, i.store_date
+		                GROUP BY i.lot, p.product_name, i.product_color, get_comm(i.product_size), 
+		                			i.storage_location, i.inventory_qy, i.product_code, i.store_date,s.storage_info_name
 		                ORDER BY lot desc
 		            ) a
 		        WHERE ROWNUM <![CDATA[ <= ]]> #{end} ) page
