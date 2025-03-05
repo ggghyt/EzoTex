@@ -35,5 +35,8 @@ public class DeliverySearchDTO {
 	String searchLot;
 	String searchColor;
 	
+	String startErrorDate;
+	String endErrorDate;
+	
 	
 }
