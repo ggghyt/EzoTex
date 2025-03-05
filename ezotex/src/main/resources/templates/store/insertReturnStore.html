@@ -118,8 +118,7 @@
 				<div id="grid4"></div> -->
 
 				<div class="d-flex justify-content-end mt-2">
-					<button type="button" id="" class="btn btn-primary registBtn"
-						data-bs-toggle="modal" data-bs-target="#registModal"
+					<button type="button" id="insertReturn" class="btn btn-primary registBtn"
 						style="height: 45px; margin-top: 10px;">등록</button>
 					<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn" >초기화</button>
 				</div>
@@ -167,9 +166,59 @@
 	</div>
 
 
+	<!-- 경고 모달 -->
+      <div class="modal fade" id="modifyMOdal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header" style="height: 20px;">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">수정 확인</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 44px; padding-bottom:10px;">
+              <div>
+                <img src="/images/modal/modify.png" alt="등록확인이미지" style="width: 84px; height:84px; ">
+              </div>
+              <div>
+                <p style="margin-top: 12px;
+                font-size: 21px;
+                font-weight: bold;">알림</p>
+                <p id="warning">내용을 수정하시겠습니까?</p>
+              </div>
+            </div>
+            <div class="modal-footer modify" style="display: flex; justify-content: center; border-top: none; padding-bottom:45px;">
+              <!---->
+              <button type="button" class="btn btn-outline-warning checkBtn" data-bs-dismiss="modal">확인</button>
+              <button type="button" class="btn btn-secondary denyBtn" data-bs-dismiss="modal">취소</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+		insertReturn.addEventListener('click', function(){
+			let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+			let check = storeGrid2.getData();
+			 console.log('check',check);
+				if(check.length == 0){
+					
+					document.querySelector("#warning").innerText = "선택된 제품이 없습니다.";
+					modifyMOdal.show();
+					return ;
+				} 
+				let modal = new bootstrap.Modal(document.getElementById('registModal'));
+		        modal.show();
+		})
+	
+	
+	
 	
 		//초기화 화면 새로고침
 		document.getElementById('resetBtn').addEventListener('click', function() {
@@ -388,17 +437,9 @@
 	    //저장
 	     InsertTest.addEventListener("click", function () {
 	    	
-	    	 
-	    	 let check = storeGrid2.getData();
-			 console.log('check',check);
-				if(check.length == 0){
-					alert('선택된 제품이 없습니다.')
-					return ;
-				} 
-	    	 
-	    	 
 	    	//storeGrid3.blur();
 	    	//storeGrid3.request('modifyData');
+	    	
 	    	console.log('데이터확인', obj);
 	    	// 변경 데이터 등록 처리
 	    	fetch(`http://localhost:80/store/InsertTest`,{
@@ -408,8 +449,14 @@
 	    	}).then(rep => rep.json()) 
 	    	  .then(result =>
 	    	      {
+	    	    	  
+	    	    	  fetch(`http://localhost:80/store/deliveryDetailsList?returnCode=${returnCode}`)
+		  	    		.then(rep => rep.json())
+		  	    		.then(data => {
+		  	    				storeGrid2.resetData(data);
+		  	    			})
 	    	    		// 옵션 그리드 변경 데이터 수정 처리
-	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&deliveryCode=${deliveryCode}`)
+	    		        fetch(`http://localhost:80/store/productCodeList?productCode=${productCode}&returnCode=${returnCode}`)
 	    		            .then(rep => rep.json())
 	    		            .then(data => {
 	    		            	let size = []
@@ -499,6 +546,9 @@
 	
 	    } else {
 	        if (data.location == null) {
+	        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+	        	document.querySelector("#warning").innerText = "창고위치를 선택하세요.";
+	        	modifyMOdal.show();
 	            return;
 	        }
 	
@@ -726,48 +776,7 @@
 	   	
 	   	
 	   	
-	   	
-	   /* 	const storeGrid4 = new Grid({
-			      el: document.getElementById('grid4'), // 컨테이너 엘리먼트
-		            scrollY: true,
-			        scrollX: false,
-			      rowHeaders: ['rowNum'],
-			      columns: [ 
-			        { header: "제품 코드", name: "productCode", editor: "text"},
-			        { header: "제품명", name: "productName", editor: "text"},
-			        { header: "색상", name: "productColor", editor: "text"},
-			        { header: "사이즈", name: "size", editor: "text"},
-			        { header: "불량 수량", name: "errorQy", editor: "text"},
-			        {
-	                      header : '처리상태',
-	                      name : 'status',
-	                      align : 'center',
-	                      editor: {
-	                          type: 'select',
-	                          options: {
-	                              listItems: [
-	                                  { text: '반품', value: '반품' },
-	                                  { text: '교환', value: '교환' },
-	                                  { text: '폐기', value: '폐기' }
-	                              ]
-	                          }
-	                      }
-			        },
-			        { header: "사이즈코드", name: "sizeCode", hidden: true }
-			      ],
-			      data: [],
-			    });
-	   	
-	   
-	   	let info = []
-	   	
-	   	StoreDelete.addEventListener("click", function () {
-	   		
-	   		storeGrid4.resetData(err);
-	   		obj.push(err);
-	   		console.log('obj데이터 확인 : ', obj)
-	   	}) */
-	    
+	  
 	    
 	    
 	    
