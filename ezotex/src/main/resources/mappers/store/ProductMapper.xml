@@ -119,13 +119,13 @@
 		                	AND i.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
 		                </if>
 		                <if test='startStoreDate != null and startStoreDate != ""'>
-		                	AND i.store_date >= #{startStoreDate}
+		                	AND TRUNC(i.store_date) >= #{startStoreDate}
 		                </if>
 		                <if test='endStoreDate != null and endStoreDate != ""'>
-		                	AND i.store_date >= #{endStoreDate}
+		                	AND TRUNC(i.store_date) >= #{endStoreDate}
 		                </if>
 		                <if test='startStoreDate != null and startStoreDate != "" and endStoreDate != null and endStoreDate != ""'>
-		                	AND i.store_date BETWEEN #{startStoreDate} and #{endStoreDate}
+		                	AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
 		                </if>
 		                </where>
 		                GROUP BY i.lot, p.product_name, i.product_color, get_comm(i.product_size), i.storage_location, i.inventory_qy, i.product_code, i.store_date
@@ -162,13 +162,13 @@
              	AND i.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
              </if>
              <if test='startStoreDate != null and startStoreDate != ""'>
-             	AND i.store_date >= #{startStoreDate}
+             	AND TRUNC(i.store_date) >= #{startStoreDate}
              </if>
              <if test='endStoreDate != null and endStoreDate != ""'>
-             	AND i.store_date >= #{endStoreDate}
+             	AND TRUNC(i.store_date) >= #{endStoreDate}
              </if>
              <if test='startStoreDate != null and startStoreDate != "" and endStoreDate != null and endStoreDate != ""'>
-             	AND i.store_date BETWEEN #{startStoreDate} and #{endStoreDate}
+             	AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
              </if>
              </where>
 	</select>
