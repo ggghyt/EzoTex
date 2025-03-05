@@ -527,12 +527,12 @@
 	   	
 	   	InsertTest.addEventListener('click', function(){
 	   		
-	   		
+	   	   let check = storeProduct.getData();
 	   		
 	   		// 데이터에서 사이즈 값 변환
 	   	   let transformedData = check.map(item => {
-	   	        // 사이즈 값 변환
-	   	        item.sizeCode = getSizeCommonCode(item.sizeCode);
+	   	     // 사이즈 값 변환
+	   	     item.sizeCode = getSizeCommonCode(item.sizeCode);
 	   	        
 	   	     console.log(item.sizeCode);
 	   	        
@@ -546,8 +546,7 @@
 	    		body: JSON.stringify(transformedData)
 	   		}).then(rep => rep.json())
 	   		  .then(result => {
-	   			  location.reload();
-	   			  console.log(result);
+	   			 storeProduct.resetData([]);
 	   		  })
 	   		
 	   	})

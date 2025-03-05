@@ -153,6 +153,8 @@ public class CommonController {
 		file.transferTo(new File(file_img + uuidFileName));
 		companyDTO.setCompanyImg(uuidFileName);
 		
+		System.out.println("파일저장경로확인" + file_img);
+		
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 		String result = encoder.encode(companyDTO.getCompanyPassword());
 		companyDTO.setCompanyPassword(result);

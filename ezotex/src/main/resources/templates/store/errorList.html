@@ -58,7 +58,7 @@
 	    <!-- 버튼 -->
 	    <div class="d-flex justify-content-center mt-2">
            <button type="button" id="planSearchBtn" class="btn btn-secondary mag-glass-btn me-2" onclick="searchErrorProductList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #646464;"></i></button>
-           <button type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+           <button id="inputReset" type="reset" class="btn btn-warning mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
          </div>
 	  </div>
 	</div>
@@ -67,7 +67,7 @@
 	<div class="row">
 		<div class="col-5 card card-body m-2">
 			<p class="fs-5 fw-bolder mt-2">불량 제품 목록</p>
-		    <div class="d-flex align-items-center">
+		    <!-- <div class="d-flex align-items-center">
 			    <button class="btn btn-dark btn-sm" style="width:150px" onclick="exportSelectedToPDF()">PDF 내보내기</button>
 			    <label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">출력할 제품 선택</label>
 			    <div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
@@ -77,8 +77,8 @@
 			            <option value="PT01">PRD0002</option>
 			        </select>
 			    </div>
-			</div>
-			<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
+			</div> -->
+			<button id="xlsx" class="btn btn-dark btn-sm" style="width:200px;">EXCEL 내보내기</button>
 			<div id="grid">
 				<div id="pagination" class="tui-pagination"></div>
 			</div>
@@ -94,15 +94,25 @@
 			    fileName: '자재명세서' + '_' + dateFormatter().replaceAll('-','')
 			  });
 			});
-	
-	
+		
+		inputReset.addEventListener('click', function(){
+			document.querySelector("#searchProductCode").value = '';
+			document.querySelector("#searchProductName").value = '';
+			document.querySelector("#searchColor").value = '';
+			document.querySelector("#searchSize").value = '';
+			document.querySelector("#searchLot").value = '';
+			document.querySelector("#requestor").value = '';
+			document.querySelector("#startErrorDate").value = '';
+			document.querySelector("#endErrorDate").value = '';
+			searchErrorProductList();
+		})
 	
 			function searchErrorProductList(){
 				errorGrid.readData(1,{
 					productCode: document.querySelector("#searchProductCode").value,
-					ProductName: document.querySelector("#searchProductName").value,
+					productName: document.querySelector("#searchProductName").value,
 					color: document.querySelector("#searchColor").value,
-					sizeCode: document.querySelector("#searchSize").value,
+					sizeCode: getSizeCommonCode(document.querySelector("#searchSize").value.toUpperCase()),
 					searchLot: document.querySelector("#searchLot").value,
 					requestor: document.querySelector("#requestor").value,
 					startErrorDate: document.querySelector("#startErrorDate").value,

@@ -241,6 +241,35 @@
 		                   e.error_info
 		            FROM inventory_error e join product_info i
 		            on e.product_code = i.product_code
+		            <where>
+		            <if test='productCode != null and productCode != ""'>
+		                 AND e.product_code LIKE '%' || UPPER(#{productCode}) || '%'
+		            </if>
+		            <if test='productName != null and productName != ""'>
+		                 AND i.product_Name LIKE '%' || UPPER(#{productName}) || '%'
+		            </if>
+		            <if test='color != null and color != ""'>
+		                 AND e.product_color LIKE '%' || UPPER(#{color}) || '%'
+		            </if>
+		            <if test='sizeCode != null and sizeCode != ""'>
+		                 AND e.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+		            </if>
+		            <if test='searchLot != null and searchLot != ""'>
+		                 AND e.lot LIKE '%' || UPPER(#{searchLot}) || '%'
+		            </if>
+		            <if test='requestor != null and requestor != ""'>
+		                 AND e.error_charger LIKE '%' || UPPER(#{requestor}) || '%'
+		            </if>
+		            <if test='startErrorDate != null and startErrorDate != ""'>
+		                 AND TRUNC(e.process_date) >= TO_DATE(#{startErrorDate}, 'yyyy-mm-dd')
+		            </if>
+		            <if test='endErrorDate != null and endErrorDate != ""'>
+		                 AND TRUNC(e.process_date) <![CDATA[ <= ]]> TO_DATE(#{endErrorDate}, 'yyyy-mm-dd')
+		            </if>
+		            <if test='startErrorDate != null and startErrorDate != "" and endErrorDate != null and endErrorDate != ""'>
+		                 AND TRUNC(e.process_date) BETWEEN TO_DATE(#{startErrorDate}, 'yyyy-mm-dd') AND TO_DATE(#{endErrorDate}, 'yyyy-mm-dd')
+		            </if>
+		            </where>
 		            ORDER BY e.process_date desc
 		            )a
 		        WHERE ROWNUM <![CDATA[ <= ]]> #{end}) page
@@ -251,6 +280,35 @@
 	<select id="errorProductCount">
 		SELECT COUNT(*)
 		FROM inventory_error
+		<where>
+            <if test='productCode != null and productCode != ""'>
+                 AND e.product_code LIKE '%' || UPPER(#{productCode}) || '%'
+            </if>
+            <if test='productName != null and productName != ""'>
+                 AND i.product_Name LIKE '%' || UPPER(#{productName}) || '%'
+            </if>
+            <if test='color != null and color != ""'>
+                 AND e.product_color LIKE '%' || UPPER(#{color}) || '%'
+            </if>
+            <if test='sizeCode != null and sizeCode != ""'>
+                 AND e.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+            </if>
+            <if test='searchLot != null and searchLot != ""'>
+                 AND e.lot LIKE '%' || UPPER(#{searchLot}) || '%'
+            </if>
+            <if test='requestor != null and requestor != ""'>
+                 AND e.error_charger LIKE '%' || UPPER(#{requestor}) || '%'
+            </if>
+            <if test='startErrorDate != null and startErrorDate != ""'>
+                 AND TRUNC(e.process_date) >= TO_DATE(#{startErrorDate}, 'yyyy-mm-dd')
+            </if>
+            <if test='endErrorDate != null and endErrorDate != ""'>
+                 AND TRUNC(e.process_date) <![CDATA[ <= ]]> TO_DATE(#{endErrorDate}, 'yyyy-mm-dd')
+            </if>
+            <if test='startErrorDate != null and startErrorDate != "" and endErrorDate != null and endErrorDate != ""'>
+                 AND TRUNC(e.process_date) BETWEEN TO_DATE(#{startErrorDate}, 'yyyy-mm-dd') AND TO_DATE(#{endErrorDate}, 'yyyy-mm-dd')
+            </if>
+       </where>
 	</select>
 	
 </mapper>
