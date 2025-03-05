@@ -264,7 +264,7 @@ public class StandardController {
 	
 	@GetMapping("/safetyStock")
 	public String safetyStock() {
-		return "/standard/safetyStock";
+		return "standard/safetyStock";
 	}
 	
 	@ResponseBody
