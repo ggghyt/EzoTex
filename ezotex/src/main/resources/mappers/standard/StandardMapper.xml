@@ -406,6 +406,7 @@ select info_no,
 from infomation
 join emp
 on infomation.writer = emp.emp_code
+order by 1 desc
 </select>
 
 <select id="getInfomationCount">
