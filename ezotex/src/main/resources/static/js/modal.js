@@ -4,7 +4,7 @@ function createModal(options){
 			header: '제목 null 시 기본 멘트 적용',
 			title: '소제목 null 시 기본 멘트 적용',
 			content: '짧은 메세지 null 시 기본 멘트 적용',
-      buttonText: '확인버튼 이름'.
+            buttonText: '확인버튼 이름'.
 			confirm: function(){} // (확인 버튼 클릭 시 실행할 함수),
 			denyMsg: '취소 클릭 시 출력할 토스트 메세지',
 		}

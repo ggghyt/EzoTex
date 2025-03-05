@@ -251,6 +251,7 @@
 			       o.charger_name,
 			       o.remark,
 			       o.rgsde,
+			       o.update_date,
 			       get_comm(o.status) status
 			FROM   material_order o JOIN material_order_details d ON o.mtril_order_code = d.mtril_order_code
 			<where>
@@ -260,7 +261,7 @@
               <if test='companyCode != null and companyCode != ""'> AND UPPER(o.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if>
               <if test='companyName != null and companyName != ""'> AND UPPER(o.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if>
             </where> 
-			GROUP  BY o.mtril_order_code, o.company_code, o.company_name, o.due_date, o.charger_name, o.remark, o.rgsde, o.status
+			GROUP  BY o.mtril_order_code, o.company_code, o.company_name, o.due_date, o.charger_name, o.remark, o.rgsde, o.update_date, o.status
 		    ) -- 바깥에서 검색하여 alias 이용 가능
 		<where> 
           <if test='mtrilOrderCode != null and mtrilOrderCode != ""'> AND UPPER(mtril_order_code) LIKE '%' || UPPER(#{mtrilOrderCode}) || '%' </if>
@@ -350,7 +351,7 @@
   </update>
   
   <update id="updateOrderDetail" parameterType="MaterialOrderDTO">
-    UPDATE material_order
+    UPDATE material_order_details
     SET    order_qy = #{orderQy}
     WHERE  mtril_order_code = #{mtrilOrderCode}
       AND  product_code = #{productCode}

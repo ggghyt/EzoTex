@@ -37,18 +37,19 @@
 		    el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
 		    data: { api: { readData: { url: '/mtr/orderList', method: 'GET' }, initialRequest: false } },
 		    columns: [
-		        { header: '발주코드', name: 'mtrilOrderCode', width: 120 },
-		        { header: '업체코드', name: 'companyCode' },
+		        { header: '발주코드', name: 'mtrilOrderCode', align: 'center', width: 110 },
+		        { header: '업체코드', name: 'companyCode', align: 'center', width: 100 },
 		        { header: '업체명', name: 'companyName', width: 150 },
-		        { header: '납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
-		        { header: '요약', name: 'summary', width: 150 },
+		        { header: '납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value) },
+		        { header: '요약', name: 'summary' },
 		        { header: '발주량', name: 'orderQy', align: 'right',
 		            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 	            { header: '발주금액', name: 'amount', align: 'right',
 	                    formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-		        { header: '비고', name: 'remark', whiteSpace: 'pre-line', width: 150 },
-		        { header: '담당자', name: 'chargerName' },
-		        { header: '등록일', name: 'rgsde', formatter: (row) => dateFormatter(row.value) },
+		        { header: '비고', name: 'remark', whiteSpace: 'pre-line' },
+		        { header: '담당자', name: 'chargerName', align: 'center' },
+		        { header: '등록일', name: 'rgsde', width: 100, align: 'center', formatter: (row) => dateFormatter(row.value) },
+		        { header: '최종변경일', name: 'updateDate', width: 100, align: 'center', formatter: (row) => dateFormatterNull(row.value) },
 		        { header: '상태', name: 'status', align: 'center',
 		          renderer: {
 		            styles: {
@@ -92,7 +93,7 @@
 	        el: document.getElementById('planDetailGrid'), // 해당 위치에 그리드 출력
 	        data: [],
 	        columns: [
-	            { header: '자재코드', name: 'productCode', sortable: true },
+	            { header: '자재코드', name: 'productCode', sortable: true, align: 'center' },
 	            { header: '자재명', name: 'productName', sortable: true },
 	            { header: '색상', name: 'productColor', sortable: true, 
 	            	formatter: (row) => row.value == 'null' ? '' : row.value },
@@ -170,35 +171,37 @@
 		    planDetailGrid.resetData(data);
 		    
 		    modalTitle.innerText = '발주서 상세조회';
-		    modifyBtn.style.display = '';
 		    planDetailDiv.style.display = '';
 		    $('#myModal').modal('show');
 		    planDetailGrid.refreshLayout(); 
 		  });
 		}
 		
-		// 발주취소버튼 동작 (상태가 RS01='대기'인 발주서에만 표시)	
+		// 발주취소버튼 동작 (상태가 '대기'인 발주서에만 수정/취소표시)	
 		document.addEventListener('DOMContentLoaded', () => {
 			createModal({ 
 		      type: 'delete',
 		      header: '취소 확인',
 		      content: '해당 발주내역을 취소하시겠습니까?',
-		    	buttonText: '확인',
+		      buttonText: '확인',
 		      confirm: () => {
-		    	  fetch('/mtr/mtrOrder', {
+		        let headerObj = {mtrilOrderCode: selected.mtrilOrderCode, status: 'RS04'};
+		        
+		    	fetch('/mtr/mtrOrder', {
 	    	        method: 'PUT',
 	    	        headers: {...headers, 'Content-Type': 'application/json'},
-	    	        body: JSON.stringify({mtrilOrderCode: selected.mtrilOrderCode, status: 'RS04'})
+	    	        body: JSON.stringify({headerObj, detailArr: []})
 	    	    })
 	    	    .then(response => response.json())
 	    	    .then(result => {
 	    	        if(result == true){
-	    	        	successToast('발주내역이 취소되었습니다.');
+	    	        	successToast('작업이 완료되었습니다.');
 	    	        	selected.status = '취소';
+	    	        	selected.updateDate = dateFormatter();
 	    	        	planGrid.setRow(selected.rowKey, selected);
 	    	        	cancelBtn.style.display = 'none';
 	    	        }
-	    	        else failToast('알 수 없는 오류로 실패했습니다.');
+	    	        else failToast('작업을 실패했습니다.');
 	    	    });
 		      }
 		  }); 
@@ -207,6 +210,7 @@
 		cancelBtn.addEventListener('click', () => {
 			$('#simpleModal').modal('show');
 		});
+		
 		
 	  </script>
 	  

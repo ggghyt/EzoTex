@@ -170,7 +170,7 @@ const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '자재코드', name: 'PRODUCT_CODE', width: 150, sortable: true },
+        { header: '자재코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' },
         { header: '자재명', name: 'PRODUCT_NAME', minWidth: 250, whiteSpace: 'pre-line', sortable: true },
         { header: '단위', name: 'UNIT_NAME', width: 150, sortable: true },
         { header: '기본단가', name: 'UNIT_PRICE', width: 150, sortable: true, align: 'right',
@@ -204,12 +204,12 @@ const companyGrid = new Grid({
     el: document.getElementById('companyGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-        { header: '업체코드', name: 'companyCode', width: 100, sortable: true },
+        { header: '업체코드', name: 'companyCode', width: 100, sortable: true, align: 'center' },
         { header: '업체명', name: 'companyName', width: 150, ellipsis: true, sortable: true },
         { header: '소재지', name: 'addressInfo', minWidth: 250, ellipsis: true, sortable: true },
-        { header: '담당자', name: 'companyCharger', width: 100, sortable: true },
-        { header: '연락처', name: 'companyPhone', width: 100, sortable: true },
-				{ header: '', name: '', className: 'comp', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
+        { header: '담당자', name: 'companyCharger', width: 100, sortable: true, align: 'center' },
+        { header: '연락처', name: 'companyPhone', width: 100, sortable: true, align: 'center' },
+		{ header: '', name: '', className: 'comp', renderer: { type: CustomBtnRender, options: {}}, width: 100, align: 'center' }
     ],
     columnOptions: { resizable: true },
     rowHeaders: ['rowNum'],
@@ -239,11 +239,11 @@ const orderGrid = new Grid({
 	el: document.getElementById('orderGrid'), // 해당 위치에 그리드 출력
     data: [],
     columns: [
-			  { header: '업체코드', name: 'companyCode', sortable: true },
+			  { header: '업체코드', name: 'companyCode', sortable: true, align: 'center' },
 		    { header: '업체명', name: 'companyName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
-		    { header: '자재코드', name: 'productCode', sortable: true },
+		    { header: '자재코드', name: 'productCode', sortable: true, align: 'center' },
 		    { header: '자재명', name: 'productName', minWidth: 100, whiteSpace: 'pre-line', sortable: true },
-			  { header: '색상', name: 'productColor', sortable: true, formatter: row => row.value == 'null' ? null : row.value},
+			{ header: '색상', name: 'productColor', sortable: true, formatter: row => row.value == 'null' ? null : row.value},
 	    	{ header: '수량', name: 'orderQy', sortable: true, align: 'right',
 			  		formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 	    	{ header: '단위', name: 'unitName', width: 50, sortable: true },
@@ -252,7 +252,7 @@ const orderGrid = new Grid({
 			  { header: '금액', name: 'amount', sortable: true, align: 'right',
 					  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 	    	{ header: '', name: '', renderer: { type: CustomDelBtnRender, options: {}}, minWidth: 60, align: 'center' },
-			  { header: '색상 및 단가정보', name: 'colorInfo', hidden: true }
+			{ header: '색상 및 단가정보', name: 'colorInfo', hidden: true }
     ],
     rowHeaders: ['rowNum'],
   	scrollX: false, // 가로 스크롤
@@ -277,13 +277,13 @@ const orderGrid = new Grid({
 const insertGrid = new Grid({
 		el: document.getElementById('insertGrid'), // 해당 위치에 그리드 출력
     columns: [
-			  { header: '업체코드', name: 'companyCode' },
+			  { header: '업체코드', name: 'companyCode', align: 'center' },
 		    { header: '업체명', name: 'companyName', minWidth: 100, whiteSpace: 'pre-line' },
 	    	{ header: '발주량', name: 'totalQy', align: 'right',
 			  		formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 			  { header: '발주금액', name: 'totalAmount', align: 'right',
 					  formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-	    	{ header: '납기일', name: 'dueDate', 
+	    	{ header: '납기일', name: 'dueDate', align: 'center', 
               editor: { 
                 type: 'datePicker', 
                 options: { selectableRanges: [[new Date(), new Date('9999-12-31')]] }
@@ -301,15 +301,15 @@ const insertGrid = new Grid({
 const planGrid = new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
     columns: [
-        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 110 },
-        { header: '계획납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value) },
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 110, align: 'center' },
+        { header: '계획납기일', name: 'dueDate', formatter: (row) => dateFormatter(row.value), align: 'center' },
         { header: '요약', name: 'summary', width: 150 },
         { header: '발주계획량', name: 'orderQy', align: 'right',
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
         { header: '비고', name: 'remark', whiteSpace: 'pre-line', width: 150 },
-        { header: '담당자', name: 'chargerName' },
-        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value) },
-        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value) },
+        { header: '담당자', name: 'chargerName', align: 'center' },
+        { header: '등록일', name: 'rgsde', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
+        { header: '최종변경일', name: 'updateDate', width: 100, formatter: (row) => dateFormatterNull(row.value), align: 'center' },
         { header: '상태', name: 'status', align: 'center', width: 80,
           renderer: {
             styles: {

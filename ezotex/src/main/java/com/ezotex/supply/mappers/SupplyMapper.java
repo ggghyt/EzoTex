@@ -32,15 +32,15 @@ public interface SupplyMapper {
 	int countSupplyPlan(Map<String, Object> map);
 	
 	// 공급계획서 단건조회
-	List<SupplyDTO> infoSupplyPlan(@Param("supplyPlanCode") String supplyPlanCode,
-			                       @Param("productCode") String productCode);
+	List<SupplyDTO> infoSupplyPlan(Map<String, String> map);
 	
 	// 공급계획서 등록
 	int insertSupplyPlan(Object supply);
 	int insertSupplyPlanDetail(Object supply);
 	
 	// 공급계획서 수정
-	int updateSupplyPlan(String supplyPlanCode);
+	int updateSupplyPlan(@Param("supplyPlanCode") String supplyPlanCode,
+			             @Param("discontinued") String discontinued);
 	int updateSupplyPlanDetail(SupplyDTO dto);
 	
 	// 자재소요계획 조회

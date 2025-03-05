@@ -18,6 +18,7 @@ public class MaterialOrderDTO {
 	private String chargerName;
 	private String remark;
 	private Date rgsde;
+	private Date updateDate;
 	private String status;
 	
 	private String mtrilOrderDetailCode;

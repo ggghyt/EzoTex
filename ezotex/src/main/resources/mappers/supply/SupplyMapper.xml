@@ -74,7 +74,8 @@
 	           p.charger_name,
 	           p.remark,
 	           p.rgsde,
-	           p.update_date
+	           p.update_date,
+	           get_comm(p.discontinued) discontinued
 	    FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code 
 	    <where>
 	       <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
@@ -146,11 +147,23 @@
 		FROM   supply_plan_details
 		<where>
 		  <if test='supplyPlanCode != null'>AND supply_plan_code = #{supplyPlanCode}</if>
-		  <if test='productCode != null'>AND product_code IN ( SELECT b.product_code 
-					                        FROM   bom b JOIN supply_plan_details sd ON b.product_code = sd.product_code
-					                                     JOIN bom_details d ON b.bom_code = d.bom_code
-					                                      AND b.bom_code = (SELECT MAX(b.bom_code) FROM bom b WHERE b.product_code = sd.product_code)
-					                        WHERE  d.mtril_code = #{productCode} )</if>
+		  <if test='productCode != null'> <!-- mrp에서 공급계획서 상세조회할 때 사용 -->
+		  AND product_code IN ( SELECT b.product_code 
+		                        FROM   bom b JOIN supply_plan_details sd ON b.product_code = sd.product_code
+		                                     JOIN bom_details d ON b.bom_code = d.bom_code
+		                                      AND b.bom_code = (SELECT MAX(b.bom_code) FROM bom b WHERE b.product_code = sd.product_code)
+		                        WHERE  d.mtril_code = #{productCode} )
+		  AND  supply_plan_code IN (SELECT supply_plan_code
+	                                FROM   supply_plan
+	                                <where>
+	                                  AND discontinued = 'YN02'
+	                                  <if test='supplyYear != null and supplyYear != ""'>AND supply_year = #{supplyYear}</if>
+							          <if test='season != "null" and season != null and season != ""'>AND season = #{season}</if>
+	                                </where> )
+	        <if test='supplyYear != null and supplyYear != "" and supplyMonth != null and supplyMonth != ""'>
+               AND TO_CHAR(supply_date, 'yyyy-mm') = #{supplyYear} || '-' || LPAD(#{supplyMonth}, 2, 0)
+            </if>
+          </if>
 		</where>
 		GROUP  BY product_code, supply_date, supply_plan_code
 		ORDER  BY product_code DESC
@@ -214,7 +227,10 @@
 	<!-- 공급계획 수정(헤더) -->
   <update id="updateSupplyPlan" parameterType="String">
     UPDATE supply_plan
-    SET    update_date = SYSDATE
+    <trim prefix="SET" suffixOverrides=",">
+      update_date = SYSDATE,
+      <if test='discontinued != null'>discontinued = #{discontinued},</if>
+   </trim>
     WHERE  supply_plan_code = #{supplyPlanCode}
   </update>
   
@@ -243,11 +259,13 @@
 		       SUM(bd.require_qy * sd.supply_qy) supply_qy,
 		       sd.supply_date
 		FROM   supply_plan s JOIN supply_plan_details sd ON s.supply_plan_code = sd.supply_plan_code
+		                                                AND s.discontinued = 'YN02' -- 중단되지 않은 공급계획만 조회
 		                     JOIN bom b ON b.product_code = sd.product_code
 		                               AND b.bom_code = (SELECT MAX(bom_code) FROM bom WHERE product_code = sd.product_code)
 		                     JOIN bom_details bd ON b.bom_code = bd.bom_code
 		                     JOIN product_info i ON bd.mtril_code = i.product_code
 		<where>
+		  AND s.discontinued = 'YN02'
 		  <if test='supplyYear != null and supplyYear != ""'>AND s.supply_year = #{supplyYear}</if>
 		  <if test='supplyYear != null and supplyYear != "" and supplyMonth != null and supplyMonth != ""'>
 		     AND TO_CHAR(sd.supply_date, 'yyyy-mm') = #{supplyYear} || '-' || LPAD(#{supplyMonth}, 2, 0)

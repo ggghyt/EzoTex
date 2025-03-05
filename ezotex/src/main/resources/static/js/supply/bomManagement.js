@@ -52,7 +52,7 @@ const createOptions = async function(ele, uri){
 	.then(response => response.json())
 	.then(data => {		
 		for(let value of data){	
-      if(value.productSize == null && value.productColor == null) continue; // null은 무시
+            if(value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
 			
 			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우
@@ -137,7 +137,7 @@ const prdGrid = new Grid({
     el: document.getElementById('prdGrid'), // 해당 위치에 그리드 출력
     data: prdData,
     columns: [
-        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true },
+        { header: '제품코드', name: 'PRODUCT_CODE', width: 100, sortable: true, align: 'center' },
         { header: '제품명', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true },
         { header: '상태', name: 'STATUS', width: 100, sortable: true, align: 'center',
           renderer: {
@@ -174,7 +174,7 @@ const prdGrid = new Grid({
 const mtrGrid = new Grid({
     el: document.getElementById('mtrGrid'), // 해당 위치에 그리드 출력
     columns: [
-        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true },
+        { header: '자재코드', name: 'mtrilCode', width: 100, sortable: true, align: 'center' },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
 				{ header: '색상', name: 'colorList', renderer: { type: CustomSelectBox, options: {}} },
         { header: '단위', name: 'unitName', width: 100, sortable: true }
@@ -190,7 +190,7 @@ const mtrGrid = new Grid({
 const selectedMtrGrid = new Grid({
 	el: document.getElementById('selectedMtrGrid'), // 해당 위치에 그리드 출력
     columns: [
-        { header: '자재코드', name: 'mtrilCode', sortable: true },
+        { header: '자재코드', name: 'mtrilCode', sortable: true, align: 'center' },
         { header: '자재명', name: 'mtrilName', whiteSpace: 'pre-line', sortable: true },
 				{ header: '색상', name: 'mtrilColor', whiteSpace: 'pre-line', sortable: true,
 					formatter: row => row.value == 'null' ? null : row.value
@@ -254,7 +254,7 @@ let selectedPrd = null;
 let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 
 // 선택된 행 강조 & 정보 가져오기
-prdGrid.on('focusChange', ev => {
+prdGrid.on('focusChange', async ev => {
 	// 배경색 클래스 적용
 	prdGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
 	prdGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
@@ -264,7 +264,8 @@ prdGrid.on('focusChange', ev => {
 	selectedPrd = prdGrid.getRow(ev.rowKey);
 	document.getElementById('selectedPrdCode').value = selectedPrd.PRODUCT_CODE;
 	document.getElementById('selectedPrdName').value = selectedPrd.PRODUCT_NAME;
-	let colorData = createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	let colorData = await createOptions(colorBox, `/supply/options/${selectedPrd.PRODUCT_CODE}`); // 선택한 제품의 색상 목록 불러오기
+	console.log('colorData', colorData);
 	if(colorData.length > 0 && colorData[0].productColor == null) createOptions(sizeBox, `/supply/optionSize/${selectedPrd.PRODUCT_CODE}`); // 색상 없으면 사이즈 목록 불러오기
 	loadMtrGrid( {productCode: selectedPrd.PRODUCT_CODE} ); // 선택한 제품의 bom 자재 출력
 });
@@ -425,9 +426,12 @@ selectedMtrGrid.on('afterChange', ev => {
 // 초기화 버튼 동작
 let isReset = false;
 document.getElementById('resetBtn').addEventListener('click', () => {
+    if(selectedPrd == null) return; // 선택한 제품이 없으면 미실행
 	createModal({ 
-		type: 'confirm',
+		type: 'modify',
+		header: '초기화',
 		content: '입력한 자재 정보를 모두 초기화하시겠습니까?',
+		buttonText: '확인',
 		confirm(){
             isReset = true;
 			changeOpt();
