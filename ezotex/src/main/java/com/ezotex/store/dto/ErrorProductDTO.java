@@ -24,4 +24,7 @@ public class ErrorProductDTO {
 	private String deliveryCode;
 	private String productName;
 	
+	
+	private double totalErrorQy;
+	
 }

@@ -50,4 +50,8 @@ public interface InventoryMapper {
 	// 불량 재고 카운트
 	public int errorProductCount(DeliverySearchDTO searchDTO);
 	
+	// 불량률
+	public List<ErrorProductDTO> errorTotal();
+	
+	
 }
