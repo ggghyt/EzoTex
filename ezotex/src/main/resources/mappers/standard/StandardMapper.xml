@@ -441,7 +441,7 @@ where info_no = #{num}
 <update id="infomationUpdate">
 update infomation
 set title = #{title}, 
-    content = #{content},
+    content = #{content}, 
     edit_date = sysdate
 where info_no = #{num}
 </update>
@@ -456,5 +456,31 @@ values(INFO_NO_SEQ.nextval,
        null
 )
 </insert>
+
+<update id="maxColUpdate">
+update storage
+set max_col = max_col + #{num}
+where storage_code = #{storageCode}
+</update>
+
+<update id="storageInfoColUpdate">
+update storage_info
+set select_col = select_col + #{num}
+where storage_code = #{storageCode}
+and select_col <![CDATA[ > ]]> (#{selectCol} - 1)
+</update>
+
+<update id="maxRowUpdate">
+update storage
+set max_row = max_row + #{num}
+where storage_code = #{storageCode}
+</update>
+
+<update id="storageInfoRowUpdate">
+update storage_info
+set select_row = select_row + #{num}
+where storage_code = #{storageCode}
+and select_row <![CDATA[ > ]]> (#{selectRow} - 1)
+</update>
 
 </mapper>

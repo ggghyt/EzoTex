@@ -132,4 +132,12 @@ public interface StandardMapper {
 	int infomationUpdate(int num, String title, String content);
 	
 	int infomationInsert(String userCode, String title, String content);
+	
+	int maxColUpdate(int num, String storageCode);
+	
+	int storageInfoColUpdate(int num, String storageCode, int selectCol);
+	
+	int maxRowUpdate(int num, String storageCode);
+	
+	int storageInfoRowUpdate(int num, String storageCode, int selectRow);
 }

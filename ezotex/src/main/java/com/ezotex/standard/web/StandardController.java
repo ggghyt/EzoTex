@@ -284,4 +284,20 @@ public class StandardController {
 		safetyStockDTO.setQy(qy);
 		service.updateSafety(safetyStockDTO);
 	}
+	
+	@ResponseBody
+	@GetMapping("/updateStorageCol")
+	public void updateStorageCol(@RequestParam(name="num") int num, 
+                                 @RequestParam(name="storageCode") String storageCode, 
+                                 @RequestParam(name="selectCol") int selectCol) {
+		service.storageInfoColUpdate(num, storageCode, selectCol);
+	}
+	
+	@ResponseBody
+	@GetMapping("/updateStorageRow")
+	public void updateStorageRow(@RequestParam(name="num") int num, 
+                                 @RequestParam(name="storageCode") String storageCode, 
+                                 @RequestParam(name="selectRow") int selectRow) {
+		service.storageInfoRowUpdate(num, storageCode, selectRow);
+	}
 }

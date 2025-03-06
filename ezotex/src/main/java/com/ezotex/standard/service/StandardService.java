@@ -53,4 +53,6 @@ public interface StandardService {
 	InfomationDTO infomationNum(int num);
 	int infomationUpdate(int num, String title, String content);
 	int infomationInsert(String userCode, String title, String content);
+	int storageInfoColUpdate(int num, String storageCode, int selectCol);
+	int storageInfoRowUpdate(int num, String storageCode, int selectRow);
 }
