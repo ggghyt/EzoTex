@@ -447,7 +447,8 @@
 		                    de.charger_code AS delivery_charger_code,
 		                    de.charger_name AS delivery_charger
 		            FROM    delivery de
-				    WHERE   de.delivery_status = 'DS01'        	
+				    WHERE   de.delivery_status = 'DS01'    
+				    AND     delivery_company_code IS NULL    	
 		            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
 		                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
 		            </if>
@@ -490,7 +491,8 @@
 	<select id="packingListCnt">
 		   SELECT   COUNT(*)
             FROM    delivery de 
-			WHERE   de.delivery_status = 'DS01'        	
+			WHERE   de.delivery_status = 'DS01' 
+			AND     delivery_company_code IS NULL       	
             <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
                 AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
             </if>
@@ -539,14 +541,14 @@
 		               TO_CHAR(ds.rgsde, 'yyyy-MM-dd') AS driver_rgsde,
 		               ds.driver_code AS driver_code,
 		               ds.driver_name AS driver_name,
-		               TO_CHAR(ds.start_time, 'yyyy-MM-dd') AS drive_start_time
+		               CASE WHEN ds.driver_code IS NULL THEN null
+                       ELSE TO_CHAR(ds.start_time, 'yyyy-MM-dd') END AS drive_start_time
 		        FROM   delivery de LEFT JOIN packing pa 
 		        						  ON de.delivery_code = pa.delivery_code
-		               			   LEFT JOIN delivery_schedule ds 
+                                        JOIN delivery_schedule ds 
 		               			   		  ON de.delivery_code = ds.delivery_code
 		        WHERE  de.delivery_code = #{deliveryCode}) info
 		WHERE info.rn = 1
-		
 	</select>
 	
 	<select id="deliveryProductList">

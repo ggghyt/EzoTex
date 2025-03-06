@@ -353,39 +353,39 @@
 		function submit_check() {
 			let check = 0;
 			if (document.querySelector("#company_id").value == 0) {
-				failToast("아이디를 입력하세요");
+				failToast("아이디를 입력해주세요.");
 			} else if (document.querySelector("#company_password").value == 0) {
-				failToast("패스워드를 입력하세요");
+				failToast("비밀번호를 입력해주세요.");
 			} else if (document.querySelector("#company_password_repeat").value == 0) {
 				failToast("패스워드 확인을 입력하세요");
 			} else if (document.querySelector("#company_exponent").value == 0) {
-				failToast("대표자를 입력하세요");
+				failToast("대표자를 입력해주세요.");
 			} else if (document.querySelector("#compnay_charger").value == 0) {
-				failToast("담당자를 입력하세요");
+				failToast("담당자를 입력해주세요.");
 			} else if (document.querySelector("#company_img").value == 0) {
-				failToast("사진을 등록하세요");
+				failToast("사진을 등록해주세요.");
 			} else if (document.querySelector("#company_name").value == 0) {
-				failToast("부서를 선택하세요");
+				failToast("부서를 선택해주세요.");
 			} else if (document.querySelector("#company_number").value == 0) {
-				failToast("직급을 선택하세요");
+				failToast("직급을 선택해주세요.");
 			} else if (document.querySelector("#company_phone").value == 0) {
-				failToast("전화번호를 입력하세요");
+				failToast("전화번호를 입력해주세요.");
 			} else if (phone_check(document.querySelector("#company_phone").value)) {
 				failToast("전화번호 양식이 다릅니다 (XXX-XXXX-XXXX)");
 			} else if (document.querySelector("#company_email").value == 0) {
-				failToast("이메일을 입력하세요");
+				failToast("이메일을 입력해주세요.");
 			} else if (document.querySelector("#addressNumber").value == 0) {
-				failToast("우편번호를 입력하세요");
+				failToast("우편번호를 입력해주세요.");
 			} else if (document.querySelector("#addressMain").value == 0) {
-				failToast("도로명주소를 입력하세요");
+				failToast("도로명주소를 입력해주세요.");
 			} else if (document.querySelector("#addressInfo").value == 0) {
-				failToast("상세주소를 입력하세요");
+				failToast("상세주소를 입력해주세요.");
 			} else if (document.querySelector("#addressReference").value == 0) {
-				failToast("참고항목을 입력하세요");
+				failToast("참고항목을 입력해주세요.");
 			} else if (pw_check == 1) {
-				failToast("비밀번호 확인이 틀렸습니다");
+				failToast("비밀번호가 일치하지 않습니다.");
 			} else if (id_check == 1) {
-				failToast("중복인 아이디가 존재합니다");
+				failToast("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요.");
 			} else {
 				simulateLoading()
 				return true;

@@ -13,14 +13,24 @@
 .modal.show {
 	visibility: visible;
 }
+#companyImg {
+	background-image: linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3) ),url('/images/dashboard/dashboardBackground.jpg');
+	padding: 50px;
+    background-size: cover;
+}
+#companyImg {
+	color: white;
+}
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">
-		| Ezo<span class="text-primary">Tex</span> Main
-	</h3>
-	<div>
-	이조텍스를 이용해주셔서 감사합니다.
+	<div id="companyImg">	
+		<h3 class="fs-2 fw-bold">
+			| Ezo<span class="text-primary">Tex</span> Main
+		</h3>
+		<div>
+		&nbsp;&nbsp;&nbsp;&nbsp;이조텍스를 이용해주셔서 감사합니다.
+		</div>
 	</div>
 	<div class="card card-body mt-3" style="width: 60%; float: left">
 		<p class="fs-5 fw-bolder">공지사항</p>
