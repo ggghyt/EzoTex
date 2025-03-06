@@ -79,11 +79,131 @@
 	<div class="card card-body mt-3">
 		<h3>제품별 일일 손실액</h3>
 		<div id="salesAmountGrid"></div>
+		<div class="card-body">
+			<div class="d-sm-flex justify-content-between align-items-start">
+				<div>
+					<h4 class="card-title card-title-dash">불량률</h4>
+				</div>
+			</div>
+			<div
+				class="d-sm-flex align-items-center mt-1 justify-content-between">
+				<div class="me-3">
+					<div id="marketing-overview-legend">
+						<div class="chartjs-legend">
+							<ul>
+								<li class="text-muted text-small"><span
+									style="background-color: #52CDFF"></span>Last week</li>
+								<li class="text-muted text-small"><span
+									style="background-color: #1F3BB3"></span>This week</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="chartjs-bar-wrapper mt-3">
+				<div class="chartjs-size-monitor">
+					<div class="chartjs-size-monitor-expand">
+						<div class=""></div>
+					</div>
+					<div class="chartjs-size-monitor-shrink">
+						<div class=""></div>
+					</div>
+				</div>
+				<canvas id="salesLossAmount" width="511" height="150"
+					style="display: block; width: 511px; height: 150px;"
+					class="chartjs-render-monitor"></canvas>
+			</div>
+		</div>
 		<h3>제품별 일일 손실액 차트</h3>
 		<div id="lossChart" style="height: 400px;"></div>
 	</div>
 
-
+	<script>
+	if ($("#salesLossAmount").length) {
+	      var marketingOverviewChart = document.getElementById("salesLossAmount").getContext('2d');
+	      var marketingOverviewData = {
+	          labels: ["JAN","FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+	          datasets: [{
+	              label: 'Last week',
+	              data: [110, 220, 200, 190, 220, 110, 210, 110, 205, 202, 201, 150],
+	              backgroundColor: "#52CDFF",
+	              borderColor: [
+	                  '#52CDFF',
+	              ],
+	              borderWidth: 0,
+	              fill: true, // 3: no fill
+	              
+	          },
+	          ]
+	      };
+	  
+	      var salesLossAmount = {
+	        responsive: true,
+	        maintainAspectRatio: false,
+	          scales: {
+	              yAxes: [{
+	                  gridLines: {
+	                      display: true,
+	                      drawBorder: false,
+	                      color:"#F0F0F0",
+	                      zeroLineColor: '#F0F0F0',
+	                  },
+	                  ticks: {
+	                    beginAtZero: true,
+	                    autoSkip: true,
+	                    maxTicksLimit: 5,
+	                    fontSize: 10,
+	                    color:"#6B778C"
+	                  }
+	              }],
+	              xAxes: [{
+	                stacked: true,
+	                barPercentage: 0.35,
+	                gridLines: {
+	                    display: false,
+	                    drawBorder: false,
+	                },
+	                ticks: {
+	                  beginAtZero: false,
+	                  autoSkip: true,
+	                  maxTicksLimit: 12,
+	                  fontSize: 10,
+	                  color:"#6B778C"
+	                }
+	            }],
+	          },
+	          legend:false,
+	          legendCallback: function (chart) {
+	            var text = [];
+	            text.push('<div class="chartjs-legend"><ul>');
+	            for (var i = 0; i < chart.data.datasets.length; i++) {
+	              console.log(chart.data.datasets[i]); // see what's inside the obj.
+	              text.push('<li class="text-muted text-small">');
+	              text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
+	              text.push(chart.data.datasets[i].label);
+	              text.push('</li>');
+	            }
+	            text.push('</ul></div>');
+	            return text.join("");
+	          },
+	          
+	          elements: {
+	              line: {
+	                  tension: 0.4,
+	              }
+	          },
+	          tooltips: {
+	              backgroundColor: 'rgba(31, 59, 179, 1)',
+	          }
+	      }
+	      var salesLossAmount = new Chart(marketingOverviewChart, {
+	          type: 'bar',
+	          data: marketingOverviewData,
+	          options: marketingOverviewOptions
+	      });
+	      document.getElementById('marketing-overview-legend').innerHTML = salesLossAmount.generateLegend();
+	    }
+	</script>
 	<script th:inline="javascript">
 	<!-- 그리드에 넣어줄 데이터 -->
 	const salesAmountList = /*[[${getSalesAmount}]]*/[];
