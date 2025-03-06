@@ -1,0 +1,92 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      th:fragment="searchBox">
+                  
+  <div class="d-flex">
+	  <input type="text" id="menuSearch" class="form-control" placeholder="메뉴 검색">
+	  <button id="menuSearchBtn" class="btn btn-light border d-flex align-items-center" style="height: 33px; width: 33px;"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #000;"></i></button>
+  </div>
+  <script>
+    // JQuery의 autocomplete 기능을 사용하여 메뉴 검색
+    // 템플릿의 z-index때문에 자동완성이 일부 가려서 안 보여, 부모태그 중 z-index 조정함
+    
+    var $j = jQuery.noConflict(); // 템플릿과 JQuery 충돌방지로 별도 선언    
+    
+    var supplierMenu = []; // 공급업체 전용 메뉴
+    var commonMenu = []; // 일반 자사 메뉴
+    
+    $j(document).ready(function() {
+		    // 상위메뉴 노드리스트 추출
+		    let sideLiArr = document.querySelectorAll('ul.nav.top > li.nav-item');
+		    
+		    // 공급업체메뉴/일반메뉴 (권한이 다른 메뉴) 분리하여 배열 생성
+		    sideLiArr.forEach(li => {
+		    	if(li.className.indexOf('supplier-menu') == -1) commonMenu.push(li);
+		    	else supplierMenu.push(li);
+		    });
+		    
+		    // 서브메뉴 객체로 추출
+		    supplierMenu = supplierMenu.map(parent => splitMenuMap(parent));
+		    commonMenu = commonMenu.map(parent => splitMenuMap(parent));
+		    
+		    // 표시할 문자열 계산
+		    var sideArr = [];
+		    commonMenu.forEach(menu => {
+		    	if(!menu.subMenus) sideArr.push(menu);
+		    	else menu.subMenus.forEach(sub => {
+		    		sideArr.push(menu.parentNm + ' > ' + sub.nm);
+		    	});
+		    });
+		    console.log('sideArr: ', sideArr);
+		    
+		    $j('#menuSearch').autocomplete({
+	          source : sideArr,
+	          minLength : 1 // 한 글자 입력할 때마다 자동완성 적용
+	      });
+	  });
+    
+    $j('#menuSearch').on('change', movePage)
+    $j('#menuSearchBtn').on('click', movePage)
+    
+    function movePage(){
+        // 현재 입력한 값으로 객체에서 url 연결
+        let str = $j('#menuSearch').val();
+        let splited = str.split(' > '); // '공급 > 자재명세서' 메뉴명 분리
+        
+        for(let menu of commonMenu){
+          if(menu.parentNm == splited[0]){
+            for(let sub of menu.subMenus){
+              if(sub.nm == splited[1]) location.href = sub.href; // 해당하는 링크를 찾아 이동
+            }
+          }
+        }
+    }
+	  
+	  // 사이드바 노드 분석 함수
+    function splitMenuMap(parent){
+        let parentNm;
+        let subMenus = [];
+        
+        parent.childNodes.forEach(node => {
+          if(node.tagName == 'A') parentNm = node.innerText.replaceAll(' ', '').replaceAll('\n\t', ''); // 상단메뉴명 추출
+          if(node.tagName == 'DIV'){
+            node.childNodes.forEach(deep => {
+              if(deep.tagName == 'UL'){
+                  deep.childNodes.forEach(subMenu => {
+                    if(subMenu.tagName == 'LI'){
+                      // 서브메뉴명/링크 배열 추출
+                      subMenus.push({
+                        nm: subMenu.firstElementChild.innerText,
+                        href: subMenu.firstElementChild.href
+                      });                               
+                    }
+                  })
+                };
+              });
+            }
+        });
+        return {parentNm, subMenus};
+    }
+  </script>
+      
+</html>
