@@ -38,6 +38,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 등록</h3>
+	<br>
 
 	<!-- 등록 모달 -->
 	<div class="modal fade" id="registModal" tabindex="-1"
@@ -75,10 +76,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 
 
-	<div class="card card-body m-2" style="background-color: #d3d3d3;">
+	<div class="card card-body m-2 bg-secondary">
 		<div class="row">
 
-			<p class="fs-5 fw-bolder">주문 정보</p>
+			<p class="fs-5 fw-bolder m-3">주문 정보</p>
 			<table class="table mt-3">
 				<tbody>
 					<!-- 첫 번째 줄 -->
@@ -212,7 +213,13 @@ let clickedData = ""; // 클릭한 행의 데이터
       data: [], // 빈 데이터로 초기화
     });
     
+	let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
+    
     grid.on('click', function(ev) {
+    	grid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+    	grid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	    lastClicked = ev.rowKey; // 선택된 행 기억
+    	
         clickedRowKey = ev.rowKey; // 클릭한 행의 키
         clickedData = grid.getRow(clickedRowKey); // 클릭한 행의 데이터
         
@@ -941,7 +948,7 @@ function addProductToOrderList(product) {
 			</div>
 			<div class="modal-body">
 				<!-- 업체 검색창 -->
-				<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+				<div class="card card-body mt-3 bg-secondary" style="background-color: #d3d3d3;">
 					<h3>검색</h3>
 					<table class="table mt-3">
 						<tbody>
@@ -1153,6 +1160,12 @@ function addProductToOrderList(product) {
 /* 헤더 체크박스 */
 #grid .tui-grid-cell input[type="checkbox"]:hover {
 	cursor: pointer;
+}
+.toastui-chart-tooltip-category {
+	width :  100px !important; 
+}
+input[readonly] {
+    background-color: white !important; /* 배경색을 흰색으로 변경 */
 }
 </style>
 </html>

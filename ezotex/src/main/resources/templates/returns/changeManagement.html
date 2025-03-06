@@ -108,8 +108,14 @@
 		
 		let lastClickedRowKey = null; // 마지막 클릭된 행의 rowKey 저장
 		let filteredData = {}; 
+		
+		let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 		// 행 클릭 이벤트 , returnCode 받기위해
 		changeGrid.on('click', (ev) => {
+			changeGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			changeGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+		    lastClicked = ev.rowKey; // 선택된 행 기억
+		    
 		    const rowData = changeGrid.getRow(ev.rowKey);
 		    console.log(rowData);
 					    

@@ -54,7 +54,7 @@
 
 
 	<p>
-	<div class="card card-body w-100" style="background-color: #d3d3d3;">
+	<div class="card card-body w-100 bg-secondary">
 
 
 		<table class="table mt-3">
@@ -187,9 +187,15 @@
 			});
 			// 클릭한 행 데이터를 저장할 배열
 			
+			let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
+			
 			// 행 클릭 이벤트
 			deliProductGrid.on('click',function (ev){
-			let selectedProduct = [];
+				deliProductGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+				deliProductGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+			    lastClicked = ev.rowKey; // 선택된 행 기억
+			    
+				let selectedProduct = [];
 			    const clickedRow = ev.rowKey; // 클릭된 행의 인덱스
 			    const clickedData = deliProductGrid.getData()[clickedRow]; // 클릭된 행의 데이터
 			    const clickedColumn = ev.columnName;  // 클릭된 열
@@ -777,6 +783,10 @@
 	-webkit-appearance: none !important;
 	-moz-appearance: none !important;
 	appearance: none !important;
+}
+
+input[readonly] {
+	background-color: white !important; /* 배경색을 흰색으로 변경 */
 }
 </style>
 </html>

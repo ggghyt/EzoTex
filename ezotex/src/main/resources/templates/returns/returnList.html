@@ -12,7 +12,7 @@
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
 
-	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+	<div class="card card-body mt-3 bg-secondary">
 		<h3>검색</h3>
 		<table class="table mt-3">
 			<tbody>
@@ -106,8 +106,14 @@
 	      	},
 		})
 		
+		let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
+		
 		// returnGrid 클릭 이벤트 추가
 		returnGrid.on('click', function(ev) {
+			returnGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			returnGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+		    lastClicked = ev.rowKey; // 선택된 행 기억
+			
 		    const clickedRow = ev.rowKey; // 클릭된 행 인덱스
 		    const clickedData = returnGrid.getData()[clickedRow];
 		    const returnCode = clickedData.returnCode;
