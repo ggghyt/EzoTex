@@ -303,5 +303,11 @@ public class InventoryRestController {
 		return GridUtil.grid(paging.getPage(), iService.errorProductCount(searchDTO), iService.errorProductList(searchDTO));
 	}
 	
+	// 불량률
+	@GetMapping("totalError")
+	public List<ErrorProductDTO> totalError(){
+		return iService.errorTotal();
+	}
+	
 	
 }

@@ -111,5 +111,11 @@ public class InventoryServiceImpl implements InventoryService {
 	public int errorProductCount(DeliverySearchDTO searchDTO) {
 		return mapper.errorProductCount(searchDTO);
 	}
+	
+	
+	@Override
+	public List<ErrorProductDTO> errorTotal() {
+		return mapper.errorTotal();
+	}
 
 }

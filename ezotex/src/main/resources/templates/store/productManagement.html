@@ -817,8 +817,8 @@
 	    	}
 	    	
 	    	let productCode = document.querySelector("#productCode").value;
-	    	let productQy = document.querySelector("#productQy").value;
-	    	let errorQy = document.querySelector("#errorQy").value;
+	    	let productQy = Number(document.querySelector("#productQy").value);
+	    	let errorQy = Number(document.querySelector("#errorQy").value);
 	    	
 	    	if(productCode == null || errorQy == null){
 	    		modalText.innerHTML = '하나 이상의 제품을 선택해 주세요	';
@@ -848,18 +848,22 @@
 			}).then(req => req.json())
 			  .then(result => {
 				  
-				  document.querySelector("#productQy").value = productQy - errorQy
-				  let check = document.querySelector("#productQy").value = productQy - errorQy
-				  
-				  
-				  if(check == 0 || check == null || check == NaN){
-					  document.querySelector("#productCode").value = '';
-					  document.querySelector("#productName").value = '';
-					  document.querySelector("#lot").value = '';
-					  document.querySelector("#productQy").value = '';
-					  document.querySelector("#color").value = '';
-					  document.querySelector("#size").value = '';
-					  document.querySelector("#errorQy").value = '';
+				  let productQyNum = Number(productQy);
+				  let errorQyNum = Number(errorQy);
+
+				  let resultQy = productQyNum - errorQyNum;
+				  document.querySelector("#productQy").value = resultQy;
+
+				  let check = resultQy;
+
+				  if (check === 0 || isNaN(check)) {
+				      document.querySelector("#productCode").value = '';
+				      document.querySelector("#productName").value = '';
+				      document.querySelector("#lot").value = '';
+				      document.querySelector("#productQy").value = '';
+				      document.querySelector("#color").value = '';
+				      document.querySelector("#size").value = '';
+				      document.querySelector("#errorQy").value = '';
 				  }
 				  
 				  

@@ -6,6 +6,7 @@
 		<meta charset="UTF-8">
 		<title>이조텍스SCM</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</head>
 	<body>
 		<div class="d-flex align-items-center">
@@ -103,19 +104,6 @@
 		</div>
 	</div>
 	
-	<div class="card-body">
-          <div class="d-sm-flex justify-content-between align-items-start">
-            <div>
-             <h4 class="card-title card-title-dash">불량률</h4>
-            </div>
-            <div id="performance-line-legend"><div class="chartjs-legend"><ul><li><span style="background-color:#1F3BB3"></span>This week</li><li><span style="background-color:#52CDFF"></span>Last week</li></ul></div></div>
-          </div>
-          <div class="chartjs-wrapper mt-5"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-            <canvas id="performaneLine" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
-          </div>
-        </div>
-	
-	
 	
 	
 	<div class="card-body">
@@ -128,85 +116,90 @@
          <div class="me-3"><div id="marketing-overview-legend"><div class="chartjs-legend"><ul><li class="text-muted text-small"><span style="background-color:#52CDFF"></span>Last week</li><li class="text-muted text-small"><span style="background-color:#1F3BB3"></span>This week</li></ul></div></div></div>
        </div>
        <div class="chartjs-bar-wrapper mt-3"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-         <canvas id="marketingOverview" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
+         <canvas id="errorChart" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
        </div>
      </div>
 	 
 	
 	<script>
 	
-	
-		
-	
-		var today = new Date();
-	
-		var year = today.getFullYear();
-		var month = ('0' + (today.getMonth() + 1)).slice(-2);
-		var day = ('0' + today.getDate()).slice(-2);
-	
-		var dateString = year +  month  + day;
-	
-		console.log(dateString);
-		
-		
-		var today = new Date();   
-
-		var hours = ('0' + today.getHours()).slice(-2); 
-		var minutes = ('0' + today.getMinutes()).slice(-2);
-		var seconds = ('0' + today.getSeconds()).slice(-2); 
-
-		var timeString = hours +  '00';
-
-		console.log(timeString);
-	
-	
-		var xhr = new XMLHttpRequest();
-		var url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst'; /*URL*/
-		var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'PKUNSIsmZZpZ0P658K43O39GNlqv26nAx4GaY0lOgv%2FEvupoDxYM1zxIypb%2BS2uz6ZbrA%2BmnFTXlO4j0awAF7w%3D%3D'; /*Service Key*/
-		queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
-		queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('1000'); /**/
-		queryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); /**/
-		queryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(dateString); /**/
-		queryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent(timeString); /**/
-		queryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('35'); /**/
-		queryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('128'); /**/
-		xhr.open('GET', url + queryParams);
-		xhr.onreadystatechange = function () {
-		    if (this.readyState == 4) {
-		        console.log('Status: '+this.status+'nHeaders: '+JSON.stringify(this.getAllResponseHeaders())+'nBody: '+this.responseText);
-		        
-		        if (this.readyState == 4 && this.status == 200) {
-		            var result = JSON.parse(this.responseText);
-		            var items = result.response.body.items.item;
-		            
-		            var filteredData = items.filter(function(item) {
-		                return item.category === 'T1H'; // T1H: 기온
-		            });
-
-		            console.log('기온 데이터:', filteredData);
-		            
-		            var sky = items.filter(function(item){
-		            	return item.category === 'SKY';
-		            })
-		            
-		            if (sky.length > 0) {
-		            	if(sky[0].fcstValue == 1){
-		            		console.log('맑음');
-		            	}
-		                console.log('첫 번째 기온:', sky[0].fcstValue + '하늘, 시간: ' + sky[0].fcstTime);
+	const errorChartOptions = {
+		    responsive: true,
+		    maintainAspectRatio: false,
+		    scales: {
+		        yAxes: [{
+		            id: 'y-axis-1',
+		            position: 'left',
+		            ticks: {
+		                beginAtZero: true,
+		                fontSize: 10,
+		                color: "#6B778C",
+		                callback: function(value) {
+		                    return value.toLocaleString();  // 숫자를 천 단위로 구분
+		                }
+		            },
+		            scaleLabel: {
+		                display: true,
+		                labelString: '수량'
 		            }
-		            
-		            
-		            if (filteredData.length > 0) {
-		                console.log('첫 번째 기온:', filteredData[0].fcstValue + '°C, 시간: ' + filteredData[0].fcstTime);
+		        }],
+		        xAxes: [{
+		            stacked: true,
+		            barPercentage: 0.35,
+		            gridLines: {
+		                display: false,
+		                drawBorder: false,
+		            },
+		            ticks: {
+		                beginAtZero: false,
+		                autoSkip: true,
+		                maxTicksLimit: 12,
+		                fontSize: 10,
+		                color: "#6B778C"
 		            }
-		        }
+		        }]
+		    },
+		    legend: {
+		        display: true  // 범례를 표시
+		    },
+		    tooltips: {
+		        backgroundColor: 'rgba(31, 59, 179, 1)',
 		    }
 		};
+
+		// 차트 객체 생성
+		const errorChart = new Chart(document.getElementById('errorChart').getContext('2d'), {
+		    type: 'bar',
+		    data: {}, 
+		    options: errorChartOptions
+		});
+
+		// fetch로 데이터를 받아서 차트에 넣기
+		fetch(`/store/totalError`)
+		    .then(rep => rep.json())
+		    .then(data => {
+		        console.log(data); 
+
+		        let labels = data.map(item => item.productCode); 
+		        let errorData = data.map(item => item.totalErrorQy); 
+
+		        // 차트 데이터 업데이트
+		        errorChart.data = {
+		            labels: labels,
+		            datasets: [{
+		                label: '불량률',
+		                data: errorData,
+		                borderColor: '#52CDFF',  // 바 색상
+		                backgroundColor: '#52CDFF',  // 바 색상
+		                borderWidth: 1
+		            }]
+		        };
+		        errorChart.update();
+		    })
+
+
+
 		
-		xhr.send('');
-		
-	
 	
 		document.querySelectorAll('.storeSearch').forEach((ev) => {
 			ev.addEventListener('keydown', (ev) => {
@@ -285,6 +278,8 @@
 		        { header: "LOT번호", name: "lot", align: "center", sortable: true},
 		        { header: "처리일", name: "processDate", sortable: true, formatter: (row) => dateFormatterNull(row.value)},
 		        { header: "처리담당자", name: "errorCharger", align: "center", sortable: true},
+		        { header: "불량사유", name: "errorInfo", sortable: true},
+		        { header: "불량수량", name: "errorQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 		        
 		      ],
 		      data: dataSource,
