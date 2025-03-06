@@ -54,33 +54,33 @@
 					
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
+					<input type="text" class="form-control pointer bg-white storeSearch" id="searchProductCode" placeholder="찾기" >
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="searchProductName">
+					<input type="text" class="form-control storeSearch" id="searchProductName">
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">색상</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="searchColor">
+					<input type="text" class="form-control storeSearch" id="searchColor">
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">사이즈</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="searchSize">
+					<input type="text" class="form-control storeSearch" id="searchSize">
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">LOT</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="searchLot">
+					<input type="text" class="form-control storeSearch" id="searchLot">
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">처리담당자</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control" id="requestor">
+					<input type="text" class="form-control storeSearch" id="requestor">
 				</div>
 				
 				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">불량 처리일</label>
 				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-					<input type="date" class="form-control text-end" id="startErrorDate" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end" id="endErrorDate" style="margin-left: 10px;">
+					<input type="date" class="form-control text-end storeSearch" id="startErrorDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end storeSearch" id="endErrorDate" style="margin-left: 10px;">
 				</div>
 			</div>
 		
@@ -103,7 +103,119 @@
 		</div>
 	</div>
 	
+	<div class="card-body">
+          <div class="d-sm-flex justify-content-between align-items-start">
+            <div>
+             <h4 class="card-title card-title-dash">불량률</h4>
+            </div>
+            <div id="performance-line-legend"><div class="chartjs-legend"><ul><li><span style="background-color:#1F3BB3"></span>This week</li><li><span style="background-color:#52CDFF"></span>Last week</li></ul></div></div>
+          </div>
+          <div class="chartjs-wrapper mt-5"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+            <canvas id="performaneLine" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
+          </div>
+        </div>
+	
+	
+	
+	
+	<div class="card-body">
+       <div class="d-sm-flex justify-content-between align-items-start">
+         <div>
+           <h4 class="card-title card-title-dash">불량률</h4>
+         </div>
+       </div>
+       <div class="d-sm-flex align-items-center mt-1 justify-content-between">
+         <div class="me-3"><div id="marketing-overview-legend"><div class="chartjs-legend"><ul><li class="text-muted text-small"><span style="background-color:#52CDFF"></span>Last week</li><li class="text-muted text-small"><span style="background-color:#1F3BB3"></span>This week</li></ul></div></div></div>
+       </div>
+       <div class="chartjs-bar-wrapper mt-3"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+         <canvas id="marketingOverview" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
+       </div>
+     </div>
+	 
+	
 	<script>
+	
+	
+		
+	
+		var today = new Date();
+	
+		var year = today.getFullYear();
+		var month = ('0' + (today.getMonth() + 1)).slice(-2);
+		var day = ('0' + today.getDate()).slice(-2);
+	
+		var dateString = year +  month  + day;
+	
+		console.log(dateString);
+		
+		
+		var today = new Date();   
+
+		var hours = ('0' + today.getHours()).slice(-2); 
+		var minutes = ('0' + today.getMinutes()).slice(-2);
+		var seconds = ('0' + today.getSeconds()).slice(-2); 
+
+		var timeString = hours +  '00';
+
+		console.log(timeString);
+	
+	
+		var xhr = new XMLHttpRequest();
+		var url = 'http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst'; /*URL*/
+		var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'PKUNSIsmZZpZ0P658K43O39GNlqv26nAx4GaY0lOgv%2FEvupoDxYM1zxIypb%2BS2uz6ZbrA%2BmnFTXlO4j0awAF7w%3D%3D'; /*Service Key*/
+		queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
+		queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('1000'); /**/
+		queryParams += '&' + encodeURIComponent('dataType') + '=' + encodeURIComponent('JSON'); /**/
+		queryParams += '&' + encodeURIComponent('base_date') + '=' + encodeURIComponent(dateString); /**/
+		queryParams += '&' + encodeURIComponent('base_time') + '=' + encodeURIComponent(timeString); /**/
+		queryParams += '&' + encodeURIComponent('nx') + '=' + encodeURIComponent('35'); /**/
+		queryParams += '&' + encodeURIComponent('ny') + '=' + encodeURIComponent('128'); /**/
+		xhr.open('GET', url + queryParams);
+		xhr.onreadystatechange = function () {
+		    if (this.readyState == 4) {
+		        console.log('Status: '+this.status+'nHeaders: '+JSON.stringify(this.getAllResponseHeaders())+'nBody: '+this.responseText);
+		        
+		        if (this.readyState == 4 && this.status == 200) {
+		            var result = JSON.parse(this.responseText);
+		            var items = result.response.body.items.item;
+		            
+		            var filteredData = items.filter(function(item) {
+		                return item.category === 'T1H'; // T1H: 기온
+		            });
+
+		            console.log('기온 데이터:', filteredData);
+		            
+		            var sky = items.filter(function(item){
+		            	return item.category === 'SKY';
+		            })
+		            
+		            if (sky.length > 0) {
+		            	if(sky[0].fcstValue == 1){
+		            		console.log('맑음');
+		            	}
+		                console.log('첫 번째 기온:', sky[0].fcstValue + '하늘, 시간: ' + sky[0].fcstTime);
+		            }
+		            
+		            
+		            if (filteredData.length > 0) {
+		                console.log('첫 번째 기온:', filteredData[0].fcstValue + '°C, 시간: ' + filteredData[0].fcstTime);
+		            }
+		        }
+		    }
+		};
+		
+		xhr.send('');
+		
+	
+	
+		document.querySelectorAll('.storeSearch').forEach((ev) => {
+			ev.addEventListener('keydown', (ev) => {
+				if(window.event.keyCode == 13){
+					searchErrorProductList();
+				}
+			})
+		})
+	
 	
 		document.getElementById('xlsx').addEventListener('click', () => {
 			  const checkedRows = errorGrid.getCheckedRows(); // 체크된 데이터 가져오기
