@@ -51,9 +51,6 @@
 			padding-left:10px;
 			width: 300px;
 		}
-		.read-bar div:nth-of-type(1) {
-			margin-left: 40px;
-		}
 		.read-bar div {
 			margin-top: 10px;
 		}
@@ -254,6 +251,9 @@
 						<input type="text" class="form-control read-order-date" readOnly> 
 					</span>
 				</div>
+				<div>				
+					<button class="btn btn-primary auto-input-btn btn-sm mb-1">자동수량입력</button>
+				</div>
 			</div>		
 				<!-- 제품 리스트 -->
 				<div id="productListGrid"></div>
@@ -285,6 +285,7 @@
 				</span>
 			</div>
 			<div class="completeBtn-section">
+				
 				<button type="button" class="btn btn-primary sendData" data-bs-toggle="modal">
 		    		등록
 		  		</button>
@@ -477,8 +478,6 @@
 			함수 정의
 		*/
 		
-
-		
 		//검색함수
         function searchOrderList() {
         	let companyCode = session_user_code;
@@ -505,8 +504,6 @@
 			})
 		})
 		
-		
-
         //검색 조건 삭제
         function resetCondition() {
     		document.querySelectorAll('.search-bar input').forEach((e) => {
@@ -523,6 +520,9 @@
 		//분할출고 여부 가지는 변수
        	let isDivyCnt = 0;
 		
+		//선택한 주문건 저장변수
+		let selectedOrderData = null;
+		
 		//주문 상세 데이터 모두 가져오기
         orderListGrid.on('focusChange', ev => {
         	loading(300);
@@ -537,6 +537,8 @@
             // 선택한 정보 가져오기
             let selected = orderListGrid.getRow(ev.rowKey);
             
+            
+            
             //처음 가져왔던 정보들로 주문 정보를 출력
             document.querySelector(".read-orderCode").value = selected.mtrilOrderCode;
             document.querySelector(".read-order-date").value = selected.orderDate;
@@ -548,7 +550,9 @@
             fetch(`/delivery/mtrilOrderInfo?orderCode=${selected.mtrilOrderCode}`)
     		.then(rep => rep.json())
     		.then(data => {
-    			console.log(data);
+    			
+    			selectedOrderData = data;
+    			
     			//배열에 담기
     			orderInfo = data;
     			
@@ -584,7 +588,7 @@
 		
 		//제품 상세 그리드의 행 값이 바뀔때 생기는 이벤트
         productListGrid.on('afterChange', ev => {
-        	console.log(ev);
+        	//console.log(ev);
         	ev.changes.forEach(change => {
         		//행데이터
         		let rowData = productListGrid.getRow(change.rowKey);
@@ -679,7 +683,30 @@
         
         //리셋버튼
         document.querySelector('.resetBtn').addEventListener('click', () => {
-        	location.href = location.href;
+        	//deliveryQy-출고수량 restQy-잔여수량
+        	for(let i=0; i<selectedOrderData.length; i++) {
+        		//출고수량에 잔여수량 입력하기
+        		selectedOrderData[i].deliveryQy = 0;
+        	}
+        	document.querySelector(".read-divyTotalQy").value = 0;
+        	productListGrid.resetData(selectedOrderData);
+        })
+        
+        //자동 수량 입력 버튼
+        document.querySelector('.auto-input-btn').addEventListener('click', () => {
+        	console.log("selectedOrderData", selectedOrderData);
+        	
+        	let qySum = 0;
+        	
+        	//deliveryQy-출고수량 restQy-잔여수량
+        	for(let i=0; i<selectedOrderData.length; i++) {
+        		//출고수량에 잔여수량 입력하기
+        		selectedOrderData[i].deliveryQy = selectedOrderData[i].restQy;
+        		qySum += selectedOrderData[i].restQy;
+        	}
+        	
+        	document.querySelector(".read-divyTotalQy").value = qySum;
+        	productListGrid.resetData(selectedOrderData);
         })
         
         //등록 데이터 보내기 통신 + 잔여량 모달 출력

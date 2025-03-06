@@ -494,17 +494,17 @@ visibility: visible;
 	function submit_check() {
 		let check = 0;	
 		if (document.querySelector("#selectProductName").value == 0) {
-			failToast("이름을 입력하세요");
+			failToast("이름을 입력해주세요.");
 		} else if (document.querySelector("#unitName").value == 0) {
-			failToast("단위를 선택하세요");
+			failToast("단위를 선택해주세요.");
 		} else if (document.querySelector("#selectUnitPrice").value == 0) {
-			failToast("단가를 입력하세요");
+			failToast("단가를 입력해주세요.");
 		} else if (document.querySelector("#selectProductType").value == 0) {
-			failToast("유형을 선택하세요");
+			failToast("유형을 입력해주세요.");
 		} else if (document.querySelector("#selectVl").value == 0) {
-			failToast("부피를 입력하세요");
+			failToast("부피를 입력해주세요.");
 		} else if (document.querySelector("#selectProductImg").value == 0) {
-			failToast("사진을 첨부하세요");
+			failToast("사진을 등록해주세요.");
 		} else {
 			return true;
 		}
