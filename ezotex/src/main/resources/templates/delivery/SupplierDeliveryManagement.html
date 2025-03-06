@@ -415,7 +415,19 @@
 			columns: [
 				{ header: "주문코드", name: "mtrilOrderCode", sortable: true, align: 'center', minWidth: 124},
 				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 248},
-				{ header: "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 71},
+				{ header: "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 71,
+					renderer: {
+			            styles: {
+			              fontWeight: 'bold',
+			              color: props => {
+			            	  switch(props.value){
+			            	     case '대기': return '#aaa';
+			            	     case '부분출고': return 'red';
+			            	  }
+			              }
+			            }
+			          }
+				},
 				{ header: "주문담당자", name: "orderCharger", sortable: true, align: 'center', minWidth: 96},
 				{ header: "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 84},
 				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 84},
@@ -769,7 +781,6 @@
 					//그리드 데이터 초기화
 					restQyGrid.resetData(orderInfo);
 					
-					
 					//잔여량 출력 모달
 		        	const restQyModal = new bootstrap.Modal(document.getElementById("restQyModal"));
 		        	restQyModal.show();
@@ -780,7 +791,6 @@
             	}
             })
             
-        	
 		}
 		
 

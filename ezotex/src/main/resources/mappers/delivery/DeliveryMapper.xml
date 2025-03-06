@@ -279,10 +279,8 @@
 	<!-- 로트 출고 수량만큼 빼서 업데이트 하기. -->
 	<update id="updateLotQy">
 		UPDATE inventory
-		SET inventory_qy = inventory_qy - #{deInfo.deliveryQy}
-		WHERE product_code = #{deInfo.productCode}
-		AND   product_color = #{deInfo.productColor}
-		AND   product_size = #{deInfo.productSize}
+		SET inventory_qy = inventory_qy - #{divyQy}	--출고되는 로트수량만큼빼야됨.
+		WHERE lot = #{lotCode}
 	</update>
 	
 	<select id="getPrice">
@@ -311,7 +309,8 @@
 		                    de.dedt AS dedt,
 		                    product_summary('delivery_details', de.delivery_code)  AS summary,
 		                    de.time AS time,
-		                    get_comm(de.delivery_status) AS delivery_status,
+		                    CASE WHEN get_comm(de.delivery_status) = '기사배정' THEN '포장완료'
+		                    ELSE get_comm(de.delivery_status) END AS delivery_status,
 		                    de.remark AS remark,
 		                    de.storage_name AS storage_name,
 		                    de.dedt_address AS dedt_address,
@@ -328,13 +327,13 @@
 			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
 			                AND ol.product_order_code LIKE '%' || UPPER(#{cri.orderCode}) || '%'    --주문코드
 			            </if>
-			            <if test="cri.productName != null and cri.productName != null">		    
+			            <if test='cri.productName != null and cri.productName != ""'>		    
 			                AND  de.delivery_code IN (SELECT dd.delivery_code 
                                  						   FROM delivery_details dd JOIN product_info pi 
                                                          						   ON (dd.product_code = pi.product_code)
                                  						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
 			            </if>
-			            <if test="cri.productCode != null and cri.productCode != null">		    
+			            <if test='cri.productCode != null and cri.productCode != ""'>		    
 			                AND de.delivery_code IN (SELECT  delivery_code 
                                  					 FROM 	  delivery_details
                                  					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
@@ -545,7 +544,7 @@
                        ELSE TO_CHAR(ds.start_time, 'yyyy-MM-dd') END AS drive_start_time
 		        FROM   delivery de LEFT JOIN packing pa 
 		        						  ON de.delivery_code = pa.delivery_code
-                                        JOIN delivery_schedule ds 
+                                   LEFT JOIN delivery_schedule ds 
 		               			   		  ON de.delivery_code = ds.delivery_code
 		        WHERE  de.delivery_code = #{deliveryCode}) info
 		WHERE info.rn = 1
