@@ -25,11 +25,14 @@
 					AND    de.company_name LIKE '%' || #{search.companyName} || '%'
 					</if>
 					<choose>
+			              <when test="search.deliveryStatus == 'All'"> 
+			              		AND de.delivery_status IN ('DS03', 'DS05')
+			              </when>
 			              <when test="search.deliveryStatus != null and search.deliveryStatus != ''"> 
-			                        AND de.delivery_status = #{search.deliveryStatus}
+			                     AND de.delivery_status = #{search.deliveryStatus}
 			              </when>
 			              <otherwise> 
-			                       AND de.delivery_status IN ('DS03', 'DS05')
+			                    AND de.delivery_status IN ('DS03')
 			              </otherwise>
 			        </choose>
 		        )info

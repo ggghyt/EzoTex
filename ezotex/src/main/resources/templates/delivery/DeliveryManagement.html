@@ -486,7 +486,19 @@ input[type=date] {
 	                { header : "업체코드", name: "companyCode", align: 'center', sortable: true, minWidth: 78},
 	                { header : "업체명", name: "company", sortable: true, align: 'left', minWidth: 85},
 	                { header : "요약", name: "summary", sortable: true, align: 'left', minWidth: 123},
-	                { header : "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 62},
+	                { header : "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 62,
+	                	renderer: {
+				            styles: {
+				              fontWeight: 'bold',
+				              color: props => {
+				            	  switch(props.value){
+				            	     case '대기': return '#aaa';
+				            	     case '부분출고': return 'red';
+				            	  }
+				              }
+				            }
+				          }
+	                },
 	                { header : "주문담당자", name: "orderCharger", sortable: true, align: 'center', minWidth: 95},
 	                { header : "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 79},
 	                { header : "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 79}
@@ -509,8 +521,8 @@ input[type=date] {
 	        		dedtEnd: document.querySelector('.search-dedt-end').value,
 	        		productCode: document.querySelector('.search-product-code').value,
 	        		productName: document.querySelector('.search-product-name').value,
-	        		totalAmountStart: document.querySelector('.search-amount-start').value,
-	        		totalAmountEnd: document.querySelector('.search-amount-end').value,
+	        		//totalAmountStart: document.querySelector('.search-amount-start').value,
+	        		//totalAmountEnd: document.querySelector('.search-amount-end').value,
 	        		companyCode: document.querySelector('.search-company-code').value,
 	        		companyName: document.querySelector('.search-company-name').value,
 	        		orderStatus: document.querySelector('.search-status').value

@@ -11,7 +11,7 @@
 			height: 1000px;
 		}
 		.search-bar {
-			width: 100%;
+			width: 1660px;
 			height: 300px;
 			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
 			display: inline-block;
@@ -275,7 +275,6 @@
 							<option value="">전체</option>
 							<option value="DS01">납품등록</option>
 							<option value="DS03">포장완료</option>
-							<option value="DS04">배송출발</option>
 							<option value="DS05">납품완료</option>
 						</select>
 					</span>
@@ -503,7 +502,20 @@
 				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 85},
 				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 420},
 				{ header: "회차", name: "time", sortable: true, align: 'center', minWidth: 50},					
-				{ header: "상태", name: "deliveryStatus", sortable: true, align: 'center', minWidth: 69},
+				{ header: "상태", name: "deliveryStatus", sortable: true, align: 'center', minWidth: 69,
+					renderer: {
+			            styles: {
+			              fontWeight: 'bold',
+			              color: props => {
+			            	  switch(props.value){
+			            	     case '납품등록': return '#aaa';
+			            	     case '포장완료': return '#4b96e6';
+			            	     case '납품완료': return 'red';
+			            	  }
+			              }
+			            }
+			          }
+			         },
 				{ header: "출고등록일", name: "registDate", sortable: true, align: 'center', minWidth: 81},
 				{ header: "비고", name: "remark", hidden: true},
 				{ header: "출고창고", name: "storageName", hidden: true},

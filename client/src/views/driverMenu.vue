@@ -21,9 +21,9 @@
         <div>
           <span>상태</span>
           <select class="search-status form-control" v-model="status">
-            <option value="">전체</option>
             <option value="DS03">미완료</option>
             <option value="DS05">완료</option>
+            <option value="All">전체</option>
           </select>
           <span class="btn-gruop">
             <button class="btn btn-primary" @click="searchData">
@@ -149,7 +149,7 @@ let selectedDelivery = ref(null);
 //검색 조건
 let address = ref(''); //주소
 let companyName = ref(''); //회사명
-let status = ref(''); //상태
+let status = ref('DS03'); //상태
 
 //배송지 단건조회 정보
 let readDeliveryCode = ref('');

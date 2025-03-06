@@ -150,6 +150,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 			//가져온 로트 수만큼 반복문 실행
 			for(int j=0; j<lotList.size(); j++) {
 				
+				//로트 합을 계속 빼서, 0보다 작아지면 바로 종료함.
+	            if(divyQy <= 0) {
+	                break;
+	            };
+				
 				int lotQy = lotList.get(j).getLotQy();
 				//로트에 있는 재고 수량을 더함.
 				
@@ -180,18 +185,13 @@ public class DeliveryServiceImpl implements DeliveryService {
 				}
 				
 				/*출고 수량 인서트*/
-				mapper.insertDeliveryDetails(insertInfo);
+				mapper.insertDeliveryDetails(insertDivyQy, lotList.get(j).getProductLot());
 				
 				/*재고 수량 업데이트*/
 				mapper.updateLotQy(insertInfo);
 				
 				//요청 수량에서 로트 합을 계속 빼기
 				divyQy -= sumLotQy;
-				
-				//로트 합을 계속 빼서, 0보다 작아지면 바로 종료함.
-	            if(divyQy <= 0) {
-	                break;
-	            };
 				
 			}
 			

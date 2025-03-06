@@ -130,7 +130,7 @@
 	<select id="getTime">
 		SELECT COUNT(*)+1 AS time
 		FROM delivery
-		WHERE product_order_code = #{productOrderCode}
+		WHERE mtril_order_code = #{productOrderCode}
 	</select>
 	
 	<select id="getDeliveryCode">
