@@ -455,7 +455,7 @@ function insertBom(){
 	let detailArr = selectedBom.map(obj => {
 		return {
 			mtrilCode: obj.mtrilCode,
-			mtrilColor: obj.mtrilColor,
+			mtrilColor: obj.mtrilColor == 'null' ? null : obj.mtrilColor,
 			requireQy: obj.requireQy
 		};
 	});

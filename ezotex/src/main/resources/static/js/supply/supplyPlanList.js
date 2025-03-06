@@ -384,35 +384,29 @@ function loadPrdPivot(selectedPrd){
   });
 }
 
-// 시즌 비교용 숫자 변환
-// 월 => 숫자
-function convertMonth(month){
-    if(month >= 3 && month <= 5) return 1; // 봄
-    else if(month >= 6 && month <= 8) return 2; // 여름
-    else if(month >= 9 && month <= 11) return 3; // 가을
-    else if(month == 12 || month <= 2)return 4; // 겨울
-    else return 0; // 상시
-}
-
-// 시즌 => 숫자
-function convertSeason(str){
+// 시즌이 시작하는 월 반환
+function getSeasonMonth(str){
     switch(str){
-        case '봄': return 1;
-        case '여름': return 2;
-        case '가을': return 3;
-        case '겨울': return 4;
+        case '봄': return 3;
+        case '여름': return 6;
+        case '가을': return 9;
+        case '겨울': return 12;
         default: return 0;
     }
 }
 
 // 수정/중단 가능 여부 (시즌 비교)
 function validSeason(row){
+    if(row.discontinued == 'Y') return false;
+    let seasonMonth = getSeasonMonth(row.season);
+    if(seasonMonth == 0) return true; // 상시공급이라면 제한 없음
+    
     let today = new Date();
     let year = today.getFullYear();
     let month = today.getMonth() + 1;
     
-    // 공급년도가 오지 않았거나, 올해라면 시즌이 도래하지 않았는지 판단
-    let isValid = convertMonth(month) < convertSeason(row.season);
+    // 공급년도가 올해라면 시즌이 시작되기까지 한 달 이상 남아있어야 수정/중단 가능
+    let isValid = month < seasonMonth - 1; 
     return (isValid && row.supplyYear == year) || row.supplyYear < year;
 }
 
