@@ -377,8 +377,17 @@
 			그리드 정의		
 		*/
 		
-		function numberFormat(value){ // 그리드 내부 포맷으로 사용 시 row.value
-			return (value == null || value == '') ? null : Number(value).toLocaleString();
+		function numberFormat(value){ 
+			
+			if(value == 0) {
+				return value;
+			} else if(value == null || value == '') {
+				return null;
+			} else {
+				return Number(value).toLocaleString();
+			}
+	
+			
 		};
 		
 	    const orderListdataSource = {

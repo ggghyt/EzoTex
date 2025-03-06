@@ -109,6 +109,7 @@
                                             ON (md.mtril_order_code = dd.order_code)
                                             AND (md.product_color = dd.product_color)
 		WHERE   md.mtril_order_code = #{orderCode}
+        AND     (md.order_qy - COALESCE(dd.delivery_qy, 0)) > 0
 		ORDER BY md.product_code
 	</select>
 	
@@ -284,11 +285,13 @@
 		SELECT dd.product_code AS product_code,
 		       pi.product_name AS product_name,
 		       dd.product_color AS product_color,
-		       0 AS order_qy,
+		       mo.order_qy AS order_qy,
 		       dd.request_qy AS req_qy,
 		       dd.delivery_qy AS delivery_qy
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON dd.product_code = pi.product_code
+		                           JOIN material_order_details mo
+		                             ON (dd.order_code = mo.mtril_order_code)
 		WHERE  dd.delivery_code = #{deliveryCode}
 		ORDER BY dd.product_code
 	</select>

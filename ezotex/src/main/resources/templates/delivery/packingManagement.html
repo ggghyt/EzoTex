@@ -559,60 +559,51 @@
     			for(let i=0; i<res.length; i++) {
     				vlSum += res[i].vl * res[i].qySum;
     			}
-    			allProductVlSum = vlSum; //초기화시 사용할 변수에 값 저장
+    			
+    			//처음 값이 부피의 총 합이 할당됨 안바뀌는 값
+    			allProductVlSum = vlSum;
 
     			console.log('vlSum', vlSum);
+    			
+    			/*
+   					원래 있던 자리.
+   				*/
+   				
    				for(let i=0; i<boxInfo.length; i++) {
-   					//console.log("반복문 시작");
-   					//while문 반복 변수
-   					let roopVal = true;
-   					
-   					
-   					//제품 전체 사이즈가 박스 사이즈보다 클경우 내부 내용 실행
-   					if( vlSum - boxInfo[i].boxVl > 0) {   		
-   						//console.log("반복문 내부 제품 전체 사이즈가 박스 사이즈보다 클 경우 내부 내용 실행");
-	   					while(roopVal) {
-	   						//console.log("반복문 내부 while문 내부 박스 사이즈에 vlSum을 계속 뺌");
-	   						//console.log("빼고 있는 상자 사이즈: ", boxInfo[i].boxVl);
-							//제품 총 부피에서 상자 크기를 계속 뺌
-	   						vlSum -= boxInfo[i].boxVl;
-							
-							//계속 빼서 제품 총 부피가 0보다 작을때 
-	   						if(vlSum < 0) {
-	   							//console.log("반복문 내부 while문 내부 vlSum이 0보다 작아졌음");
-	   							//console.log('i의 값', i);
-	   							//roopVal = false;
-	   							switch(i) {
-	   								case 0 : //console.log('case1실행', Math.floor(allProductVlSum / boxInfo[i].boxVl));
-	   										 lBox = Math.floor(allProductVlSum / boxInfo[i].boxVl);
-	   										 document.querySelector(".big-box").value = lBox;
-	   										 vlSum = allProductVlSum % boxInfo[i].boxVl;
-	   										 roopVal = false;
-	   									break;
-	   								case 1 : //console.log('case2실행', Math.floor(vlSum / boxInfo[i].boxVl));
-	   										 mBox = Math.floor(allProductVlSum / boxInfo[i].boxVl);
-	   										 document.querySelector(".middle-box").value = mBox;
-	   										 vlSum = (allProductVlSum / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
-										     roopVal = false;
-										break;
-	   								case 2 : //console.log('case3실행', Math.floor(vlSum / boxInfo[i].boxVl));
-	   										 sBox = Math.ceil(allProductVlSum / boxInfo[i].boxVl);
-	   										 document.querySelector(".small-box").value = sBox;
-			   								 vlSum = ((allProductVlSum / boxInfo[i-2].boxVl) / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
-										     roopVal = false;
-										break;
-	   						        default:
-	   						            break;	
-	   							}
-	   							break;
-	   						}
-							//console.log('roopVal', roopVal);
-	   					}
-   					}
-   				}
+   					switch(i) {
+						case 0 : 
+								 lBox = Math.floor(vlSum / boxInfo[i].boxVl);
+								 document.querySelector(".big-box").value = lBox;
+								 vlSum = allProductVlSum % boxInfo[i].boxVl;
+								 console.log('i는 0', vlSum);
+							break;
+						case 1 : 
+								 mBox = Math.floor(vlSum / boxInfo[i].boxVl);
+								 document.querySelector(".middle-box").value = mBox;
+								 vlSum = (allProductVlSum / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
+								 console.log('i는 0', vlSum);
+							break;
+						case 2 : 
+								 sBox = Math.ceil(vlSum / boxInfo[i].boxVl);
+								 document.querySelector(".small-box").value = sBox;
+								 vlSum = ((allProductVlSum / boxInfo[i-2].boxVl) / boxInfo[i-1].boxVl) % boxInfo[i].boxVl;
+								 console.log('i는 0', vlSum);
+								break;
+				        default:
+				            break;	
+					}
+					
+				}
+   				
+   				
+   				
+   				
+   				
+   				
    				lBox = document.querySelector(".big-box").value;
    				mBox = document.querySelector(".middle-box").value;
    				sBox = document.querySelector(".small-box").value;
+   				
    				//박스 수량 업데이트
    				document.querySelector(".boxQySum").value = Number(document.querySelector(".big-box").value) + Number(document.querySelector(".middle-box").value) + Number(document.querySelector(".small-box").value);
   				
@@ -701,17 +692,6 @@
    				document.querySelector(".boxQySum").value = Number(document.querySelector(".big-box").value) + Number(document.querySelector(".middle-box").value) + Number(document.querySelector(".small-box").value);
         	})
         );
-        /*
-        DELIVERY_CODE     
-		BOX_SIZE   
-		QY  
-		
-        PACKING_NO    packing_seq.nextVal                     
-		RGSDE                 
-		UPDDE               
-		CHARGER_CODE      
-		CHARGER_NAME
-		*/
 		
 		//서버로 보내기
 		document.querySelector('.openIsRegist').addEventListener("click", () => {
