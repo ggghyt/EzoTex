@@ -8,7 +8,7 @@
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-<script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 손실액 조회</h3>
@@ -76,87 +76,83 @@
 	</div>
 
 	<!-- 제품 손실액 조회할 그리드 -->
+	<!-- 제품 손실액 조회할 그리드 -->
 	<div class="card card-body mt-3">
 		<h3>제품별 일일 손실액</h3>
 		<div id="salesAmountGrid"></div>
 		<div class="card-body">
 			<div class="d-sm-flex justify-content-between align-items-start">
 				<div>
-					<h4 class="card-title card-title-dash">불량률</h4>
+					<h4 class="card-title card-title-dash">제품별 매출·손실 현황</h4>
 				</div>
 			</div>
-			<div
-				class="d-sm-flex align-items-center mt-1 justify-content-between">
-				<div class="me-3">
-					<div id="marketing-overview-legend">
-						<div class="chartjs-legend">
-							<ul>
-								<li class="text-muted text-small"><span
-									style="background-color: #52CDFF"></span>Last week</li>
-								<li class="text-muted text-small"><span
-									style="background-color: #1F3BB3"></span>This week</li>
-							</ul>
-						</div>
-					</div>
+			<div class="d-flex flex-row mt-3">
+				<!-- 기존 매출액과 손실액 차트 -->
+				<div class="chartjs-bar-wrapper"
+					style="width: 50%; padding-right: 15px;">
+					<canvas id="salesLossAmount" width="300" height="300"
+						style="display: block; width: 100%; height: 300px;"
+						class="chartjs-render-monitor"></canvas>
 				</div>
-			</div>
-			<div class="chartjs-bar-wrapper mt-3">
-				<div class="chartjs-size-monitor">
-					<div class="chartjs-size-monitor-expand">
-						<div class=""></div>
-					</div>
-					<div class="chartjs-size-monitor-shrink">
-						<div class=""></div>
-					</div>
+				<!-- 주문량과 반품량 차트 추가 -->
+				<div class="chartjs-bar-wrapper"
+					style="width: 50%; padding-left: 15px;">
+					<canvas id="orderReturn" width="300" height="300"
+						style="display: block; width: 100%; height: 300px;"
+						class="chartjs-render-monitor"></canvas>
 				</div>
-				<canvas id="salesLossAmount" width="511" height="150"
-					style="display: block; width: 511px; height: 150px;"
-					class="chartjs-render-monitor"></canvas>
 			</div>
 		</div>
-		<h3>제품별 일일 손실액 차트</h3>
-		<div id="lossChart" style="height: 400px;"></div>
 	</div>
 
 	<script>
 	if ($("#salesLossAmount").length) {
-	      var marketingOverviewChart = document.getElementById("salesLossAmount").getContext('2d');
-	      var marketingOverviewData = {
-	          labels: ["JAN","FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
-	          datasets: [{
-	              label: 'Last week',
-	              data: [110, 220, 200, 190, 220, 110, 210, 110, 205, 202, 201, 150],
-	              backgroundColor: "#52CDFF",
-	              borderColor: [
-	                  '#52CDFF',
-	              ],
-	              borderWidth: 0,
-	              fill: true, // 3: no fill
-	              
-	          },
-	          ]
-	      };
-	  
-	      var salesLossAmount = {
+	    var salesLossAmountChart = document.getElementById("salesLossAmount").getContext('2d');
+	    var salesLossAmountData = {
+	        labels: ["금액"],  // 하나의 항목으로 합쳐서 "금액"만 표시
+	        datasets: [
+	            {
+	                label: "매출액",  // 매출액을 먼저 표시
+	                data: [],  // 매출액 데이터만 표시
+	                backgroundColor: "#52CDFF",  // 매출액 색상
+	                borderColor: "#52CDFF",  // 매출액 테두리 색상
+	                borderWidth: 1,
+	                type: "bar",  // 막대 그래프
+	                yAxisID: "y-axis-1"  // 금액은 왼쪽 축 사용
+	            },
+	            {
+	                label: "손실액",  // 손실액을 두 번째로 표시
+	                data: [],  // 손실액 데이터만 표시
+	                backgroundColor: "#FF5A5A",  // 손실액 색상
+	                borderColor: "#FF5A5A",  // 손실액 테두리 색상
+	                borderWidth: 1,
+	                type: "bar",  // 막대 그래프
+	                yAxisID: "y-axis-1"  // 금액은 왼쪽 축 사용
+	            }
+	        ]
+	    };
+
+	    var salesLossAmountOptions = {
 	        responsive: true,
 	        maintainAspectRatio: false,
-	          scales: {
-	              yAxes: [{
-	                  gridLines: {
-	                      display: true,
-	                      drawBorder: false,
-	                      color:"#F0F0F0",
-	                      zeroLineColor: '#F0F0F0',
-	                  },
-	                  ticks: {
+	        scales: {
+	            yAxes: [{
+	                id: 'y-axis-1',
+	                position: 'left',
+	                ticks: {
 	                    beginAtZero: true,
-	                    autoSkip: true,
-	                    maxTicksLimit: 5,
 	                    fontSize: 10,
-	                    color:"#6B778C"
-	                  }
-	              }],
-	              xAxes: [{
+	                    color: "#6B778C",
+	                    callback: function(value) {
+	                        return value.toLocaleString();  // 금액을 통화 형식으로 표시
+	                    }
+	                },
+	                scaleLabel: {
+	                    display: true,
+	                    labelString: '금액 (₩)'
+	                }
+	            }],
+	            xAxes: [{
 	                stacked: true,
 	                barPercentage: 0.35,
 	                gridLines: {
@@ -164,45 +160,105 @@
 	                    drawBorder: false,
 	                },
 	                ticks: {
-	                  beginAtZero: false,
-	                  autoSkip: true,
-	                  maxTicksLimit: 12,
-	                  fontSize: 10,
-	                  color:"#6B778C"
+	                    beginAtZero: false,
+	                    autoSkip: true,
+	                    maxTicksLimit: 12,
+	                    fontSize: 10,
+	                    color: "#6B778C"
+	                }
+	            }]
+	        },
+	        legend: {
+	            display: true  // 범례를 표시
+	        },
+	        tooltips: {
+	            backgroundColor: 'rgba(31, 59, 179, 1)',
+	        }
+	    };
+
+	    var salesLossAmount = new Chart(salesLossAmountChart, {
+	        type: 'bar',
+	        data: salesLossAmountData,
+	        options: salesLossAmountOptions
+	    });
+	}
+	
+	if ($("#orderReturn").length) {
+	    var orderReturnChart = document.getElementById("orderReturn").getContext('2d');
+	    var orderReturnData = {
+	        labels: ["수량"],  // 하나의 항목으로 합쳐서 "금액"만 표시
+	        datasets: [
+	            {
+	                label: "주문량",  // 매출액을 먼저 표시
+	                data: [],  // 매출액 데이터만 표시
+	                backgroundColor: "#28A745",  // 매출액 색상
+	                borderColor: "#28A745",  // 매출액 테두리 색상
+	                borderWidth: 1,
+	                type: "bar",  // 막대 그래프
+	                yAxisID: "y-axis-1"  // 금액은 왼쪽 축 사용
+	            },
+	            {
+	                label: "반품량",  // 손실액을 두 번째로 표시
+	                data: [],  // 손실액 데이터만 표시
+	                backgroundColor: "#FFA500",  // 손실액 색상
+	                borderColor: "#FFA500",  // 손실액 테두리 색상
+	                borderWidth: 1,
+	                type: "bar",  // 막대 그래프
+	                yAxisID: "y-axis-1"  // 금액은 왼쪽 축 사용
+	            }
+	        ]
+	    };
+
+	    var orderReturnOptions = {
+	        responsive: true,
+	        maintainAspectRatio: false,
+	        scales: {
+	            yAxes: [{
+	                id: 'y-axis-1',
+	                position: 'left',
+	                ticks: {
+	                    beginAtZero: true,
+	                    fontSize: 10,
+	                    color: "#6B778C",
+	                    callback: function(value) {
+	                        return value.toLocaleString();
+	                    }
+	                },
+	                scaleLabel: {
+	                    display: true,
+	                    labelString: '수량'
 	                }
 	            }],
-	          },
-	          legend:false,
-	          legendCallback: function (chart) {
-	            var text = [];
-	            text.push('<div class="chartjs-legend"><ul>');
-	            for (var i = 0; i < chart.data.datasets.length; i++) {
-	              console.log(chart.data.datasets[i]); // see what's inside the obj.
-	              text.push('<li class="text-muted text-small">');
-	              text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
-	              text.push(chart.data.datasets[i].label);
-	              text.push('</li>');
-	            }
-	            text.push('</ul></div>');
-	            return text.join("");
-	          },
-	          
-	          elements: {
-	              line: {
-	                  tension: 0.4,
-	              }
-	          },
-	          tooltips: {
-	              backgroundColor: 'rgba(31, 59, 179, 1)',
-	          }
-	      }
-	      var salesLossAmount = new Chart(marketingOverviewChart, {
-	          type: 'bar',
-	          data: marketingOverviewData,
-	          options: marketingOverviewOptions
-	      });
-	      document.getElementById('marketing-overview-legend').innerHTML = salesLossAmount.generateLegend();
-	    }
+	            xAxes: [{
+	                stacked: true,
+	                barPercentage: 0.35,
+	                gridLines: {
+	                    display: false,
+	                    drawBorder: false,
+	                },
+	                ticks: {
+	                    beginAtZero: false,
+	                    autoSkip: true,
+	                    maxTicksLimit: 12,
+	                    fontSize: 10,
+	                    color: "#6B778C"
+	                }
+	            }]
+	        },
+	        legend: {
+	            display: true  // 범례를 표시
+	        },
+	        tooltips: {
+	            backgroundColor: 'rgba(31, 59, 179, 1)',
+	        }
+	    };
+
+	    var orderReturn = new Chart(orderReturnChart, {
+	        type: 'bar',
+	        data: orderReturnData,
+	        options: orderReturnOptions
+	    });
+	}
 	</script>
 	<script th:inline="javascript">
 	<!-- 그리드에 넣어줄 데이터 -->
@@ -262,8 +318,84 @@
       	},
 	})
 	
-	let lossChart = null; // 차트 객체 저장
+	// 클릭된 행의 데이터를 차트에 반영하는 함수
+	function updateChart(rowData) {
+	    if (!rowData) return;
+	
+	    // 새로운 데이터로 업데이트
+	    salesLossAmount.data.labels = ["금액"];  // 하나의 항목으로 합쳐서 "금액"을 표시
+	    
+	    // datasets에서 매출액을 먼저, 손실액을 두 번째로 표시
+	    salesLossAmount.data.datasets = [
+	        {
+	            label: rowData.productName + " 매출액",  // 매출액 라벨
+	            data: [rowData.totalSales],  // 매출액만 표시하고
+	            backgroundColor: "#52CDFF",  // 매출액 색상
+	            borderColor: "#52CDFF",  // 매출액 테두리 색상
+	            borderWidth: 1,
+	            type: "bar",  // 막대 그래프
+	            yAxisID: "y-axis-1",  // 금액은 왼쪽 축 사용
+	        },
+	        {
+	            label: rowData.productName + " 손실액",  // 손실액 라벨
+	            data: [rowData.totalLoss],  // 손실액만 표시하고
+	            backgroundColor: "#FF5A5A",  // 손실액 색상
+	            borderColor: "#FF5A5A",  // 손실액 테두리 색상
+	            borderWidth: 1,
+	            type: "bar",  // 막대 그래프
+	            yAxisID: "y-axis-1",  // 금액은 왼쪽 축 사용
+	        }
+	    ];
+	
+	    // 차트 다시 그리기
+	    salesLossAmount.update();
+	}
+	
+	function updateOrderReturnChart(rowData) {
+	    if (!rowData) return;
 
+	    // 새로운 데이터로 업데이트
+	    orderReturn.data.labels = ["수량"];  // 하나의 항목으로 합쳐서 "수량"을 표시
+	    
+	    // datasets에서 주문량을 먼저, 반품량을 두 번째로 표시
+	    orderReturn.data.datasets = [
+	        {
+	            label: rowData.productName + " 주문량",  // 주문량 라벨
+	            data: [rowData.totalOrderQuantity],  // 주문량만 표시하고
+	            backgroundColor: "#28A745",  // 주문량 색상
+	            borderColor: "#28A745",  // 주문량 테두리 색상
+	            borderWidth: 1,
+	            type: "bar",  // 막대 그래프
+	            yAxisID: "y-axis-1",  // 수량은 왼쪽 축 사용
+	        },
+	        {
+	            label: rowData.productName + " 반품량",  // 반품량 라벨
+	            data: [rowData.totalReturnQuantity],  // 반품량만 표시하고
+	            backgroundColor: "#FFA500",  // 반품량 색상
+	            borderColor: "#FFA500",  // 반품량 테두리 색상
+	            borderWidth: 1,
+	            type: "bar",  // 막대 그래프
+	            yAxisID: "y-axis-1",  // 수량은 왼쪽 축 사용
+	        }
+	    ];
+
+	    // 차트 다시 그리기
+	    orderReturn.update();
+	}
+
+	// 그리드 행 클릭 이벤트
+	salesAmountGrid.on('click', (ev) => {
+	    salesAmountGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 제거
+	    salesAmountGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	    lastClicked = ev.rowKey; // 현재 클릭된 행 저장
+
+	    const rowData = salesAmountGrid.getRow(ev.rowKey);
+	    if (rowData) {
+	        updateChart(rowData); // 매출액 , 손실액 차트 업데이트
+	        updateOrderReturnChart(rowData);  // 주문량, 반품량 차트 업데이트
+	    }
+	});
+	
 	let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
 	// 행 클릭 이벤트 추가
 	salesAmountGrid.on('click', (ev) => {
@@ -277,41 +409,6 @@
 	        updateChart(rowData);
 	    }
 	});
-	
-
-	// 차트 업데이트 함수
-	function updateChart(data) {
-	    const chartData = {
-	        categories: ['매출액', '손실액', '주문량', '반품량'],
-	        series: [
-	            {
-	                name: `${data.productName} (${data.orderDate})`, // 제품명 + 날짜 포함
-	                data: [
-	                    data.totalSales || 0,
-	                    data.totalLoss || 0,
-	                    data.totalOrderQuantity || 0,
-	                    data.totalReturnQuantity || 0
-	                ]
-	            }
-	        ]
-	    };
-
-	    const options = {
-	        chart: { width: 700, height: 400, title: `손실액 차트 - ${data.productName} (${data.orderDate})` },
-	        xAxis: { categories: chartData.categories },
-	        series: { showLabel: false },
-	        tooltip: {
-	        	enabled : false
-	        }
-	    };
-
-	    if (lossChart) {
-	        lossChart.setOptions(options);
-	        lossChart.setData(chartData);
-	    } else {
-	        lossChart = toastui.Chart.columnChart({ el: document.getElementById('lossChart'), data: chartData, options });
-	    }
-	}
 	
 	// 손실액 검색 함수
 	function searchSalesLossAmount() {
