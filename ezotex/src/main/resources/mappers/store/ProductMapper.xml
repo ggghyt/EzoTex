@@ -285,7 +285,8 @@
 	<!-- 불량 재고 카운트 -->
 	<select id="errorProductCount">
 		SELECT COUNT(*)
-		FROM inventory_error
+		FROM inventory_error e join product_info i
+		on e.product_code = i.product_code
 		<where>
             <if test='productCode != null and productCode != ""'>
                  AND e.product_code LIKE '%' || UPPER(#{productCode}) || '%'

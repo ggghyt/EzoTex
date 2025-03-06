@@ -46,11 +46,11 @@
 					
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="searchProductCode" placeholder="찾기" >
+					<input type="text" class="form-control pointer bg-white storeSearch" id="searchProductCode" placeholder="찾기" >
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">제품</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="searchProductName" placeholder="찾기" >
+					<input type="text" class="form-control pointer bg-white storeSearch" id="searchProductName" placeholder="찾기" >
 				</div>
 			</div>
 	
@@ -91,6 +91,14 @@
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
 		
+	
+		document.querySelectorAll('.storeSearch').forEach((ev) => {
+			ev.addEventListener('keydown', (ev) => {
+				if(window.event.keyCode == 13){
+					searchProductList();
+				}
+			})
+		})
 	
 		inputReset.addEventListener('click', function(){
 			document.querySelector('#searchProductCode').value = '';

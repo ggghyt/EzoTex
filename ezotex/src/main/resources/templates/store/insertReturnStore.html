@@ -30,15 +30,15 @@
 		                        <div class="mb-3 row d-flex justify-content-between">
 		                            <div class="col-sm-3 d-flex align-items-center">
 		                                <label for="searchStorageCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 코드</label>
-		                                <input type="text" class="form-control" id="searchStorageCode" style="width: 150px;">
+		                                <input type="text" class="form-control modalSearch" id="searchStorageCode" style="width: 150px;">
 		                            </div>
 		                            <div class="col-sm-3 d-flex align-items-center">
 		                                <label for="searchStorageInfoCode" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 상세 코드</label>
-		                                <input type="text" class="form-control" id="searchStorageInfoCode" style="width: 150px;">
+		                                <input type="text" class="form-control modalSearch" id="searchStorageInfoCode" style="width: 150px;">
 		                            </div>
 		                            <div class="col-sm-3 d-flex align-items-center">
 		                                <label for="searchStorageInfoName" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 이름</label>
-		                                <input type="text" class="form-control" id="searchStorageInfoName" style="width: 150px;">
+		                                <input type="text" class="form-control modalSearch" id="searchStorageInfoName" style="width: 150px;">
 		                            </div>
 		                        </div>
 		
@@ -78,17 +78,17 @@
 					
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">반품코드</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="searchReturnCode" placeholder="찾기" >
+					<input type="text" class="form-control pointer bg-white storeSearch" id="searchReturnCode" placeholder="찾기" >
 				</div>
 				<label class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
 				<div class="col-8 col-sm-4 col-lg-2 d-flex mb-2">
-					<input type="text" class="form-control pointer bg-white" id="requestor" placeholder="찾기" >
+					<input type="text" class="form-control pointer bg-white storeSearch" id="requestor" placeholder="찾기" >
 				</div>
 				
 				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">반품 요청일</label>
 				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-					<input type="date" class="form-control text-end" id="startRequestDate" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end" id="endRequestDate" style="margin-left: 10px;">
+					<input type="date" class="form-control text-end storeSearch" id="startRequestDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control text-end storeSearch" id="endRequestDate" style="margin-left: 10px;">
 				</div>
 				
 				
@@ -131,7 +131,7 @@
 
 				<div class="d-flex justify-content-end mt-2">
 					<button type="button" id="insertReturn" class="btn btn-primary registBtn"
-						style="height: 45px; margin-top: 10px;">등록</button>
+						style="height: 45px; margin-top: 10px;">입고</button>
 					<button class="btn btn-secondary" style="margin: 10px;" id="resetBtn" >초기화</button>
 				</div>
 
@@ -213,6 +213,15 @@
 
 	<!-- Toast UI Grid 스크립트 -->
 	<script>
+	
+		document.querySelectorAll(".storeSearch").forEach((ev) => {
+			ev.addEventListener('keydown', (ev) => {
+				if(window.event.keyCode == 13){
+					searchReturnList();
+				}
+			})
+		})
+	
 	
 		insertReturn.addEventListener('click', function(){
 			let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
@@ -555,6 +564,15 @@
 	    
 	    let locationData = [];
 	    
+	    document.querySelectorAll('.modalSearch').forEach((ev) => {
+	    	ev.addEventListener('keydown', (ev) => {
+	    		if(window.event.keyCode == 13){
+	    			searchLocation();
+	    		}
+	    	})
+	    })
+	    
+	    
 	   	function searchLocation() {
 	   	    let storageCode = document.querySelector('#searchStorageCode').value;
 	   	    let storageInfoCode = document.querySelector('#searchStorageInfoCode').value;
@@ -632,9 +650,9 @@
 	                        childNames: ['size' + option.productSizeInfo, 'SZ' + option.productSizeInfo.toLowerCase()]
 	                    });
 	                    color.push({
-	                        header: "입고할수량", name: "size" + option.productSizeInfo, align: "center", editor: "text"
+	                        header: "입고할수량", name: "size" + option.productSizeInfo, align: 'right', formatter: (row) => numberFormatter(row.value), editor: "text"
 	                    }, {
-	                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: "center"
+	                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: 'right', formatter: (row) => numberFormatter(row.value)
 	                    }, {
 	                        header: "제품코드", name: "productCode", hidden: true
 	                    }, {
