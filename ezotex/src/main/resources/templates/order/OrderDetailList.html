@@ -13,7 +13,7 @@
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
 
-	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+	<div class="card card-body mt-3 bg-secondary">
 		<h3>검색</h3>
 		<table class="table mt-3">
 			<tbody>
@@ -182,7 +182,7 @@
 								name : 'details',
 								align : 'center',
 								formatter : function(value , row) {
-									return `<button type = "button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#orderDetailModal">상세보기</button>`;
+									return `<button type = "button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#orderDetailModal">상세보기</button>`;
 								}
 							},
 					        {

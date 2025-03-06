@@ -7,6 +7,7 @@ import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.SalesDTO;
 import com.ezotex.returns.dto.changeDTO;
 import com.ezotex.returns.dto.showDTO;
 
@@ -44,4 +45,10 @@ public interface ReturnsMapper {
 	
 	// 일별 제품별 손실액
 	List<ReturnsProductDTO> getTotalReturnProduct();
+	
+	// 매출액 조회
+	List<SalesDTO> getSalesList();
+	
+	// 주문코드에 대한 매출액과 손실액 조회
+	List<SalesDTO> getSalesAmount();
 }

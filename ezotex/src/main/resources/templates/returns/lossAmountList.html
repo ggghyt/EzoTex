@@ -8,48 +8,62 @@
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="https://uicdn.toast.com/chart/latest/toastui-chart.min.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 손실액 조회</h3>
-	<div class="card card-body mt-3" style="background-color: #d3d3d3;">
+	<div class="card card-body mt-3 bg-secondary">
 		<h3>검색</h3>
 		<table class="table mt-3">
 			<tbody>
 				<!-- 첫 번째 줄 -->
 				<tr>
-					<td class="col-auto"><label class="col-form-label">제품코드</label></td>
-					<td class="col-auto"><input type="text" id="productCode"
-						class="form-control"></td>
 					<td class="col-auto"><label class="col-form-label">제품명</label></td>
 					<td class="col-auto"><input type="text" id="productName"
 						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">요청일</label></td>
-					<td class="col-auto"><input type="date" id="startRequestDate"
+					<td class="col-auto"><label class="col-form-label">주문일</label></td>
+					<td class="col-auto"><input type="date" id="startOrderDate"
 						class="form-control"></td>
 					<td>~</td>
-					<td class="col-auto"><input type="date" id="endRequestDate"
+					<td class="col-auto"><input type="date" id="endOrderDate"
 						class="form-control"></td>
 				</tr>
 				<!-- 두 번째 줄 -->
 				<tr>
-					<td class="col-auto"><label class="col-form-label">수량</label></td>
-					<td class="col-auto"><input type="text" id="qy"
-						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">처리상태</label></td>
-					<td class="col-auto"><input type="text" id="processingStatus"
-						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">반품일</label></td>
-					<td class="col-auto"><input type="date" id="startReturnDate"
+					<td class="col-auto"><label class="col-form-label">매출액</label></td>
+					<td class="col-auto"><input type="text" id="startTotalSales"
 						class="form-control"></td>
 					<td>~</td>
-					<td class="col-auto"><input type="date" id="endReturnDate"
+					<td class="col-auto"><input type="date" id="endTotalSales"
 						class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">손실액</label></td>
+					<td class="col-auto"><input type="text" id="startTotalLoss"
+						class="form-control"></td>
+					<td>~</td>
+					<td class="col-auto"><input type="text" id="endTotalLoss"
+						class="form-control"></td>
+
+				</tr>
+				<!-- 세번째 줄 -->
+				<tr>
+					<td class="col-auto"><label class="col-form-label">주문수량</label></td>
+					<td class="col-auto"><input type="text"
+						id="startTotalOrderQuantity" class="form-control"></td>
+					<td>~</td>
+					<td class="col-auto"><input type="text"
+						id="endTotalOrderQuantity" class="form-control"></td>
+					<td class="col-auto"><label class="col-form-label">반품수량</label></td>
+					<td class="col-auto"><input type="text"
+						id="startTotalReturnQuantity" class="form-control"></td>
+					<td>~</td>
+					<td class="col-auto"><input type="text"
+						id="endTotalReturnQuantity" class="form-control"></td>
 				</tr>
 			</tbody>
 		</table>
 		<div class="text-center mt-3">
 			<button class="btn btn-warning mag-glass-btn"
-				onclick="searchLossAmount()">
+				onclick="searchSalesLossAmount()">
 				<i class="fa-solid fa-magnifying-glass icon-left"
 					style="color: #ffffff;"></i>
 			</button>
@@ -63,164 +77,60 @@
 
 	<!-- 제품 손실액 조회할 그리드 -->
 	<div class="card card-body mt-3">
-	<h3>반품목록</h3>
-		<div id="lossAmountGrid"></div>
-	<h3>제품별 일일 손실액</h3>
-		<div id="totalAmountGrid"></div>
+		<h3>제품별 일일 손실액</h3>
+		<div id="salesAmountGrid"></div>
+		<h3>제품별 일일 손실액 차트</h3>
+		<div id="lossChart" style="height: 400px;"></div>
 	</div>
 
 
 	<script th:inline="javascript">
 	<!-- 그리드에 넣어줄 데이터 -->
-	const returnProductList = /*[[${getReturnProductList}]]*/[];	
-	const totalAmountList = /*[[${getTotalReturnProduct}]]*/[];	
-	// 토스트 그리드 사용
-	// 반품 제품 그리드 설정
-	const returnProductGrid = new tui.Grid(
-		{
-			el : document.getElementById('lossAmountGrid'), // 그리드 표시할 div ID
-			scrollX : false,
-			scrollY : false,
-			data : returnProductList,
-			columnOptions : {
-				resizable : true // 컬럼 크기 조절
-			},
-			columns : [
-				{
-					header : '제품코드',
-					name : 'productCode',
-					align : 'center',
-				},
-				{
-					header : '제품명',
-					name : 'productName',
-					align : 'center',
-				},
-				{
-					header : '요청일',
-					name : 'requestDate',
-					align : 'center',
-					hidden:true,
-				},
-				{
-					header : '수량',
-					name : 'qy',
-					align : 'right',
-		            formatter: (value) => {
-		                // 객체인 경우 value.value로 접근
-		                const val = value && value.value ? value.value : value;
-		                if (typeof val === 'number') {
-		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-		                }
-		                return val; // 숫자가 아니면 그대로 반환
-		            },
-				},
-				{
-					header : '단가',
-					name : 'unitPrice',
-					align : 'right',
-		            formatter: (value) => {
-		                // 객체인 경우 value.value로 접근
-		                const val = value && value.value ? value.value : value;
-		                if (typeof val === 'number') {
-		                    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-		                }
-		                return val; // 숫자가 아니면 그대로 반환
-		            },
-				},
-				{
-					header : '처리상태',
-					name : 'processingStatus',
-					align : 'center',
-					formatter : function(value) {
-						const status = value.value;
-						switch (status) {
-						case 'ER03':
-							return '반품';
-						case 'ER02':
-							return '교환';
-						case 'ER01':
-							return '폐기';
-						default : 
-							return status;
-						}
-					},
-				},
-				{
-					header : '반품일',
-					name : 'returnDate',
-					align : 'center',
-					hidden:true,
-				},
-				{
-					header : '손실액',
-					name : 'lossAmount',
-					align : 'right',
-		            formatter: ({ row }) => {
-		                const unitPrice = parseFloat(row.unitPrice) || 0;
-		                const quantity = parseInt(row.qy) || 0;
-		                return (unitPrice * quantity).toLocaleString();
-		            }
-				},
-				{
-					header : '요청일',
-					name : 'requestDate',
-					align : 'center',
-				},
-				{
-					header : '반품일',
-					name : 'returnDate',
-					align : 'center',
-				},
-				
-			],
-		    pageOptions: {
-		        useClient: true, // 페이징을 위해 필요
-		        perPage: 10
-	      	},
-		}
+	const salesAmountList = /*[[${getSalesAmount}]]*/[];
 	
-	
-	)
-	const totalAmountGrid = new tui.Grid({
-		el : document.getElementById('totalAmountGrid'),
+	// 매출액 + 손실액
+	const salesAmountGrid = new tui.Grid({
+		el : document.getElementById('salesAmountGrid'),
 		scrollX : false, // 가로 스크롤바 비활성화
 		scrollY : false, // 세로 스크롤바 비활성화
-		data : totalAmountList,
+		data : salesAmountList,
 		bodyHeight : 200,
 		rowHeaders : [{
 			type : 'rowNum',
 			header : 'NO'
 		}],
 		columns : [{
-			header : '반품등록일',
-			name : 'returnRequestDate',
-			align : 'center',
-		},{
-			header : '제품코드',
-			name : 'productCode',
+			header : '주문일',
+			name : 'orderDate',
 			align : 'center',
 		},{
 			header : '제품명',
 			name : 'productName',
 			align : 'center',
 		},{
-			header : '총 수량',
-			name : 'totalQy',
+			header : '매출액',
+			name : 'totalSales',
 			align : 'right',
 	        formatter: function({ value }) {
 	            return value ? value.toLocaleString() : '0';
 	        },
 		},{
-			header : '단가',
-			name : 'totalUnitPrice',
+			header : '손실액',
+			name : 'totalLoss',
 			align : 'right',
 	        formatter: function({ value }) {
 	            return value ? value.toLocaleString() : '0';
 	        },
 		},{
-			header : '총 손실액',
-			name : 'lossAmount',
+			header : '주문량',
+			name : 'totalOrderQuantity',
+			align : 'right',
+	        formatter: function({ value }) {
+	            return value ? value.toLocaleString() : '0';
+	        },
+		},{
+			header : '반품량',
+			name : 'totalReturnQuantity',
 			align : 'right',
 	        formatter: function({ value }) {
 	            return value ? value.toLocaleString() : '0';
@@ -230,40 +140,96 @@
 	        useClient: true, // 페이징을 위해 필요
 	        perPage: 5
       	},
-		
 	})
 	
+	let lossChart = null; // 차트 객체 저장
+
+	let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
+	// 행 클릭 이벤트 추가
+	salesAmountGrid.on('click', (ev) => {
+		
+		salesAmountGrid.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+		salesAmountGrid.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
+	    lastClicked = ev.rowKey; // 선택된 행 기억
+	    
+	    const rowData = salesAmountGrid.getRow(ev.rowKey);
+	    if (rowData) {
+	        updateChart(rowData);
+	    }
+	});
+	
+
+	// 차트 업데이트 함수
+	function updateChart(data) {
+	    const chartData = {
+	        categories: ['매출액', '손실액', '주문량', '반품량'],
+	        series: [
+	            {
+	                name: `${data.productName} (${data.orderDate})`, // 제품명 + 날짜 포함
+	                data: [
+	                    data.totalSales || 0,
+	                    data.totalLoss || 0,
+	                    data.totalOrderQuantity || 0,
+	                    data.totalReturnQuantity || 0
+	                ]
+	            }
+	        ]
+	    };
+
+	    const options = {
+	        chart: { width: 700, height: 400, title: `손실액 차트 - ${data.productName} (${data.orderDate})` },
+	        xAxis: { categories: chartData.categories },
+	        series: { showLabel: false },
+	        tooltip: {
+	        	enabled : false
+	        }
+	    };
+
+	    if (lossChart) {
+	        lossChart.setOptions(options);
+	        lossChart.setData(chartData);
+	    } else {
+	        lossChart = toastui.Chart.columnChart({ el: document.getElementById('lossChart'), data: chartData, options });
+	    }
+	}
+	
 	// 손실액 검색 함수
-	function searchLossAmount() {
-        const productCode = document.querySelector('#productCode').value;
+	function searchSalesLossAmount() {
         const productName = document.querySelector('#productName').value;
-        const startRequestDate = document.querySelector('#startRequestDate').value;
-        const endRequestDate = document.querySelector('#endRequestDate').value;
-        const qy = document.querySelector('#qy').value;
-        const processingStatus = document.querySelector('#processingStatus').value;
-        const startReturnDate = document.querySelector('#startReturnDate').value;
-        const endReturnDate = document.querySelector('#endReturnDate').value;
+        const startOrderDate = document.querySelector('#startOrderDate').value;
+        const endOrderDate = document.querySelector('#endOrderDate').value;
+        const startTotalSales = document.querySelector('#startTotalSales').value;
+        const endTotalSales = document.querySelector('#endTotalSales').value;
+        const startTotalLoss = document.querySelector('#startTotalLoss').value;
+        const endTotalLoss = document.querySelector('#endTotalLoss').value;
+        const startTotalOrderQuantity = document.querySelector('#startTotalOrderQuantity').value;
+        const endTotalOrderQuantity = document.querySelector('#endTotalOrderQuantity').value;
+        const startTotalReturnQuantity = document.querySelector('#startTotalReturnQuantity').value;
+        const endTotalReturnQuantity = document.querySelector('#endTotalReturnQuantity').value;
         
-        const filteredData = returnProductList.filter(item => {
-            return (!productCode || item.productCode.includes(productCode)) &&
-                   (!productName || item.productName.includes(productName)) &&
-                   (!startRequestDate || item.requestDate >= startRequestDate) &&
-                   (!endRequestDate || item.requestDate <= endRequestDate) &&
-                   (!qy || item.qy == qy) &&
-                   (!processingStatus || item.processingStatus.includes(processingStatus)) &&
-                   (!startReturnDate || item.returnDate >= startReturnDate) &&
-                   (!endReturnDate || item.returnDate <= endReturnDate);
+        const filteredData = salesAmountList.filter(item => {
+            return (!productName || item.productName.includes(productName)) &&
+                   (!startOrderDate || item.orderDate >= startOrderDate) &&
+                   (!endOrderDate || item.orderDate <= endOrderDate) &&
+                   (!startTotalSales || item.totalSales >= startTotalSales) &&
+                   (!endTotalSales || item.totalSales <= endTotalSales) &&
+                   (!startTotalLoss || item.totalLoss >= startTotalLoss) &&
+                   (!endTotalLoss || item.totalLoss <= endTotalLoss) &&
+                   (!startTotalOrderQuantity || item.totalOrderQuantity >= startTotalOrderQuantity) &&
+                   (!endTotalOrderQuantity || item.totalOrderQuantity <= endTotalOrderQuantity) &&
+                   (!startTotalReturnQuantity || item.totalReturnQuantity >= startTotalReturnQuantity) &&
+                   (!endTotalReturnQuantity || item.totalReturnQuantity <= endTotalReturnQuantity);
         });
 
     // 필터링된 데이터를 다시 설정
-    returnProductGrid.resetData(filteredData);
+    salesAmountGrid.resetData(filteredData);
 }
 
 	// 검색 엔터 이벤트 추가
 	document.querySelectorAll(".card-body input").forEach((ele) => {
 	    ele.addEventListener('keydown', (event) => {				
 	        if (event.keyCode === 13) {
-	            searchLossAmount();
+	        	searchSalesLossAmount();
 	        }
 	    });
 	});
@@ -273,7 +239,7 @@
 	    document.querySelectorAll('.card-body input').forEach((e) => {
 	        e.value = null;
 	    });
-	    searchLossAmount();
+	    searchSalesLossAmount();
 	}
 	
 	</script>

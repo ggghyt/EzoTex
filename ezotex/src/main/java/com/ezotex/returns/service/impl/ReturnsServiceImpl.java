@@ -12,6 +12,7 @@ import com.ezotex.returns.dto.DeliveryDetailsReturnsDTO;
 import com.ezotex.returns.dto.DeliveryReturnsDTO;
 import com.ezotex.returns.dto.ReturnsDTO;
 import com.ezotex.returns.dto.ReturnsProductDTO;
+import com.ezotex.returns.dto.SalesDTO;
 import com.ezotex.returns.dto.changeDTO;
 import com.ezotex.returns.dto.showDTO;
 import com.ezotex.returns.mappers.ReturnsMapper;
@@ -117,6 +118,18 @@ public class ReturnsServiceImpl implements ReturnsService {
 	@Override
 	public List<ReturnsProductDTO> getTotalReturnProduct() {
 		return mapper.getTotalReturnProduct();
+	}
+	
+	// 매출액 조회
+	@Override
+	public List<SalesDTO> getSalesList() {
+		return mapper.getSalesList();
+	}
+
+	// 주문코드에 대한 매출액과 손실액 조회
+	@Override
+	public List<SalesDTO> getSalesAmount() {
+		return mapper.getSalesAmount();
 	}
 
 }
