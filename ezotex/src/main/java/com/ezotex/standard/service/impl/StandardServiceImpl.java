@@ -249,5 +249,20 @@ public class StandardServiceImpl implements StandardService {
 		return mapper.infomationInsert(userCode, title, content);
 	}
 
+	@Override
+	@Transactional
+	public int storageInfoColUpdate(int num, String storageCode, int selectCol) {
+		mapper.maxColUpdate(num, storageCode);
+		mapper.storageInfoColUpdate(num, storageCode, selectCol);
+		return 0;
+	}
+
+	@Override
+	public int storageInfoRowUpdate(int num, String storageCode, int selectRow) {
+		mapper.maxRowUpdate(num, storageCode);
+		mapper.storageInfoRowUpdate(num, storageCode, selectRow);
+		return 0;
+	}
+
 	
 }

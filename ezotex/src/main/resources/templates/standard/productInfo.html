@@ -653,7 +653,7 @@ visibility: visible;
 			}
 			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
 			for (let i = 0 ; i < option_size.length ; i++) {
-				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', formatter: row => numberFormatter(row.value) })
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', formatter: row => numberStringFormatter(row.value) })
 			}
 			
 			let option_color = []
@@ -831,6 +831,15 @@ visibility: visible;
 	        }
 	    });
 	});
+	
+	function numberStringFormatter(value){ // 그리드 내부 포맷으로 사용 시 row.value
+		if (typeof(value) == "number") {
+			value = value == null ? 0 : value;
+			    return Number(value).toLocaleString();
+		} else {
+			return value
+		}
+	};
 	</script>
 </body>
 </html>

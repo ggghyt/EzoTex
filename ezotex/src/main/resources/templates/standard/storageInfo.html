@@ -46,9 +46,13 @@
 			<div class="row" style="width: 100%">
 				<div id="storageGrid" style="width: 100%">
 				</div>
-				<div style="text-align: right">
-					<button type="button" class="btn btn-primary" style="margin: 15px" onclick="addRow()">↓ 행 추가</button>
-					<button type="button" class="btn btn-primary" style="margin: 15px" onclick="addCol()">열 추가 →</button>
+				<div style="display: flex; justify-content: flex-end; height: 80px">
+					<button type="button" id="addRow" class="btn btn-primary" style="margin: 15px; display: none;" onclick="addRowBtn()">행 추가</button>
+					<button type="button" id="deleteRow" class="btn btn-danger" style="margin: 15px; display: none;" onclick="deleteRowBtn()">행 삭제</button>
+					<button type="button" id="addCol" class="btn btn-primary" style="margin: 15px; display: none;" onclick="addColBtn()">열 추가</button>
+					<button type="button" id="deleteCol" class="btn btn-danger" style="margin: 15px; display: none;" onclick="deleteColBtn()">열 삭제</button>
+					<button type="button" class="btn btn-primary" style="margin: 15px; display: block;" onclick="addRow()">↓ 행 추가</button>
+					<button type="button" class="btn btn-primary" style="margin: 15px; display: block;" onclick="addCol()">열 추가 →</button>
 				</div>
 			</div>
 		</div>
@@ -150,6 +154,10 @@
 		document.getElementById('storageGrid').replaceChildren()
 		storage_data = []
 		storage_columns = null
+		document.querySelector("#addRow").style.display = "none"
+		document.querySelector("#addCol").style.display = "none"
+		document.querySelector("#deleteRow").style.display = "none"
+		document.querySelector("#deleteCol").style.display = "none"
 		fetch('/standard/storageList')
 		.then((response) => response.json())
 		.then((data) => {
@@ -175,9 +183,6 @@
 				for (let i = 0 ; i < data.length ; i++) {
 					storage_data[data[i].selectRow - 1][data[i].selectCol] = data[i].storageInfoName
 				}
-			
-				console.log(storage_data)
-				console.log(storage_columns)
 				
 				storageGrid = new Grid({
 					el: document.getElementById('storageGrid'), // 해당 위치에 그리드 출력
@@ -192,49 +197,77 @@
 				storageGrid.on('focusChange', ev => {
 					select_row = ev.rowKey + 1
 					select_col = ev.columnName
-					document.querySelector('#selectColRowName').innerText = (ev.rowKey + 1) + "행 " + String.fromCharCode(ev.columnName + 64) + "열"
-					if (storageGrid.getData()[ev.rowKey][ev.columnName] != null) {
-						
-						document.querySelector("#insertStorageInfoBtn").style.display = "none"
-						document.querySelector("#updateStorageInfoBtn").style.display = "block"
-						document.querySelector("#storageInfoModalBtn").style.display = "block"
-						
-						document.querySelector('#selectedName').value = storageGrid.getData()[ev.rowKey][ev.columnName]
-						for (let i = 0 ; i < data.length ; i++) {
-							if (data[i].storageInfoName == storageGrid.getData()[ev.rowKey][ev.columnName]) {
-								document.querySelector('#selectedVl').value = data[i].vl
-								document.querySelector('#selectedInfoVl').value = data[i].vl
-							
-								fetch('/standard/storageVl?storageInfoCode=' + data[i].storageInfoCode)
-								.then((response) => response.json())
-								.then((total_vl) => {
-									if (typeof(total_vl) != "number") {
-										document.querySelector('#seledtedNowVL').value = 0
-										document.querySelector('#seledtedRestVL').value = data[i].vl
-										document.querySelector('#seledtedRestPercentVL').value = "0%"
-									} else {
-										document.querySelector('#seledtedNowVL').value = total_vl
-										document.querySelector('#seledtedRestVL').value = data[i].vl - total_vl
-										document.querySelector('#seledtedRestPercentVL').value = Math.round(total_vl / data[i].vl * 10000) / 100 + "%"
-									} 
-								})
-							}
+					
+					document.querySelector("#addRow").style.display = "none"
+					document.querySelector("#addCol").style.display = "none"
+					document.querySelector("#deleteRow").style.display = "none"
+					document.querySelector("#deleteCol").style.display = "none"
+					
+					console.log(storage_data)
+					if (typeof(ev.columnName) == "string") {
+						if (ev.columnName == "storage_row") {
+							console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+							console.log("rowKey : " + ev.rowKey)
+							document.querySelector("#deleteRow").style.display = "block"
+							document.querySelector("#addRow").style.display = "block"
+							document.querySelector("#deleteRow").innerText = (ev.rowKey + 1) + "행 삭제"
+							document.querySelector("#addRow").innerText = (ev.rowKey + 1) + "행 삽입"
+						} else {
+							console.log("↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓");
+							console.log("columnName : " + ev.columnName)
+							document.querySelector("#deleteCol").style.display = "block"
+							document.querySelector("#addCol").style.display = "block"
+							document.querySelector("#deleteCol").innerText = String.fromCharCode(parseInt(ev.columnName) + 64) + "열 삭제"
+							document.querySelector("#addCol").innerText = String.fromCharCode(parseInt(ev.columnName) + 64) + "열 삽입"
 						}
 					} else {
-						document.querySelector("#insertStorageInfoBtn").style.display = "block"
-						document.querySelector("#updateStorageInfoBtn").style.display = "none"
-						document.querySelector("#storageInfoModalBtn").style.display = "none"
-						
-						document.querySelector('#selectedName').value = ""
-						document.querySelector('#selectedVl').value = ""
-						document.querySelector('#selectedInfoVl').value = ""
-						document.querySelector('#seledtedNowVL').value = ""
-						document.querySelector('#seledtedRestVL').value = ""
-						document.querySelector('#seledtedRestPercentVL').value = ""
+						document.querySelector('#selectColRowName').innerText = (ev.rowKey + 1) + "행 " + String.fromCharCode(ev.columnName + 64) + "열"
+						if (storageGrid.getData()[ev.rowKey][ev.columnName] != null) {
+							
+							document.querySelector("#insertStorageInfoBtn").style.display = "none"
+							document.querySelector("#updateStorageInfoBtn").style.display = "block"
+							document.querySelector("#storageInfoModalBtn").style.display = "block"
+							
+							document.querySelector('#selectedName').value = storageGrid.getData()[ev.rowKey][ev.columnName]
+							for (let i = 0 ; i < data.length ; i++) {
+								if (data[i].storageInfoName == storageGrid.getData()[ev.rowKey][ev.columnName]) {
+									document.querySelector('#selectedVl').value = data[i].vl
+									document.querySelector('#selectedInfoVl').value = data[i].vl
+								
+									fetch('/standard/storageVl?storageInfoCode=' + data[i].storageInfoCode)
+									.then((response) => response.json())
+									.then((total_vl) => {
+										if (typeof(total_vl) != "number") {
+											document.querySelector('#seledtedNowVL').value = 0
+											document.querySelector('#seledtedRestVL').value = data[i].vl
+											document.querySelector('#seledtedRestPercentVL').value = "0%"
+										} else {
+											document.querySelector('#seledtedNowVL').value = total_vl
+											document.querySelector('#seledtedRestVL').value = data[i].vl - total_vl
+											document.querySelector('#seledtedRestPercentVL').value = Math.round(total_vl / data[i].vl * 10000) / 100 + "%"
+										} 
+									})
+								}
+							}
+						} else {
+							document.querySelector("#insertStorageInfoBtn").style.display = "block"
+							document.querySelector("#updateStorageInfoBtn").style.display = "none"
+							document.querySelector("#storageInfoModalBtn").style.display = "none"
+							
+							document.querySelector('#selectedName').value = ""
+							document.querySelector('#selectedVl').value = ""
+							document.querySelector('#selectedInfoVl').value = ""
+							document.querySelector('#seledtedNowVL').value = ""
+							document.querySelector('#seledtedRestVL').value = ""
+							document.querySelector('#seledtedRestPercentVL').value = ""
+						}
 					}
 				})
+				
 				storageGrid.on('dblclick', ev => {
-					storageInfoModal();
+					if (ev.columnName != "storage_row") {
+						storageInfoModal();
+					}
 				})
 			})	
 		})
@@ -269,12 +302,20 @@
 	}
 	
 	function addRow() {
+		document.querySelector("#addRow").style.display = "none"
+		document.querySelector("#addCol").style.display = "none"
+		document.querySelector("#deleteRow").style.display = "none"
+		document.querySelector("#deleteCol").style.display = "none"
 		storageGrid.appendRow({"storage_row" : maxRow + 1})
 		maxRow = maxRow + 1
 		updateStorage(document.querySelector("#storageSelect").value, $("#storageSelect option:selected").text(), maxRow, maxCol)
 	}
 	
 	function addCol() {
+		document.querySelector("#addRow").style.display = "none"
+		document.querySelector("#addCol").style.display = "none"
+		document.querySelector("#deleteRow").style.display = "none"
+		document.querySelector("#deleteCol").style.display = "none"
 		storage_columns = [...storage_columns, {header : String.fromCharCode(maxCol + 65), name : maxCol + 1, align: 'center'}]
 		storageGrid.setColumns(storage_columns)
 		maxCol = maxCol + 1
@@ -350,6 +391,70 @@
 			}
         })
 	}
+	
+	function deleteColBtn() {
+		for (let i = 0 ; i < storage_data.length ; i++) {
+			if (storage_data[i][select_col] == undefined) {
+				
+			} else {
+				failToast("항목이 존재하여 삭제 할 수 없습니다");
+				document.querySelector("#deleteRow").style.display = "none"
+				document.querySelector("#addRow").style.display = "none"
+				return;
+			}
+		}
+		fetch('/standard/updateStorageCol?num=' + (-1) + 
+				                '&storageCode=' + document.querySelector("#storageSelect").value + 
+				                  '&selectCol=' + select_col)
+		.then(() => {
+			storageSelect()
+			successToast("작업이 완료되었습니다")
+		})
+	}
+	
+	function addColBtn() {
+		console.log(select_col)
+		fetch('/standard/updateStorageCol?num=' + 1 + 
+                                '&storageCode=' + document.querySelector("#storageSelect").value + 
+                                  '&selectCol=' + select_col)
+		.then(() => {
+			storageSelect()
+			successToast("작업이 완료되었습니다")
+		})
+	}
+	
+	function deleteRowBtn() {
+		console.log(select_row - 1)
+		console.log(storage_data)
+		for (let i = 0 ; i < maxCol ; i++) {
+			if (storage_data[select_row - 1][i] == undefined) {
+				
+			} else {
+				failToast("항목이 존재하여 삭제 할 수 없습니다");
+				document.querySelector("#deleteCol").style.display = "none"
+				document.querySelector("#addCol").style.display = "none"
+				return;
+			}
+		}
+		fetch('/standard/updateStorageRow?num=' + (-1) + 
+				                '&storageCode=' + document.querySelector("#storageSelect").value + 
+				                  '&selectRow=' + select_row)
+		.then(() => {
+			storageSelect()
+			successToast("작업이 완료되었습니다")
+		})
+	}
+	
+	function addRowBtn() {
+		fetch('/standard/updateStorageRow?num=' + 1 + 
+                                '&storageCode=' + document.querySelector("#storageSelect").value + 
+                                  '&selectRow=' + select_row)
+		.then(() => {
+			storageSelect()
+			successToast("작업이 완료되었습니다")
+		})
+	}
+	
 	</script>
 </body>
 </html>
