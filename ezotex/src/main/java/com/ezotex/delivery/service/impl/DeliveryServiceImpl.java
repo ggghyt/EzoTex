@@ -185,10 +185,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 				}
 				
 				/*출고 수량 인서트*/
-				mapper.insertDeliveryDetails(insertDivyQy, lotList.get(j).getProductLot());
+				mapper.insertDeliveryDetails(insertInfo);
 				
 				/*재고 수량 업데이트*/
-				mapper.updateLotQy(insertInfo);
+				mapper.updateLotQy(insertDivyQy, lotList.get(j).getProductLot());
 				
 				//요청 수량에서 로트 합을 계속 빼기
 				divyQy -= sumLotQy;
