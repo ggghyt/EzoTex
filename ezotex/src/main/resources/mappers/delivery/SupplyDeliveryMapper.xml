@@ -147,7 +147,7 @@
 	<insert id="insertDeliveryMaster">
 		INSERT INTO delivery(delivery_code, company_se, mtril_order_code, company_code, company_name, order_date, dedt, storage_name, dedt_address
 							,delivery_status , remark, charger_code, charger_name, rgsde, updde, time, amount, delivery_company_code)
-		VALUES (#{info.deliveryCode}, #{info.companySe}, #{info.productOrderCode}, #{info.companyCode}, #{info.companyName}, #{info.orderDate}, #{info.dedt}, #{info.storageName}, #{info.dedtAddress}
+		VALUES (#{info.deliveryCode}, #{info.companySe}, #{info.productOrderCode}, #{info.companyCode}, #{info.companyName}, TO_DATE(#{info.orderDate}, 'YYYY-MM-DD'), TO_DATE(#{info.dedt}, 'YYYY-MM-DD'), #{info.storageName}, #{info.dedtAddress}
 				, #{info.deliveryStatus}, #{info.remark}, #{info.chargerCode}, #{info.chargerName}, SYSDATE, SYSDATE, #{info.time}, #{info.amount}, #{info.divyCompanyCode})
 	</insert>
 	
