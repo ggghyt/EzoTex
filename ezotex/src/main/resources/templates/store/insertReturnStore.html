@@ -72,7 +72,7 @@
 	</div>
 	<div class="row ps-2">
 	  <div class="col-12 card card-body m-2  bg-secondary">
-	    <p class="fs-5 fw-bolder">제품 정보</p>
+	    <p class="fs-5 fw-bolder">검색</p>
 	
 	    <div class="row ps-2">
 					
@@ -327,7 +327,12 @@
 	          perPage: 10
 	        },
 	      columns: [ 
-	        { header: "반품 코드", name: "returnCode", align: "center" , sortable: true},
+	        { header: "반품 코드", name: "returnCode", align: "center" , sortable: true, renderer: {
+                styles: {
+                    fontWeight: 'bold',
+                  }
+                }
+	        },
 	        { header: "제품 종류 수", name: "count", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 	        { header: "반품 요청일", name: "requestDate", sortable: true, formatter: (row) => dateFormatterNull(row.value)},
 	        { header: "반품담당자", name: "requestor", align: "center" , sortable: true},

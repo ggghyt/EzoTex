@@ -238,7 +238,7 @@
 	<h3 class="fs-3 fw-bold">| 재고 조정</h3>
 				<div class="row ps-2">
 	  <div class="col-12 card card-body m-2  bg-secondary">
-	    <p class="fs-5 fw-bolder">제품 정보</p>
+	    <p class="fs-5 fw-bolder">검색</p>
 	
 			    <div class="row ps-2">
 							
@@ -427,19 +427,30 @@
 				bodyHeight: 417,
 				columns: [
 					{ header: "제품코드", name: "productCode", align: "center", sortable: true },
-					{ header: "제품명", name: "productName", sortable: true, width: 250 },
+					{ header: "제품명", name: "productName", sortable: true, width: 250,renderer: {
+		                styles: {
+		                    fontWeight: 'bold',
+		                  }
+		                }
+					},
 					{ header: "색상", name: "productColor", sortable: true },
 					{ header: "사이즈", name: "productSize", sortable: true },
-					{ header: "LOT번호", name: "lot", align: "center" },
+					{ header: "LOT번호", name: "lot", align: "center",renderer: {
+		                styles: {
+		                    fontWeight: 'bold',
+		                  }
+		                }
+					},
 					{ header: "창고위치", name: "storageName", sortable: true },
 					{ header: "입고일", name: "storeDate", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
 					{ header: "재고수량", name: "inventoryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) },
-					/* { header: 'checkbox', name: 'checkbox', editor: 'checkbox'}, */ 
+					{ header: "과적", name: "totalVl", hidden:true },
 				],
 				data: ManagementData,
 				showDummyRows: true
 			})
 			
+			console.log('데이터확인:',ManagementData.data);
 			
 			
 			const modalGrid2 = new Grid({
@@ -873,7 +884,6 @@
 				    })
 			  })
 	   })	
-	   
 			
 	   let modalElement = document.getElementById('exampleModal');
 	   modalElement.addEventListener('show.bs.modal', function () {
