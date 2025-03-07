@@ -10,39 +10,10 @@
 		#container {
 			height: 1000px;
 		}
-		.search-bar {
-			width: 780px;
-			height: 250px;
-			-webkit-box-shadow: 0 0 0 0 rgba(90, 113, 208, 0), 0 4px 16px 0 rgba(167, 175, 183, 0);
-			display: inline-block;
-			flex-direction:row;
-		}
-
-		.order-list {
-			width: 780px;
-			height: 778px;
-		}
 		.order-info{
 			flex-grow: 0 !important;
 			margin-top: 0;
 			margin-left: 30px;
-			width: 900px !important;
-			height: 1030px;
-		}
-		.search-unit {
-			display: flex;
-			margin-bottom:5px;
-		}
-		.search-unit div {
-			display: inline-block;
-		}
-		.search-bar > div {
-		    display: inline-block;
-		    vertical-align: top; /* 정렬 보정 */
-		}
-		.search-bar div:nth-of-type(1) {
-			padding-left:10px;
-			width: 300px;
 		}
 		.read-bar div:nth-of-type(1) {
 			margin-left: 40px;
@@ -59,52 +30,8 @@
 		.read-bar span::nth-of-type(2) {
 			margin-left: 20px;
 		}
-		.search-bar div:nth-of-type(2) {
-			padding-left:10px;
-			width: 410px;
-		}
-		.search-unit span {
-			font-size: smaller;
-			line-height: 2.5;
-			width: 67px;
-		}
-		.search-bar div:nth-of-type(1) input{
-			margin-left: 10px;
-		}
-		.search-bar div input[type=text] {
-			width: 140px;
-		}
-		.search-bar select {
-		    margin-left: 10px;
-			width: 140px;
-			border: 1px solid #dee2e6;
-		    font-weight: 400;
-		    font-size: 0.875rem;
-		    border-radius: 4px;
-		    height: 2rem;
-		}
-		input[type=date] {
-			width: 140px;
-		}
-		.search-bar input[type=number] {
-			width: 140px;
-		}
-		.search-bar b {
-			display: block;
-			margin-bottom:5px;
-		}
 		.btn-secondary {
 			background-color: #b1b1b1;
-		}
-		.search-bar .btn-section{
-			width: 390px !important;
-			display: flex;
-			justify-content: right;
-			margin-top: 30px;
-			margin-bottom: 10px;
-		}
-		.search-bar .btn-section button{
-			margin-right: 10px;
 		}
 		.info-section>div{
 			width: 600px;
@@ -145,36 +72,15 @@
 		.summary-info {
 			margin-top: 30px;
 		}
-		#productListGrid {
-			width: 807px;
-		}
 		.packing-info {
-			
-			width: 807px;
 			border: 1px solid #eeeeee;
 			border-radius: 13px;
 			flex-grow: 0!important
 		}
-		.storage select {
-			width: 150px;
-		}
 		.storage {
 			border-top-left-radius: 13px;
     		border-top-right-radius: 13px;
-			display: flex;
-			width: 805px;
 			border-bottom: 1px solid #eeeeee;
-		}
-		.storage span {
-		    padding-top: 4px;
-			width: 100px;
-		}
-		.storage {
-			background-color: #f9f9f9;
-			padding: 10px;
-		}
-		.packing-table {
-			width: 805px;
 		}
 		.packing-table table tr{
 			background-color: #f9f9f9 !important;
@@ -186,66 +92,50 @@
 			background-color: #f9f9f9 !important;
 			text-align: center;
 		}
-		.chargerInfo-section {
-			display: flex;
-			width: 200px !important;
-			position: relative;
-			left: 40%;
-		}
-		.chargerInfo-section input {
-			text-align: center;
-			width: 130px;
-		}
 	</style>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 포장등록</h3>
 	<div id="container row" style="display: flex;">
-		<div>			
+		<div class="col-6">			
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
-				
-				<b>검색</b>
-									
 				<div>
-					<span class="search-unit">
-						<span>납품코드</span>
-						<input type="text" class="form-control search-delivery-code"> 
-					</span>
-					<span class="search-unit">
-						<span>제품코드</span>
-						<input type="text" class="form-control search-product-code">
-					</span>
-					<span class="search-unit">
-						<span>제품명</span>
-						<input type="text" class="form-control search-product-name"> 
-					</span>
-					<span class="search-unit">
-						<span>담당자코드</span>
-						<input type="text" class="form-control search-delivery-chargerCode">
-					</span>
-					<span class="search-unit">
-						<span>담당자</span>
-						<input type="text" class="form-control search-delivery-charger"> 
-					</span>
-				</div>
-				
-				<!-- 검색조건2: 발주일, 납기일 -->
-				<div>
-					
-					<span class="search-unit">
-						<span>발주일</span>
-						<input type="date" class="form-control search-date-start"> <b class="dash">-</b> 
-						<input type="date" class="form-control search-date-end">
-					</span>
-					<span class="search-unit">
-						<span>납기일</span>
-						<input type="date" class="form-control search-dedt-start"> <b class="dash">-</b> 
-						<input type="date" class="form-control search-dedt-end">
-					</span>
-
-					<div class="btn-section">						
-						<button class="btn btn-warning mag-glass-btn" onclick="searchOrderList()"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
-						<button class="btn btn-secondary mag-glass-btn" onclick="resetCondition()"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+					<div class="row">
+						 <b class="col-12">검색</b>	
+				         <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
+				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control search-product-code">
+				         </div>
+				         <label for="amountMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">발주일</label>
+	                     <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+	                       <input type="date" class="form-control search-date-start">-
+	                       <input type="date" class="form-control search-date-end">
+	                     </div>	
+	                     <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
+				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control search-delivery-chargerCode">
+				         </div>
+				         <label for="amountMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">납기일</label>
+	                     <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+	                       <input type="date" class="form-control search-dedt-start">-
+	                       <input type="date" class="form-control search-dedt-end">
+	                     </div>	
+				         <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자코드</label>
+				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control search-delivery-chargerCode">
+				         </div>	
+				         <label for="companyCode" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">납품코드</label>
+				         <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
+				           <input type="text" class="form-control search-delivery-code">
+				         </div>	
+				         <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
+				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
+				           <input type="text" class="form-control search-delivery-charger">
+				         </div>	
+				         <div class="col-8 col-sm-2 col-lg-6 d-flex mb-2 align-items-center justify-content-end wbreak p-0">
+					        <button type="button" onclick="searchOrderList()" class="btn btn-warning mag-glass-btn ml-4 ms-3 me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
+				            <button type="reset" onclick="resetCondition()" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				         </div>
 					</div>
 				</div>
 			</div>
@@ -257,7 +147,7 @@
 		</div>
 		
 		
-		<div class="col card card-body order-info">		
+		<div class="col-6 mw-100 card card-body order-info">		
 			<b>제품 목록</b>
 			<!-- 제품 리스트 -->
 			<div id="productListGrid"></div>
@@ -268,16 +158,17 @@
 			
 			<b class="mt-5 mb-0">포장 정보</b>
 			<div class="packing-info">
-				<div class="storage">
-					<span>출고창고</span>
-					<select class=" form-control">
-						<option value=""></option>
-					</select>
-					<span class="chargerInfo-section">					
-						<span>작성자 : </span>
-						<input type="text" class="form-control chargerName" readOnly>
-					</span>
+				<div class="storage  bg-secondary p-3">
+				    <div class="d-flex align-items-center gap-2">	
+				        <label for="amountMin" class='d-block'>출고창고</label>			
+				        <select class="form-control w-auto me-10">
+				            <option value=""></option>
+				        </select>				
+				        <label for="amountMin" class="wbreak">작성자 :</label>
+				        <input type="text" class="form-control chargerName w-auto" readOnly>
+				    </div>
 				</div>
+
 				
 				<table class="table packing-table">
 					<tbody>
@@ -358,6 +249,7 @@
 	
 		};
 		
+		
 		addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
 				//바로넣으니 undifined로 나와서 살짝 지연해서 입력.
@@ -399,6 +291,25 @@
         	}, false);	//안에 값 넣으면 됨 파라미터 세개 (1:몊번째 페이지 불러올 것인가, 2:검색조건, 3:true=기존데이터 초기화)
         }
 		
+		
+		//검색 엔터 이벤트
+		document.querySelectorAll(".search-bar input").forEach((ele) => {
+			ele.addEventListener('keydown', (ele) => {				
+				if (window.event.keyCode == 13) {
+					searchOrderList();
+			    }
+			})
+		})
+		
+        //검색 조건 삭제
+        function resetCondition() {
+    		document.querySelectorAll('.search-bar input').forEach((e) => {
+    			e.value = null;
+    		})
+    		document.querySelector('.search-bar select').value = '';
+    		searchOrderList();
+        }
+		
 		//출고 목록
 		const dataSource = {
 		  	      api: {
@@ -423,8 +334,13 @@
             columns: [
 				{ header: "납품코드", name: "deliveryCode", sortable: true, align: 'center', minWidth: 110},
 				{ header: "업체코드", name: "companyCode", sortable: true, align: 'center', minWidth: 80},
-				{ header: "업체명", name: "company", sortable: true, align: 'left', minWidth: 117},
-				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 224},			
+				{ header: "업체명", name: "company", sortable: true, align: 'left', minWidth: 117,
+                	renderer: {
+			            styles: {
+			              fontWeight: 'bold'
+			            }
+			          }},
+				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 224, ellipsis:true},			
 				{ header: "등록일", name: "registDate", sortable: true, align: 'center', minWidth: 80},
 				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 80},
 				{ header: "비고", name: "remark", hidden: true},
@@ -440,15 +356,14 @@
 		const productListGrid = new Grid({
 			el: document.getElementById('productListGrid'),
 			bodyHeight: 150,
-			width: 807,
 			scrollY: true,
-			scrollX: false,
+			scrollX: true,
 			rowHeaders: ['rowNum'],
 			columns: [
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
-				{ header: "제품코드", name: "productCode", align: 'left', minWidth: 160},
-				{ header: "제품명", name: "productName", align: 'left', minWidth: 416},
-				{ header: "출고량합계", name: "qySum", align: 'right', minWidth: 174, formatter: row => numberFormat(row.value)},
+				{ header: "제품코드", name: "productCode", align: 'center'},
+				{ header: "제품명", name: "productName", align: 'left'},
+				{ header: "출고량합계", name: "qySum", align: 'right', formatter: row => numberFormat(row.value)},
 				{ header: "부피", name: "vl", hidden: true},
 			]
 		});
@@ -458,7 +373,6 @@
 			el: document.getElementById('productDetails'),
 			scrollY: true,
 		    scrollX: true,
-		    width: 807,
 		    bodyHeight: 200,
 		    header: {
 		        	height: 70,
@@ -494,7 +408,7 @@
 			  columnOptions: {
 			        frozenCount: 1,
 			        frozenBorderWidth: 1,
-			        minWidth: 150
+			        minWidth: 100
 			      }
 		  	  });  
 		
@@ -502,11 +416,10 @@
 		const productLot = new Grid({
 			el: document.getElementById('productLot'),
 			bodyHeight: 100,
-			width: 807,
 			scrollY: true,
-			scrollX: false,
+			scrollX: true,
 			columns: [
-				{ header: "로트", name: "productLot"},
+				{ header: "로트", name: "productLot", align: "center"},
 				{ header: "출고수량", name: "deliveryQy", align: "right", formatter: row => numberFormat(row.value)}
 			]
 		});
@@ -595,11 +508,6 @@
 					
 				}
    				
-   				
-   				
-   				
-   				
-   				
    				lBox = document.querySelector(".big-box").value;
    				mBox = document.querySelector(".middle-box").value;
    				sBox = document.querySelector(".small-box").value;
@@ -642,7 +550,7 @@
     		                minWidth: 150
     		             })
     		             
-    		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 100, formatter:(row)=>numberFormat(row.value)})
+    		             color.push({ header: sizeCode, name: 'DE'+sizeCode, align: "right", minWidth: 60, formatter:(row)=>numberFormat(row.value)})
     	            }
     	            //이 작업없으면 중복해서 계속 들어감. 한번만 들어가도록 하기
     	            for(let i=0; i<deliveryDetails.qyList.length; i++) {    

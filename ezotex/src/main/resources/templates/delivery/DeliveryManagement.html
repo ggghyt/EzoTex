@@ -482,32 +482,39 @@ input[type=date] {
 	  	          resizable: true
 	  	      	},
 	            columns: [
-	                { header : "주문코드", name: "productOrderCode", sortable: true, align: 'center', minWidth: 110},
-	                { header : "업체코드", name: "companyCode", align: 'center', sortable: true, minWidth: 78},
-	                { header : "업체명", name: "company", sortable: true, align: 'left', minWidth: 85},
-	                { header : "요약", name: "summary", sortable: true, align: 'left', minWidth: 123},
-	                { header : "상태", name: "orderStatus", sortable: true, align: 'center', minWidth: 62,
+	                { header : "주문코드", name: "productOrderCode", sortable: true, align: 'center', minWidth:107},
+	                { header : "업체코드", name: "companyCode", align: 'center', minWidth:67},
+	                { header : "업체명", name: "company", sortable: true, align: 'left', minWidth:138 ,
 	                	renderer: {
 				            styles: {
-				              fontWeight: 'bold',
-				              color: props => {
-				            	  switch(props.value){
-				            	     case '대기': return '#aaa';
-				            	     case '부분출고': return 'red';
-				            	  }
-				              }
+				              fontWeight: 'bold'
 				            }
 				          }
 	                },
-	                { header : "주문담당자", name: "orderCharger", sortable: true, align: 'center', minWidth: 95},
-	                { header : "주문일", name: "orderDate", sortable: true, align: 'center', minWidth: 79},
-	                { header : "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 79}
+	                { header : "요약", name: "summary", sortable: true, align: 'left', minWidth:137, ellipsis:true},
+	                { header : "상태", name: "orderStatus", align: 'center', minWidth:63,
+	                	renderer: {
+	                        styles: {
+	                          fontWeight: 'bold',
+	                          color: props => {
+	                              switch(props.value){
+	                                 case '대기': return '#aaa';
+	                                 case '부분출고': return '#4b96ea';
+	                              }
+	                          }
+	                        }
+	                      }
+	                },
+	                { header : "담당자", name: "orderCharger", sortable: true, align: 'center', minWidth:50},
+	                { header : "주문일", name: "orderDate", sortable: true, align: 'center', minWidth:74},
+	                { header : "납기일", name: "dedt", sortable: true, align: 'center', minWidth:74}
 	            ],
 	            data: dataSource,
 				showDummyRows: true	//더미로우 추가
 	        });
 	        
-			
+	        
+	        
 	        function searchOrderList() {
 	        	
 	        	grid.readData(1, {
@@ -724,7 +731,7 @@ input[type=date] {
 		    
 	      //제품 선택
 	        let productSelected = null;
-	        let productSelectedEvData = null;
+	        let newProduct = null;
 	        
 		 	// 제품 상세보기 그리드 클릭 이벤트
 		    productListgrid.on('focusChange', ev => {
@@ -779,9 +786,9 @@ input[type=date] {
 			    			//allOrderInfo.productDetails[i].productSize
 			    			
 			    			//제품의 한 색상의 사이즈 컬럼을 하나씩 넣어서 그리드를 생성함
-			    			color.push({ header: "출고수량", name: 'DE'+sizeCode, align: "center", editor: "text", minWidth: 100, formatter:(row)=>numberFormat(row.value)},
-			    					{ header: "잔여수량", name: 'RE'+sizeCode , align: "center", minWidth: 100, formatter:(row)=>numberFormat(row.value) },
-			    					{ header: "재고수량", name: 'IN'+sizeCode, align: "center", minWidth: 100, formatter:(row)=> {
+			    			color.push({ header: "출고량", name: 'DE'+sizeCode, align: "right", editor: "text", minWidth: 60, formatter:(row)=>numberFormat(row.value)},
+			    					{ header: "잔여량", name: 'RE'+sizeCode , align: "right", minWidth: 60, formatter:(row)=>numberFormat(row.value) },
+			    					{ header: "재고량", name: 'IN'+sizeCode, align: "right", minWidth: 60, formatter:(row)=> {
 			    						//요청 수량이 0이 아니라면
 			    						if(row.row[reqSize] != null) {
 			    							if(row.value == 0) {
@@ -1216,6 +1223,7 @@ input[type=date] {
 			
 			//그리드 다시 그리기  -> productSelectedEvData사용
 			function reWriteGrid() {
+				
 	        	 //사이즈 정보 담을 배열
 	            let products = [];
 	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
@@ -1255,9 +1263,9 @@ input[type=date] {
 			    			//allOrderInfo.productDetails[i].productSize
 			    			
 			    			//제품의 한 색상의 사이즈 컬럼을 하나씩 넣어서 그리드를 생성함
-			    			color.push({ header: "출고수량", name: 'DE'+sizeCode, align: "center", editor: "text", minWidth: 100, formatter:(row)=>numberFormat(row.value)},
-			    					{ header: "잔여수량", name: 'RE'+sizeCode , align: "center", minWidth: 100, formatter:(row)=>numberFormat(row.value) },
-			    					{ header: "재고수량", name: 'IN'+sizeCode, align: "center", minWidth: 100, formatter:(row)=> {
+			    			color.push({ header: "출고량", name: 'DE'+sizeCode, align: "right", editor: "text", minWidth: 60, formatter:(row)=>numberFormat(row.value)},
+			    					{ header: "잔여량", name: 'RE'+sizeCode , align: "right", minWidth: 60, formatter:(row)=>numberFormat(row.value) },
+			    					{ header: "재고량", name: 'IN'+sizeCode, align: "right", minWidth: 60, formatter:(row)=> {
 			    						//요청 수량이 0이 아니라면
 			    						if(row.row[reqSize] != null) {
 			    							if(row.value == 0) {
@@ -1384,7 +1392,6 @@ input[type=date] {
 		        			val = invenNum == undefined ? 0 : invenNum;
 		        			val = invenNum == null ? 0 : invenNum;
 		        			
-		        			console.log("invenNum이 널? 아니면 다른거", invenNum);
 		        			if(reqNum > val) {
 		        				info[j][deliverySize] = val;
 		        			} else {		        				

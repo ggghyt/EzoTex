@@ -13,12 +13,14 @@
 	                       ol.product_order_code AS product_order_code,
 	                       ol.company_code AS company_code,
 	                       ol.company AS company,
-	                       product_summary('order_product', product_order_code) AS summary,
+	                       v.summary AS summary,
 	                       ol.charger AS orderCharger,
 	                       ol.order_date AS order_date,
 	                       ol.delivery_request_deadline AS dedt,
 	                       get_comm(ol.order_status) AS orderStatus
-	                FROM   order_list ol
+	                FROM   order_list ol JOIN summary_view v
+                                           ON (ol.product_order_code = v.header_code
+                                           AND v.nm = 'order_list')
 	               	<where>	               	
 			            <if test='cri.orderCode != null and cri.orderCode != ""'>	    
 			                AND ol.product_order_code LIKE '%' || UPPER(#{cri.orderCode}) || '%'    --주문코드
@@ -307,7 +309,7 @@
 		                    de.company_name AS company,
 		                    de.order_date AS order_date,
 		                    de.dedt AS dedt,
-		                    product_summary('delivery_details', de.delivery_code)  AS summary,
+		                    v.summary AS summary,
 		                    de.time AS time,
 		                    CASE WHEN get_comm(de.delivery_status) = '기사배정' THEN '포장완료'
 		                    ELSE get_comm(de.delivery_status) END AS delivery_status,
@@ -320,6 +322,9 @@
 		                    de.charger_name AS delivery_charger
 		            FROM    delivery de JOIN order_list ol
 		                                  ON de.product_order_code = ol.product_order_code
+		                                JOIN summary_view v
+                                          ON (de.delivery_code = v.header_code
+                                              AND v.nm = 'delivery')
 					<where>	               	
 			            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
 			                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
@@ -375,6 +380,9 @@
 		   SELECT   COUNT(*)
             FROM    delivery de JOIN order_list ol
                                   ON de.product_order_code = ol.product_order_code
+                                JOIN summary_view v
+                                          ON (de.delivery_code = v.header_code
+                                              AND v.nm = 'delivery')
 			<where>	               	
 	            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
 	                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
@@ -435,7 +443,7 @@
 		                    de.company_name AS company,
 		                    de.order_date AS order_date,
 		                    de.dedt AS dedt,
-		                    product_summary('delivery_details', de.delivery_code)  AS summary,
+		                    v.summary AS summary,
 		                    de.time AS time,
 		                    get_comm(de.delivery_status) AS delivery_status,
 		                    de.remark AS remark,
@@ -445,7 +453,9 @@
 		                    TO_CHAR(de.rgsde, 'yyyy-MM-dd') AS regist_date,
 		                    de.charger_code AS delivery_charger_code,
 		                    de.charger_name AS delivery_charger
-		            FROM    delivery de
+		            FROM    delivery de JOIN summary_view v
+                                          ON (de.delivery_code = v.header_code
+                                              AND v.nm = 'delivery')
 				    WHERE   de.delivery_status = 'DS01'    
 				    AND     delivery_company_code IS NULL    	
 		            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
@@ -489,7 +499,9 @@
 	<!-- 포장할 리스트 조회 -->
 	<select id="packingListCnt">
 		   SELECT   COUNT(*)
-            FROM    delivery de 
+            FROM    delivery de JOIN summary_view v
+                                          ON (de.delivery_code = v.header_code
+                                              AND v.nm = 'delivery')
 			WHERE   de.delivery_status = 'DS01' 
 			AND     delivery_company_code IS NULL       	
             <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
