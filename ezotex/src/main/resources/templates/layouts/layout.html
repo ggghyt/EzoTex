@@ -101,7 +101,7 @@
 		  f.submit();
 	  }
 	  
-	  fetch('http://localhost:80/login/userInfo')
+	  fetch('/login/userInfo')
 	  .then((response) => response.json())
 	  .then((data) => {
 		  session_user_code = data.code;
