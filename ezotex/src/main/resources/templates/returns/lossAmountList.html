@@ -349,17 +349,12 @@ td {
 	if ($("#monthSalesLoss").length) {
 	    var monthSalesLossChart = document.getElementById("monthSalesLoss").getContext('2d');
 	    
-	    //플러그인 등록
-	    Chart.register(ChartDataLabels);
-	    
 	    // 월별 레이블을 미리 설정 (1월부터 12월까지)
 	    var labels = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
 	    var salesData = Array(12).fill(0);  // 매출액을 저장할 배열 (기본값 0으로 설정)
 	    var lossData = Array(12).fill(0);   // 손실액을 저장할 배열 (기본값 0으로 설정)
-	    var lossRateData = Array(12).fill(0);
 
 	    // 데이터를 월별로 매핑
-	    console.log(monthSalesLossList);
 	    monthSalesLossList.forEach(function(item) {
 	        console.log("item:", item);  // 각 항목 확인
 	        
@@ -378,12 +373,10 @@ td {
 	        // 해당 월에 매출액과 손실액 추가
 	        salesData[monthIndex] = item.totalSales;
 	        lossData[monthIndex] = item.totalLoss;
-	        lossRateData[monthIndex] = item.lossRate;
 	    });
 	    
 	    console.log("Sales Data:", salesData);
 	    console.log("Loss Data:", lossData);
-	    console.log("Loss Rate Data:", lossRateData);
 	    
 	    var monthSalesLossData = {
 	        labels: labels,  // 월별 레이블
@@ -407,20 +400,7 @@ td {
 	                type: "bar",  // 막대 그래프
 	                yAxisID: "y-axis-1",  // 금액은 왼쪽 축 사용
 	                barPercentage: 0.35  // 막대의 비율을 설정
-	            },
-	            {
-	                label: "손실률 (%)",
-	                data: lossRateData,
-	                borderColor: "#FFAA00",
-	                backgroundColor: "rgba(255, 170, 0, 0.3)",
-	                borderWidth: 2,
-	                type: "line",
-	                yAxisID: "y-axis-2",
-	                tension: 0.4, // 부드러운 곡선 효과
-	                pointBackgroundColor: "#FFAA00",
-	                pointBorderColor: "#FFAA00",
-	                pointRadius: 4
-	            },
+	            }
 	        ]
 	    };
 
@@ -465,27 +445,6 @@ td {
 	        },
 	        tooltips: {
 	            backgroundColor: 'rgba(31, 59, 179, 1)',
-	        },
-	        plugins: {
-	            // 손실률을 막대 위에 표시하는 플러그인
-	            datalabels: {
-	                display: true,
-	                formatter: function(value, context) {
-	                    // 손실률을 표시 (손실액 데이터에 대해서만)
-	                    if (context.datasetIndex === 2) {
-	                        var monthIndex = context.dataIndex;
-	                        return lossRateData[monthIndex] + "%";  // 손실률 표시
-	                    }
-	                    return null;
-	                },
-	                color: '#FFAA00',  // 손실률 텍스트 색상
-	                font: {
-	                    weight: 'bold',
-	                    size: 10
-	                },
-	                anchor: 'end',
-	                align: 'top'
-	            }
 	        }
 	    };
 
