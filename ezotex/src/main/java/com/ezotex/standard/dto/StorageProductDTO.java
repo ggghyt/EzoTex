@@ -17,4 +17,5 @@ public class StorageProductDTO {
 	private String qy;
 	private String productColor;
 	private String productSize;
+	private String vl;
 }

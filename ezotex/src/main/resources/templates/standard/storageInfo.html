@@ -365,6 +365,7 @@
                                                    '&vl=' + document.querySelector("#selectedVl").value)
         .then((response) => response.json())
 		.then((data) => {
+			console.log(data)
 			if (data.length > 0) {
 				$('#storageInfoModal').modal('show');
 	        	document.querySelector('#optionCodeModalLabel').innerText = document.querySelector('#selectColRowName').innerText + " 상세보기"
@@ -376,7 +377,8 @@
 			        	{ header: '제품 이름', name: 'productName', sortable: true, align: 'left' }, 
 			        	{ header: '색상', name: 'productColor', sortable: true, align: 'center' }, 
 			        	{ header: '사이즈', name: 'productSize', sortable: true, align: 'center' }, 
-			        	{ header: '수량', name: 'qy', sortable: true, align: 'center' }, 
+			        	{ header: '수량', name: 'qy', sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }, 
+			        	{ header: '부피', name: 'vl', sortable: true, align: 'center', formatter: row => numberFormatter(row.value) }, 
 			        	{ header: '입고 날짜', name: 'storeDate', sortable: true, align: 'center' }, 
 			        	{ header: '입고자', name: 'storeChargerName', sortable: true, align: 'center' }
 			    	],

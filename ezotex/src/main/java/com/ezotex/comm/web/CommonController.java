@@ -97,7 +97,7 @@ public class CommonController {
 	public String Login_fail(RedirectAttributes attr) {
 		attr.addFlashAttribute("login_fail", true);
 		
-		return "redirect:/login/main";
+		return "redirect:main";
 	}
 	
 	// dept 리스트
@@ -140,7 +140,7 @@ public class CommonController {
 		service.insertEmp(empDTO, addDTO);
 		attr.addFlashAttribute("result", true);
 		
-		return "redirect:login/main";
+		return "redirect:main";
 	}
 	
 	// company 회원 가입
@@ -172,7 +172,7 @@ public class CommonController {
 		
 		attr.addFlashAttribute("result", true);
 		
-		return "redirect:login/main";
+		return "redirect:main";
 	}
 	
 	// 인증 여부 확인
@@ -215,16 +215,16 @@ public class CommonController {
 			if (update_result == 1) {
 				attr.addFlashAttribute("reset", true);
 			
-				return "redirect:login/main";
+				return "redirect:main";
 			} else {
 				attr.addFlashAttribute("reset", true);
 				
-				return "redirect:login/password_reset";
+				return "redirect:password_reset";
 			}
 		} else {
 			attr.addFlashAttribute("reset", true);
 			
-			return "redirect:login/password_reset";
+			return "redirect:password_reset";
 		}
 		
 	}

@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ezotex.comm.GridUtil;
 import com.ezotex.comm.dto.PagingDTO;
 import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CalenderDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
@@ -119,13 +120,14 @@ public class StandardController {
 	public String productInsert(ProductListInfoDTO productListInfoDTO, RedirectAttributes attr) throws Exception {
 		MultipartFile file = productListInfoDTO.getImgFile();
 		UUID uuid = UUID.randomUUID();
-		String uuidFileName = uuid + "_" + file.getOriginalFilename();
-		file.transferTo(new File(file_img + uuidFileName));
-		productListInfoDTO.setImg(uuidFileName);
-		
+		if (file.getOriginalFilename().length() > 3) {
+			String uuidFileName = uuid + "_" + file.getOriginalFilename();
+			file.transferTo(new File(file_img + uuidFileName));
+			productListInfoDTO.setImg(uuidFileName);
+		}
 		
 		service.ProductInfoInsert(productListInfoDTO);
-		return "redirect:standard/productInfo";
+		return "redirect:productInfo";
 	}
 	
 	// 제품 카테고리 조회
@@ -299,5 +301,23 @@ public class StandardController {
                                  @RequestParam(name="storageCode") String storageCode, 
                                  @RequestParam(name="selectRow") int selectRow) {
 		service.storageInfoRowUpdate(num, storageCode, selectRow);
+	}
+	
+	@ResponseBody
+	@GetMapping("/calendarInfo")
+	public List<CalenderDTO> calendarInfo() {
+		return service.calendarInfo();
+	}
+	
+	@ResponseBody
+	@GetMapping("/calendarCount")
+	public List<CalenderDTO> calendarCount() {
+		return service.calendarCount();
+	}
+	
+	@ResponseBody
+	@GetMapping("/mainProductImg")
+	public List<ProductListInfoDTO> mainProductImg() {
+		return service.mainProductImg();
 	}
 }

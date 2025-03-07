@@ -116,6 +116,15 @@
 		  const loginEvent = new Event('login');
 		  document.dispatchEvent(loginEvent); // 이벤트 호출
 		  
+		  console.log("session_check : " + session_user_code)
+		  if (session_user_code == null) {
+			  console.log("it's null")
+			  alert("세션이 만료되어서 로그인 화면으로 돌아갑니다.");
+			  logout()
+		  } else {
+			  console.log("not null")
+		  }
+		  
 		  console.log("로그인 아이디", session_user_code.substring(0,3));
 		  if(session_user_code.substring(0,3) == "COM") {
 			  document.querySelector(".supplier-menu").classList.remove('supplier-menu');
@@ -123,6 +132,7 @@
 			  document.querySelectorAll(".manufacturing-menu").forEach(ele => ele.classList.remove('manufacturing-menu'));
 			  
 		  }
+		  
 	  })
 	  
 	  
