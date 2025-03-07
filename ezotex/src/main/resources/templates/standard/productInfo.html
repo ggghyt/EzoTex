@@ -112,7 +112,7 @@ visibility: visible;
 				</div>
 			</div>
 			<div class="col me-2" style="height: 525px; text-align: center; margin-top: 20px">
-				<img id="preview" style="width: 90%; height: 90%;" onerror="this.src='/images/no_img.png'"/>
+				<img id="preview" style="width: auto; height: 90%;" onerror="this.src='/images/no_img.png'"/>
 			</div>
 			<form action="/standard/productInsert" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -402,7 +402,13 @@ visibility: visible;
 	    data: gridData,
 	    columns: [
 	        { header: '코드', name: 'PRODUCT_CODE', width: 100, sortable: true, align: 'center' }, 
-	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
+	        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true, 
+	        	renderer: {
+	                styles: {
+	                    fontWeight: 'bold'
+	                }
+	            }
+	        }, 
 	        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 100, sortable: true, align: 'center' }, 
 	        { header: '대분류', name: 'LCLAS', width: 100, sortable: true, align: 'center' }, 
 	        { header: '소분류', name: 'SCLAS', width: 100, sortable: true, align: 'center' }, 
@@ -503,8 +509,6 @@ visibility: visible;
 			failToast("유형을 입력해주세요.");
 		} else if (document.querySelector("#selectVl").value == 0) {
 			failToast("부피를 입력해주세요.");
-		} else if (document.querySelector("#selectProductImg").value == 0) {
-			failToast("사진을 등록해주세요.");
 		} else {
 			return true;
 		}

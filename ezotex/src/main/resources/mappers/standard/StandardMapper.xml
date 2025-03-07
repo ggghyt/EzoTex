@@ -220,7 +220,7 @@ values(concat('PRD', LPAD(PRODUCT_CODE_SEQ.nextval, 4, 0)),
        #{productType}, 
        #{unitPrice}, 
        #{vl}, 
-       #{img}, 
+<if test='img != null or img != ""'>#{img}, </if>
        #{unitName}
 )
 </insert>
@@ -368,18 +368,21 @@ and select_col = #{selectCol}
 </update>
 
 <select id="StorageProductList" resultType="StorageProductDTO">
-select lot, 
-       product_name, 
-       product_color, 
-       code_name as product_size, 
-       qy, 
-       store_date, 
-       store_charger_name
+select storage_product.lot, 
+       product_info.product_name, 
+       product_option.product_color, 
+       common_code_details.code_name as product_size, 
+       storage_product.qy, 
+       storage_product.store_date, 
+       storage_product.store_charger_name, 
+       product_info.vl
 from storage_product
 join product_option
 on storage_product.option_code = product_option.option_code
 join common_code_details
 on product_option.product_size = common_code_details.comm_detail_code
+join product_info
+on product_info.product_code = product_option.product_code
 where storage_info_code = #{storageInfoCode}
 </select>
 
@@ -483,4 +486,37 @@ where storage_code = #{storageCode}
 and select_row <![CDATA[ > ]]> (#{selectRow} - 1)
 </update>
 
+<select id="calendarInfo">
+select delivery_details.product_code, 
+       product_name, 
+       to_char(rgsde, 'YYYY-MM-DD') as rgsde
+from delivery_schedule
+join delivery_details
+on delivery_schedule.delivery_code = delivery_details.delivery_code
+join product_info
+on delivery_details.product_code = product_info.product_code
+</select>
+
+<select id="calendarCount">
+select to_char(rgsde, 'YYYY-MM-DD') as rgsde, 
+       count(*) as count
+from delivery_schedule
+join delivery_details
+on delivery_schedule.delivery_code = delivery_details.delivery_code
+join product_info
+on delivery_details.product_code = product_info.product_code
+group by to_char(rgsde, 'YYYY-MM-DD')
+</select>
+
+<select id="mainProductImg" resultType="ProductListInfoDTO">
+select distinct delivery_details.product_code, 
+                product_name, 
+                img
+from delivery_details
+join product_info
+on delivery_details.product_code = product_info.product_code
+join delivery_schedule
+on delivery_details.delivery_code = delivery_schedule.delivery_code
+where rgsde > sysdate - 30
+</select>
 </mapper>

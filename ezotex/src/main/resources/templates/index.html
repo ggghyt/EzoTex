@@ -2,6 +2,9 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layouts/layout}" layout:fragment="content">
 <head>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
 <meta charset="UTF-8">
 <title>이조텍스SCM</title>
 <style>
@@ -21,6 +24,28 @@
 #companyImg {
 	color: white;
 }
+.fc-col-header-cell-cushion, .fc-daygrid-day-number {
+    text-decoration: none;
+}
+
+.fc-scrollgrid-sync-inner > .fc-col-header-cell-cushion,
+.fc-day-mon .fc-daygrid-day-number,
+.fc-day-tue .fc-daygrid-day-number,
+.fc-day-wed .fc-daygrid-day-number,
+.fc-day-thu .fc-daygrid-day-number,
+.fc-day-fri .fc-daygrid-day-number {
+    color: black;
+}
+
+.fc-day-sun .fc-col-header-cell-cushion,
+.fc-day-sun a{
+    color : red;
+}
+
+.fc-day-sat .fc-col-header-cell-cushion,
+.fc-day-sat a {
+    color : blue;
+}
 </style>
 </head>
 <body>
@@ -32,15 +57,21 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;이조텍스를 이용해주셔서 감사합니다.
 		</div>
 	</div>
-	<div class="card card-body mt-3" style="width: 60%; float: left">
+	<div class="card card-body mt-3" style="width: 38%; float: left; margin: 3px; height: 650px">
 		<p class="fs-5 fw-bolder">공지사항</p>
 		<div id="announcementGrid" style="height: 525px"></div>
 		<div>
 			<button class="btn btn-primary" style="margin: 10px; float: right;" onclick="addInfomation()">작성</button>
 		</div>
 	</div>
-	<div class="card card-body mt-3" style="width: 38%; height: 600px; float: right">
-		<h1>넣을꺼 추천 좀</h1>
+	<div class="card card-body mt-3" style="width: 30%; height: 600px; float: left; margin: 3px; height: 650px">
+		<p class="fs-5 fw-bolder">출고 예정 날짜</p>
+		<div id="calendar"></div>
+	</div>
+	<div class="card card-body mt-3" style="width: 30%; height: auto; float: left; margin: 3px; height: 650px">
+		<p class="fs-5 fw-bolder">최근 출고된 물품</p>
+		<img id="main_img" style="width: 90%; height: auto; margin-bottom: 5px" onerror="this.src='/images/no_img.png'"/>
+		<p id="main_img_name" class="fs-5 fw-bolder" style="margin: 5px; padding: 5px">제품 이름</p>
 	</div>
 	<div class="modal fade" id="infomationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl" style="width: 50%">
@@ -160,8 +191,6 @@
 	}
 	
 	function infomationSubmit() {
-		console.log(session_user_code)
-		console.log(writer)
 		if (document.querySelector("#infoBtn").innerText == "수정") {
 			if (session_user_code == writer) {
 				document.querySelector("#infoBtn").innerText = "저장"
@@ -199,8 +228,6 @@
 	}
 	
 	function addInfomation() {
-		console.log(session_user_code)
-		console.log(writer)
 		$('#infomationModal').modal('show');
 		document.querySelector("#writerName").innerText = session_user_name
 		let today = new Date();
@@ -216,6 +243,100 @@
 		document.querySelector("#content").value = ""
 		document.querySelector("#infoBtn").innerText = "작성"
 	}
+	
+	let img_data = null
+	let img_num
+	fetch('/standard/mainProductImg')
+	.then((response) => response.json())
+	.then((data) => {
+		img_data = data
+	})
+	
+	
+	document.addEventListener('DOMContentLoaded', function() {
+		fetch('/standard/calendarInfo')
+		.then((response) => response.json())
+		.then((data) => {
+			fetch('/standard/calendarCount')
+			.then((response) => response.json())
+			.then((count_data) => {
+				let calendar_event = []
+				let desc_text = ""
+				let desc_text_count = []
+				for (let i = 0 ; i < count_data.length ; i++) {
+					desc_text = ""
+					desc_text_count = []
+					for (let j = 0 ; j < data.length ; j++) {
+						if (data[j].rgsde == count_data[i].rgsde) {
+							let push_check = 1
+							for (let k = 0 ; k < desc_text_count.length ; k++) {
+								if (desc_text_count[k].productName == data[j].productName) {
+									desc_text_count[k].count = desc_text_count[k].count + 1
+									push_check = 0;
+									break;
+								}
+							}
+							if (push_check == 1) {
+								desc_text_count.push({ "productName" : data[j].productName, 
+					                                   "count" : 1 })
+							}
+						}
+					}
+					for (let j = 0 ; j < desc_text_count.length ; j++) {
+						if (j > 0) {
+							desc_text = desc_text + "<br>"
+						}
+						desc_text = desc_text + desc_text_count[j].productName + " " + desc_text_count[j].count + "건"
+					}
+					calendar_event.push({ "title" : count_data[i].count + " 건", 
+						                  "start" : count_data[i].rgsde, 
+						                  "description" : desc_text})
+				}
+				var calendarEl = document.getElementById('calendar');
+		        var calendar = new FullCalendar.Calendar(calendarEl, {
+		            initialView: 'dayGridMonth', 
+		            events: calendar_event,
+		            height: 600, 
+		            locale: 'ko', 
+		            eventDidMount: function(info) {
+	                    // tippy.js로 툴팁 설정
+	                    tippy(info.el, {
+	                        content: info.event.extendedProps.description, // 'description'을 툴팁 내용으로 사용
+	                        theme: 'light',
+	                        trigger: 'mouseenter', // 마우스를 올리면 툴팁 표시
+	                        animation: 'fade', 
+	                        allowHTML: true
+	                    });
+	                }
+		        });
+		        calendar.render();
+			})
+		})
+		fetch('/standard/mainProductImg')
+		.then((response) => response.json())
+		.then((data) => {
+			img_data = data
+			show_img()
+		})
+	});
+	
+	
+	function show_img() {
+		let now_num
+		while(true) {
+			now_num = Math.floor(Math.random() * img_data.length)
+			if (now_num != img_num) {
+				img_num = now_num
+				break;
+			}
+		}
+		console.log(img_data[now_num])
+		document.querySelector("#main_img").src = "/img/" + img_data[now_num].img
+		document.querySelector("#main_img_name").innerText = img_data[now_num].productName
+		
+	}
+	
+	setInterval(show_img, 3000);
 	
 	</script>
 </html>

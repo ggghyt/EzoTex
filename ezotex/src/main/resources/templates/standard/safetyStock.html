@@ -185,8 +185,27 @@
 		    data: gridData,
 		    columns: [
 		        { header: '코드', name: 'PRODUCT_CODE', width: 150, sortable: true, align: 'center' }, 
-		        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true }, 
-		        { header: '안전재고', name: 'QY', width: 150, sortable: true, align: 'right' }, 
+		        { header: '이름', name: 'PRODUCT_NAME', whiteSpace: 'pre-line', sortable: true, 
+		        	renderer: {
+		                styles: {
+		                    fontWeight: 'bold'
+		                }
+		            }
+		        }, 
+		        { header: '안전재고', name: 'QY', width: 150, sortable: true, align: 'right' , 
+		        	renderer: {
+		                styles: {
+		                    fontWeight: 'bold', 
+		                    color: props => {
+		                        if(props.value > 0){
+		                        	return '#4b96ea';
+		                        } else {
+		                        	return 'orange';
+		                        }
+		                    }
+		                }
+		            }
+		        }, 
 		        { header: '유형', name: 'PRODUCT_TYPE_NAME', width: 150, sortable: true, align: 'center' }, 
 		        { header: '대분류', name: 'LCLAS', width: 150, sortable: true, align: 'center' }, 
 		        { header: '소분류', name: 'SCLAS', width: 150, sortable: true, align: 'center' }, 

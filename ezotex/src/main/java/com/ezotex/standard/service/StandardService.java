@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CalenderDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.EmpDTO;
@@ -55,4 +56,7 @@ public interface StandardService {
 	int infomationInsert(String userCode, String title, String content);
 	int storageInfoColUpdate(int num, String storageCode, int selectCol);
 	int storageInfoRowUpdate(int num, String storageCode, int selectRow);
+	List<CalenderDTO> calendarInfo();
+	List<CalenderDTO> calendarCount();
+	List<ProductListInfoDTO> mainProductImg();
 }

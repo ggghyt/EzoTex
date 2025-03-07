@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CalenderDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
@@ -140,4 +141,10 @@ public interface StandardMapper {
 	int maxRowUpdate(int num, String storageCode);
 	
 	int storageInfoRowUpdate(int num, String storageCode, int selectRow);
+	
+	List<CalenderDTO> calendarInfo();
+	
+	List<CalenderDTO> calendarCount();
+	
+	List<ProductListInfoDTO> mainProductImg();
 }

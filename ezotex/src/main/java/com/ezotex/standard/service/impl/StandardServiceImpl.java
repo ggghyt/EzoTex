@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ezotex.standard.dto.AddressListDTO;
+import com.ezotex.standard.dto.CalenderDTO;
 import com.ezotex.standard.dto.CompanyDTO;
 import com.ezotex.standard.dto.DeptDTO;
 import com.ezotex.standard.dto.DivyAddressDTO;
@@ -117,10 +118,10 @@ public class StandardServiceImpl implements StandardService {
 
 	@Override
 	public int ProductInfoInsert(ProductListInfoDTO productListInfoDTO) {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" + productListInfoDTO.toString());
 		if (productListInfoDTO.getProductCode().length() < 1) {
 			return mapper.ProductInfoInsert(productListInfoDTO);
 		} else {
-			System.out.println(productListInfoDTO.toString());
 			return mapper.ProductInfoUpdate(productListInfoDTO);
 		}
 	}
@@ -262,6 +263,21 @@ public class StandardServiceImpl implements StandardService {
 		mapper.maxRowUpdate(num, storageCode);
 		mapper.storageInfoRowUpdate(num, storageCode, selectRow);
 		return 0;
+	}
+
+	@Override
+	public List<CalenderDTO> calendarInfo() {
+		return mapper.calendarInfo();
+	}
+
+	@Override
+	public List<CalenderDTO> calendarCount() {
+		return mapper.calendarCount();
+	}
+
+	@Override
+	public List<ProductListInfoDTO> mainProductImg() {
+		return mapper.mainProductImg();
 	}
 
 	
