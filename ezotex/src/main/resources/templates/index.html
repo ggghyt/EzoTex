@@ -323,7 +323,7 @@
 	
 	function show_img() {
 		let now_num
-		while(true) {
+		for(let i = 0 ; i < 100 ; i++) {
 			now_num = Math.floor(Math.random() * img_data.length)
 			if (now_num != img_num) {
 				img_num = now_num
