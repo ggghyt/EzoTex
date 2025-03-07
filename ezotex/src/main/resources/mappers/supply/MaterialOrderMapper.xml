@@ -152,7 +152,7 @@
 		SELECT * FROM
 		    (SELECT DISTINCT(p.mtril_order_plan_code),
 		            p.due_date,
-		            product_summary('material_order_plan_details', p.mtril_order_plan_code) summary,
+		            v.summary,
 		            (SELECT SUM(order_qy) 
 		             FROM   material_order_plan_details
 		             WHERE  mtril_order_plan_code = p.mtril_order_plan_code) order_qy,
@@ -162,6 +162,8 @@
                     p.update_date,
 		            get_comm(p.status) status
 		     FROM   material_order_plan p JOIN material_order_plan_details d ON p.mtril_order_plan_code = d.mtril_order_plan_code
+		                                  JOIN summary_view v ON (p.mtril_order_plan_code = v.header_code
+                                                              AND v.nm = 'material_order_plan')
 		    <where>
 		      <if test='status != null'> AND p.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
 		      <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' ||  UPPER(#{productCode}) || '%' </if>
@@ -244,7 +246,7 @@
 			SELECT o.mtril_order_code,
 			       o.company_code,
 			       o.company_name,
-			       product_summary('material_order_details', o.mtril_order_code) summary,
+			       v.summary,
 			       o.due_date,
 			       SUM(d.order_qy) order_qy,
 			       SUM(d.amount) amount,
@@ -254,6 +256,8 @@
 			       o.update_date,
 			       get_comm(o.status) status
 			FROM   material_order o JOIN material_order_details d ON o.mtril_order_code = d.mtril_order_code
+			                        JOIN summary_view v ON (o.mtril_order_code = v.header_code
+                                                      AND v.nm = 'material_order')
 			<where>
               <if test='status != null'> AND o.status IN ( <foreach collection="status" item="st" separator=", "> #{st} </foreach> ) </if>
               <if test='productCode != null and productCode != ""'> AND UPPER(d.product_code) LIKE '%' ||  UPPER(#{productCode}) || '%' </if>
@@ -261,7 +265,7 @@
               <if test='companyCode != null and companyCode != ""'> AND UPPER(o.company_code) LIKE '%' || UPPER(#{companyCode}) || '%' </if>
               <if test='companyName != null and companyName != ""'> AND UPPER(o.company_name) LIKE '%' || UPPER(#{companyName}) || '%' </if>
             </where> 
-			GROUP  BY o.mtril_order_code, o.company_code, o.company_name, o.due_date, o.charger_name, o.remark, o.rgsde, o.update_date, o.status
+			GROUP  BY o.mtril_order_code, o.company_code, o.company_name, o.due_date, o.charger_name, o.remark, o.rgsde, o.update_date, o.status, v.summary
 		    ) -- 바깥에서 검색하여 alias 이용 가능
 		<where> 
           <if test='mtrilOrderCode != null and mtrilOrderCode != ""'> AND UPPER(mtril_order_code) LIKE '%' || UPPER(#{mtrilOrderCode}) || '%' </if>

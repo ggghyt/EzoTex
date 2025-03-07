@@ -53,27 +53,27 @@
 			         </div>
 			         <label for="scProductName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control" id="scProductName">
+			           <input type="search" class="form-control" id="scProductName">
 			         </div>
 			         <label for="scSupplyPlanCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급계획코드</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control" id="scSupplyPlanCode">
+			           <input type="search" class="form-control" id="scSupplyPlanCode">
 			         </div>
 			         <label for="scChargerName" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">담당자</label>
 			         <div class="col-8 col-sm-4 col-lg-4 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control" id="scChargerName">
+			           <input type="search" class="form-control" id="scChargerName">
 			         </div>
 			         <label for="scRemark" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">비고</label>
 			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center mb-2">
-			           <input type="text" class="form-control" id="scRemark">
+			           <input type="search" class="form-control" id="scRemark">
 			         </div>
 				 </div>
 				 
 		         <div class="row col-12 col-lg-6 pe-0 ps-lg-4">
 		           <label for="supplyQyMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급량합계</label>
 			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
-			           <input type="text" class="form-control me-sm-2 text-end" id="supplyQyMin">-
-			           <input type="text" class="form-control ms-sm-2 text-end" id="supplyQyMax">
+			           <input type="search" class="form-control me-sm-2 text-end" id="supplyQyMin">-
+			           <input type="search" class="form-control ms-sm-2 text-end" id="supplyQyMax">
 			         </div>
 			         <label for="supplyDateMin" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">공급일자</label>
 			         <div class="col-8 col-sm-10 col-lg-10 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
@@ -187,6 +187,7 @@
 	                
 	             </div>
 	              <div class="modal-footer">
+	                <span style="color: #999" class="me-3 text-small">*공급계획은 시즌 1개월 전까지만 변경 가능합니다.</span>
 	                <button type="button" id="closeBtn" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 	                <button type="button" id="disconBtn" class="btn btn-danger" style="display: none;">계획중단</button>
 	              </div>

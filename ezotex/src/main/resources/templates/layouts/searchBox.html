@@ -11,27 +11,28 @@
     // 템플릿의 z-index때문에 가려서 안 보여, 부모태그 중 z-index 조정함
     
     var $j = jQuery.noConflict(); // 템플릿과 JQuery 충돌방지로 별도 선언    
-    
-    var supplierMenu = []; // 공급업체 전용 메뉴
-    var commonMenu = []; // 일반 자사 메뉴
+    var currentMenu = [];
     
     $j(document).ready(function() {
 		    // 상위메뉴 노드리스트 추출
 		    let sideLiArr = document.querySelectorAll('ul.nav.top > li.nav-item');
 		    
+		    // 접속한 게정에 따라 다르게 구분
+		    let exceptClassNm;
+		    if(session_user_code.substring(0,3) == "COM") exceptClassNm = 'manufacturing-menu';
+        else if(session_user_code.substring(0,3) == "EMP") exceptClassNm = 'supplier-menu';
+		    
 		    // 공급업체메뉴/일반메뉴 (권한이 다른 메뉴) 분리하여 배열 생성
 		    sideLiArr.forEach(li => {
-		    	if(li.className.indexOf('supplier-menu') == -1) commonMenu.push(li);
-		    	else supplierMenu.push(li);
+		    	if(li.className.indexOf(exceptClassNm) == -1) currentMenu.push(li);
 		    });
 		    
 		    // 서브메뉴 객체로 추출
-		    supplierMenu = supplierMenu.map(parent => splitMenuMap(parent));
-		    commonMenu = commonMenu.map(parent => splitMenuMap(parent));
+		    currentMenu = currentMenu.map(parent => splitMenuMap(parent));
 		    
 		    // 표시할 문자열 계산
 		    var sideArr = [];
-		    commonMenu.forEach(menu => {
+		    currentMenu.forEach(menu => {
 		    	if(!menu.subMenus) sideArr.push(menu);
 		    	else menu.subMenus.forEach(sub => {
 		    		sideArr.push(menu.parentNm + ' > ' + sub.nm);
@@ -53,7 +54,7 @@
         let str = $j('#menuSearch').val();
         let splited = str.split(' > '); // '공급 > 자재명세서' 메뉴명 분리
         
-        for(let menu of commonMenu){
+        for(let menu of currentMenu){
           if(menu.parentNm == splited[0]){
             for(let sub of menu.subMenus){
               if(sub.nm == splited[1]) location.href = sub.href; // 해당하는 링크를 찾아 이동

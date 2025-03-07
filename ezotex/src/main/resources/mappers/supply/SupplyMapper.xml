@@ -66,7 +66,7 @@
 	    SELECT DISTINCT(p.supply_plan_code),
 	           p.supply_year,
 	           get_comm(p.season) season,
-	           product_summary('supply_plan_details', p.supply_plan_code) summary, 
+	           v.summary, 
 	           (SELECT SUM(supply_qy) 
 	            FROM   supply_plan_details
 	            WHERE  supply_plan_code = p.supply_plan_code) supply_qy,
@@ -76,7 +76,9 @@
 	           p.rgsde,
 	           p.update_date,
 	           get_comm(p.discontinued) discontinued
-	    FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code 
+	    FROM   supply_plan p JOIN supply_plan_details d ON p.supply_plan_code = d.supply_plan_code
+	                         JOIN summary_view v ON (p.supply_plan_code = v.header_code
+	                                                 AND v.nm = 'supply_plan')
 	    <where>
 	       <if test='season != null'> AND p.season IN ( <foreach collection="season" item="se" separator=", "> #{se} </foreach> ) </if>
 	       <if test='seasonNull != null'> OR p.season IS NULL </if>

@@ -59,7 +59,22 @@ td.tui-grid-cell select {
     display:none;
 }
 
+.tui-grid-container, .footer {
+	font-size: 15px;
+}
 
+.menu-title {
+	font-size: 17px !important;
+}
+
+.nav-item a {
+	font-size: 14px !important;
+}
+
+.nav-link.active {
+	color: #1131ba !important;
+	font-weight: bolder !important;
+}
 
 
 
