@@ -142,7 +142,7 @@ const supplyGrid = new Grid({
     },
     columns: [
         { header: '공급계획코드', name: 'supplyPlanCode', width: 120, sortable: true, align: 'center' },
-        { header: '공급년도', name: 'supplyYear', width: 80, sortable: true, align: 'center' },
+        { header: '공급년도', name: 'supplyYear', width: 90, sortable: true, align: 'center' },
         { header: '시즌', name: 'season', width: 50, sortable: true, align: 'center' },
         { header: '요약', name: 'summary', whiteSpace: 'pre-line', sortable: true },
         { header: '공급량합계', name: 'supplyQy', width: 150, sortable: true, align: 'right',
