@@ -220,7 +220,7 @@ values(concat('PRD', LPAD(PRODUCT_CODE_SEQ.nextval, 4, 0)),
        #{productType}, 
        #{unitPrice}, 
        #{vl}, 
-<if test='img != null or img != ""'>#{img}, </if>
+       #{img},
        #{unitName}
 )
 </insert>
@@ -231,7 +231,7 @@ set product_name = #{productName},
     product_type = #{productType}, 
     unit_price = #{unitPrice}, 
     vl = #{vl}, 
-    img = #{img}, 
+<if test='img != null'>img = #{img}, </if>
     unit_name = #{unitName}
 where product_code = #{productCode}
 </update>
