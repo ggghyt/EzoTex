@@ -599,7 +599,6 @@
 		            // storeProduct의 데이터를 갱신 (기존 데이터 + 새 데이터)
 		            storeProduct.resetData(currentData);
 		
-		            console.log('제품이 추가되었습니다.');
 		        }
 		    }
 		});
@@ -628,11 +627,17 @@
 	   		
 	   		for (let i = 0; i < check.length; i++) {
 	   	        if (!check[i].productQy || check[i].productQy.trim() === "") {
-	   	            alert(`제품 ${check[i].productName} 의 수량을 입력해주세요.`);
+	   	        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+			    	document.querySelector("#warning").innerText = "제품의 수량을 입력해주세요.";
+			    	modifyMOdal.show();
+	   	            //alert(`제품 ${check[i].productName} 의 수량을 입력해주세요.`);
 	   	            return; 
 	   	        }
 	   	     	if(!check[i].location || check[i].location.trim() === "") {
-	   	            alert(`창고위치를 선택하세요 .`);
+		   	     	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+			    	document.querySelector("#warning").innerText = "창고위치를 선택하세요 .";
+			    	modifyMOdal.show();
+	   	            //alert(`창고위치를 선택하세요 .`);
 	   	            return; 
 	   	        }
 	   	    }
