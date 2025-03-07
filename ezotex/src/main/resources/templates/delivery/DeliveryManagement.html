@@ -3,7 +3,7 @@
 	layout:decorate="~{layouts/layout}" layout:fragment="content">
 <head>
 <meta charset="UTF-8">
-<title>납품등록</title>
+<title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <style>
@@ -664,6 +664,7 @@ input[type=date] {
 		    	fetch(`/delivery/orderInfo?orderCode=${selected.productOrderCode}`)
 	    		.then(rep => rep.json())
 	    		.then(data => {
+	    				
 	    				//등록해야되는 정보 처음 가져온 내용
 	    				allOrderInfo = data;
 	    				

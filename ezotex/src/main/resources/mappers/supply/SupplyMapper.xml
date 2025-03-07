@@ -24,7 +24,7 @@
 		       product_color
 		FROM   product_option
 		WHERE  product_code = #{productCode}
-		  AND  discontinued = 'YN02'
+		AND    discontinued = 'YN02'
 		ORDER BY product_color, product_size
 	</select>
 	
