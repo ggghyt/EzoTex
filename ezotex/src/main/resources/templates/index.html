@@ -71,7 +71,7 @@
 	<div class="card card-body mt-3" style="width: 30%; height: auto; float: left; margin: 3px; height: 650px">
 		<p class="fs-5 fw-bolder">최근 출고된 물품</p>
 		<img id="main_img" style="width: 90%; height: auto; margin-bottom: 5px" onerror="this.src='/images/no_img.png'"/>
-		<p id="main_img_name" class="fs-5 fw-bolder" style="margin: 5px; padding: 5px">제품 이름</p>
+		<p id="main_img_name" class="fs-5 fw-bolder" style="margin: 5px; padding: 5px"></p>
 	</div>
 	<div class="modal fade" id="infomationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl" style="width: 50%">
@@ -177,11 +177,9 @@
 				document.querySelector("#writerName").innerText = data.writerName
 				document.querySelector("#title").value = data.title
 				document.querySelector("#content").value = data.content.replace(/<br>/g, "\n")
-				let [wdate, wtime] = data.writeDate.split("T");
-				document.querySelector("#writeDate").innerText = wdate
+				document.querySelector("#writeDate").innerText = dateFormatter(data.writeDate)
 				if (data.editDate != null) {
-					let [edate, etime] = data.editDate.split("T");
-					document.querySelector("#editDate").innerText = edate
+					document.querySelector("#editDate").innerText = dateFormatter(data.editDate)
 				} else {
 					document.querySelector("#editDate").innerText = ""
 				}
@@ -200,6 +198,10 @@
 				failToast("작성자가 아니라서 수정 권한이 없습니다.");
 			}
 		} else if (document.querySelector("#infoBtn").innerText == "저장") {
+			if ((document.querySelector("#title").value).length == 0 || (document.querySelector("#content").value).length == 0) {
+				failToast("내용을 입력하세요");
+				return
+			}
 			let today = new Date();
 			let year = today.getFullYear();
 			let month = String(today.getMonth() + 1).padStart(2, '0');
