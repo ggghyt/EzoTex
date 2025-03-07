@@ -25,7 +25,7 @@
 		</div>
 		<div class="row ps-2">
 		  <div class="col-12 card card-body m-2  bg-secondary">
-		    <p class="fs-5 fw-bolder">제품 정보</p>
+		    <p class="fs-5 fw-bolder">검색</p>
 		
 		    <div class="row ps-2 align-items-center">
 			<!-- 납품코드 -->
@@ -254,7 +254,13 @@
 			},
 			bodyHeight: 417,
 			columns: [
-				{ header: "납품코드", name: "deliveryCode", align: "center", sortable: true},
+				{ header: "납품코드", name: "deliveryCode", align: "center", sortable: true,
+					renderer: {
+		                styles: {
+		                    fontWeight: 'bold',
+		                  }
+		             }	
+				},
 				{ header: "제품 종류 수", name: "deliveryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 				{ header: "납품 요청일", name: "orderDate", align: "center", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
 				{ header: "입고 예정일", name: "dedt", align: "center", sortable: true, formatter: (row) => dateFormatterNull(row.value) },

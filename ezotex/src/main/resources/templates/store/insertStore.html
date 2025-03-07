@@ -332,7 +332,12 @@
 	      bodyHeight: 417,
 	      columns: [ 
 	        { header: "제품코드", name: "productCode", align: "center", sortable: true},
-	        { header: "제품명", name: "productName", sortable: true},
+	        { header: "제품명", name: "productName", sortable: true, renderer: {
+                styles: {
+                    fontWeight: 'bold',
+                  }
+                }
+	        },
 	        { header: "단가", name: "unitPrice", align: "center", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 	      ],
 	      data: dataSource,

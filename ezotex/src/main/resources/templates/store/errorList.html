@@ -49,7 +49,7 @@
 	
 	<div class="row ps-2">
 	  <div class="col-12 card card-body m-2  bg-secondary">
-	    <p class="fs-5 fw-bolder">제품 정보</p>
+	    <p class="fs-5 fw-bolder">검색</p>
 	
 	    <div class="row ps-2">
 					
@@ -98,7 +98,7 @@
 		<div class="col-5 card card-body m-2">
 			<div class="d-flex justify-content-between align-items-center mt-2 mb-2">
 				<p class="fs-5 fw-bolder m-0">불량 제품 목록</p>
-				<button id="xlsx" class="btn btn-dark btn-sm" style="width: 200px;">EXCEL 내보내기</button>
+				<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
 			</div>
 			<div id="grid"></div>
 		</div>
@@ -272,13 +272,28 @@
 		      bodyHeight: 417,
 		      columns: [ 
 		        { header: "제품코드", name: "productCode", align: "center", sortable: true},
-		        { header: "제품명", name: "productName", sortable: true, width: 200},
+		        { header: "제품명", name: "productName", sortable: true, width: 200, renderer: {
+	                styles: {
+	                    fontWeight: 'bold',
+	                  }
+	                }
+		        },
 		        { header: "색상", name: "productColor", sortable: true},
 		        { header: "사이즈", name: "productSize", sortable: true},
-		        { header: "LOT번호", name: "lot", align: "center", sortable: true},
+		        { header: "LOT번호", name: "lot", align: "center", sortable: true, renderer: {
+	                styles: {
+	                    fontWeight: 'bold',
+	                  }
+	                }
+		        },
 		        { header: "처리일", name: "processDate", sortable: true, formatter: (row) => dateFormatterNull(row.value)},
 		        { header: "처리담당자", name: "errorCharger", align: "center", sortable: true},
-		        { header: "불량사유", name: "errorInfo", sortable: true},
+		        { header: "불량사유", name: "errorInfo", sortable: true, renderer: {
+	                styles: {
+	                    fontWeight: 'bold',
+	                  }
+	                }
+		        },
 		        { header: "불량수량", name: "errorQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value)},
 		        
 		      ],
