@@ -50,4 +50,7 @@ public interface ReturnsService {
 	
 	// 주문코드에 대한 매출액과 손실액 조회
 	List<SalesDTO> getSalesAmount();
+	
+	// 일일 전체 매출 손실
+	List<SalesDTO> getDaySalesLoss();
 }

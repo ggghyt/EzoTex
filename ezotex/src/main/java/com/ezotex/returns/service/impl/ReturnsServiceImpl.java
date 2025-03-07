@@ -131,5 +131,10 @@ public class ReturnsServiceImpl implements ReturnsService {
 	public List<SalesDTO> getSalesAmount() {
 		return mapper.getSalesAmount();
 	}
-
+	
+	// 일일 전체 매출 손실
+	@Override
+	public List<SalesDTO> getDaySalesLoss() {
+		return mapper.getDaySalesLoss();
+	}
 }
