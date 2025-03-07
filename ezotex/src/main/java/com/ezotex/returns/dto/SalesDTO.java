@@ -34,4 +34,9 @@ public class SalesDTO {
 	private int totalLoss;
 	private int totalOrderQuantity;
 	private int totalReturnQuantity;
+	
+	// 월별 매출 손실
+	private float lossRate;
+	private Date orderMonth;
+	
 }

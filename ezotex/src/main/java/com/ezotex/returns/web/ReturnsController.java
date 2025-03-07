@@ -70,6 +70,9 @@ public class ReturnsController {
 		// 주문코드에 대한 매출액과 손실액 조회
 		List<SalesDTO> salesAmount = service.getSalesAmount();
 		model.addAttribute("getSalesAmount", salesAmount);
+		// 일일 전체 매출 손실
+		List<SalesDTO> daySalesLoss = service.getDaySalesLoss();
+		model.addAttribute("getDaySalesLoss" , daySalesLoss);
 	}
 
 }
