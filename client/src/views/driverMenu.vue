@@ -5,8 +5,9 @@
         {{ toastMessage }}
       </div>
     </transition>
-  <div id="containerApp">
-    <div class="col card card-body">
+    <div id="containerApp">
+    <div class="EzoTex-title mt-5">Ezo<span class="texColor">Tex</span></div>
+    <div class="card card-body mt-0">
       <p class="fs-6 fw-bold deliveryTitle">| 배송지 목록</p>
       <div class="search-section">
         <div>
@@ -46,7 +47,7 @@
   <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header" style="height: 20px;">
+        <div class="modal-header bg-light" style="height: 20px;">
           <h5 class="modal-title" id="exampleModalLabel" style="font-size: 15px;">배송지 정보</h5>
         </div>
         <div class="modal-body" style="text-align: center;">
@@ -158,6 +159,8 @@ let readCompanyName = ref('');
 let readDedt = ref('');
 let fileInput = ref('');    //이미지 파일
 
+
+document.title = '이조텍스SCM';
 /*
 const deliveryList = async () => {
 
@@ -207,8 +210,20 @@ onMounted(() => {
     columns: [
       { header: '출고 코드', name: 'deliveryCode', hidden: true},
       { header: '상호명', name: 'companyName', minWidth: 60, width: 'auto'  },
-      { header: '납기주소', name: 'dedtAddress' },
-      { header: '상태', name: 'deliveryStatus', minWidth: 30, width: 'auto' },
+      { header: '납기주소', name: 'dedtAddress', ellipsis:true },
+      { header: '상태', name: 'deliveryStatus', minWidth: 50, width: 'auto',
+        renderer: {
+              styles: {
+                fontWeight: 'bold',
+                color: props => {
+                    switch(props.value){
+                        case '완료': return 'green';
+                        case '미완료': return 'red';
+                    }
+                }
+              }
+            }
+            },
       { header: '납기일', name: 'dedt', hidden: true},
     ],
     data: {
@@ -437,6 +452,21 @@ const submitFormBtn = async() => {
 </script>
 
 <style>
+.EzoTex-title {
+  color: white;
+  font-weight: 700;
+  font-size: 24px;
+  text-align: center;
+}
+.texColor {
+  color: #0c1fad;
+}
+.tui-grid-cell-has-input .tui-grid-cell-content {
+  font-size: 15px;
+}
+#containerApp {
+  width: 100%;
+}
 .modal-dialog {
     height: auto !important;
     position: relative !important;
@@ -482,16 +512,17 @@ const submitFormBtn = async() => {
   padding-bottom: 0 !important;
 }
 .form-control {
-    font-size: 0.7rem !important;
+    font-size: 1rem !important;
     display: inline-block !important;
-    width: 84% !important;
+    width: 60% !important;
     height: 24px;
 }
 .search-section :nth-of-type(2) input{
-  width: 84% !important;
+  width: 60% !important;
 }
 .search-section :nth-of-type(3) select{
-  font-size: 0.5rem !important;
+  font-size: 0.7rem !important;
+  height: 31px;
   width: 30% !important;
   text-align: center;
 }
@@ -499,9 +530,9 @@ const submitFormBtn = async() => {
   margin-bottom: 10px;
 }
 .search-section div span {
-  font-size: 11px; 
+  font-size: 17px; 
   display: inline-block;
-  width: 50px;
+  width: 100px;
 }
 .search-section div{
   margin-bottom: 5px;
@@ -527,7 +558,6 @@ const submitFormBtn = async() => {
     --bs-btn-font-size: 0.7rem;
 }
 .btn-gruop {
-  width: 54% !important;
   text-align: right !important;
 }
 .btn-gruop button{
@@ -536,7 +566,7 @@ const submitFormBtn = async() => {
   width: 40px;
 }
 textarea {
-  height: 50px !important;
+  height: 80px !important;
 }
 .toast {
   position: fixed;
