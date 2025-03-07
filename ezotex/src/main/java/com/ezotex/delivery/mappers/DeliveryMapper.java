@@ -51,11 +51,11 @@ public interface DeliveryMapper {
     public List<OrderInsertDTO> getProductLot(@Param("pinfo")OrderInsertDTO pinfo);
     
     //(제조업체에서 사용)출고 제품 등록
-    public void insertDeliveryDetails(@Param("divyQy")int pinfo,
-    								  @Param("lotCode")String lotCode);
+    public void insertDeliveryDetails(@Param("pinfo")OrderInsertDTO deinfo);
     
     //로트 수량 업데이트
-    public void updateLotQy(@Param("deInfo")OrderInsertDTO deinfo);
+    public void updateLotQy(@Param("divyQy")int pinfo,
+			  				@Param("lotCode")String lotCode);
     
     //제품 단가, 금액 가져오기
     public List<OrderInsertDTO> getPrice(@Param("pinfo")OrderInsertDTO pinfo);
