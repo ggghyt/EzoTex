@@ -486,6 +486,7 @@
    				*/
    				
    				for(let i=0; i<boxInfo.length; i++) {
+   					if(vlSum == 0) countinue; //박스 수량이 딱 떨어질 경우 넘어감
    					switch(i) {
 						case 0 : 
 								 lBox = Math.floor(vlSum / boxInfo[i].boxVl);

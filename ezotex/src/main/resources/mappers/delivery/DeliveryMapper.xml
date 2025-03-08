@@ -62,7 +62,8 @@
 			                           AND order_status IN ('OR01', 'OR06')
 			                  </otherwise>
 			            </choose>
-	               	</where>                
+	               	</where>  
+	               	ORDER BY ol.product_order_code DESC              
 		    )info
 		    WHERE info.rn  <![CDATA[ <= ]]>#{cri.end}) page
 		WHERE page.rn  <![CDATA[ >= ]]>#{cri.start}
@@ -369,7 +370,8 @@
 			                           AND delivery_status IN ('DS01', 'DS02', 'DS03', 'DS04', 'DS05')
 			                  </otherwise>
 			            </choose>
-	               	</where>      
+	               	</where>  
+	               	ORDER BY de.delivery_code DESC
 		            )info
 		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
 		WHERE page.rn <![CDATA[ >= ]]>#{cri.start}
@@ -490,7 +492,7 @@
 		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
 		                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
 		            </if>
-			                 
+			        ORDER BY de.delivery_code DESC
 		            )info
 		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
 		WHERE page.rn <![CDATA[ >= ]]>#{cri.start}
@@ -572,6 +574,7 @@
 		                             ON (dd.product_code = pi.product_code)
 		WHERE dd.delivery_code = #{deliveryCode}
 		GROUP BY dd.delivery_code, dd.product_code, pi.product_name, pi.vl
+		ORDER BY dd.delivery_code
 	</select>
 	
 	<select id="deliveryProductDetails">	

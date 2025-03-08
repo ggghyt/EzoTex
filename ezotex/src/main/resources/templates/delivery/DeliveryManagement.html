@@ -813,7 +813,7 @@ input[type=date] {
 		            	//선택한 제품코드와 객체 배열 안에 있는 제품 코드가 같으면 배열에 넣고, 화면에 출력함.
 		            	if(productCode == allOrderInfo.productDetails[i].qyList[j].PRODUCT_CODE) {	
 			            	//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
-			            	allOrderInfo.productDetails[i].qyList[j][invenForZero] = 0;
+			            	//allOrderInfo.productDetails[i].qyList[j][invenForZero] = 0;																	---------------------------------------이거 문제생길 가능성 많음 내가 왜 한지 모름
 							products.push({...allOrderInfo.productDetails[i].qyList[j], productName : data.productName});
 			            	
 		            	}
@@ -841,7 +841,7 @@ input[type=date] {
 						{ header: "제품코드", name: "PRODUCT_CODE", align: "center", hidden:true},
 						{ header: "제품명", name: "productName", align: "center", hidden:true});
 				
-				//console.log("products: ", newProduct);	//중복없는 데이터
+				console.log("products: ", newProduct);	//중복없는 데이터
 				
 				productDetailgrid.setHeader({complexColumns:size});
 				productDetailgrid.setColumns(color);
@@ -1265,7 +1265,7 @@ input[type=date] {
 			    			//제품의 한 색상의 사이즈 컬럼을 하나씩 넣어서 그리드를 생성함
 			    			color.push({ header: "출고량", name: 'DE'+sizeCode, align: "right", editor: "text", minWidth: 60, formatter:(row)=>numberFormat(row.value)},
 			    					{ header: "잔여량", name: 'RE'+sizeCode , align: "right", minWidth: 60, formatter:(row)=>numberFormat(row.value) },
-			    					{ header: "재고량", name: 'IN'+sizeCode, align: "right", minWidth: 60, formatter:(row)=> {
+			    					{ header: "재고량", name: 'IN'+sizeCode, align: "right", minWidth: 60, formatter:(row)=> { console.log(row.value);
 			    						//요청 수량이 0이 아니라면
 			    						if(row.row[reqSize] != null) {
 			    							if(row.value == 0) {
