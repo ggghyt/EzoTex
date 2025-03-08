@@ -100,7 +100,7 @@
 		<div class="col-6">			
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 				<div>
-					<div class="row">
+					<div class="row search-bar">
 						 <b class="col-12">검색</b>	
 				         <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품코드</label>
 				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
@@ -113,7 +113,7 @@
 	                     </div>	
 	                     <label for="companyCode" class="col-4 col-sm-2 col-lg-2 d-flex mb-2 align-items-center justify-content-center wbreak">제품명</label>
 				         <div class="col-8 col-sm-4 col-lg-3 d-flex align-items-center mb-2">
-				           <input type="text" class="form-control search-delivery-chargerCode">
+				           <input type="text" class="form-control search-product-name">
 				         </div>
 				         <label for="amountMin" class="col-4 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">납기일</label>
 	                     <div class="col-8 col-sm-10 col-lg-5 d-flex align-items-center justify-content-start mb-2 pe-0 ps-lg-4">
@@ -134,7 +134,7 @@
 				         </div>	
 				         <div class="col-8 col-sm-2 col-lg-6 d-flex mb-2 align-items-center justify-content-end wbreak p-0">
 					        <button type="button" onclick="searchOrderList()" class="btn btn-warning mag-glass-btn ml-4 ms-3 me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
-				            <button type="reset" onclick="resetCondition()" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				            <button type="reset" onclick="resetCondition()" class="btn btn-secondary mag-glass-btn resetBtn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 				         </div>
 					</div>
 				</div>
@@ -309,8 +309,7 @@
     		document.querySelectorAll('.search-bar input').forEach((e) => {
     			e.value = null;
     		})
-    		document.querySelector('.search-bar select').value = '';
-    		searchOrderList();
+    		searchOrderList()
         }
 		
 		//출고 목록
@@ -423,7 +422,7 @@
 			scrollX: true,
 			columns: [
 				{ header: "로트", name: "productLot", align: "center"},
-				{ header: "출고수량", name: "deliveryQy", align: "right", formatter: row => numberFormat(row.value)}
+				{ header: "출고수량", name: "deliveryQy", align: "center", formatter: row => numberFormat(row.value)}
 			]
 		});
 		

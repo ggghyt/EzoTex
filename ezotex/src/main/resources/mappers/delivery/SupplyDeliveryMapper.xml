@@ -37,10 +37,10 @@
 	                                    WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
 	        	</if>
 	        	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
-	        		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+	        		AND    TO_CHAR(rgsde, 'yyyy-MM-dd') BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
 	        	</if>
 	        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
-	        		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+	        		AND    TO_CHAR(due_date, 'yyyy-MM-dd') BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
 	        	</if>
        			<choose>
 	                  <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 
@@ -78,10 +78,10 @@
                                    WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
        	</if>
        	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
-       		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+       		AND    TO_CHAR(rgsde, 'yyyy-MM-dd') BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
        	</if>
        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
-       		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+       		AND    TO_CHAR(due_date, 'yyyy-MM-dd') BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
        	</if>
      	<choose>
                  <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 

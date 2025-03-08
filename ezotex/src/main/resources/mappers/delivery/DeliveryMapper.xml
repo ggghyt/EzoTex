@@ -49,7 +49,7 @@
 			                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
 			            </if>
 			            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-			                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+			                AND TO_DATE(ol.order_date) BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
 			            </if>
 			            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
 			                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
@@ -101,7 +101,7 @@
 			                AND ol.charger LIKE '%' || #{cri.orderCharger} || '%'                          --주문 담당자
 			            </if>
 			            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-			                AND ol.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+			                AND TO_DATE(ol.order_date) BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
 			            </if>
 			            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
 			                AND ol.delivery_request_deadline BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
@@ -443,8 +443,8 @@
 		                    de.delivery_code AS delivery_code,
 		                    de.company_code AS company_code,
 		                    de.company_name AS company,
-		                    de.order_date AS order_date,
-		                    de.dedt AS dedt,
+		                    TO_DATE(de.order_date)+1 AS order_date,
+		                    TO_DATE(de.dedt)+1 AS dedt,
 		                    v.summary AS summary,
 		                    de.time AS time,
 		                    get_comm(de.delivery_status) AS delivery_status,
@@ -463,16 +463,16 @@
 		            <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
 		                AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
 		            </if>
-		            <if test="cri.productName != null and cri.productName != null">		    
+		            <if test='cri.productName != null and cri.productName != ""'>		    
 		                AND  de.delivery_code IN (SELECT dd.delivery_code 
-                                						   FROM delivery_details dd JOIN product_info pi 
-                                                        						   ON (dd.product_code = pi.product_code)
-                                						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
+		                              						   FROM delivery_details dd JOIN product_info pi 
+		                                                      						   ON (dd.product_code = pi.product_code)
+		                              						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
 		            </if>
-		            <if test="cri.productCode != null and cri.productCode != null">		    
+		            <if test='cri.productCode != null and cri.productCode != ""'>		    
 		                AND de.delivery_code IN (SELECT  delivery_code 
-                                					 FROM 	  delivery_details
-                                					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
+		                              					 FROM 	  delivery_details
+		                              					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
 		            </if>
 		            <if test='cri.companyName != null and cri.companyName != ""'>
 		                AND de.company_name LIKE '%' || #{cri.companyName} || '%'                          --업체명
@@ -487,11 +487,11 @@
 		                AND de.charger_name LIKE '%' || #{cri.deliveryCharger} || '%'                          --주문 담당자
 		            </if>
 		            <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-		                AND de.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+		                AND TO_DATE(de.order_date) BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
 		            </if>
 		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-		                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
-		            </if>
+		                AND TO_DATE(de.dedt) BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+		            </if>    
 			        ORDER BY de.delivery_code DESC
 		            )info
 		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
@@ -509,13 +509,13 @@
             <if test='cri.deliveryCode != null and cri.deliveryCode != ""'>	    
                 AND de.delivery_code LIKE '%' || UPPER(#{cri.deliveryCode}) || '%'    --주문코드
             </if>
-            <if test="cri.productName != null and cri.productName != null">		    
+            <if test='cri.productName != null and cri.productName != ""'>		    
                 AND  de.delivery_code IN (SELECT dd.delivery_code 
                               						   FROM delivery_details dd JOIN product_info pi 
                                                       						   ON (dd.product_code = pi.product_code)
                               						   WHERE pi.product_name LIKE '%' || #{cri.productName} || '%')               --제품명
             </if>
-            <if test="cri.productCode != null and cri.productCode != null">		    
+            <if test='cri.productCode != null and cri.productCode != ""'>		    
                 AND de.delivery_code IN (SELECT  delivery_code 
                               					 FROM 	  delivery_details
                               					 WHERE   UPPER(product_code) LIKE '%' || UPPER(#{cri.productCode}) || '%')               --제품코드
@@ -533,10 +533,10 @@
                 AND de.charger_name LIKE '%' || #{cri.deliveryCharger} || '%'                          --주문 담당자
             </if>
             <if test="cri.orderDateStart != null and cri.orderDateStart != '' and cri.orderDateEnd != null and cri.orderDateEnd != ''">
-                AND de.order_date BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
+                AND TO_DATE(de.order_date) BETWEEN TO_DATE(#{cri.orderDateStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.orderDateEnd}, 'YYYY-MM-DD')  --주문일 
             </if>
             <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
-                AND de.dedt BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
+                AND TO_DATE(de.dedt) BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
             </if>    
 	</select>
 	<select id="allcharger">
