@@ -432,6 +432,13 @@ let clickedData = ""; // 클릭한 행의 데이터
 		        // 값을 0으로 변경하여 음수 입력 방지
 		        optionGrid.setValue(rowKey, columnName, 1);
 		    }
+		    
+		    // 숫자가 아닌 값 입력 방지
+		    if (!/^\d+$/.test(value)) {  
+		        alert("숫자만 입력할 수 있습니다.");
+		        optionGrid.setValue(rowKey, columnName, 1); // 기본값 1로 설정
+		        return;
+		    }
 		});
 		// 제품별로 입력된 수량을 저장할 배열
 		let savedProductData = [];
@@ -626,6 +633,22 @@ let clickedData = ""; // 클릭한 행의 데이터
 		    
 		    // 삭제된 데이터 반영
 		    grid.removeRows(checkedRows.map(row => row.rowKey));
+		    
+		    // 주문총수량 총합 다시 계산
+		    const orderUnit = grid.getData().map(row => row.orderQuantity || 0); 
+		    const unitSum = orderUnit.reduce((acc, value) => acc + value, 0);
+		    
+		    console.log("열 데이터 출력 (삭제 후 주문 수량):", orderUnit);
+		    console.log("총합 (삭제 후 주문 수량):", unitSum);
+		    document.getElementById('orderQuantity').value = unitSum.toLocaleString();
+
+		    // 주문금액 총합 다시 계산
+		    const orderMoney = grid.getData().map(row => row.orderAmount || 0);
+		    const moneySum = orderMoney.reduce((acc, value) => acc + value, 0);
+
+		    console.log("열 데이터 출력 (삭제 후 주문 금액):", orderMoney);
+		    console.log("총합 (삭제 후 주문 금액):", moneySum);
+		    document.getElementById('orderAmount').value = moneySum.toLocaleString();
 		
 		    // 그리드 다시 렌더링 (필요한 경우)
 		    grid.refreshLayout();

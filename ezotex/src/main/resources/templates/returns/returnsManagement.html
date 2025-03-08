@@ -6,7 +6,6 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <style>
 .inputbold {
@@ -260,11 +259,63 @@
 			</tr>
 		</table>
 		<script th:inline="javascript">
+		// select 커스텀 렌더링
+		class CustomSelectBox {
+		  constructor(props) {
+		    // props: 화면에 표시될 때마다 생성자가 실행되며 넘어오는 객체
+		    // props => grid, rowKey, columnInfo, value(데이터)
+		    const el = document.createElement('select');
+		    el.classList = 'form-control h-100 w-90';
+		    el.id = props.rowKey; // 태그 id에 rowKey 저장       
+		    
+		    // null 옵션 생성
+		    let nullOpt = document.createElement('option');
+		    nullOpt.value = null;
+		    nullOpt.innerText = '선택';
+		    el.append(nullOpt);
+		    
+		    // 옵션 생성
+		    let options = ['반품', '교환', '폐기'];
+		    options.forEach((data, idx) => {
+	            let opt = document.createElement('option');
+	            opt.value = data;
+	            opt.innerText = data;
+	            el.append(opt);
+		    });
+		    
+		    // tui 그리드 셀 기본 이벤트 방지
+		    el.addEventListener('mousedown', (e) => e.stopPropagation());
+		    el.addEventListener('click', (e) => e.stopPropagation());
+		    
+		    // 옵션을 선택했을 때 데이터 반영
+		    el.addEventListener('change', (e) => {
+		        let rowKey = e.target.id; // 선택한 rowKey
+		        let row = selectProductGrid.getRow(rowKey);
+		        row.status = e.target.value;
+		        selectProductGrid.setRow(rowKey, row);
+		    });
+		    
+		    this.el = el;
+		    this.render(props);
+		  }
+
+		  getElement() { return this.el; }
+
+		  render(props) {
+		    // 화면에 표시될 때마다 선택값 반영
+		    let rowKey = this.el.id; // 선택한 rowKey
+            let row = selectProductGrid.getRow(rowKey);
+		    this.el.value = row.status;
+		  }
+		}
+		
+		// 선택 그리드
 			const selectProductGrid = new tui.Grid({
 				el : document.getElementById('selectProductGrid'), // 그리드를 표시할 div
 				scrollX : false, // 가로 스크롤바 비활성화
 				scrollY : false, // 세로 스크롤바 비활성화
 				data : [], // 서버에서 전달된 데이터
+			    bodyHeight: 200, 
 				columnOptions : {
 					resizable : false
 				// 컬럼 크기 조절 가능
@@ -295,6 +346,7 @@
 					header : '수량',
 					name : 'deliveryQy',
 					align : 'right',
+					editor: 'text',
 			        formatter: function({ value }) {
 			            return value ? value.toLocaleString() : '0';
 			        },
@@ -311,16 +363,7 @@
 				      header : '처리상태',
 				      name : 'status',
 				      align : 'center',
-				      editor: {
-				          type: 'select',
-				          options: {
-				              listItems: [
-				                  { text: '반품', value: '반품' },
-				                  { text: '교환', value: '교환' },
-				                  { text: '폐기', value: '폐기' }
-				              ]
-				          },
-				      },
+				      renderer: { type: CustomSelectBox, options: {}}
 			    },
 				],
 
