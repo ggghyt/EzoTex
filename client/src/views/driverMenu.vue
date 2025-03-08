@@ -334,7 +334,7 @@ const searchData = () => {
 const refreshData = () => {
   address.value = ''; //주소
   companyName.value = ''; //회사명
-  status = ''; //상태  
+  status.value = 'DS03'; //상태  
   searchData();
 };
 
