@@ -360,7 +360,7 @@
     WHERE  mtril_order_code = #{mtrilOrderCode}
       AND  product_code = #{productCode}
       AND  <choose>
-              <when test='productColor == "null"'>product_color IS NULL</when>
+              <when test='productColor == null'>product_color IS NULL</when>
               <otherwise>product_color = #{productColor}</otherwise>
            </choose>
   </update>
@@ -383,7 +383,7 @@
     WHERE  mtril_order_plan_code = #{mtrilOrderPlanCode}
       AND  product_code = #{productCode}
       AND  <choose>
-              <when test='productColor == "null"'>product_color IS NULL</when>
+              <when test='productColor == null'>product_color IS NULL</when>
               <otherwise>product_color = #{productColor}</otherwise>
            </choose>
   </update>
