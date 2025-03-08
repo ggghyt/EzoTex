@@ -334,16 +334,12 @@ optionGrid.on('afterChange', ev => {
 	let row = optionGrid.getRow(changed.rowKey);
 	
 	// 숫자 유효성 검사
-	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-		failToast('입력값은 문자가 들어갈 수 없습니다.');
-		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
-		row[ev.columnName] = changed.prevValue == null ? 0 : changed.prevValue;
-		optionGrid.setRow(rowKey, row);
-		return;
-	} else if (val < 0){
-		failToast('입력값은 음수가 될 수 없습니다.');
-		row[ev.columnName] = changed.prevValue == null ? 0 : changed.prevValue;
-		optionGrid.setRow(rowKey, row);
+	if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+		if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+		else failToast('입력값은 음수가 될 수 없습니다.');
+		
+		row[changed.columnName] = changed.prevValue;
+		optionGrid.setRow(row.rowKey, row);
 		return;
 	}
 	
