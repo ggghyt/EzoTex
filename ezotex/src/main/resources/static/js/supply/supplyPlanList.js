@@ -519,16 +519,13 @@ function getEditableCells(){
 optionGrid.on('afterChange', ev => {
   let changed = ev.changes[0];
   let rowKey = changed.rowKey;
-  console.log('ev',ev);
   let row = optionGrid.getRow(rowKey);
   let val = changed.value;
-  if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-    failToast('입력값은 문자가 들어갈 수 없습니다.');
-    // 이전 값이 있으면 이전 값으로, 없으면 0으로 전환
-    val = changed.prevValue == null ? 0 : changed.prevValue;
-  } else if (val < 0){ // 음수면 양수로 전환 
-    val = val * -1;
-    failToast('입력값은 음수가 될 수 없습니다.');
+  
+  if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+    if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+    else failToast('입력값은 음수가 될 수 없습니다.');
+    val = changed.prevValue;
   }
   row[changed.columnName] = val;
   optionGrid.setRow(rowKey, row);
