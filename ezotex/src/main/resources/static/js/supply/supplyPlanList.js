@@ -298,7 +298,10 @@ function loadPlanDetail(supplyPlanCode){
     planDetailGrid.resetData(data);
     
     detailList.style.display = '';
-    if(validSeason(selected)) disconBtn.style.display = ''; // 중단버튼 표시
+    if(validSeason(selected)){
+        disconBtn.style.display = ''; // 중단버튼 표시
+        disconMsg.style.display = '';
+    } 
     modalTitle.innerText = '공급계획서 상세조회';
     $('#myModal').modal('show');
     planDetailGrid.refreshLayout(); 
@@ -326,6 +329,7 @@ let modifyBtn = document.getElementById('modifyBtn');
 let modifyConfirmBtn = document.getElementById('modifyConfirmBtn');
 let modifyCancelBtn = document.getElementById('modifyCancelBtn');
 let disconBtn = document.getElementById('disconBtn'); 
+let disconMsg = document.getElementById('disconMsg');
 
 // 선택한 공급계획서-제품의 옵션별 집계 조회
 function loadPrdPivot(selectedPrd){
@@ -354,7 +358,7 @@ function loadPrdPivot(selectedPrd){
     } else {
       // 사이즈/색상 모두 있으면 피벗 형태로 반환
       // data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ...}, ...]
-      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80, align: "center" });
+      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 100, align: "center" });
       let sizeNmArr = [];
       
       // pivot으로 가져온 사이즈명을 분리하여 컬럼 지정
@@ -407,7 +411,7 @@ function validSeason(row){
     
     // 공급년도가 올해라면 시즌이 시작되기까지 한 달 이상 남아있어야 수정/중단 가능
     let isValid = month < seasonMonth - 1; 
-    return (isValid && row.supplyYear == year) || row.supplyYear < year;
+    return (isValid && row.supplyYear == year) || row.supplyYear > year;
 }
 
 // 공급계획서 수정
@@ -476,6 +480,7 @@ function modifyMode(boolean){
     modifyConfirmBtn.style.display = isModify ? '' : 'none';
     modifyCancelBtn.style.display = isModify ? '' : 'none';
     disconBtn.style.display = isModify ? 'none' : '';
+    disconMsg.style.display = isModify ? 'none' : '';
     
     editableCells = getEditableCells();
     if(isModify){ // 입력 가능한 셀만 해제
@@ -555,6 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 selected.updateDate = dateFormatter();
                 supplyGrid.setRow(selected.rowKey, selected);
                 disconBtn.style.display = 'none';
+                disconMsg.style.display = 'none';
             }
             else failToast('작업을 실패했습니다.');
         });
@@ -576,6 +582,7 @@ function closeAll(){
     productList.style.display = 'none';
     modifyBtn.style.display = 'none';
     disconBtn.style.display = 'none';
+    disconMsg.style.display = 'none';
     optionGrid.resetData([]);
     optionGrid.setColumns([]);
     document.getElementById('selectedPrdCode').value = '';

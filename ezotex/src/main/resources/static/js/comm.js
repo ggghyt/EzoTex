@@ -1,12 +1,17 @@
+// 타임존 설정옵션 (aws 배포 시 UTC 적용 문제 해결)
+const options = { 
+    timeZone: 'Asia/Seoul', 
+    year: 'numeric', 
+    month: '2-digit', 
+    day: '2-digit' 
+};
+
 // 날짜 포맷 함수 (0000-00-00)
 const dateFormatter = function(value){
-	let date = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
-    
-  let year = date.getFullYear();
-  let month = ('0' + (date.getMonth() + 1)).slice(-2);
-  let day = ('0' + (date.getDate())).slice(-2);
-
-  return year + '-' + month + '-' + day;
+  let date = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
+  date = date.toLocaleDateString('ko-KR', options); // 한국시간으로 변경 (2025. 03. 08. 형식)
+  
+  return date.replaceAll('.', '-').replaceAll(' ','').slice(0, -1);
 }
 
 // 날짜 포맷 함수 (null 그대로 리턴하는 버전)

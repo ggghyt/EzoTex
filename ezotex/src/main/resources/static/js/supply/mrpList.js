@@ -221,7 +221,7 @@ function loadPrdPivot(selectedPrd){
     } else {
       // 사이즈/색상 모두 있으면 피벗 형태로 반환
       // data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ...}, ...]
-      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80, align: "center" });
+      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 100, align: "center" });
       let sizeNmArr = [];
       
       // pivot으로 가져온 사이즈명을 분리하여 컬럼 지정

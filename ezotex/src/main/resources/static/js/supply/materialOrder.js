@@ -540,7 +540,7 @@ function insertRow(rowKey){
 		companyName: compNameBox.value,
 		productCode: mtrCodeBox.value,
 		productName: mtrNameBox.value,
-		productColor: colorBox.value,
+		productColor: colorBox.value == 'null' ? null : colorBox.value,
 		orderQy: orderQy,
 		unitName: unitNameBox.value,
 		unitPrice: unitPrice,
@@ -675,7 +675,7 @@ function insertOrder(){
 	
 	// 업체별 발주서 비고/납기일 조정 모달 표시
 	insertGrid.resetData(modalData);
-  document.getElementById('insertCnt').innerText = modalData.length;
+    document.getElementById('insertCnt').innerText = modalData.length;
 	modalTitle.innerText = '등록 확인';
   
 	insertListDiv.style.display = '';
@@ -719,7 +719,7 @@ document.querySelector('.btn-close').addEventListener('click', () => closeAll())
 function closeAll(){
 	mtrListDiv.style.display = 'none';
 	compListDiv.style.display = 'none';
-  planListDiv.style.display = 'none';
+    planListDiv.style.display = 'none';
 	insertListDiv.style.display = 'none';
 	confirmBtn.style.display = 'none';
 }
