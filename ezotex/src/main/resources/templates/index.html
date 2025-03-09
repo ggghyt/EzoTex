@@ -57,14 +57,14 @@
 		&nbsp;&nbsp;&nbsp;&nbsp;이조텍스를 이용해주셔서 감사합니다.
 		</div>
 	</div>
-	<div class="card card-body mt-3" style="width: 30%; float: left; margin: 3px; height: 650px">
+	<div class="card card-body mt-3" style="width: 33%; float: left; margin: 3px; height: 650px">
 		<p class="fs-5 fw-bolder mb-3">공지사항</p>
 		<div id="announcementGrid" style="height: 525px"></div>
 		<div>
 			<button class="btn btn-primary" style="margin: 10px; float: right;" onclick="addInfomation()">작성</button>
 		</div>
 	</div>
-	<div class="card card-body mt-3" style="width: 38%; height: 600px; float: left; margin: 3px; height: 650px">
+	<div class="card card-body mt-3" style="width: 35%; height: 600px; float: left; margin: 3px; height: 650px">
 		<p class="fs-5 fw-bolder mb-3">출고 예정 날짜</p>
 		<div id="calendar"></div>
 	</div>
@@ -164,7 +164,7 @@
 	    	data: gridData,
 	    	columns: [
 	        	{ header: '번호', name: 'INFO_NO', width: 60, sortable: true, align: 'center' }, 
-		        { header: '제목', name: 'TITLE', whiteSpace: 'pre-line', sortable: true }, 
+		        { header: '제목', name: 'TITLE', sortable: true, ellipsis: true }, 
 		        { header: '작성자', name: 'WRITER_NAME', width: 100, sortable: true, align: 'center' }, 
 	    	    { header: '작성일', name: 'WRITE_DATE', width: 100, sortable: true, align: 'center', formatter: row => dateFormatter(row.value)}
 	    	],
