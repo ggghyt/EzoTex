@@ -519,4 +519,19 @@ join delivery_schedule
 on delivery_details.delivery_code = delivery_schedule.delivery_code
 where rgsde > sysdate - 30
 </select>
+
+<select id="mainTodayCount" resultType="map">
+SELECT
+(SELECT COUNT(*)
+ FROM   order_list
+ WHERE  TO_CHAR(order_date, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) order_cnt,
+(SELECT COUNT(*)
+ FROM   delivery
+ WHERE  TO_CHAR(rgsde, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) delivery_cnt,
+(SELECT COUNT(*)
+ FROM   returns
+ WHERE  TO_CHAR(request_date, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) return_cnt
+FROM   dual
+</select>
+
 </mapper>

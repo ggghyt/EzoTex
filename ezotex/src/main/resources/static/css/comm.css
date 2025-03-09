@@ -1,3 +1,16 @@
+.main-panel {
+	position: absolute;
+	right: 0;
+}
+
+nav.sidebar.sidebar-offcanvas {
+	position: fixed;
+}
+
+.tui-grid-content-area, .tui-grid-layer-state {
+	z-index: 0;
+}
+
 .mag-glass-btn {
 	width: 40px;
 }

@@ -1,12 +1,12 @@
 package com.ezotex.standard.web;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ezotex.comm.GridUtil;
-import com.ezotex.comm.dto.PagingDTO;
-import com.ezotex.standard.dto.AddressListDTO;
 import com.ezotex.standard.dto.CalenderDTO;
-import com.ezotex.standard.dto.CompanyDTO;
-import com.ezotex.standard.dto.EmpDTO;
 import com.ezotex.standard.dto.ProductCategoryDTO;
 import com.ezotex.standard.dto.ProductListInfoDTO;
 import com.ezotex.standard.dto.ProductOptionDTO;
@@ -30,11 +26,7 @@ import com.ezotex.standard.dto.SafetyStockDTO;
 import com.ezotex.standard.dto.StorageDTO;
 import com.ezotex.standard.dto.StorageProductDTO;
 import com.ezotex.standard.service.impl.StandardServiceImpl;
-import com.ezotex.store.dto.storageInfoDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
-import groovyjarjarantlr4.v4.runtime.misc.ParseCancellationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -319,5 +311,11 @@ public class StandardController {
 	@GetMapping("/mainProductImg")
 	public List<ProductListInfoDTO> mainProductImg() {
 		return service.mainProductImg();
+	}
+	
+	@ResponseBody
+	@GetMapping("/mainTodayCount")
+	public Map<String, BigDecimal> mainTodayCount() {
+		return service.mainTodayCount();	
 	}
 }

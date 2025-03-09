@@ -112,7 +112,7 @@ let planGrid = th != null ? null : new Grid({
     data: { api: { readData: { url: '/mtr/orderPlanList', method: 'GET' }, initialRequest: false } },
     columns: [
         { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 130, align: 'center' },
-        { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
+        { header: '계획납기일', name: 'dueDate', width: 100, className: 'fw-bold',formatter: (row) => dateFormatter(row.value), align: 'center' },
         { header: '요약', name: 'summary' },
         { header: '발주계획량', name: 'orderQy', align: 'right', width: 120, 
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
