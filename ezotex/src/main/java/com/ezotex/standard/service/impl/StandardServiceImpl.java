@@ -1,5 +1,6 @@
 package com.ezotex.standard.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -278,6 +279,11 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<ProductListInfoDTO> mainProductImg() {
 		return mapper.mainProductImg();
+	}
+
+	@Override
+	public Map<String, BigDecimal> mainTodayCount() {
+		return mapper.mainTodayCount();
 	}
 
 	

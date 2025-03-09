@@ -1,5 +1,6 @@
 package com.ezotex.standard.mappers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -147,4 +148,6 @@ public interface StandardMapper {
 	List<CalenderDTO> calendarCount();
 	
 	List<ProductListInfoDTO> mainProductImg();
+	
+	Map<String, BigDecimal> mainTodayCount();
 }

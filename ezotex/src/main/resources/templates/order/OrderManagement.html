@@ -6,7 +6,6 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 <script>
 // 인풋 초기화 함수
@@ -37,7 +36,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 주문 등록</h3>
+	<h3 class="fs-3 fw-bold m-0">| 주문 등록</h3>
 	<br>
 
 	<!-- 등록 모달 -->
@@ -79,8 +78,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 	<div class="card card-body m-2 bg-secondary">
 		<div class="row">
 
-			<p class="fs-5 fw-bolder m-3">주문 정보</p>
-			<table class="table mt-3">
+			<p class="fs-5 fw-bolder m-1">주문 정보</p>
+			<table class="table table-borderless">
 				<tbody>
 					<!-- 첫 번째 줄 -->
 					<tr>
@@ -113,9 +112,6 @@ let clickedData = ""; // 클릭한 행의 데이터
 						<td class="col-auto"><label class="col-form-label">업체
 								전화번호</label> <input type="tel" id="companyTel"
 							class="form-control inputbold" readonly></td>
-						<td class="col-auto"><label class="col-form-label"></label> <input
-							type="text" id="orderStatus" class="form-control inputbold"
-							readonly hidden=true></td>
 					</tr>
 					<tr>
 						<td colspan="4"><label class="col-form-label">비고</label> <input
@@ -1205,6 +1201,10 @@ function addProductToOrderList(product) {
 
 input[readonly] {
 	background-color: white !important; /* 배경색을 흰색으로 변경 */
+}
+
+td {
+    padding: 0 20px !important;
 }
 </style>
 </html>

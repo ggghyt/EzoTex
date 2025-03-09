@@ -6,36 +6,35 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
 	<div class="card card-body mt-3 bg-secondary">
-		<h3>검색</h3>
-		<form id="planForm" class="row me-4 justify-content-center">
+		<p class="fs-5 fw-bolder mb-3">검색</p>
+		<form id="planForm" class="row justify-content-center">
 			<!-- 검색 조건 -->
 			<div
-				class="row row-cols-auto align-items-center justify-content-center">
+				class="row align-items-center justify-content-center">
 				<label for="returnCode" class="col-auto text-end pe-2">반품코드</label>
 				<div class="col">
 					<input type="text" class="form-control form-control-sm"
 						id="returnCode">
 				</div>
 
-				<label for="deliveryCode" class="col-auto text-end pe-2 ms-3">납품코드</label>
+				<label for="deliveryCode" class="col-auto text-end pe-2">납품코드</label>
 				<div class="col">
 					<input type="text" class="form-control form-control-sm"
 						id="deliveryCode">
 				</div>
 
-				<label for="companyName" class="col-auto text-end pe-2 ms-3">업체명</label>
+				<label for="companyName" class="col-auto text-end pe-2">업체명</label>
 				<div class="col">
 					<input type="text" class="form-control form-control-sm"
 						id="companyName">
 				</div>
 
-				<label for="startRequestDate" class="col-auto text-end pe-2 ms-3">요청일</label>
+				<label for="startRequestDate" class="col-auto text-end pe-2">요청일</label>
 				<div class="col d-flex align-items-center">
 					<input type="date" class="form-control form-control-sm me-2"
 						id="startRequestDate"> <span class="mx-1">~</span> <input
@@ -58,11 +57,11 @@
 	</div>
 	<br>
 	<div class="card card-body mt-3">
-		<h3>반품 목록</h3>
+		<p class="fs-5 fw-bolder mb-3">반품 목록</p>
 		<div id="returnGrid"></div>
 	</div>
 	<div class="card card-body mt-3">
-		<h3>반품 제품</h3>
+		<p class="fs-5 fw-bolder mb-3">반품 제품</p>
 		<div id="returnProductGrid"></div>
 	</div>
 	<script th:inline="javascript">
