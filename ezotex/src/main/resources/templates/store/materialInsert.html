@@ -330,12 +330,12 @@
 
 	   	        // 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
 	   	        row.productInsertQy = changed.prevValue == null ? 0 : changed.prevValue;
-	   	     mtGrid2.setRow(rowKey, row);
+	   	        mtGrid2.setRow(rowKey, row);
 	   	        return;
 	   	    } else if (val < 0){ // 음수면 양수로 전환 
 	   	        val = val * -1;
 	   	        row.productInsertQy = val;
-	   	     mtGrid2.setRow(rowKey, row);
+	   	        mtGrid2.setRow(rowKey, row);
 	   	        failToast('입력값은 음수가 될 수 없습니다.');
 	   	    }
 	   	 }
@@ -375,6 +375,7 @@
 
 		        if (data.qy < data.productInsertQy) {
 		            mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
+		            failToast(`입고 가능 수량은 ${data.qy} 입니다.`);
 		        }
 		    });
 		});
@@ -443,8 +444,6 @@
 			// 수량과 창고위치 둘 다 입력되지 않은 행이 있는지 확인
 		    let checkValidRow = check.some(item => item.productInsertQy && item.location);
 		    
-		    
-			
 		     let checkIroductInsertQy = insertData.find(item => {
 					return !item.productInsertQy;
 				})
@@ -472,7 +471,6 @@
 			        return;
 			    }
 			
-			
 		        modal.show();
 		})
 		
@@ -491,6 +489,12 @@
 				     .then(data => {
 				    	 data.forEach(item => item.deliveryCode = deliveryCode); 
 				    	 mtGrid2.resetData(data);
+				    	 
+				    	 setTimeout(() => {
+				    		 window.location.reload();
+				    	 }, 1500);
+				    	 
+				    	 
 				     })
 				  
 			  })

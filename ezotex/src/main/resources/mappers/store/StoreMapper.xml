@@ -268,19 +268,22 @@
 	<select id="findByDeliveryCode" resultType="StoreReturnDTO">
 		SELECT  r.product_code,
 			    r.product_name,
-			    SUM(distinct r.qy) AS qy,
-			    SUM(distinct r.qy) - NVL(SUM(i.store_qy), 0) AS not_store_qy,
-			    NVL(SUM(i.store_qy), 0) AS store_qy
+			    SUM(r.qy) AS qy,
+			    SUM(r.qy) - NVL(SUM(i.total_store_qy), 0) AS not_store_qy,
+			    NVL(SUM(i.total_store_qy), 0) AS store_qy
 			FROM 
 			    return_product r
 			LEFT JOIN 
-			    inventory i ON r.return_code = i.return_code
-			                 AND r.product_code = i.product_code
-			                 AND r.product_size = i.product_size
-			                 AND r.product_color = i.product_color
+			    (SELECT return_code, product_code, product_size, product_color, SUM(store_qy) AS total_store_qy  
+			     FROM inventory  
+			     GROUP BY return_code, product_code, product_size, product_color) i
+			    ON r.return_code = i.return_code
+			    AND r.product_code = i.product_code
+			    AND r.product_size = i.product_size
+			    AND r.product_color = i.product_color
 			WHERE 
 			    r.return_code = #{returnCode}
-			GROUP BY 
+			GROUP BY  
 			    r.product_code, 
 			    r.product_name
 	</select>
@@ -288,22 +291,33 @@
 	
 	<!-- 납품코드를 기반으로 입고해야될 자재 기본정보 리스트 -->
 	<select id="findByMtDeliveryCode">
-		SELECT d.product_code,
-		       p.product_name,
-		       d.product_color,
-		       SUM(DISTINCT d.delivery_qy) as productQy,
-		       sum(distinct d.delivery_qy) - sum(nvl(i.store_qy,0)) as qy,
-		       SUM(i.store_qy) as totalQy
-		FROM delivery_details d LEFT join inventory i
-		on d.delivery_code = i.delivery_code
-		        AND d.product_color = i.product_color
-		left join product_info p
-		on d.product_code = p.product_code
-		WHERE d.product_se = 'PT01'
-		AND d.delivery_code = #{deliveryCode}
-		group by d.product_code,
-		         p.product_name,
-		         d.product_color
+		SELECT 
+			    d.product_code,
+			    p.product_name,
+			    COALESCE(d.product_color, '') AS product_color,
+			    SUM(d.delivery_qy) AS productQy,
+			    SUM(d.delivery_qy) - NVL(SUM(i.total_store_qy), 0) AS qy,
+			    NVL(SUM(i.total_store_qy), 0) AS totalQy
+			FROM 
+			    delivery_details d 
+			LEFT JOIN 
+			    (SELECT delivery_code, product_code, product_color, SUM(store_qy) AS total_store_qy  
+			     FROM inventory  
+			     GROUP BY delivery_code, product_code, product_color) i
+			ON d.delivery_code = i.delivery_code
+			AND d.product_code = i.product_code
+			AND (d.product_color = i.product_color OR i.product_color IS NULL)
+			LEFT JOIN 
+			    product_info p 
+			ON d.product_code = p.product_code
+			WHERE 
+			    d.product_se = 'PT01'
+			AND d.delivery_code = #{deliveryCode}
+			GROUP BY  
+			    d.product_code,
+			    p.product_name,
+			    COALESCE(d.product_color, '')
+			ORDER BY d.product_code
 	</select>
 	
 	
@@ -320,17 +334,24 @@
 	<select id="findByProductCode">
 		with temp as
 		     (SELECT r.product_color,
-	                 'sz' || get_comm(r.product_size) as product_size_info,
-	                 r.product_code,
-	                 r.qy - SUM(NVL(i.store_qy,0)) as store_qy
-	         FROM return_product r LEFT JOIN inventory i
-	         on r.return_code = i.return_code
-	                       AND r.product_size = i.product_size
-	                       AND r.product_code = i.product_code
-	                       AND r.product_color = i.product_color
-	         WHERE r.product_code = #{productCode}
-	         AND r.return_code = #{returnCode}
-	         GROUP BY r.product_color, r.product_code, r.product_size,r.qy, i.store_qy)
+			        'sz' || get_comm(r.product_size) AS product_size_info,
+			        r.product_code,
+			        r.qy - NVL(SUM(i.total_store_qy), 0) AS store_qy
+			    FROM 
+			        return_product r 
+			    LEFT JOIN 
+			        (SELECT return_code, product_code, product_size, product_color, SUM(store_qy) AS total_store_qy  
+			         FROM inventory  
+			         GROUP BY return_code, product_code, product_size, product_color) i
+			    ON r.return_code = i.return_code
+			    AND r.product_size = i.product_size
+			    AND r.product_code = i.product_code
+			    AND r.product_color = i.product_color
+			    WHERE 
+			        r.product_code = #{productCode}
+			    AND r.return_code = #{returnCode}
+			    GROUP BY 
+			        r.product_color, r.product_code, r.product_size, r.qy)
 		select * from temp
 		pivot( sum(store_qy)
 		       for product_size_info in (
@@ -471,10 +492,19 @@
 	
 	<!-- 반품 처리상태를 위한 제품입고량 -->
 	<select id="deliveryPrCheck">
-		SELECT SUM(r.qy) - sum(NVL(i.store_qy, 0)) as checkQy
-		FROM return_product r left join inventory i
-		on r.return_code = i.return_code
-		WHERE r.return_code = #{returnCode}	
+		SELECT SUM(r.qy) - NVL(SUM(i.total_store_qy), 0) AS checkQy
+		FROM 
+		    return_product r 
+		LEFT JOIN 
+		    (SELECT return_code, product_code, product_size, product_color, SUM(store_qy) AS total_store_qy  
+		     FROM inventory  
+		     GROUP BY return_code, product_code, product_size, product_color) i
+		ON r.return_code = i.return_code
+		AND r.product_code = i.product_code
+		AND r.product_size = i.product_size
+		AND r.product_color = i.product_color
+		WHERE 
+		    r.return_code = #{returnCode}
 	</select>
 	
 	<!-- 반품 처리상태 변경 -->
