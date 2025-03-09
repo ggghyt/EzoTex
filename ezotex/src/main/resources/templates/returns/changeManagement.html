@@ -71,6 +71,9 @@
 				header : "반품코드",
 				name : "returnCode",
 				align : 'center',
+		        formatter: function({ value }) {
+		            return `<strong>${value}</strong>`; // 글자를 굵게 설정
+		        }
 			}, {
 				header : "납품코드",
 				name : "deliveryCode",
@@ -104,6 +107,7 @@
 				useClient : true, // 페이징을 위해 필요
 				perPage : 5
 			},
+			showDummyRows: true	//더미로우 추가
 		})
 		
 		let lastClickedRowKey = null; // 마지막 클릭된 행의 rowKey 저장
@@ -237,6 +241,7 @@
 				useClient : true, // 페이징을 위해 필요
 				perPage : 5
 			},
+			showDummyRows: true	//더미로우 추가
 		})
 			let selectedProducts = []; // 체크된 데이터 저장 배열
 			let totalUnitPrice = 0; // 수량 * 단가  합산 변수
@@ -280,7 +285,7 @@
 	    const checkedRows = changeProductGrid.getCheckedRows();
 
 	    if (checkedRows.length === 0) {
-	        alert("반품할 제품을 선택해야 합니다."); // 경고 메시지
+	    	failToast("반품할 제품을 선택해야 합니다."); // 경고 메시지
 	        return; // 모달 실행 중단
 	    }
 		
@@ -365,7 +370,7 @@
 		})
 		.catch(error => {
 			console.error("주문 등록 오류:", error);
-			alert("주문 등록 중 오류가 발생했습니다.");
+			failToast("주문 등록 중 오류가 발생했습니다.");
 		})
 	})
 	

@@ -11,31 +11,39 @@
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 반품 내역 조회</h3>
-
 	<div class="card card-body mt-3 bg-secondary">
 		<h3>검색</h3>
-		<table class="table mt-3">
-			<tbody>
-				<!-- 첫 번째 줄 -->
-				<tr>
-					<td class="col-auto"><label class="col-form-label">반품코드</label></td>
-					<td class="col-auto"><input type="text" id="returnCode"
-						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">납품코드</label></td>
-					<td class="col-auto"><input type="text" id="deliveryCode"
-						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">업체명</label></td>
-					<td class="col-auto"><input type="text" id="companyName"
-						class="form-control"></td>
-					<td class="col-auto"><label class="col-form-label">요청일</label></td>
-					<td class="col-auto"><input type="date" id="startRequestDate"
-						class="form-control"></td>
-					<td>~</td>
-					<td class="col-auto"><input type="date" id="endRequestDate"
-						class="form-control"></td>
-				</tr>
-			</tbody>
-		</table>
+		<form id="planForm" class="row me-4 justify-content-center">
+			<!-- 검색 조건 -->
+			<div
+				class="row row-cols-auto align-items-center justify-content-center">
+				<label for="returnCode" class="col-auto text-end pe-2">반품코드</label>
+				<div class="col">
+					<input type="text" class="form-control form-control-sm"
+						id="returnCode">
+				</div>
+
+				<label for="deliveryCode" class="col-auto text-end pe-2 ms-3">납품코드</label>
+				<div class="col">
+					<input type="text" class="form-control form-control-sm"
+						id="deliveryCode">
+				</div>
+
+				<label for="companyName" class="col-auto text-end pe-2 ms-3">업체명</label>
+				<div class="col">
+					<input type="text" class="form-control form-control-sm"
+						id="companyName">
+				</div>
+
+				<label for="startRequestDate" class="col-auto text-end pe-2 ms-3">요청일</label>
+				<div class="col d-flex align-items-center">
+					<input type="date" class="form-control form-control-sm me-2"
+						id="startRequestDate"> <span class="mx-1">~</span> <input
+						type="date" class="form-control form-control-sm ms-2"
+						id="endRequestDate">
+				</div>
+			</div>
+		</form>
 		<div class="text-center mt-3">
 			<button class="btn btn-warning mag-glass-btn"
 				onclick="searchReturnList()">
@@ -72,6 +80,9 @@
 					header : "반품코드",
 					name : "returnCode",
 					align : 'center',
+			        formatter: function({ value }) {
+			            return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			        }
 				},
 				{
 					header : "납품코드",
@@ -104,6 +115,7 @@
 		        useClient: true, // 페이징을 위해 필요
 		        perPage: 5
 	      	},
+			showDummyRows: true	//더미로우 추가
 		})
 		
 		let lastClicked = null; // 페이지 이동 시에도 이전 선택 기억하기 위함.
@@ -161,6 +173,10 @@
 					header : "제품명",
 					name : "productName",
 					align : 'center',
+			        formatter: function({ value }) {
+			            return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			        },
+					width: 300
 				},
 				{
 					header : "색상",
@@ -223,6 +239,7 @@
 		        useClient: true, // 페이징을 위해 필요
 		        perPage: 5
 	      	},
+			showDummyRows: true	//더미로우 추가
 		})
 		
 		
