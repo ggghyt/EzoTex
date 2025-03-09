@@ -139,6 +139,9 @@
 					header : '납품코드',
 					name : 'deliveryCode',
 					align : 'center',
+			        formatter: function({ value }) {
+			              return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			        }
 				},
 				{
 					header : '제품명',
@@ -183,6 +186,7 @@
 					useClient : true, // 페이징을 위해 필요
 					perPage : 5
 				},
+				showDummyRows: true	//더미로우 추가
 			});
 			// 클릭한 행 데이터를 저장할 배열
 			
@@ -330,6 +334,9 @@
 					header : '제품명',
 					name : 'productName',
 					align : 'center',
+			        formatter: function({ value }) {
+			            return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			        }
 				},
 				{
 					header : '색상',
@@ -366,6 +373,7 @@
 				      renderer: { type: CustomSelectBox, options: {}}
 			    },
 				],
+				showDummyRows: true	//더미로우 추가
 
 /* 				pageOptions : {
 					useClient : true, // 페이징을 위해 필요
@@ -389,7 +397,7 @@
 
 		        // 수량이 0 이하인 경우 처리
 		        if (columnName === 'deliveryQy' && Number(value) <= 0) {
-		            alert("수량은 0보다 큰 값이어야 합니다.");
+		        	failToast("수량은 0보다 큰 값이어야 합니다.");
 		            selectProductGrid.setValue(rowKey, columnName, 1); // 0 이하의 수량은 1로 강제 변경
 		        }
 		    });
@@ -412,24 +420,31 @@
 				<!-- 제품 검색창 -->
 				<div class="card card-body mt-3 bg-secondary">
 					<h3>검색</h3>
-					<table class="table mt-3">
-						<tbody>
-							<tr>
-								<td class="col-auto"><label class="col-form-label">납품코드</label></td>
-								<td class="col-auto"><input type="text"
-									id="searchDeliveryCode" class="form-control"></td>
-								<td class="col-auto"><label class="col-form-label">업체명</label></td>
-								<td class="col-auto"><input type="text"
-									id="searchCompanyName" class="form-control"></td>
-								<td class="col-auto"><label class="col-form-label">납기일</label></td>
-								<td class="col-auto"><input type="date"
-									id="startDeliveryDate" class="form-control"></td>
-								<td>~</td>
-								<td class="col-auto"><input type="date"
-									id="endDeliveryDate" class="form-control"></td>
-							</tr>
-						</tbody>
-					</table>
+					<form id="planForm" class="row me-4 justify-content-center">
+						<!-- 검색 조건 -->
+						<div
+							class="row row-cols-auto align-items-center justify-content-center">
+							<label for="returnCode" class="col-auto text-end pe-2">납품코드</label>
+							<div class="col">
+								<input type="text" class="form-control form-control-sm"
+									id="searchDeliveryCode">
+							</div>
+
+							<label for="deliveryCode" class="col-auto text-end pe-2 ms-3">업체명</label>
+							<div class="col">
+								<input type="text" class="form-control form-control-sm"
+									id="searchCompanyName">
+							</div>
+
+							<label for="startRequestDate" class="col-auto text-end pe-2 ms-3">납기일</label>
+							<div class="col d-flex align-items-center">
+								<input type="date" class="form-control form-control-sm me-2"
+									id="startDeliveryDate"> <span class="mx-1">~</span> <input
+									type="date" class="form-control form-control-sm ms-2"
+									id="endDeliveryDate">
+							</div>
+						</div>
+					</form>
 					<div class="text-center mt-3">
 						<button class="btn btn-warning mag-glass-btn"
 							onclick="searchReturnList()">
@@ -596,7 +611,7 @@
 	    );
 	
 	    if (!matchingDeliRow) {
-	        alert('일치하는 데이터가 없습니다.');
+	    	failToast('일치하는 데이터가 없습니다.');
 	        selectProductGrid.setValue(rowKey, 'deliveryQy', 0); // 잘못된 입력 초기화
 	        return;
 	    }
@@ -604,7 +619,7 @@
 	    const maxQy = matchingDeliRow.deliveryQy;
 	
 	    if (Number(newValue) > Number(maxQy)) {
-	        alert(`${maxQy}을 초과할 수 없습니다.`);
+	    	failToast(`${maxQy}을 초과할 수 없습니다.`);
 	        selectProductGrid.setValue(rowKey, 'deliveryQy', maxQy); // 최대 수량으로 조정
 	    }
 	}
@@ -614,7 +629,7 @@
 	    // deliProductGrid 데이터 가져오기
 	    const deliProductData = deliProductGrid.getData();
 	    if (deliProductData.length === 0) {
-	        alert("납품 내역 조회하여 납품건을 선택해주세요.");
+	    	failToast("납품 내역 조회하여 납품건을 선택해주세요.");
 	        return;
 	    }
 
@@ -625,7 +640,7 @@
 	        const row = rows[i];
 	        if (!row.deliveryQy || row.deliveryQy === '') {
 	            // 수량이 없으면 경고 처리
-	            alert('수량을 입력해주세요.'); // 여기서는 alert로 처리
+	            failToast('수량을 입력해주세요.');
 	            return false;
 	        }
 	    }
@@ -635,7 +650,7 @@
 	        const row = rows[i];
 	        // 수량이 없거나 0 이하일 경우 경고 처리
 	        if (!row.deliveryQy || row.deliveryQy <= 0) {
-	            alert('수량은 1 이상이어야 합니다.'); // 수량이 0 이하일 경우 경고
+	        	failToast('수량은 1 이상이어야 합니다.'); // 수량이 0 이하일 경우 경고
 	            return false;
 	        }
 	    }
@@ -643,7 +658,7 @@
 	    // 처리상태가 모두 비어있는지 확인
 	    const allStatusEmpty = rows.every(row => !row.status || row.status.trim() === '');
 	    if (allStatusEmpty) {
-	        alert("모든 처리상태가 비어 있습니다. 처리상태를 선택해주세요.");
+	    	failToast("모든 처리상태가 비어 있습니다. 처리상태를 선택해주세요.");
 	        return;
 	    }
 		
