@@ -11,5 +11,6 @@ public class storageInfoDTO {
 	private int selectCol;
 	private String storageInfoName;
 	private String vl;
+	private int totalVlValue;
 	
 }

@@ -166,12 +166,9 @@ public class CommonController {
 		addDTO.setAddressMain(companyDTO.getAddressMain());
 		addDTO.setAddressInfo(companyDTO.getAddressInfo());
 		addDTO.setAddressReference(companyDTO.getAddressReference());
-		
-		
 		service.insertCompany(companyDTO, addDTO);
 		
 		attr.addFlashAttribute("result", true);
-		
 		return "redirect:main";
 	}
 	

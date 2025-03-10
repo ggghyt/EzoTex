@@ -111,8 +111,8 @@ let planGrid = th != null ? null : new Grid({
     el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
     data: { api: { readData: { url: '/mtr/orderPlanList', method: 'GET' }, initialRequest: false } },
     columns: [
-        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 120, align: 'center' },
-        { header: '계획납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value), align: 'center' },
+        { header: '발주계획코드', name: 'mtrilOrderPlanCode', width: 130, align: 'center' },
+        { header: '계획납기일', name: 'dueDate', width: 100, className: 'fw-bold',formatter: (row) => dateFormatter(row.value), align: 'center' },
         { header: '요약', name: 'summary' },
         { header: '발주계획량', name: 'orderQy', align: 'right', width: 120, 
             formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
@@ -489,14 +489,12 @@ const afterChangeListener = ev => {
   
   let row = planDetailGrid.getRow(rowKey);
   let val = changed.value;
-  if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-    failToast('입력값은 문자가 들어갈 수 없습니다.');
-    // 이전 값이 있으면 이전 값으로, 없으면 0으로 전환
-    val = changed.prevValue == null ? 0 : changed.prevValue;
-  } else if (val < 0){ // 음수면 양수로 전환 
-    val = val * -1;
-    failToast('입력값은 음수가 될 수 없습니다.');
+  if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+    if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+    else failToast('입력값은 음수가 될 수 없습니다.');
+    val = changed.prevValue;
   }
+  
   row.orderQy = val;
   if(row.amount) row.amount = row.unitPrice * row.orderQy; // 금액 있으면 재계산
   planDetailGrid.setRow(rowKey, row);

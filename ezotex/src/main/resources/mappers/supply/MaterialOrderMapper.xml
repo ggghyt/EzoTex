@@ -57,7 +57,7 @@
 		<if test='productCode != null and productCode != "null" and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
 		<if test='productName != null and productName != "null" and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if> 
 		<if test='companyCode != null and companyCode != "null" and companyCode != ""'> AND m.company_code = #{companyCode} </if>
-		ORDER  BY product_code DESC
+		ORDER  BY product_code
 	</select>
 	
 	<!-- 자재 조회 개수 -->
@@ -360,7 +360,7 @@
     WHERE  mtril_order_code = #{mtrilOrderCode}
       AND  product_code = #{productCode}
       AND  <choose>
-              <when test='productColor == "null"'>product_color IS NULL</when>
+              <when test='productColor == null'>product_color IS NULL</when>
               <otherwise>product_color = #{productColor}</otherwise>
            </choose>
   </update>
@@ -383,7 +383,7 @@
     WHERE  mtril_order_plan_code = #{mtrilOrderPlanCode}
       AND  product_code = #{productCode}
       AND  <choose>
-              <when test='productColor == "null"'>product_color IS NULL</when>
+              <when test='productColor == null'>product_color IS NULL</when>
               <otherwise>product_color = #{productColor}</otherwise>
            </choose>
   </update>

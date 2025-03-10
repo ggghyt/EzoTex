@@ -51,7 +51,6 @@
 	        });
 	       }
 		   document.addEventListener('DOMContentLoaded', planDomEventHandler);
-			
 		  
 		  /******************** 발주계획 등록 ********************/ 
 		  function insertOrderPlan(){
@@ -60,7 +59,7 @@
 			  
 			  // 헤더 정보 #{dueDate}, #{chargerCode}, #{chargerName}, #{remark}
 			  let headerObj = {
-				  dueDate: dueDateBox.value,
+				dueDate: dueDateBox.value,
 			    chargerCode: session_user_code,
 			    chargerName: session_user_name,
 			    remark: document.getElementById('remark').value
@@ -69,7 +68,6 @@
 			  
 			  // 디테일 정보 #{companyCode}, #{companyName}, #{productCode}, #{orderQy}, #{productColor}
 			  // => orderGrid에 있는 데이터들이라 통째로 전송
-			  
 			  loading();
 			  fetch('/mtr/mtrOrderPlan', {
 			    method: 'POST',

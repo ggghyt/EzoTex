@@ -366,6 +366,12 @@
 			} else if (num.slice(3, 4) == "-" && num.slice(7, 8) == "-" && num.slice(8).length == 4) {
 				let test = num.slice(0, 3) + num.slice(4, 7) + num.slice(8)
 				return isNaN(test)
+			} else if (num.slice(2, 3) == "-" && num.slice(7, 8) == "-" && num.slice(8).length == 4) {
+				let test = num.slice(0, 2) + num.slice(3, 7) + num.slice(8)
+				return isNaN(test)
+			} else if (num.slice(2, 3) == "-" && num.slice(6, 7) == "-" && num.slice(7).length == 4) {
+				let test = num.slice(0, 2) + num.slice(3, 6) + num.slice(7)
+				return isNaN(test)
 			} else {
 				return true
 			}

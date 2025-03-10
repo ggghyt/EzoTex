@@ -89,19 +89,23 @@
 		SELECT *
 		FROM (
 		       SELECT a.*, ROWNUM as rn
-		       FROM ( SELECT MAX(i.product_code) AS product_code,
-		                       p.product_name,
-		                       i.product_color,
-		                       get_comm(i.product_size) AS product_size,
-		                       i.lot,
-		                       i.storage_location,
-		                       i.inventory_qy,
-		                       i.store_date,
-		                       s.storage_info_name as storageName
-		                FROM inventory i JOIN product_info p 
-		                ON i.product_code = p.product_code
-		                join storage_info s
-						on i.storage_location = s.storage_info_code
+		       FROM ( SELECT 
+    MAX(i.product_code) AS product_code,
+    p.product_name,
+    i.product_color,
+    get_comm(i.product_size) AS product_size,
+    i.lot,
+    i.storage_location,
+    i.inventory_qy,
+    i.store_date,
+    s.storage_info_name AS storageName,
+    s.vl - (i.inventory_qy * p.vl) AS vl
+FROM 
+    inventory i 
+JOIN 
+    product_info p ON i.product_code = p.product_code
+JOIN 
+    storage_info s ON i.storage_location = s.storage_info_code
 		                <where>
 		                	AND product_se = 'PT02'
 		                	AND i.inventory_qy > 0
@@ -115,13 +119,13 @@
 		                	AND i.product_color LIKE '%' || UPPER(#{searchColor}) || '%'
 		                </if>
 		                <if test='location != null and location != ""'>
-		                	AND i.storage_location LIKE '%' || UPPER(#{location}) || '%'
+		                	AND s.storage_info_name LIKE '%' || UPPER(#{location}) || '%'
 		                </if>
 		                <if test='searchLot != null and searchLot != ""'>
 		                	AND i.lot LIKE '%' || UPPER(#{searchLot}) || '%'
 		                </if>
 		                <if test='sizeCode != null and sizeCode != ""'>
-		                	AND i.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+		                	AND get_comm(i.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
 		                </if>
 		                <if test='startStoreDate != null and startStoreDate != ""'>
 		                	AND TRUNC(i.store_date) >= #{startStoreDate}
@@ -133,9 +137,22 @@
 		                	AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
 		                </if>
 		                </where>
-		                GROUP BY i.lot, p.product_name, i.product_color, get_comm(i.product_size), 
-		                			i.storage_location, i.inventory_qy, i.product_code, i.store_date,s.storage_info_name
-		                ORDER BY lot desc
+		                GROUP BY i.lot, 
+							    p.product_name, 
+							    i.product_color, 
+							    get_comm(i.product_size), 
+							    i.storage_location, 
+							    i.inventory_qy, 
+							    i.product_code, 
+							    i.store_date, 
+							    s.storage_info_name, 
+							    s.vl, 
+							    p.vl
+		                ORDER BY CASE 
+					        WHEN (s.vl - (i.inventory_qy * p.vl)) <![CDATA[ < ]]> 0 THEN 0
+					        ELSE 1
+					    END ASC, 
+					    i.lot DESC
 		            ) a
 		        WHERE ROWNUM <![CDATA[ <= ]]> #{end} ) page
 		    WHERE page.rn <![CDATA[ >= ]]> #{start}
@@ -146,6 +163,8 @@
 		SELECT COUNT(*)
 		FROM inventory i join product_info p
         on i.product_code = p.product_code
+        join storage_info s
+        on i.storage_location = s.storage_info_code
 		 <where>
              	AND product_se = 'PT02'
              	AND i.inventory_qy > 0
@@ -159,13 +178,13 @@
              	AND i.product_color LIKE '%' || UPPER(#{searchColor}) || '%'
              </if>
              <if test='location != null and location != ""'>
-             	AND i.storage_location LIKE '%' || UPPER(#{location}) || '%'
+             	AND s.storage_info_name LIKE '%' || UPPER(#{location}) || '%'
              </if>
              <if test='searchLot != null and searchLot != ""'>
              	AND i.lot LIKE '%' || UPPER(#{searchLot}) || '%'
              </if>
              <if test='sizeCode != null and sizeCode != ""'>
-             	AND i.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+             	AND get_comm(i.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
              </if>
              <if test='startStoreDate != null and startStoreDate != ""'>
              	AND TRUNC(i.store_date) >= #{startStoreDate}
@@ -237,10 +256,15 @@
 	
 	<!-- 창고 위치 코드 리스트 -->
 	<select id="storageInfoList" resultType="storageInfoDTO">
-		SELECT storage_code,
-		       storage_info_code,
-		       storage_info_name
-		FROM storage_info
+		SELECT s.storage_code,
+		       s.storage_info_code,
+		       s.storage_info_name,
+		       SUM(i.inventory_qy * p.vl) AS total_vl_value
+		FROM storage_info s
+		LEFT JOIN inventory i ON s.storage_info_code = i.storage_location
+		LEFT JOIN product_info p ON i.product_code = p.product_code
+		GROUP BY s.storage_code, s.storage_info_code, s.storage_info_name, s.vl
+		HAVING s.vl - NVL(SUM(i.inventory_qy * p.vl),0) > 0
 	</select>
 	
 	<!-- 재고조정 위치이동 -->
@@ -279,13 +303,13 @@
 		                 AND e.product_color LIKE '%' || UPPER(#{color}) || '%'
 		            </if>
 		            <if test='sizeCode != null and sizeCode != ""'>
-		                 AND e.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+		                 AND get_comm(e.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
 		            </if>
 		            <if test='searchLot != null and searchLot != ""'>
 		                 AND e.lot LIKE '%' || UPPER(#{searchLot}) || '%'
 		            </if>
 		            <if test='requestor != null and requestor != ""'>
-		                 AND e.error_charger LIKE '%' || UPPER(#{requestor}) || '%'
+		                 AND e.error_charger LIKE '%' || #{requestor} || '%'
 		            </if>
 		            <if test='startErrorDate != null and startErrorDate != ""'>
 		                 AND TRUNC(e.process_date) >= TO_DATE(#{startErrorDate}, 'yyyy-mm-dd')
@@ -319,13 +343,13 @@
                  AND e.product_color LIKE '%' || UPPER(#{color}) || '%'
             </if>
             <if test='sizeCode != null and sizeCode != ""'>
-                 AND e.product_size LIKE '%' || UPPER(#{sizeCode}) || '%'
+                 AND get_comm(e.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
             </if>
             <if test='searchLot != null and searchLot != ""'>
                  AND e.lot LIKE '%' || UPPER(#{searchLot}) || '%'
             </if>
             <if test='requestor != null and requestor != ""'>
-                 AND e.error_charger LIKE '%' || UPPER(#{requestor}) || '%'
+                 AND e.error_charger LIKE '%' || #{requestor} || '%'
             </if>
             <if test='startErrorDate != null and startErrorDate != ""'>
                  AND TRUNC(e.process_date) >= TO_DATE(#{startErrorDate}, 'yyyy-mm-dd')

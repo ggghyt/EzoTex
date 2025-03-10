@@ -37,17 +37,17 @@
 			<!-- 납품 요청일 -->
 			<label class="col-4 col-sm-2 col-lg-1 d-flex justify-content-center align-items-center mb-2 wbreak">납품 요청일</label>
 			<div class="col-8 col-sm-4 col-lg-3 mb-2 d-flex align-items-center">
-				<input type="date" class="form-control text-end me-2 storeSearch" id="startOrderDate">
+				<input type="date" class="form-control me-2 storeSearch" id="startOrderDate">
 				<span class="mx-1">~</span>
-				<input type="date" class="form-control text-end ms-2 storeSearch" id="endOrderDate">
+				<input type="date" class="form-control ms-2 storeSearch" id="endOrderDate">
 			</div>
 		
 			<!-- 입고 예정일 -->
 			<label class="col-4 col-sm-2 col-lg-1 d-flex justify-content-center align-items-center mb-2 wbreak">입고 예정일</label>
 			<div class="col-8 col-sm-4 col-lg-3 mb-2 d-flex align-items-center">
-				<input type="date" class="form-control text-end me-2 storeSearch" id="startDedt">
+				<input type="date" class="form-control me-2 storeSearch" id="startDedt">
 				<span class="mx-1">~</span>
-				<input type="date" class="form-control text-end ms-2 storeSearch" id="endDedt">
+				<input type="date" class="form-control ms-2 storeSearch" id="endDedt">
 			</div>
 		</div>
 
@@ -266,7 +266,7 @@
 				{ header: "입고 예정일", name: "dedt", align: "center", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
 			],
 			data: mtDataSource,
-			showDummyRows: true
+			showDummyRows: true,
 		})
 		
 		
@@ -330,12 +330,12 @@
 
 	   	        // 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
 	   	        row.productInsertQy = changed.prevValue == null ? 0 : changed.prevValue;
-	   	     mtGrid2.setRow(rowKey, row);
+	   	        mtGrid2.setRow(rowKey, row);
 	   	        return;
 	   	    } else if (val < 0){ // 음수면 양수로 전환 
-	   	        val = val * -1;
+	   	        val = 0;
 	   	        row.productInsertQy = val;
-	   	     mtGrid2.setRow(rowKey, row);
+	   	        mtGrid2.setRow(rowKey, row);
 	   	        failToast('입력값은 음수가 될 수 없습니다.');
 	   	    }
 	   	 }
@@ -375,6 +375,7 @@
 
 		        if (data.qy < data.productInsertQy) {
 		            mtGrid2.setValue(change.rowKey, 'productInsertQy', data.qy);
+		            failToast(`입고 가능 수량은 ${data.qy} 입니다.`);
 		        }
 		    });
 		});
@@ -443,8 +444,6 @@
 			// 수량과 창고위치 둘 다 입력되지 않은 행이 있는지 확인
 		    let checkValidRow = check.some(item => item.productInsertQy && item.location);
 		    
-		    
-			
 		     let checkIroductInsertQy = insertData.find(item => {
 					return !item.productInsertQy;
 				})
@@ -472,7 +471,6 @@
 			        return;
 			    }
 			
-			
 		        modal.show();
 		})
 		
@@ -491,6 +489,12 @@
 				     .then(data => {
 				    	 data.forEach(item => item.deliveryCode = deliveryCode); 
 				    	 mtGrid2.resetData(data);
+				    	 
+				    	 setTimeout(() => {
+				    		 window.location.reload();
+				    	 }, 1500);
+				    	 
+				    	 
 				     })
 				  
 			  })

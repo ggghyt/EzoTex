@@ -36,4 +36,7 @@ public class InventoryDTO {
 	// 제품명
 	private String productName;
 	
+	// 부피 
+	private int vl;
+	
 }

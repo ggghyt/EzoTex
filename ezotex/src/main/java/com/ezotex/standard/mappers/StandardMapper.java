@@ -1,5 +1,6 @@
 package com.ezotex.standard.mappers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +125,10 @@ public interface StandardMapper {
 	
 	int updateSafety(SafetyStockDTO safetyStockDTO);
 	
+	int checksafety(SafetyStockDTO safetyStockDTO);
+	
+	int insertSafety(SafetyStockDTO safetyStockDTO);
+	
 	List<Map<String, Object>> infomationList();
 	
 	int getInfomationCount();
@@ -147,4 +152,6 @@ public interface StandardMapper {
 	List<CalenderDTO> calendarCount();
 	
 	List<ProductListInfoDTO> mainProductImg();
+	
+	Map<String, BigDecimal> mainTodayCount();
 }

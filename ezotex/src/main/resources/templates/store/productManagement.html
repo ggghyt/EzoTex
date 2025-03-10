@@ -81,6 +81,15 @@
         padding: 5px 10px;
         font-size: 14px;
     }
+    
+    
+.bg-blue {
+    background-color: blue;
+    color: white; /* 글자색을 흰색으로 변경 */
+}
+.negative-row {
+    background-color: #ffcccc; /* 음수일 때 배경색을 연한 빨간색으로 */
+}
 </style>
 
 
@@ -114,7 +123,7 @@
 		                            </div>
 		                            <div class="col-sm-3 d-flex align-items-center">
 		                                <label for="searchStorageInfoName" class="col-form-label" style="margin-right: 10px; white-space: nowrap;">창고 이름</label>
-		                                <input type="text" class="form-control " id="searchStorageInfoName" style="width: 150px;">
+		                                <input type="text" class="form-control modalSearch " id="searchStorageInfoName" style="width: 150px;">
 		                            </div>
 		                        </div>
 		
@@ -295,6 +304,13 @@
 		<div class="col-8 card card-body m-2">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
 			    <p class="fs-5 fw-bolder mt-2 mb-0">재고 현황</p>
+			    <!-- 과적 상태를 차트처럼 표시하는 영역 -->
+		       <div id="overload-status" style="display: flex; align-items: center; gap: 10px;">
+		            <span>과적:</span>
+		            <div style="background-color: #ffcccc; border: 1px solid red; padding: 10px; display: inline-block;">
+		                <!-- 과적 상태 표시 -->
+		            </div>
+		        </div>
 			    <div class="modal-footer regist" style="display: flex; gap: 10px; border-top: none; padding: 0; margin: 0;">
 			        <button class="btn btn-warning" id="productLocation" style="width: 110px;">위치이동</button>
 			        <button class="btn btn-danger" id="productError" style="width: 110px;">불량선택</button>
@@ -394,10 +410,23 @@
 					searchLot: document.querySelector('#searchLot').value,
 					location: document.querySelector('#location').value,
 					searchColor: document.querySelector('#searchColor').value,
-					sizeCode: getSizeCommonCode(document.querySelector('#sizeCode').value.toUpperCase()),
+					sizeCode: document.querySelector('#sizeCode').value,
 					startStoreDate: document.querySelector('#startStoreDate').value,
 					endStoreDate: document.querySelector('#endStoreDate').value,
 				}, false)
+				
+				
+				setTimeout(() => {
+			    const data = ManagementGrid.getData();
+			    data.forEach((row, index) => {
+			        console.log(data); // 데이터를 콘솔로 확인
+			        if (row.vl < 0) {
+			            // 'vl'이 음수인 행에 'negative-row' 클래스를 추가
+			            ManagementGrid.addRowClassName(index, 'negative-row');
+			        }
+			    });
+			}, 500); 
+				
 			}
 	
 	
@@ -444,14 +473,34 @@
 					{ header: "창고위치", name: "storageName", sortable: true },
 					{ header: "입고일", name: "storeDate", sortable: true, formatter: (row) => dateFormatterNull(row.value) },
 					{ header: "재고수량", name: "inventoryQy", sortable: true, align: 'right', formatter: (row) => numberFormatter(row.value) },
-					{ header: "과적", name: "totalVl", hidden:true },
+					{ header: "과적", name: "vl", hidden:true },
 				],
 				data: ManagementData,
-				showDummyRows: true
+				showDummyRows: true,
 			})
+		
+
+			setTimeout(() => {
+			    const data = ManagementGrid.getData();
+			    data.forEach((row, index) => {
+			        console.log(data); // 데이터를 콘솔로 확인
+			        if (row.vl < 0) {
+			            // 'vl'이 음수인 행에 'negative-row' 클래스를 추가
+			            ManagementGrid.addRowClassName(index, 'negative-row');
+			        }
+			    });
+			}, 500); 
 			
-			console.log('데이터확인:',ManagementData.data);
-			
+			setInterval(() => {
+			    const data = ManagementGrid.getData();
+			    data.forEach((row, index) => {
+			        if (row.vl < 0) {
+			            // 'vl'이 음수인 행에 'negative-row' 클래스를 추가
+			            ManagementGrid.addRowClassName(index, 'negative-row');
+			        }
+			    });
+			}, 500);  
+
 			
 			const modalGrid2 = new Grid({
 		    	el: document.getElementById('modalGrid2'),
@@ -650,6 +699,17 @@
 		                 backdrop.classList.remove('show');  // 배경을 숨김
 		                 backdrop.remove();  // 배경 요소를 DOM에서 제거
 		             }
+		             
+		             setTimeout(() => {
+		 			    const data = ManagementGrid.getData();
+		 			    data.forEach((row, index) => {
+		 			        console.log(data); // 데이터를 콘솔로 확인
+		 			        if (row.vl < 0) {
+		 			            // 'vl'이 음수인 행에 'negative-row' 클래스를 추가
+		 			            ManagementGrid.addRowClassName(index, 'negative-row');
+		 			        }
+		 			    });
+		 			}, 500); 
 		             
 		         })
 		   })

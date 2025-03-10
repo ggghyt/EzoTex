@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  mrpGrid.setRequestParams({supplyYear: new Date().getFullYear()});
-  mrpGrid.reloadData();
+  searchMrp();
   makeQuantityTag();
 });
 
@@ -27,9 +26,7 @@ document.getElementById('xlsx').addEventListener('click', () => {
 // 자재소요계획 그리드
 const mrpGrid = new Grid({
     el: document.getElementById('mrpGrid'), // 해당 위치에 그리드 출력
-    data: {
-      api: { readData: { url: '/supply/listMrp', method: 'GET' }, initialRequest: false }
-    },
+    data: [],
     columns: [
         { header: '자재코드', name: 'productCode', width: 100, rowSpan: true, align: 'center', className: 'pointer bg-light' },
         { header: '자재명', name: 'productName', rowSpan: true, align: 'center', className: 'pointer bg-light' },
@@ -54,7 +51,6 @@ const mrpGrid = new Grid({
             },
             supplyQy: { // 컬럼명
                    template: (valueMap) => {
-                       console.log(valueMap);
                        return `총계: ${numberFormatter(valueMap.sum)}`
                    }
             }
@@ -107,16 +103,25 @@ const optionGrid = new Grid({
 });
 
 /******************** Tui Grid 출력 ********************/ 
+let loadSuccess = false; // 그리드에 합계 입력하기 위함.
 // 검색조건으로 조회
-document.getElementById('planSearchBtn').addEventListener('click', () => {  
+document.getElementById('planSearchBtn').addEventListener('click', searchMrp);
+function searchMrp(){
   let dto = {
     supplyYear: document.getElementById('scSupplyYear').value,
     supplyMonth: document.getElementById('scSupplyMonth').value,
     season: document.getElementById('season').value
   };
-  mrpGrid.setRequestParams(dto); // 조회 조건 전달
-  mrpGrid.reloadData(); // 그리드 재출력 (readData)
-});
+  
+  let query = new URLSearchParams(dto);
+  
+  fetch('/supply/listMrp?' + query)
+  .then(response => response.json())
+  .then(result => {
+    mrpGrid.resetData(result.data.contents);
+    loadSuccess = true;
+  });
+}
 
 // 엔터키로 검색
 document.getElementById('mrpForm').addEventListener('keyup', e => {
@@ -124,13 +129,10 @@ document.getElementById('mrpForm').addEventListener('keyup', e => {
 });
 
 // 제품코드별 합계 출력
-let loadSuccess = false; // reloadData 이후 합계 입력하기 위함.
-mrpGrid.on('successResponse', () => loadSuccess = true);
-
 mrpGrid.on('onGridUpdated', () => { 
     if(loadSuccess){
         getTotalQy();
-        loadSuccess = false; // successResponse, onGridUpdated 갭 차이로 무한루프 방지
+        loadSuccess = false; // 무한루프 방지
     }
 });
 
@@ -221,7 +223,7 @@ function loadPrdPivot(selectedPrd){
     } else {
       // 사이즈/색상 모두 있으면 피벗 형태로 반환
       // data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ...}, ...]
-      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80, align: "center" });
+      columns.push({ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 100, align: "center" });
       let sizeNmArr = [];
       
       // pivot으로 가져온 사이즈명을 분리하여 컬럼 지정
