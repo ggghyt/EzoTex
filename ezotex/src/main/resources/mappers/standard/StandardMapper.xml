@@ -408,6 +408,20 @@ where safety_stock_month = #{safetyStockMonth}
 and product_code = #{productCode}
 </update>
 
+<select id="checksafety" parameterType="SafetyStockDTO">
+select count(*)
+from safety_stock
+where safety_stock_month = #{safetyStockMonth}
+and product_code = #{productCode}
+</select>
+
+<insert id="insertSafety" parameterType="SafetyStockDTO">
+insert into safety_stock
+values(#{safetyStockMonth}, 
+       #{productCode}, 
+       #{qy})
+</insert>
+
 <select id="infomationList" resultType="map">
 select info_no, 
        title, 
@@ -451,7 +465,8 @@ where info_no = #{num}
 
 <insert id="infomationInsert">
 insert into infomation
-values(INFO_NO_SEQ.nextval, 
+values((select max(info_no) + 1
+        from infomation), 
        #{title}, 
        #{content}, 
        #{userCode}, 
@@ -519,4 +534,19 @@ join delivery_schedule
 on delivery_details.delivery_code = delivery_schedule.delivery_code
 where rgsde > sysdate - 30
 </select>
+
+<select id="mainTodayCount" resultType="map">
+SELECT
+(SELECT COUNT(*)
+ FROM   order_list
+ WHERE  TO_CHAR(order_date, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) order_cnt,
+(SELECT COUNT(*)
+ FROM   delivery
+ WHERE  TO_CHAR(rgsde, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) delivery_cnt,
+(SELECT COUNT(*)
+ FROM   returns
+ WHERE  TO_CHAR(request_date, 'yyyy-MM-dd') = TO_CHAR(SYSDATE, 'yyyy-MM-dd')) return_cnt
+FROM   dual
+</select>
+
 </mapper>

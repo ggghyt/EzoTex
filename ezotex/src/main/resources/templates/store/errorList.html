@@ -78,10 +78,10 @@
 					<input type="text" class="form-control storeSearch" id="requestor">
 				</div>
 				
-				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">불량 처리일</label>
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">불량 처리일</label>
 				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-					<input type="date" class="form-control text-end storeSearch" id="startErrorDate" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end storeSearch" id="endErrorDate" style="margin-left: 10px;">
+					<input type="date" class="form-control storeSearch" id="startErrorDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control storeSearch" id="endErrorDate" style="margin-left: 10px;">
 				</div>
 			</div>
 		
@@ -96,7 +96,7 @@
 	
 	<div class="row">
 		<div class="col-5 card card-body m-2">
-			<div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+			<div class="d-flex justify-content-between align-items-center mt-2 mb-3">
 				<p class="fs-5 fw-bolder m-0">불량 제품 목록</p>
 				<button id="xlsx" class="btn btn-dark btn-sm">EXCEL 내보내기</button>
 			</div>
@@ -106,7 +106,7 @@
 	
 	
 	
-	<div class="card-body">
+	<!-- <div class="card-body">
        <div class="d-sm-flex justify-content-between align-items-start">
          <div>
            <h3 class="card-title card-title-dash">불량률</h3>
@@ -118,12 +118,12 @@
        <div class="chartjs-bar-wrapper mt-3"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
          <canvas id="errorChart" width="511" height="150" style="display: block; width: 511px; height: 150px;" class="chartjs-render-monitor"></canvas>
        </div>
-     </div>
+     </div> -->
 	 
 	
 	<script>
 	
-	const errorChartOptions = {
+	/* const errorChartOptions = {
 		    responsive: true,
 		    maintainAspectRatio: false,
 		    scales: {
@@ -172,10 +172,10 @@
 		    type: 'bar',
 		    data: {}, 
 		    options: errorChartOptions
-		});
+		}); */
 
 		// fetch로 데이터를 받아서 차트에 넣기
-		fetch(`/store/totalError`)
+		/* fetch(`/store/totalError`)
 		    .then(rep => rep.json())
 		    .then(data => {
 		        console.log(data); 
@@ -195,7 +195,7 @@
 		            }]
 		        };
 		        errorChart.update();
-		    })
+		    }) */
 
 
 
@@ -211,21 +211,22 @@
 	
 	
 		document.getElementById('xlsx').addEventListener('click', () => {
-			  const checkedRows = errorGrid.getCheckedRows(); // 체크된 데이터 가져오기
-			  if (checkedRows.length === 0){
-				  let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
-				  document.querySelector("#warning").innerText = "선택된 제품이 없습니다.";
-					modifyMOdal.show();
-				  return; // 체크된 데이터가 없으면 미동작
-			  }
-	
-			  // 체크된 데이터만 내보내기
-			  errorGrid.export('xlsx', {
-			    useFormattedValue: true,
-			    fileName: '불량재고' + '_' + dateFormatter().replaceAll('-', ''),
-			    rows: checkedRows // 체크된 행만 내보내기
-			  });
-			});
+		    const allRows = errorGrid.getData(); // 그리드 전체 데이터 가져오기
+		    if (allRows.length === 0) {
+		        let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+		        document.querySelector("#warning").innerText = "내보낼 데이터가 없습니다.";
+		        modifyMOdal.show();
+		        return; // 데이터가 없으면 미동작
+		    }
+		
+		    // 전체 데이터 내보내기
+		    errorGrid.export('xlsx', {
+		        useFormattedValue: true,
+		        fileName: '불량재고' + '_' + dateFormatter().replaceAll('-', ''),
+		        rows: allRows // 전체 데이터 내보내기
+		    });
+		});
+
 		
 		inputReset.addEventListener('click', function(){
 			document.querySelector("#searchProductCode").value = '';
@@ -244,7 +245,7 @@
 					productCode: document.querySelector("#searchProductCode").value,
 					productName: document.querySelector("#searchProductName").value,
 					color: document.querySelector("#searchColor").value,
-					sizeCode: getSizeCommonCode(document.querySelector("#searchSize").value.toUpperCase()),
+					sizeCode: document.querySelector("#searchSize").value,
 					searchLot: document.querySelector("#searchLot").value,
 					requestor: document.querySelector("#requestor").value,
 					startErrorDate: document.querySelector("#startErrorDate").value,
@@ -261,7 +262,7 @@
 		    
 		    const errorGrid = new Grid({
 		      el: document.getElementById('grid'), // 컨테이너 엘리먼트
-		      rowHeaders: ['rowNum','checkbox'],
+		      rowHeaders: ['rowNum'],
 		      columnOptions: {
 		          resizable: true
 		      },

@@ -6,11 +6,10 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 교환 관리</h3>
+	<h3 class="fs-3 fw-bold m-0">| 교환 관리</h3>
 	<br>
 	<!-- 등록 모달 -->
 	<div class="modal fade" id="registModal" tabindex="-1"
@@ -45,16 +44,16 @@
 			</div>
 		</div>
 	</div>
-	<div class="card card-body mt-3">
-	<h4>교환 목록</h4>
-	<div id="changeGrid"></div>
+	<div class="card card-body">
+		<p class="fs-5 fw-bolder mb-3">교환 목록</p>
+		<div id="changeGrid"></div>
 	</div>
 	<div class="card card-body mt-3">
-	<h4>교환할 제품</h4>
-	<div id="changeProductGrid"></div>
-	<div>
-		<button type="button" class="btn btn-primary" id="changeResiBtn">교환등록</button>
-	</div>
+		<p class="fs-5 fw-bolder mb-3">교환할 제품</p>
+		<div id="changeProductGrid"></div>
+		<div>
+			<button type="button" class="btn btn-primary" id="changeResiBtn">교환등록</button>
+		</div>
 	</div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
@@ -285,7 +284,7 @@
 	    const checkedRows = changeProductGrid.getCheckedRows();
 
 	    if (checkedRows.length === 0) {
-	    	failToast("반품할 제품을 선택해야 합니다."); // 경고 메시지
+	    	failToast("교환할 제품을 선택해야 합니다."); // 경고 메시지
 	        return; // 모달 실행 중단
 	    }
 		
@@ -381,7 +380,7 @@
 <style>
 /* 체크박스가 포함된 셀에 마우스를 올리면 커서 변경 */
 #changeProductGrid .tui-grid-cell input[type="checkbox"]:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 </style>
 </html>

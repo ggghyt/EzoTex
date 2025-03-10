@@ -23,7 +23,7 @@
 		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		ORDER  BY status, product_code DESC
+		ORDER  BY status, product_code
 	</select>
 	
 	<!-- 제품 목록 전체 개수 -->
@@ -93,7 +93,7 @@
 		                     RIGHT JOIN product_info p ON d.mtril_code = p.product_code
                      		 LEFT JOIN  product_category c ON p.product_code = c.product_code
 		WHERE  p.product_type = 'PT01'
-		ORDER  BY require_qy DESC NULLS LAST, mtril_code DESC
+		ORDER  BY require_qy DESC NULLS LAST, mtril_code
 	</select>
 	
 	<!-- BOM 등록(헤더) -->

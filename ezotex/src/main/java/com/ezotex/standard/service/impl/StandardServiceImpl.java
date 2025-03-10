@@ -1,5 +1,6 @@
 package com.ezotex.standard.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -222,7 +223,11 @@ public class StandardServiceImpl implements StandardService {
 
 	@Override
 	public int updateSafety(SafetyStockDTO safetyStockDTO) {
-		return mapper.updateSafety(safetyStockDTO);
+		if (mapper.checksafety(safetyStockDTO) == 1) {
+			return mapper.updateSafety(safetyStockDTO);
+		} else {
+			return mapper.insertSafety(safetyStockDTO);
+		}
 	}
 
 	@Override
@@ -278,6 +283,11 @@ public class StandardServiceImpl implements StandardService {
 	@Override
 	public List<ProductListInfoDTO> mainProductImg() {
 		return mapper.mainProductImg();
+	}
+
+	@Override
+	public Map<String, BigDecimal> mainTodayCount() {
+		return mapper.mainTodayCount();
 	}
 
 	

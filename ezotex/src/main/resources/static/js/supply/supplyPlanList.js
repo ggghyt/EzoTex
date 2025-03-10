@@ -142,8 +142,8 @@ const supplyGrid = new Grid({
     },
     columns: [
         { header: '공급계획코드', name: 'supplyPlanCode', width: 120, sortable: true, align: 'center' },
-        { header: '공급년도', name: 'supplyYear', width: 90, sortable: true, align: 'center' },
-        { header: '시즌', name: 'season', width: 50, sortable: true, align: 'center' },
+        { header: '공급년도', name: 'supplyYear', width: 90, sortable: true, align: 'center', className: 'fw-bold' },
+        { header: '시즌', name: 'season', width: 50, sortable: true, align: 'center', className: 'fw-bold' },
         { header: '요약', name: 'summary', whiteSpace: 'pre-line', sortable: true },
         { header: '공급량합계', name: 'supplyQy', width: 150, sortable: true, align: 'right',
            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
@@ -502,15 +502,15 @@ function getEditableCells(){
     // 행-열을 순회하며 0이 아닌 셀을 찾고, [{rowKey, columnName, qy},..] 형식으로 반환
     let resultArr = [];
     gridData.forEach(data => {
-        let obj = {};
         columnNames.forEach(nm => {
             if(data[nm] != 0 && data[nm] != null && !isNaN(data[nm])){
+                let obj = {};
                 obj.rowKey = data.rowKey;
                 obj.columnName = nm;
                 obj.qy = data[nm];
+                resultArr.push(obj);
             }
         });
-        resultArr.push(obj);
     });
     return resultArr;
 }
@@ -519,16 +519,13 @@ function getEditableCells(){
 optionGrid.on('afterChange', ev => {
   let changed = ev.changes[0];
   let rowKey = changed.rowKey;
-  console.log('ev',ev);
   let row = optionGrid.getRow(rowKey);
   let val = changed.value;
-  if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-    failToast('입력값은 문자가 들어갈 수 없습니다.');
-    // 이전 값이 있으면 이전 값으로, 없으면 0으로 전환
-    val = changed.prevValue == null ? 0 : changed.prevValue;
-  } else if (val < 0){ // 음수면 양수로 전환 
-    val = val * -1;
-    failToast('입력값은 음수가 될 수 없습니다.');
+  
+  if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+    if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+    else failToast('입력값은 음수가 될 수 없습니다.');
+    val = changed.prevValue;
   }
   row[changed.columnName] = val;
   optionGrid.setRow(rowKey, row);

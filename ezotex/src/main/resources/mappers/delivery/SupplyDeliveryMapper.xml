@@ -37,10 +37,10 @@
 	                                    WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
 	        	</if>
 	        	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
-	        		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+	        		AND    TO_CHAR(rgsde, 'yyyy-MM-dd') BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
 	        	</if>
 	        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
-	        		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+	        		AND    TO_CHAR(due_date, 'yyyy-MM-dd') BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
 	        	</if>
        			<choose>
 	                  <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 
@@ -78,10 +78,10 @@
                                    WHERE  s.product_name LIKE '%' || #{searchDto.productName} || '%')
        	</if>
        	<if test="searchDto.orderDateStart != null and searchDto.orderDateStart != '' and searchDto.orderDateEnd != null and searchDto.orderDateEnd != ''">
-       		AND    rgsde BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
+       		AND    TO_CHAR(rgsde, 'yyyy-MM-dd') BETWEEN #{searchDto.orderDateStart} AND #{searchDto.orderDateEnd}
        	</if>
        	<if test="searchDto.dedtStart != null and searchDto.dedtStart != '' and searchDto.dedtEnd != null and searchDto.dedtEnd != ''">
-       		AND    due_date BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
+       		AND    TO_CHAR(due_date, 'yyyy-MM-dd') BETWEEN #{searchDto.dedtStart} AND #{searchDto.dedtEnd}
        	</if>
      	<choose>
                  <when test="searchDto.orderStatus != null and searchDto.orderStatus != ''"> 
@@ -99,17 +99,19 @@
 		        pi.product_name AS product_name,
 		        md.product_color AS product_color,
 		        md.order_qy AS req_qy,
-                (md.order_qy - COALESCE(dd.delivery_qy, 0)) AS rest_qy, --잔여량 구하기
+                (md.order_qy - COALESCE(SUM(dd.delivery_qy), 0)) AS rest_qy, --잔여량 구하기
 		        md.amount AS price,	-- 제품 단가 금액 합계
 		        md.product_color AS product_color,
 		        md.unit_price AS unit_price
 		FROM    material_order_details md JOIN product_info pi
 		                                    ON (md.product_code = pi.product_code)
                                      LEFT JOIN delivery_details dd
-                                            ON (md.mtril_order_code = dd.order_code)
-                                            AND (md.product_color = dd.product_color)
+                                            ON (md.mtril_order_code = dd.order_code
+                                            AND md.product_code = dd.product_code
+                                            AND md.product_color = dd.product_color)
 		WHERE   md.mtril_order_code = #{orderCode}
-        AND     (md.order_qy - COALESCE(dd.delivery_qy, 0)) > 0
+        GROUP BY md.product_code, pi.product_name, md.product_color, md.order_qy, md.amount, md.product_color, md.unit_price
+        HAVING (md.order_qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0 
 		ORDER BY md.product_code
 	</select>
 	
@@ -293,6 +295,7 @@
 		                           JOIN material_order_details mo
 		                             ON (dd.order_code = mo.mtril_order_code)
 		WHERE  dd.delivery_code = #{deliveryCode}
+        GROUP BY dd.product_code, pi.product_name, dd.product_color, mo.order_qy, dd.request_qy, dd.delivery_qy
 		ORDER BY dd.product_code
 	</select>
 </mapper>

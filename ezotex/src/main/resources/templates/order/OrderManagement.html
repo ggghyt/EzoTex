@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <title>이조텍스SCM</title>
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet"	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"></script>
 <script>
 // 인풋 초기화 함수
 function resetForm() {
@@ -15,9 +15,7 @@ function resetForm() {
     document.getElementById('company').value = '';
     document.getElementById('companyCharger').value = '';
     document.getElementById('companyTel').value = '';
-    document.getElementById('orderDate').value = '';
     document.getElementById('deliveryRequestDeadline').value = '';
-    document.getElementById('orderStatus').value = '';
     document.getElementById('remarks').value = '';
 }
 // 모든 제품의 총 수량 계산
@@ -37,7 +35,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 주문 등록</h3>
+	<h3 class="fs-3 fw-bold m-0">| 주문 등록</h3>
 	<br>
 
 	<!-- 등록 모달 -->
@@ -79,8 +77,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 	<div class="card card-body m-2 bg-secondary">
 		<div class="row">
 
-			<p class="fs-5 fw-bolder m-3">주문 정보</p>
-			<table class="table mt-3">
+			<p class="fs-5 fw-bolder m-1">주문 정보</p>
+			<table class="table table-borderless">
 				<tbody>
 					<!-- 첫 번째 줄 -->
 					<tr>
@@ -113,9 +111,6 @@ let clickedData = ""; // 클릭한 행의 데이터
 						<td class="col-auto"><label class="col-form-label">업체
 								전화번호</label> <input type="tel" id="companyTel"
 							class="form-control inputbold" readonly></td>
-						<td class="col-auto"><label class="col-form-label"></label> <input
-							type="text" id="orderStatus" class="form-control inputbold"
-							readonly hidden=true></td>
 					</tr>
 					<tr>
 						<td colspan="4"><label class="col-form-label">비고</label> <input
@@ -125,7 +120,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				</tbody>
 			</table>
 			<div class="d-flex justify-content-center gap-2">
-				<button type="button" class="btn btn-secondary btn-sm"
+				<button type="button" class="btn btn-secondary btn-sm mt-3"
 					onclick="resetForm()">초기화</button>
 			</div>
 		</div>
@@ -175,7 +170,7 @@ let clickedData = ""; // 클릭한 행의 데이터
       scrollX: false, // 가로 스크롤바 비활성화
       scrollY: false, // 세로 스크롤바 비활성화
       rowHeight: 'auto',  // 행 높이를 자동으로 조정
-      rowHeaders: ['checkbox',{ type: 'rowNum', header: 'NO' }],
+      rowHeaders: ['checkbox',{ type: 'rowNum', header : 'NO', width: 60 }],
       columns: [  // 컬럼 설정 (빈 컬럼으로 초기화)
         {
           header: '제품 코드',
@@ -669,6 +664,11 @@ let clickedData = ""; // 클릭한 행의 데이터
 		            return false;
 		        }
 		        
+/* 		        if (!deliveryRequestDeadline.value.trim()) {
+		        	failToast("납기일을 선택해야합니다.");
+		            return false;
+		        } */
+		        
 			    const orderQuantity = document.getElementById("orderQuantity");
 			    const orderAmount = document.getElementById("orderAmount");
 			    
@@ -703,7 +703,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        companyRepresentative: document.getElementById("companyCharger").value, // 업체담당자
 			        companyTel: document.getElementById("companyTel").value, // 업체담당자 전화번호
 			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value, // 납기일
-			        orderStatus: document.getElementById("orderStatus").value || "OR01", // 주문 상태 - 기본값 : 대기
+			        orderStatus: "OR01", // 주문 상태 - 기본값 : 대기
 			        remarks: document.getElementById("remarks").value, // 비고 
 			        amount: Number(orderAmount.value.replace(/,/g, '')), // 콤마 제거하고 숫자로 변환
 			    };
@@ -810,7 +810,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 				            throw new Error("주문 등록 실패");
 				        }
 				        console.log("주문 등록 성공:", data);
-				        location.reload();
+				        // 2초 후 리로드 (2000ms)
+				        setTimeout(() => {
+				            location.reload();
+				        }, 2000);
 				    })
 			    })
 			    .catch(error => {
@@ -888,7 +891,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 						resizable : false
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders: [{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '제품코드',
@@ -1034,7 +1037,7 @@ function addProductToOrderList(product) {
 						resizable : false,
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders:[{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '업체코드',
@@ -1205,6 +1208,18 @@ function addProductToOrderList(product) {
 
 input[readonly] {
 	background-color: white !important; /* 배경색을 흰색으로 변경 */
+}
+
+td {
+	padding: 0 20px !important;
+}
+
+.tui-grid-cell.tui-grid-cell-row-header {
+	padding: 0 !important;
+}
+
+.tui-grid-layer-state {
+	z-index: 0;
 }
 </style>
 </html>

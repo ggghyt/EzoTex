@@ -216,7 +216,7 @@
 		<div class="col">			
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 				
-				<b>납품검색</b>
+				<p class="fs-5 fw-bolder mb-3">납품검색</p>
 								
 				<div>
 					<span class="search-unit">
@@ -286,7 +286,7 @@
 				</div>
 			</div>
 			<div class="card card-body mt-3 delivery-list">
-				<b>납품목록</b>
+				<p class="fs-5 fw-bolder mb-3">납품목록</p>
 				<!-- 검색결과 목록 -->
 				<div id="deliveryListGrid"></div>
 			</div>
@@ -329,12 +329,12 @@
 									<td>납기일</td>
 									<td><input type="text" class="form-control read-dedt" disabled></td>
 								</tr>
-								<!-- 								
+																
 								<tr>
 									<td>출고창고</td>
 									<td><input type="text" class="form-control read-storage" disabled></td>
 								</tr>
-								 -->
+								 
 								<tr>
 									<td>납기주소</td>
 									<td><textarea type="text" class="form-control read-dedt-address" disabled></textarea></td>
@@ -710,7 +710,7 @@
 			document.querySelector(".read-regist-date").value = data.registDate;
 			document.querySelector(".read-order-date").value = data.orderDate;
 			document.querySelector(".read-dedt").value = data.dedt;
-			//document.querySelector(".read-storage").value = data.storageName;
+			document.querySelector(".read-storage").value = data.storageName;
 			document.querySelector(".read-dedt-address").value = data.dedtAddress;
 			document.querySelector(".read-memo").value = data.remark;
 			

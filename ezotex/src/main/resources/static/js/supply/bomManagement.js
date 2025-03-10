@@ -52,7 +52,8 @@ const createOptions = async function(ele, uri){
 	.then(response => response.json())
 	.then(data => {		
 		for(let value of data){	
-            if(value.productSize == null && value.productColor == null) continue; // null은 무시
+            if((ele == colorBox || ele == sizeBox) && 
+                value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
 			
 			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우
@@ -100,9 +101,8 @@ class CustomSelectBox {
 			el.append(opt);								
 		}
 	});
-	el.addEventListener('mousedown', (e) => {
-      e.stopPropagation(); // tui 그리드 셀 기본 이벤트 방지
-	});
+	el.addEventListener('click', e =>  e.stopPropagation() ); // tui 그리드 셀 기본 이벤트 방지
+  el.addEventListener('mousedown', e =>  e.stopPropagation() ); // tui 그리드 셀 기본 이벤트 방지
 	// 옵션을 선택했을 때 저장된 배열에 데이터 반영
 	el.addEventListener('change', (e) => {
 		let rowKey = e.target.id; // 선택한 색상배열 인덱스
@@ -395,19 +395,15 @@ selectedMtrGrid.on('afterChange', ev => {
 	selectedMtrGrid.check(rowKey);
 	let row = selectedMtrGrid.getRow(rowKey);
 	let val = changed.value;
-	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-		failToast('입력값은 문자가 들어갈 수 없습니다.');
-		
-		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
-		row.requireQy = changed.prevValue == null ? 0 : changed.prevValue;
-		selectedMtrGrid.setRow(rowKey, row);
-		return;
-	} else if (val < 0){ // 음수면 양수로 전환 
-		val = val * -1;
-		row.requireQy = val;
-		selectedMtrGrid.setRow(rowKey, row);
-		failToast('입력값은 음수가 될 수 없습니다.');
-	}
+	
+	if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+        if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+        else failToast('입력값은 음수가 될 수 없습니다.');
+        val = changed.prevValue;
+        row.requireQy = changed.prevValue == null ? 0 : changed.prevValue;
+        selectedMtrGrid.setRow(rowKey, row);
+        return;
+    }
 	
 	// 유효한 값인 경우, 자재 원본 데이터에서 해당하는 rowKey를 찾아 입력값 저장
 	let mtrRowKey;
@@ -491,7 +487,6 @@ function validBom(selectedBom){
 			return false;
 		} else {
 			for(let origin of originBomData){ // 원본 데이터와 비교하여 변경되었는지 확인
-			console.log(origin, data);
 				if(origin.mtrilCode == data.mtrilCode && origin.mtrilColor == data.mtrilColor &&
 				   origin.requireQy == data.requireQy){
 					return false;
