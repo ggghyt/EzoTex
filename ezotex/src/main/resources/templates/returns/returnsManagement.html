@@ -438,9 +438,11 @@
 							<label for="startRequestDate" class="col-auto text-end pe-2">납기일</label>
 							<div class="col d-flex align-items-center">
 								<input type="date" class="form-control form-control-sm me-2"
-									id="startDeliveryDate"> <span class="mx-1">~</span> <input
-									type="date" class="form-control form-control-sm ms-2"
-									id="endDeliveryDate">
+									id="startDeliveryDate" style="cursor: pointer;"
+									onclick="this.showPicker()"> <span class="mx-1">~</span>
+								<input type="date" class="form-control form-control-sm ms-2"
+									id="endDeliveryDate" style="cursor: pointer;"
+									onclick="this.showPicker()">
 							</div>
 						</div>
 					</form>
