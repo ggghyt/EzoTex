@@ -52,7 +52,8 @@ const createOptions = async function(ele, uri){
 	.then(response => response.json())
 	.then(data => {		
 		for(let value of data){	
-            if(value.productSize == null && value.productColor == null) continue; // null은 무시
+            if((ele == colorBox || ele == sizeBox) && 
+                value.productSize == null && value.productColor == null) continue; // null은 무시
 			let opt = document.createElement('option');
 			
 			let prdOptVal = null; // 제품 색상/사이즈 옵션인 경우
@@ -100,9 +101,8 @@ class CustomSelectBox {
 			el.append(opt);								
 		}
 	});
-	el.addEventListener('mousedown', (e) => {
-      e.stopPropagation(); // tui 그리드 셀 기본 이벤트 방지
-	});
+	el.addEventListener('click', e =>  e.stopPropagation() ); // tui 그리드 셀 기본 이벤트 방지
+  el.addEventListener('mousedown', e =>  e.stopPropagation() ); // tui 그리드 셀 기본 이벤트 방지
 	// 옵션을 선택했을 때 저장된 배열에 데이터 반영
 	el.addEventListener('change', (e) => {
 		let rowKey = e.target.id; // 선택한 색상배열 인덱스
