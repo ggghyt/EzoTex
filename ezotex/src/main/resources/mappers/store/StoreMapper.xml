@@ -283,6 +283,7 @@
 			    AND r.product_color = i.product_color
 			WHERE 
 			    r.return_code = #{returnCode}
+			    AND r.processing_status = 'ER03'
 			GROUP BY  
 			    r.product_code, 
 			    r.product_name
@@ -351,6 +352,7 @@
 			    WHERE 
 			        r.product_code = #{productCode}
 			    AND r.return_code = #{returnCode}
+			    AND r.processing_status = 'ER03'
 			    GROUP BY 
 			        r.product_color, r.product_code, r.product_size, r.qy)
 		select * from temp
