@@ -313,6 +313,7 @@
 			WHERE 
 			    d.product_se = 'PT01'
 			AND d.delivery_code = #{deliveryCode}
+			AND d.delivery_qy > 0
 			GROUP BY  
 			    d.product_code,
 			    p.product_name,
