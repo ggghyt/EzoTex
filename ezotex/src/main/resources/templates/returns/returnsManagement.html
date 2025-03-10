@@ -422,8 +422,7 @@
 					<p class="fs-5 fw-bolder mb-3">검색</p>
 					<form id="planForm" class="row justify-content-center">
 						<!-- 검색 조건 -->
-						<div
-							class="row align-items-center justify-content-center">
+						<div class="row align-items-center justify-content-center">
 							<label for="returnCode" class="col-auto text-end pe-2">납품코드</label>
 							<div class="col">
 								<input type="text" class="form-control form-control-sm"
@@ -658,7 +657,7 @@
 	    // 처리상태가 모두 비어있는지 확인
 	    const allStatusEmpty = rows.every(row => !row.status || row.status.trim() === '');
 	    if (allStatusEmpty) {
-	    	failToast("모든 처리상태가 비어 있습니다. 처리상태를 선택해주세요.");
+	    	failToast("처리상태를 선택해주세요.");
 	        return;
 	    }
 		
@@ -818,7 +817,7 @@
 
 		// 검색 조건 초기화 함수
 		function resetCondition() {
-		    document.querySelectorAll('.card-body input').forEach((e) => {
+		    document.querySelectorAll('#planForm input').forEach((e) => {
 		        e.value = null;
 		    });
 		    searchReturnList();
@@ -848,8 +847,7 @@ input[readonly] {
 }
 
 .tui-grid-layer-state {
-    z-index: 0;
+	z-index: 0;
 }
-
 </style>
 </html>
