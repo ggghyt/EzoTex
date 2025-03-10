@@ -502,15 +502,15 @@ function getEditableCells(){
     // 행-열을 순회하며 0이 아닌 셀을 찾고, [{rowKey, columnName, qy},..] 형식으로 반환
     let resultArr = [];
     gridData.forEach(data => {
-        let obj = {};
         columnNames.forEach(nm => {
             if(data[nm] != 0 && data[nm] != null && !isNaN(data[nm])){
+                let obj = {};
                 obj.rowKey = data.rowKey;
                 obj.columnName = nm;
                 obj.qy = data[nm];
+                resultArr.push(obj);
             }
         });
-        resultArr.push(obj);
     });
     return resultArr;
 }
