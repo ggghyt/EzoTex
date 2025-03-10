@@ -71,7 +71,8 @@ public class SupplyDeliveryServiceImpl implements SupplyDeliveryService {
 		mapper.insertDeliveryMaster(orderInfoList.get(orderInfoList.size()-1));
 		
 		//디테일 정보 입력하기
-		for(int i=0; i<orderInfoList.size()-1; i++) {			
+		for(int i=0; i<orderInfoList.size()-1; i++) {	
+			System.out.println("+++++++++++++++++++++++++++++++++++++++++++반복문 작동");
 			orderInfoList.get(i).setDeliveryCode(divyCode);
 			mapper.insertDeliveryDetails(orderInfoList.get(i));
 		}

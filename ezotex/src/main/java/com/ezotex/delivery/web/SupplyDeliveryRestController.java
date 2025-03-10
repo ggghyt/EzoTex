@@ -70,10 +70,11 @@ public class SupplyDeliveryRestController {
 	
 	@PostMapping("supplyDeliveryRegist")
 	public Map<String, String> insertDelivery(@RequestBody List<OrderInsertDTO> insertData) {
-		
+		log.info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		log.info(insertData.toString());
 		Map<String, String> map = new HashMap<>();
 		map.put("state", service.insertDelivery(insertData));
-		return map;
+		return map; 
 	}
 	
 	//출고 조회
