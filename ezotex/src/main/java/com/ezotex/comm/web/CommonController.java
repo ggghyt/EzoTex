@@ -169,7 +169,7 @@ public class CommonController {
 		service.insertCompany(companyDTO, addDTO);
 		
 		attr.addFlashAttribute("result", true);
-		return "login/register_supply";
+		return "redirect:main";
 	}
 	
 	// 인증 여부 확인
