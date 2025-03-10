@@ -223,7 +223,11 @@ public class StandardServiceImpl implements StandardService {
 
 	@Override
 	public int updateSafety(SafetyStockDTO safetyStockDTO) {
-		return mapper.updateSafety(safetyStockDTO);
+		if (mapper.checksafety(safetyStockDTO) == 1) {
+			return mapper.updateSafety(safetyStockDTO);
+		} else {
+			return mapper.insertSafety(safetyStockDTO);
+		}
 	}
 
 	@Override
