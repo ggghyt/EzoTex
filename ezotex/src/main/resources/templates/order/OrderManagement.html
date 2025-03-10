@@ -64,7 +64,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!---->
 					<button type="button" id="resiBtn"
-						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+						class="btn btn-outline-primary" data-bs-dismiss="modal">등록</button>
 					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
@@ -664,10 +664,6 @@ let clickedData = ""; // 클릭한 행의 데이터
 		            return false;
 		        }
 		        
-/* 		        if (!deliveryRequestDeadline.value.trim()) {
-		        	failToast("납기일을 선택해야합니다.");
-		            return false;
-		        } */
 		        
 			    const orderQuantity = document.getElementById("orderQuantity");
 			    const orderAmount = document.getElementById("orderAmount");
@@ -679,6 +675,11 @@ let clickedData = ""; // 클릭한 행의 데이터
 		        	failToast("등록할 제품이 없습니다.");
 		            return false;
 	        	}
+		        
+		        if (!deliveryRequestDeadline.value.trim()){
+		        	failToast("납기일을 선택해야 합니다.");
+		            return false;
+		        }
 		        
 		        // newData2가 비어있으면 등록 불가
 		        if (newData2.length === 0) {
@@ -810,6 +811,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				            throw new Error("주문 등록 실패");
 				        }
 				        console.log("주문 등록 성공:", data);
+				        successToast("작업이 완료되었습니다.");
 				        // 2초 후 리로드 (2000ms)
 				        setTimeout(() => {
 				            location.reload();

@@ -37,7 +37,7 @@
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!---->
 					<button type="button" id="resiBtn"
-						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+						class="btn btn-outline-primary" data-bs-dismiss="modal">등록</button>
 					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
@@ -354,6 +354,7 @@
 					.then(rep => rep.json())
 					.then(result => {
 						if(result === true){
+							successToast("작업이 완료되었습니다.");
 							console.log("show 변경 성공");
 						    setTimeout(function() {
 						        location.reload();  // 페이지 새로 고침
