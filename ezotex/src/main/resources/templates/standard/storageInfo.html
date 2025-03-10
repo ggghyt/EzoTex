@@ -296,6 +296,7 @@
 		fetch('/standard/insertStorage?storageName=' + document.querySelector("#storageNameInput").value)
 		.then(() => {
 			storage_option()
+			storageSelect()
 			document.querySelector("#storageNameInput").value = "";
 			successToast("작업이 완료되었습니다");
 		})

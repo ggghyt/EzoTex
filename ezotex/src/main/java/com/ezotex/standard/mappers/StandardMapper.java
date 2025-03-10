@@ -125,6 +125,10 @@ public interface StandardMapper {
 	
 	int updateSafety(SafetyStockDTO safetyStockDTO);
 	
+	int checksafety(SafetyStockDTO safetyStockDTO);
+	
+	int insertSafety(SafetyStockDTO safetyStockDTO);
+	
 	List<Map<String, Object>> infomationList();
 	
 	int getInfomationCount();

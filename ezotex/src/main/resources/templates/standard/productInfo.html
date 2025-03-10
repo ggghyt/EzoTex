@@ -308,6 +308,12 @@ visibility: visible;
 							<div id="optionGrid">
 							</div>
 						</div>
+						<div class="row me-2" style="text-align: center;">
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-10 col-lg-10 d-flex mb-2">
+								<p>안전재고를 입력해주세요</p>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div style="text-align: center; margin: 20px;">
@@ -659,7 +665,7 @@ visibility: visible;
 			}
 			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
 			for (let i = 0 ; i < option_size.length ; i++) {
-				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', formatter: row => numberStringFormatter(row.value) })
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', align: 'right', formatter: row => numberStringFormatter(row.value) })
 			}
 			
 			let option_color = []
@@ -724,7 +730,7 @@ visibility: visible;
 		let modalSize = document.querySelector("#modalSize");
 		modalSize.innerHTML = "";
 		let o = document.createElement('option');
-		o.setAttribute("value", "");
+		o.setAttribute("value", "SI00");
 		o.innerText = "없음";
 		modalSize.appendChild(o);
 		for (let i = 0 ; i < data.length ; i++) {
