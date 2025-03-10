@@ -19,6 +19,7 @@
 	<select id="getCompanyList">
 		SELECT *
 		FROM COMPANY
+		order by company_code
 	</select>
 <!-- 제품 옵션 조회 -->
 	<select id="getProductOption">
