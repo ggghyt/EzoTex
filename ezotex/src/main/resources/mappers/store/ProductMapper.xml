@@ -86,77 +86,98 @@
 	
 	<!-- 위치별 제품 상세 리스트(재고조정) -->
 	<select id="location" resultType="InventoryDTO">
-		SELECT *
-		FROM (
-		       SELECT a.*, ROWNUM as rn
-		       FROM ( SELECT 
-    MAX(i.product_code) AS product_code,
-    p.product_name,
-    i.product_color,
-    get_comm(i.product_size) AS product_size,
-    i.lot,
-    i.storage_location,
-    i.inventory_qy,
-    i.store_date,
-    s.storage_info_name AS storageName,
-    s.vl - (i.inventory_qy * p.vl) AS vl
-FROM 
-    inventory i 
-JOIN 
-    product_info p ON i.product_code = p.product_code
-JOIN 
-    storage_info s ON i.storage_location = s.storage_info_code
-		                <where>
-		                	AND product_se = 'PT02'
-		                	AND i.inventory_qy > 0
-		                <if test='productCode != null and productCode != ""'>
-		                	AND i.product_code LIKE '%' || UPPER(#{productCode}) || '%'
-		                </if>
-		                <if test='productName != null and productName != ""'>
-		                	AND p.product_name LIKE '%' || UPPER(#{productName}) || '%'
-		                </if>
-		                <if test='searchColor != null and searchColor != ""'>
-		                	AND i.product_color LIKE '%' || UPPER(#{searchColor}) || '%'
-		                </if>
-		                <if test='location != null and location != ""'>
-		                	AND s.storage_info_name LIKE '%' || UPPER(#{location}) || '%'
-		                </if>
-		                <if test='searchLot != null and searchLot != ""'>
-		                	AND i.lot LIKE '%' || UPPER(#{searchLot}) || '%'
-		                </if>
-		                <if test='sizeCode != null and sizeCode != ""'>
-		                	AND get_comm(i.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
-		                </if>
-		                <if test='startStoreDate != null and startStoreDate != ""'>
-		                	AND TRUNC(i.store_date) >= #{startStoreDate}
-		                </if>
-		                <if test='endStoreDate != null and endStoreDate != ""'>
-		                	AND TRUNC(i.store_date) >= #{endStoreDate}
-		                </if>
-		                <if test='startStoreDate != null and startStoreDate != "" and endStoreDate != null and endStoreDate != ""'>
-		                	AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
-		                </if>
-		                </where>
-		                GROUP BY i.lot, 
-							    p.product_name, 
-							    i.product_color, 
-							    get_comm(i.product_size), 
-							    i.storage_location, 
-							    i.inventory_qy, 
-							    i.product_code, 
-							    i.store_date, 
-							    s.storage_info_name, 
-							    s.vl, 
-							    p.vl
-		                ORDER BY CASE 
-					        WHEN (s.vl - (i.inventory_qy * p.vl)) <![CDATA[ < ]]> 0 THEN 0
-					        ELSE 1
-					    END ASC, 
-					    i.lot DESC
-		            ) a
-		        WHERE ROWNUM <![CDATA[ <= ]]> #{end} ) page
-		    WHERE page.rn <![CDATA[ >= ]]> #{start}
-	</select>
+    SELECT *
+    FROM (
+        SELECT 
+            MAX(i.product_code) AS product_code,
+            p.product_name,
+            i.product_color,
+            get_comm(i.product_size) AS product_size,
+            i.lot,
+            i.storage_location,
+            i.inventory_qy,
+            i.store_date,
+            s.storage_info_name AS storageName,
+            (s.vl - storage_usage.total_used_space) AS vl,
+            CASE 
+                WHEN (s.vl - storage_usage.total_used_space) <![CDATA[ < ]]> 0 THEN '과적'
+                ELSE '정상'
+            END AS storage_status,
+            ROW_NUMBER() OVER (
+                ORDER BY 
+                    CASE 
+                        WHEN (s.vl - storage_usage.total_used_space) <![CDATA[ < ]]> 0 THEN 0
+                        ELSE 1  
+                    END ASC, 
+                    i.lot DESC
+            ) AS rn
+        FROM 
+            inventory i
+        JOIN 
+            product_info p ON i.product_code = p.product_code
+        JOIN 
+            storage_info s ON i.storage_location = s.storage_info_code
+        JOIN 
+            (SELECT 
+                i.storage_location, 
+                SUM(i.inventory_qy * p.vl) AS total_used_space
+             FROM 
+                inventory i
+             JOIN 
+                product_info p ON i.product_code = p.product_code
+             WHERE 
+                i.product_se = 'PT02'
+             GROUP BY 
+                i.storage_location
+            ) storage_usage ON i.storage_location = storage_usage.storage_location
+        <where>
+            AND i.product_se = 'PT02'
+            AND i.inventory_qy > 0
+            <if test='productCode != null and productCode != ""'>
+                AND i.product_code LIKE '%' || UPPER(#{productCode}) || '%'
+            </if>
+            <if test='productName != null and productName != ""'>
+                AND p.product_name LIKE '%' || UPPER(#{productName}) || '%'
+            </if>
+            <if test='searchColor != null and searchColor != ""'>
+                AND i.product_color LIKE '%' || UPPER(#{searchColor}) || '%'
+            </if>
+            <if test='location != null and location != ""'>
+                AND s.storage_info_name LIKE '%' || UPPER(#{location}) || '%'
+            </if>
+            <if test='searchLot != null and searchLot != ""'>
+                AND i.lot LIKE '%' || UPPER(#{searchLot}) || '%'
+            </if>
+            <if test='sizeCode != null and sizeCode != ""'>
+                AND get_comm(i.product_size) LIKE '%' || UPPER(#{sizeCode}) || '%'
+            </if>
+            <if test='startStoreDate != null and startStoreDate != ""'>
+                AND TRUNC(i.store_date) >= #{startStoreDate}
+            </if>
+            <if test='endStoreDate != null and endStoreDate != ""'>
+                AND TRUNC(i.store_date) <![CDATA[ <= ]]> #{endStoreDate}
+            </if>
+            <if test='startStoreDate != null and startStoreDate != "" and endStoreDate != null and endStoreDate != ""'>
+                AND TRUNC(i.store_date) BETWEEN #{startStoreDate} and #{endStoreDate}
+            </if>
+        </where>
+        GROUP BY 
+            i.lot, 
+            p.product_name, 
+            i.product_color, 
+            get_comm(i.product_size), 
+            i.storage_location, 
+            i.inventory_qy, 
+            i.product_code, 
+            i.store_date, 
+            s.storage_info_name, 
+            s.vl, 
+            storage_usage.total_used_space
+    ) a
+    WHERE a.rn BETWEEN #{start} AND #{end}
+</select>
+	
+
 	
 	<!-- 재고조정 LOT 카운터 -->
 	<select id="getCountProduct">
@@ -256,15 +277,21 @@ JOIN
 	
 	<!-- 창고 위치 코드 리스트 -->
 	<select id="storageInfoList" resultType="storageInfoDTO">
-		SELECT s.storage_code,
-		       s.storage_info_code,
-		       s.storage_info_name,
-		       SUM(i.inventory_qy * p.vl) AS total_vl_value
-		FROM storage_info s
-		LEFT JOIN inventory i ON s.storage_info_code = i.storage_location
-		LEFT JOIN product_info p ON i.product_code = p.product_code
-		GROUP BY s.storage_code, s.storage_info_code, s.storage_info_name, s.vl
-		HAVING s.vl - NVL(SUM(i.inventory_qy * p.vl),0) > 0
+		SELECT 
+			    s.storage_code,
+			    s.storage_info_code,
+			    s.storage_info_name,
+			    NVL(SUM(i.inventory_qy * p.vl), 0) AS total_vl_value
+			FROM 
+			    storage_info s
+			LEFT JOIN 
+			    inventory i ON s.storage_info_code = i.storage_location
+			LEFT JOIN 
+			    product_info p ON i.product_code = p.product_code
+			GROUP BY 
+			    s.storage_code, s.storage_info_code, s.storage_info_name, s.vl
+			HAVING 
+			    s.vl - NVL(SUM(i.inventory_qy * p.vl), 0) > 0
 	</select>
 	
 	<!-- 재고조정 위치이동 -->
