@@ -166,13 +166,10 @@ public class CommonController {
 		addDTO.setAddressMain(companyDTO.getAddressMain());
 		addDTO.setAddressInfo(companyDTO.getAddressInfo());
 		addDTO.setAddressReference(companyDTO.getAddressReference());
-		
-		
 		service.insertCompany(companyDTO, addDTO);
 		
 		attr.addFlashAttribute("result", true);
-		
-		return "redirect:main";
+		return "login/register_supply";
 	}
 	
 	// 인증 여부 확인
