@@ -106,13 +106,13 @@
 		FROM    material_order_details md JOIN product_info pi
 		                                    ON (md.product_code = pi.product_code)
                                      LEFT JOIN delivery_details dd
-                                            ON (md.mtril_order_code = dd.order_code)
-                                            AND (md.product_color = dd.product_color)
+                                            ON (md.mtril_order_code = dd.order_code
+                                            AND md.product_code = dd.product_code
+                                            AND md.product_color = dd.product_color)
 		WHERE   md.mtril_order_code = #{orderCode}
         GROUP BY md.product_code, pi.product_name, md.product_color, md.order_qy, md.amount, md.product_color, md.unit_price
         HAVING (md.order_qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0 
 		ORDER BY md.product_code
-		
 	</select>
 	
 	<select id="getAddress">
