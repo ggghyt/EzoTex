@@ -99,7 +99,7 @@
 		        pi.product_name AS product_name,
 		        md.product_color AS product_color,
 		        md.order_qy AS req_qy,
-                (md.order_qy - COALESCE(dd.delivery_qy, 0)) AS rest_qy, --잔여량 구하기
+                (md.order_qy - COALESCE(SUM(dd.delivery_qy), 0)) AS rest_qy, --잔여량 구하기
 		        md.amount AS price,	-- 제품 단가 금액 합계
 		        md.product_color AS product_color,
 		        md.unit_price AS unit_price
@@ -109,8 +109,10 @@
                                             ON (md.mtril_order_code = dd.order_code)
                                             AND (md.product_color = dd.product_color)
 		WHERE   md.mtril_order_code = #{orderCode}
-        AND     (md.order_qy - COALESCE(dd.delivery_qy, 0)) > 0
+        GROUP BY md.product_code, pi.product_name, md.product_color, md.order_qy, md.amount, md.product_color, md.unit_price
+        HAVING (md.order_qy - COALESCE(SUM(dd.delivery_qy), 0)) > 0 
 		ORDER BY md.product_code
+		
 	</select>
 	
 	<select id="getAddress">
@@ -293,6 +295,7 @@
 		                           JOIN material_order_details mo
 		                             ON (dd.order_code = mo.mtril_order_code)
 		WHERE  dd.delivery_code = #{deliveryCode}
+        GROUP BY dd.product_code, pi.product_name, dd.product_color, mo.order_qy, dd.request_qy, dd.delivery_qy
 		ORDER BY dd.product_code
 	</select>
 </mapper>
