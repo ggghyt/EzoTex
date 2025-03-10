@@ -664,14 +664,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 		  let newData2 = [];
 		  // 등록이벤트
 		  function insertOrder(productCode) {
-			  	// 업체 선택안하면 알림
 		        if (!companyCode.value.trim()) {
 		        	failToast("업체를 선택해야 합니다.");
-		            return false;
-		        }
-		        // 납기일 선택안하면 알림
-		        if (!deliveryRequestDeadline.value.trim()){
-		        	failToast("납기일을 선택해야 합니다.");
 		            return false;
 		        }
 		        
