@@ -134,7 +134,7 @@
 				         </div>	
 				         <div class="col-8 col-sm-2 col-lg-6 d-flex mb-2 align-items-center justify-content-end wbreak p-0">
 					        <button type="button" onclick="searchOrderList()" class="btn btn-warning mag-glass-btn ml-4 ms-3 me-2"><i class="fa-solid fa-magnifying-glass icon-left" style="color: #ffffff;"></i></button>
-				            <button type="reset" onclick="resetCondition()" class="btn btn-secondary mag-glass-btn resetBtn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
+				            <button type="reset" onclick="resetCondition()" class="btn btn-secondary mag-glass-btn"><i class="fa-solid fa-repeat icon-left" style="color: #ffffff;"></i></button>
 				         </div>
 					</div>
 				</div>
@@ -167,7 +167,7 @@
 				        
 				        <div class="d-flex align-items-center ms-auto gap-2">
 				            <label for="amountMin" class="wbreak">작성자 :</label>
-				            <input type="text" class="form-control form-control-sm chargerName w-25 text-center" readOnly>
+				            <input type="text" class="form-control form-control-sm chargerName w-25 text-center" style="width: 100px !important" readOnly>
 				        </div>
 				    </div>
 				</div>
@@ -342,7 +342,7 @@
 			              fontWeight: 'bold'
 			            }
 			          }},
-				{ header: "요약", name: "summary", sortable: true, align: 'left', minWidth: 224, ellipsis:true},			
+				{ header: "요약", name: "summary", align: 'left', minWidth: 167, ellipsis:true},			
 				{ header: "등록일", name: "registDate", sortable: true, align: 'center', minWidth: 80},
 				{ header: "납기일", name: "dedt", sortable: true, align: 'center', minWidth: 80},
 				{ header: "비고", name: "remark", hidden: true},
@@ -656,11 +656,13 @@
         
 		//입력값 초기화
         document.querySelector('.resetBtn').addEventListener("click", () => {
-        	console.log('작동');
+        	
+        	console.log('리셋버튼 작동');
+        	
         	document.querySelector(".big-box").value = lBox;
         	document.querySelector(".middle-box").value = mBox;
         	document.querySelector(".small-box").value = sBox;
-        	document.querySelector(".boxQySum").value = totalBoxQy;
+        	document.querySelector(".boxQySum").value = Number(lBox + mBox + sBox);
         })
 	</script>
 </body>
