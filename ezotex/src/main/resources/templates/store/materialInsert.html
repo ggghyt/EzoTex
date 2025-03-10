@@ -333,7 +333,7 @@
 	   	        mtGrid2.setRow(rowKey, row);
 	   	        return;
 	   	    } else if (val < 0){ // 음수면 양수로 전환 
-	   	        val = val * -1;
+	   	        val = 0;
 	   	        row.productInsertQy = val;
 	   	        mtGrid2.setRow(rowKey, row);
 	   	        failToast('입력값은 음수가 될 수 없습니다.');

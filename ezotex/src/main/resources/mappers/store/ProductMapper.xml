@@ -261,10 +261,10 @@ JOIN
 		       s.storage_info_name,
 		       SUM(i.inventory_qy * p.vl) AS total_vl_value
 		FROM storage_info s
-		JOIN inventory i ON s.storage_info_code = i.storage_location
-		JOIN product_info p ON i.product_code = p.product_code
+		LEFT JOIN inventory i ON s.storage_info_code = i.storage_location
+		LEFT JOIN product_info p ON i.product_code = p.product_code
 		GROUP BY s.storage_code, s.storage_info_code, s.storage_info_name, s.vl
-		HAVING s.vl - SUM(i.inventory_qy * p.vl) > 0
+		HAVING s.vl - NVL(SUM(i.inventory_qy * p.vl),0) > 0
 	</select>
 	
 	<!-- 재고조정 위치이동 -->
