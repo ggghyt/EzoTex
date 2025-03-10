@@ -668,6 +668,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 		        	failToast("업체를 선택해야 합니다.");
 		            return false;
 		        }
+		        if (!deliveryRequestDeadline.value.trim()){
+		        	failToast("납기일을 선택해야 합니다.");
+		            return false;
+		        }
 		        
 			    const orderQuantity = document.getElementById("orderQuantity");
 			    const orderAmount = document.getElementById("orderAmount");
