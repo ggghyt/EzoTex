@@ -680,6 +680,11 @@ let clickedData = ""; // 클릭한 행의 데이터
 		            return false;
 	        	}
 		        
+		        if (!deliveryRequestDeadline.value.trim()){
+		        	failToast("납기일을 선택해야 합니다.");
+		            return false;
+		        }
+		        
 		        // newData2가 비어있으면 등록 불가
 		        if (newData2.length === 0) {
 		        	failToast("등록할 제품이 없습니다.");
