@@ -43,7 +43,7 @@
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!---->
 					<button type="button" id="resiBtn"
-						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+						class="btn btn-outline-primary" data-bs-dismiss="modal">등록</button>
 					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
@@ -461,7 +461,7 @@
 				<div class="card card-body mt-3">
 					<div class="row">
 						<!-- Toast Grid를 표시할 div 추가 -->
-						<p class="fs-5 fw-bolder">납품내역 선택 모달</p>
+						<p class="fs-5 fw-bolder">납품내역 선택</p>
 						<!-- 그리드를 표시할 div -->
 						<div id="deliveryGrid" style="width: 100%;"></div>
 					</div>
@@ -778,6 +778,7 @@
 			    }
 
 			    console.log("반품 등록 성공:", data);
+			    successToast("작업이 완료되었습니다.");
 
 			    // 성공 시 페이지 리로드
  			        setTimeout(function() {
