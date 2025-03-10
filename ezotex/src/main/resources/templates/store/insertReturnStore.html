@@ -787,7 +787,7 @@
 		            storeGrid3.setValue(rowKey, columnName, changed.prevValue == null ? 0 : changed.prevValue);
 		            return;
 		        } else if (newValue < 0) { // 음수면 양수로 전환
-		            newValue = Math.abs(newValue);
+		            newValue = 0;
 		            storeGrid3.setValue(rowKey, columnName, newValue);
 		            failToast('입력값은 음수가 될 수 없습니다.');
 		        }

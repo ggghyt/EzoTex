@@ -390,7 +390,7 @@
 		   	     	storeProduct.setRow(rowKey, row);
 		   	       return;
 		   	    } else if (val < 0){ // 음수면 양수로 전환 
-		   	        val = val * -1;
+		   	        val = 0;
 		   	        row.productQy = val;
 		   	        storeProduct.setRow(rowKey, row);
 		   	        failToast('입력값은 음수가 될 수 없습니다.');
@@ -565,13 +565,27 @@
 		// 제품 추가 버튼 클릭 시
 		addProduct.addEventListener('click', function () {
 			
+			
+			let colorElement = document.querySelector('#color').value;
+		    let sizeElement = document.querySelector('#size').value;
+			
+			console.log('scolor',colorElement);
+			console.log('check', colorElement == null);
 		    productCode = document.querySelector('#productCode').value;
 		    
 		    if (productCode == null || productCode == "") {
 		    	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 		    	document.querySelector("#warning").innerText = "제품을 선택하세요";
 		    	modifyMOdal.show();
-		    } else {
+		    }else if(colorElement == "null" || !colorElement || colorElement == ""){
+	        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+		    	document.querySelector("#warning").innerText = "색상을 선택하세요.";
+		    	modifyMOdal.show();
+	        }else if(sizeElement == "null" || !sizeElement || sizeElement == ""){
+	        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
+		    	document.querySelector("#warning").innerText = "사이즈를 선택하세요.";
+		    	modifyMOdal.show();
+	        } else {
 		        // 이미 3번 그리드에 있는지 확인
 		        let isProductExist = false;
 		
@@ -581,12 +595,14 @@
 		                isProductExist = true; // 이미 있는 제품
 		            }
 		        });
+		        
+		  
 		
 		        if (isProductExist) {
 		        	let modifyMOdal = new bootstrap.Modal(document.getElementById('modifyMOdal'));
 			    	document.querySelector("#warning").innerText = "이미 등록된 제품입니다.";
 			    	modifyMOdal.show();
-		        } else {
+		        }else {
 		            // 새로운 제품 추가
 		            let objInfo = {
 		                productCode: productCode,
