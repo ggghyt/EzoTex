@@ -170,7 +170,7 @@ let clickedData = ""; // 클릭한 행의 데이터
       scrollX: false, // 가로 스크롤바 비활성화
       scrollY: false, // 세로 스크롤바 비활성화
       rowHeight: 'auto',  // 행 높이를 자동으로 조정
-      rowHeaders: ['checkbox',{ type: 'rowNum', header: 'NO' }],
+      rowHeaders: ['checkbox',{ type: 'rowNum', header : 'NO', width: 60 }],
       columns: [  // 컬럼 설정 (빈 컬럼으로 초기화)
         {
           header: '제품 코드',
@@ -664,6 +664,11 @@ let clickedData = ""; // 클릭한 행의 데이터
 		            return false;
 		        }
 		        
+		        if (!deliveryRequestDeadline.value.trim()) {
+		        	failToast("납기일을 선택해야합니다.");
+		            return false;
+		        }
+		        
 			    const orderQuantity = document.getElementById("orderQuantity");
 			    const orderAmount = document.getElementById("orderAmount");
 			    
@@ -883,7 +888,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 						resizable : false
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders: [{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '제품코드',
@@ -1029,7 +1034,7 @@ function addProductToOrderList(product) {
 						resizable : false,
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders:[{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '업체코드',
@@ -1204,6 +1209,10 @@ input[readonly] {
 
 td {
     padding: 0 20px !important;
+}
+
+.tui-grid-cell.tui-grid-cell-row-header {
+    padding: 0 !important;
 }
 
 .tui-grid-layer-state {

@@ -7,8 +7,9 @@
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script	src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"></script>
 </head>
 <body>
 	<h3 class="fs-3 fw-bold">| 주문 내역 조회</h3>
@@ -87,12 +88,15 @@
 	</div>
 	<script>
 	document.getElementById('xlsx').addEventListener('click', () => {
-		  if(grid.getRowCount() == 0) return; // 값이 없으면 미동작
-		  grid.export('xlsx', {
-		    useFormattedValue: true,
-		    fileName: '주문 내역' + '_' + dateFormatter().replaceAll('-','')
-		  });
-		});
+	    if (grid.getRowCount() == 0) return; // 값이 없으면 미동작
+	    grid.export('xlsx', {
+	        useFormattedValue: true,
+	        fileName: '주문 내역' + '_' + dateFormatter().replaceAll('-', ''),
+	        exportOptions: {
+	            ignoredColumns: ['details'] // '상세보기' 컬럼 제외
+	        }
+	    });
+	});
 	</script>
 
 
@@ -108,6 +112,7 @@
 		const grid = new tui.Grid(
 				{
 					el : document.getElementById('orderGrid'), // 그리드를 표시할 div
+					bodyHeight : 400,
 					data : orderList, // 서버에서 전달된 데이터
 					columnOptions : {
 						resizable : true
