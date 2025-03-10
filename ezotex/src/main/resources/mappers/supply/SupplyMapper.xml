@@ -14,7 +14,7 @@
 		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
 		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
 		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
-		ORDER  BY product_code DESC
+		ORDER  BY product_code
 	</select>
 	
 	<!-- 해당 제품의 전체 옵션 목록 (사이즈/색상 중 한 가지만 있거나 단일 제품인 경우 필요) -->

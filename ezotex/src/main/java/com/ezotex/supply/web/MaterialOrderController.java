@@ -24,7 +24,7 @@ public class MaterialOrderController {
 	@GetMapping("mtrOrder")
 	public String materialOrder(@RequestParam Map<String, String> plan, Model model) {
 		model.addAttribute("prdLclasList", prdService.listLclas("PT01")); // 자재 대분류 기본 출력
-		model.addAttribute("selectedPlan", plan);
+		if(!plan.isEmpty()) model.addAttribute("selectedPlan", plan);
 		return "supply/materialOrder";
 	}
 	

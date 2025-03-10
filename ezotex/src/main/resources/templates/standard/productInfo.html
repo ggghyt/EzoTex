@@ -44,7 +44,7 @@ visibility: visible;
 	<div class="col" style="padding: 10px">
 		<div class="row">
 			<!-- 제품 검색 조건 -->
-			<div class="card">
+			<div class="card bg-secondary">
 			<div class="card-body">
 			<div class="search">
 			<div class="row me-2">
@@ -112,7 +112,7 @@ visibility: visible;
 				</div>
 			</div>
 			<div class="col me-2" style="height: 525px; text-align: center; margin-top: 20px">
-				<img id="preview" style="width: auto; height: 90%;" onerror="this.src='/images/no_img.png'"/>
+				<img id="preview" style="width: 100%; height: 500px; object-fit: contain; object-position: left;" onerror="this.src='/images/no_img.png'"/>
 			</div>
 			<form action="/standard/productInsert" method="post" enctype="multipart/form-data" onsubmit="return submit_check()">
 				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -306,6 +306,12 @@ visibility: visible;
 						</div>
 						<div style="margin: 0px auto; width: 80%">
 							<div id="optionGrid">
+							</div>
+						</div>
+						<div class="row me-2">
+							<div class="col-2 col-lg-2 d-flex mb-2"></div>
+							<div class="col-10 col-lg-10 d-flex mb-2">
+								<p>각 제품 옵션별 단가를 설정해주세요.<br>적혀진 옵션만 저장됩니다.</p>
 							</div>
 						</div>
 					</div>
@@ -659,7 +665,7 @@ visibility: visible;
 			}
 			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
 			for (let i = 0 ; i < option_size.length ; i++) {
-				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', formatter: row => numberStringFormatter(row.value) })
+				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', align: 'right', formatter: row => numberStringFormatter(row.value) })
 			}
 			
 			let option_color = []
@@ -724,7 +730,7 @@ visibility: visible;
 		let modalSize = document.querySelector("#modalSize");
 		modalSize.innerHTML = "";
 		let o = document.createElement('option');
-		o.setAttribute("value", "");
+		o.setAttribute("value", "SI00");
 		o.innerText = "없음";
 		modalSize.appendChild(o);
 		for (let i = 0 ; i < data.length ; i++) {

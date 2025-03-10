@@ -1,5 +1,6 @@
 package com.ezotex.standard.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -59,4 +60,5 @@ public interface StandardService {
 	List<CalenderDTO> calendarInfo();
 	List<CalenderDTO> calendarCount();
 	List<ProductListInfoDTO> mainProductImg();
+	Map<String, BigDecimal> mainTodayCount();
 }
