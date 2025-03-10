@@ -668,7 +668,12 @@
         	//입력후 삭제하면 0이라서, 출고 수량이 0인것의 개수와 배열의 길이가 같으면 작동되면 안됨.
         	let zeroCnt = 0;
         	
+        	//출고수량 합계 구하는 변수
         	let sum = 0;
+        	
+        	//요청 수량 구하는 변수
+        	let reqSum = 0;
+        	
         	for(let i=0; i<orderInfo.length; i++) {
         		if(orderInfo[i].deliveryQy == null) {
         			failToast('수량을 입력해주세요');
@@ -677,12 +682,20 @@
         		if(orderInfo[i].deliveryQy == 0) {
         			zeroCnt++;
         		}
+        		
+        		//츨고수량, 요청수량 구하기
         		sum += orderInfo[i].deliveryQy;
-        		if(orderInfo[i].reqQy > sum) {
-        			splitCnt = 1;
-        		}
+        		reqSum += orderInfo[i].reqQy
         	
         	}
+        	
+      		if(reqSum > sum) {
+      			console.log('작동');
+      			splitCnt = 1;
+      		}
+      		
+        	console.log("출고 수량 합계", sum);
+        	console.log("요청 수량 합계", reqSum);
         	
         	if(zeroCnt == orderInfo.length) {
         		failToast('수량을 입력해주세요');
@@ -701,6 +714,7 @@
         		//출고수량에 잔여수량 입력하기
         		selectedOrderData[i].deliveryQy = 0;
         	}
+        	successToast("수량이 변경되었습니다.");
         	document.querySelector(".read-divyTotalQy").value = 0;
         	productListGrid.resetData(selectedOrderData);
         })
@@ -720,6 +734,7 @@
         	
         	document.querySelector(".read-divyTotalQy").value = qySum;
         	productListGrid.resetData(selectedOrderData);
+        	successToast("수량이 변경되었습니다.");
         })
         
         //등록 데이터 보내기 통신 + 잔여량 모달 출력
@@ -761,6 +776,9 @@
 			sendArr.push(masterObj);
 			
 			console.log('보내기 직전', sendArr);
+			
+			
+			
 			const response = fetch('/delivery/supplyDeliveryRegist', {
                 method: 'post',
                 headers: {
