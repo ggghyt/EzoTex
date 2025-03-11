@@ -293,7 +293,9 @@
 		FROM   delivery_details dd JOIN product_info pi
 		                             ON dd.product_code = pi.product_code
 		                           JOIN material_order_details mo
-		                             ON (dd.order_code = mo.mtril_order_code)
+		                             ON (dd.order_code = mo.mtril_order_code
+                                     AND dd.product_code = mo.product_code
+                                     AND dd.product_color = mo.product_color)
 		WHERE  dd.delivery_code = #{deliveryCode}
         GROUP BY dd.product_code, pi.product_name, dd.product_color, mo.order_qy, dd.request_qy, dd.delivery_qy
 		ORDER BY dd.product_code
