@@ -47,18 +47,21 @@
         WHERE    de.delivery_company_code IS NULL
         <if test='search.dedtAddress != null and search.dedtAddress != ""'>
 			AND 	get_address(de.company_code) LIKE '%' || #{search.dedtAddress} || '%'
-			</if>
-			<if test='search.companyName != null and search.companyName != ""'>
+		</if>
+		<if test='search.companyName != null and search.companyName != ""'>
 			AND    de.company_name LIKE '%' || #{search.companyName} || '%'
-			</if>
-			<choose>
-	              <when test="search.deliveryStatus != null and search.deliveryStatus != ''"> 
-	                        AND de.delivery_status = #{search.deliveryStatus}
-	              </when>
-	              <otherwise> 
-	                       AND de.delivery_status IN ('DS03', 'DS05')
-	              </otherwise>
-	        </choose>
+		</if>
+		<choose>
+              <when test="search.deliveryStatus == 'All'"> 
+              		AND de.delivery_status IN ('DS03', 'DS05')
+              </when>
+              <when test="search.deliveryStatus != null and search.deliveryStatus != ''"> 
+                     AND de.delivery_status = #{search.deliveryStatus}
+              </when>
+              <otherwise> 
+                    AND de.delivery_status IN ('DS03')
+              </otherwise>
+        </choose>
 	</select>
 	
 	<!-- 배송기사 상자 개수 조회 -->
