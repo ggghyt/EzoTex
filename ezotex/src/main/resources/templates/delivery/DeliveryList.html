@@ -759,7 +759,7 @@
 		let selectedProduct = '';
 		
 		productList.on('focusChange', ev => {
-			productList.removeRowClassName(lastClicked, 'bg-blue'); // 이전 선택 행 배경색 삭제
+			productList.removeRowClassName(selectedProduct, 'bg-blue'); // 이전 선택 행 배경색 삭제
 			productList.addRowClassName(ev.rowKey, 'bg-blue'); // 선택된 행 배경색 추가
 			selectedProduct = ev.rowKey; // 선택된 행 기억
 			
