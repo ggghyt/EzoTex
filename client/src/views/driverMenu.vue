@@ -465,7 +465,7 @@ const submitFormBtn = async() => {
   font-size: 15px;
 }
 #containerApp {
-  width: 100%;
+  width: 375px;
 }
 .modal-dialog {
     height: auto !important;
