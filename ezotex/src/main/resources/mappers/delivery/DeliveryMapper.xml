@@ -301,7 +301,8 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		            SELECT  de.delivery_code AS delivery_code,
+		            SELECT  ROWNUM AS rn,
+		            		de.delivery_code AS delivery_code,
 		                    ol.product_order_code AS product_order_code,
 		                    de.company_code AS company_code,
 		                    de.company_name AS company,
