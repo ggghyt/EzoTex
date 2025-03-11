@@ -8,8 +8,7 @@
 		FROM (
 		    select info.*
 		    from (
-	                SELECT /*+ INDEX_DESC(ol PK_ORDER_LIST)*/
-	                       ROWNUM AS rn,
+	                SELECT ROWNUM AS rn,
 	                       ol.product_order_code AS product_order_code,
 	                       ol.company_code AS company_code,
 	                       ol.company AS company,
@@ -63,10 +62,10 @@
 			                  </otherwise>
 			            </choose>
 	               	</where>  
-	               	ORDER BY ol.product_order_code DESC              
 		    )info
 		    WHERE info.rn  <![CDATA[ <= ]]>#{cri.end}) page
 		WHERE page.rn  <![CDATA[ >= ]]>#{cri.start}
+        ORDER BY page.product_order_code DESC              
 	</select>
 	
 	<!-- 주문 조회 전체 수량(페이징 용) -->
@@ -302,9 +301,7 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		            SELECT  /*+ INDEX_DESC(de PK_DELIVERY)*/
-		                    ROWNUM AS rn,
-		                    de.delivery_code AS delivery_code,
+		            SELECT  de.delivery_code AS delivery_code,
 		                    ol.product_order_code AS product_order_code,
 		                    de.company_code AS company_code,
 		                    de.company_name AS company,
@@ -371,10 +368,10 @@
 			                  </otherwise>
 			            </choose>
 	               	</where>  
-	               	ORDER BY de.delivery_code DESC
 		            )info
 		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
 		WHERE page.rn <![CDATA[ >= ]]>#{cri.start}
+        ORDER BY page.delivery_code DESC
 	</select>
 	
 	<!-- 납품조회 카운트 -->
@@ -438,8 +435,7 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		            SELECT  /*+ INDEX_DESC(de PK_DELIVERY)*/
-		                    ROWNUM AS rn,
+		            SELECT  ROWNUM AS rn,
 		                    de.delivery_code AS delivery_code,
 		                    de.company_code AS company_code,
 		                    de.company_name AS company,
@@ -492,10 +488,11 @@
 		            <if test="cri.dedtStart != null and cri.dedtStart != '' and cri.dedtEnd != null and cri.dedtEnd != ''">
 		                AND TO_DATE(de.dedt) BETWEEN TO_DATE(#{cri.dedtStart}, 'YYYY-MM-DD') AND TO_DATE(#{cri.dedtEnd}, 'YYYY-MM-DD') --납기일
 		            </if>    
-			        ORDER BY de.delivery_code DESC
+			        
 		            )info
 		    WHERE info.rn <![CDATA[ <= ]]>#{cri.end})page
 		WHERE page.rn <![CDATA[ >= ]]>#{cri.start}
+		ORDER BY page.delivery_code DESC
 	</select>
 	
 	<!-- 포장할 리스트 조회 -->

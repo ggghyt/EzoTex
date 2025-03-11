@@ -38,6 +38,7 @@
 		        )info
 		    WHERE  info.rn <![CDATA[ <= ]]>#{search.end})page
 		WHERE  page.rn <![CDATA[ >= ]]>#{search.start}
+		order by page.delivery_code desc
 	</select>
 	
 	<!-- 배송기사 배송지 리스트 조회 전체 레코드 수-->
