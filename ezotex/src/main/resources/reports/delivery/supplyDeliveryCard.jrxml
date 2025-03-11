@@ -45,7 +45,7 @@ FROM ( SELECT dd.product_code AS product_code,
                dd.request_qy AS request_qy,
                SUM(dd.delivery_qy) AS delivery_qy,
                dd.unit_price AS unit_price,
-               SUM(dd.price) AS price
+               SUM(dd.delivery_qy)*dd.unit_price AS price
         FROM   delivery_details dd JOIN product_info pi
                                      ON (dd.product_code = pi.product_code)
         WHERE  dd.delivery_code = $P{P_DELIVERY_CODE}
