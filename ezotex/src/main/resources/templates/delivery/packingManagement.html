@@ -650,6 +650,11 @@
             	console.log('서버 통신결과:', result);
             	if(result.result == 'success') {
 						successToast("작업이 완료되었습니다.");
+						//데이터 다시가져오기
+						deliveryListGrid.readData();
+						productListGrid.clear();
+						productDetails.clear();
+						productLot.clear();
             		}
             	})
 		}) 
