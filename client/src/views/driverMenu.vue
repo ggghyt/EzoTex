@@ -1,11 +1,11 @@
 <template>  
+    <!-- 토스트 메시지 -->
+    <transition name="fade">
+      <div v-show="showToast" class="toast show" :class="toastClass">
+        {{ toastMessage }}
+      </div>
+    </transition>
     <div id="containerApp">
-      <!-- 토스트 메시지 -->
-      <transition name="fade">
-        <div v-show="showToast" class="toast show" :class="toastClass">
-          {{ toastMessage }}
-        </div>
-      </transition>
     <div class="EzoTex-title mt-5">Ezo<span class="texColor">Tex</span></div>
     <div class="card card-body mt-0">
       <p class="fs-6 fw-bold deliveryTitle">| 배송지 목록</p>
@@ -480,6 +480,10 @@ const submitFormBtn = async() => {
 
 .modal-backdrop {
     z-index: 1040 !important; /* 배경 어둡게 하는 부분 */
+}
+
+.container {
+  width: 350px;
 }
 .tui-grid-container {
     width: 100%;
