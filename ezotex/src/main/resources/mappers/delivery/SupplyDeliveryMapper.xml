@@ -8,8 +8,7 @@
 		FROM (
 		    SELECT *
 		    FROM (
-		        SELECT /*+ INDEX_DESC(material_order  PK_MATERIAL_ORDER)*/
-		        	   ROWNUM rn,
+		        SELECT ROWNUM rn,
 		               mtril_order_code AS mtrilOrderCode,
 		               product_summary('material_order_details', mtril_order_code) AS Summary,
 		               charger_name AS orderCharger,
@@ -53,6 +52,7 @@
 		        ) info
 		    WHERE info.rn <![CDATA[ <= ]]> #{searchDto.end}) page
 		WHERE page.rn <![CDATA[ >= ]]> #{searchDto.start}
+		order by mtrilOrderCode desc
 	</select>
 	
 	<!-- 검색결과 카운트 -->
@@ -166,8 +166,7 @@
 		FROM (
 			    SELECT *
 			    FROM (
-					SELECT  /*+ INDEX_DESC(de PK_DELIVERY)*/
-							ROWNUM AS rn,
+					SELECT  ROWNUM AS rn,
 							de.delivery_code AS delivery_code,
 					        de.mtril_order_code AS mtril_order_code,
 					        de.order_date AS order_date,
@@ -226,10 +225,10 @@
 		                           AND delivery_status IN ('DS01', 'DS05')
 		                  </otherwise>
 		            </choose>
-		            ORDER BY de.delivery_code DESC
 				        ) info
 		    WHERE info.rn <![CDATA[ <= ]]> #{cri.end}) page
 		WHERE page.rn <![CDATA[ >= ]]> #{cri.start}
+		order by delivery_code desc
 	</select>
 	
 	<!-- 출고 내역 조회 총 레코드 수 -->
