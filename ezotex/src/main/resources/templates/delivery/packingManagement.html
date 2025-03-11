@@ -659,10 +659,10 @@
         	
         	console.log('리셋버튼 작동');
         	
-        	document.querySelector(".big-box").value = lBox;
-        	document.querySelector(".middle-box").value = mBox;
-        	document.querySelector(".small-box").value = sBox;
-        	document.querySelector(".boxQySum").value = Number(lBox + mBox + sBox);
+        	document.querySelector(".big-box").value = Number(lBox);
+        	document.querySelector(".middle-box").value = Number(mBox);
+        	document.querySelector(".small-box").value = Number(sBox);
+        	document.querySelector(".boxQySum").value = (Number(lBox) + Number(mBox) + Number(sBox));
         })
 	</script>
 </body>
