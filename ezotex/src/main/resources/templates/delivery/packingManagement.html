@@ -365,7 +365,7 @@
 				{ header: "출고번호", name: "deliveryCode", hidden: true},
 				{ header: "제품코드", name: "productCode", align: 'center'},
 				{ header: "제품명", name: "productName", align: 'left'},
-				{ header: "출고량합계", name: "qySum", align: 'right', formatter: row => numberFormat(row.value)},
+				{ header: "출고량합계", name: "qySum", align: 'center', formatter: row => numberFormat(row.value)},
 				{ header: "부피", name: "vl", hidden: true},
 			]
 		});
@@ -649,7 +649,7 @@
             .then(result => {
             	console.log('서버 통신결과:', result);
             	if(result.result == 'success') {
-						successToast("포장등록이 완료되었습니다.");
+						successToast("작업이 완료되었습니다.");
             		}
             	})
 		}) 
