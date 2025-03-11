@@ -863,15 +863,10 @@ input[type=date] {
 
 		    	})
 		    	
-		    //초기화, 제품 수량 자동입력 기능시 제품이름을 넣기 위한 변수
-			let selectedProductName = '';
-		 	
 	    	// 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
 	    	productDetailgrid.on('afterChange', ev => {
 	    	    //console.log('선택 제품코드:', productCode);
 	    	    
-	    	    //초기화, 제품 수량 자동입력 기능시 제품이름을 넣기 위한 값 할당
-				selectedProductName = rowData.productName;
 	    	    
 	    	    //if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
 	    	    ev.changes.forEach(change => {
