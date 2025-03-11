@@ -6,8 +6,6 @@
 	<select id="listBomProduct" resultType="map" parameterType="ProductDTO">
 		SELECT DISTINCT(p.product_code),
 		       p.product_name,
-		       c.lclas,
-			   c.sclas,
 		       CASE WHEN p.product_code IN (SELECT DISTINCT(oo.product_code) -- 옵션의 BOM이 없는 제품
 		                                      FROM product_option oo LEFT JOIN bom b ON b.product_code = oo.product_code
 		                                       AND (b.product_size = oo.product_size OR (b.product_size IS NULL AND oo.product_size IS NULL))
@@ -16,25 +14,40 @@
 		              OR p.product_code NOT IN (SELECT product_code -- BOM이 하나도 등록되지 않은 경우
 		                                        FROM   BOM)
 		            THEN '등록필요' ELSE '완료' END status
-		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
-		                      LEFT JOIN product_option o ON p.product_code = o.product_code
+		FROM   product_info p LEFT JOIN product_option o ON p.product_code = o.product_code
 		WHERE  p.product_type = 'PT02' 
 		<if test='productCode != null and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
 		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%' </if> 
-		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
-		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		    <if test='lclas != null and lclas != "null"'> 
+      AND  p.product_code IN (SELECT product_code
+                              FROM   product_category
+                              WHERE  lclas = #{lclas})
+    </if> 
+    <if test='sclas != null and sclas != "null"'>
+      AND  p.product_code IN (SELECT product_code
+                              FROM   product_category
+                              WHERE  sclas = #{sclas})
+    </if> 
 		ORDER  BY status, product_code
 	</select>
 	
 	<!-- 제품 목록 전체 개수 -->
 	<select id="countProduct" parameterType="ProductDTO">
 		SELECT COUNT(*)
-		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
+		FROM   product_info
 		WHERE  product_type = 'PT02' 
-		<if test='productCode != null and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
-		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
-		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
-		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		<if test='productCode != null and productCode != ""'> AND UPPER(product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+		<if test='productName != null and productName != ""'> AND UPPER(product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
+		<if test='lclas != null and lclas != "null"'> 
+      AND  product_code IN (SELECT product_code
+                            FROM   product_category
+                            WHERE  lclas = #{lclas})
+    </if> 
+    <if test='sclas != null and sclas != "null"'>
+      AND  product_code IN (SELECT product_code
+                            FROM   product_category
+                            WHERE  sclas = #{sclas})
+    </if> 
 	</select>
 		
 	<!-- 제품의 옵션 조회 -->

@@ -4,16 +4,22 @@
 
 	<!-- 전체 제품 목록 단순조회 -->
 	<select id="listProduct" resultType="ProductDTO" parameterType="ProductDTO">
-		SELECT p.product_code,
-		       p.product_name,
-		       c.lclas,
-			     c.sclas
-		FROM   product_info p LEFT JOIN product_category c ON p.product_code = c.product_code
-		WHERE  p.product_type = 'PT02' 
-		<if test='productCode != null and productCode != ""'> AND UPPER(p.product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
-		<if test='productName != null and productName != ""'> AND UPPER(p.product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
-		<if test='lclas != null and lclas != "null"'> AND c.lclas = #{lclas}	</if> 
-		<if test='sclas != null and sclas != "null"'> AND c.sclas = #{sclas}	</if> 
+		SELECT product_code,
+		       product_name
+		FROM   product_info
+		WHERE  product_type = 'PT02' 
+		<if test='productCode != null and productCode != ""'> AND UPPER(product_code) LIKE '%' || UPPER(#{productCode}) || '%' </if> 
+		<if test='productName != null and productName != ""'> AND UPPER(product_name) LIKE '%' || UPPER(#{productName}) || '%'	</if> 
+		<if test='lclas != null and lclas != "null"'> 
+		  AND  product_code IN (SELECT product_code
+                            FROM   product_category
+                            WHERE  lclas = #{lclas})
+    </if> 
+		<if test='sclas != null and sclas != "null"'>
+      AND  product_code IN (SELECT product_code
+                            FROM   product_category
+                            WHERE  sclas = #{sclas})
+		</if> 
 		ORDER  BY product_code
 	</select>
 	
