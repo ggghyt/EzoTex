@@ -696,16 +696,20 @@ input[type=date] {
 			            		allOrderInfo.orderInfo.splice(i, 1);
 		            		} 		  
 		            		
-	    					for(let k=0; k<allOrderInfo.productDetails[i].qyList.length; k++) {	    	//4번					
-	    						
-			    				for(let j=0; j<allOrderInfo.orderInfo.length; j++) {	//2번
-			    					//console.log("앞에꺼allOrderInfo.productDetails[i].qyList[k].productCode", allOrderInfo.productDetails[i].qyList[k].productCode, "뒤에꺼", allOrderInfo.orderInfo[j].productCode);
-			    					if(allOrderInfo.productDetails[i].qyList[k].PRODUCT_CODE == allOrderInfo.orderInfo[j].productCode) {
-			    						//console.log("제품명 넣기 작동됨");
-			    						allOrderInfo.productDetails[i].qyList[k].productName = allOrderInfo.orderInfo[j].productName;
-			    					}
-			    				}
-	    					}
+	    					//수량이 0이상인건 빼버려서, try catch로 제어
+	    					try {	    						
+		    					for(let k=0; k<allOrderInfo.productDetails[i].qyList.length; k++) {	    	//4번					
+		    						
+				    				for(let j=0; j<allOrderInfo.orderInfo.length; j++) {	//2번
+				    					//console.log("앞에꺼allOrderInfo.productDetails[i].qyList[k].productCode", allOrderInfo.productDetails[i].qyList[k].productCode, "뒤에꺼", allOrderInfo.orderInfo[j].productCode);
+				    					if(allOrderInfo.productDetails[i].qyList[k].PRODUCT_CODE == allOrderInfo.orderInfo[j].productCode) {
+				    						//console.log("제품명 넣기 작동됨");
+				    						allOrderInfo.productDetails[i].qyList[k].productName = allOrderInfo.orderInfo[j].productName;
+				    					}
+				    				}
+		    					}
+	    					} catch {}					
+	    					
 	    				}
 	    				
 	    				
