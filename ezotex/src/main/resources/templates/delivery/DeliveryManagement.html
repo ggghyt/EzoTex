@@ -261,7 +261,7 @@ input[type=date] {
 				</div>
 			</div>
 			<div class="card card-body mt-3 order-list">
-				<p class="fs-5 fw-bolder mb-3">목록</p>
+				<p class="fs-5 fw-bolder mb-3">주문목록</p>
 				<div id="grid"></div>
 			</div>
 		</div>
@@ -688,7 +688,7 @@ input[type=date] {
 	    				
 	    				
 	    				
-	    				for(let i=0; i<allOrderInfo.productDetails.length; i++) {
+	    				for(let i=0; i<allOrderInfo.productDetails.length; i++) {	//2번
 	    					
 	    					//이미 출고 수량을 모두 채운 경우 화면에서 출력하지 않기 위한 splice / 하지 않으면 빈행이 출력됨.
 		            		if(allOrderInfo.productDetails[i].qyList.length == 0) {		            			
@@ -696,6 +696,16 @@ input[type=date] {
 			            		allOrderInfo.orderInfo.splice(i, 1);
 		            		} 		  
 		            		
+	    					for(let k=0; k<allOrderInfo.productDetails[i].qyList.length; k++) {	    	//4번					
+	    						
+			    				for(let j=0; j<allOrderInfo.orderInfo.length; j++) {	//2번
+			    					//console.log("앞에꺼allOrderInfo.productDetails[i].qyList[k].productCode", allOrderInfo.productDetails[i].qyList[k].productCode, "뒤에꺼", allOrderInfo.orderInfo[j].productCode);
+			    					if(allOrderInfo.productDetails[i].qyList[k].PRODUCT_CODE == allOrderInfo.orderInfo[j].productCode) {
+			    						//console.log("제품명 넣기 작동됨");
+			    						allOrderInfo.productDetails[i].qyList[k].productName = allOrderInfo.orderInfo[j].productName;
+			    					}
+			    				}
+	    					}
 	    				}
 	    				
 	    				
@@ -747,6 +757,8 @@ input[type=date] {
 		    	// 선택한 제품코드 저장
 	    		productCode = data.productCode;
 	    		
+	            
+	    		console.log("data.productName, 제품명: " ,data.productName);
 	            //사이즈 정보 담을 배열
 	            let products = [];
 	    		//사이즈 컬럼(그리드 헤더 - 제일 위)
@@ -819,6 +831,8 @@ input[type=date] {
 		            	}
 		            	
 		            }
+		            
+		            
 
 	    		}
 	    		
@@ -839,7 +853,7 @@ input[type=date] {
 	    		//데이터 입력에 필요한 정보 마지막에 넣고 히든
 				color.push({ header: "주문코드", name: "ORDER_CODE", align: "center", hidden:true},
 						{ header: "제품코드", name: "PRODUCT_CODE", align: "center", hidden:true},
-						{ header: "제품명", name: "productName", align: "center", hidden:true});
+						{ header: "제품명", name: "productName", align: "center"});
 				
 				console.log("products: ", newProduct);	//중복없는 데이터
 				
@@ -849,13 +863,16 @@ input[type=date] {
 
 		    	})
 		    	
-		    
-
+		    //초기화, 제품 수량 자동입력 기능시 제품이름을 넣기 위한 변수
+			let selectedProductName = '';
 		 	
 	    	// 제품 옵션 그리드 체인지 이벤트(하나 또는 여러변경값)
 	    	productDetailgrid.on('afterChange', ev => {
 	    	    //console.log('선택 제품코드:', productCode);
-				
+	    	    
+	    	    //초기화, 제품 수량 자동입력 기능시 제품이름을 넣기 위한 값 할당
+				selectedProductName = rowData.productName;
+	    	    
 	    	    //if (!ev || !ev.changes) return; // 변경된 데이터가 없으면 종료
 	    	    ev.changes.forEach(change => {
 	    	    	//console.log(change.rowKey);
@@ -986,6 +1003,8 @@ input[type=date] {
 	        			//가독성을 위해서 변수로 저장
 	        			let info = allOrderInfo.productDetails[i].qyList;
 	        			
+	        			console.log("info에 제품이름이 없으면 더 올라가야됨", info);
+	        			
 	        			//필드를 배열로 만듦
 	        			let fieldList = Object.keys(info[j]);
 	        			
@@ -1008,7 +1027,7 @@ input[type=date] {
 		        				failToast('출고 수량을 입력해주세요.');
 		        				return;
 		        			} 
-		        			
+		        			console.log("info[j].productName j=",j, info[j].productName);	//제품명 못가져옴
 		        			
 		        			//실제 서버로 보낼 객체
 	        				let obj = {productCode: info[j].PRODUCT_CODE, productColor: info[j].PRODUCT_COLOR,
@@ -1023,7 +1042,7 @@ input[type=date] {
 	        			
 	        		}
 	        	}
-	        	
+	        	console.log("필터링 되기전,", registData);		//이때도 제품명 안들어감.
 	        	//입력하면서 생기는 중복값 모두 제거
        		    filteredRegistData = registData.filter((product_1, idx) => {
    		            return (
@@ -1116,7 +1135,8 @@ input[type=date] {
 	        	//스피너
 	        	//simulateLoading();
 	        	console.log("filteredRegistData보내기 직전", filteredRegistData);
-
+				
+	        	
                 const response = fetch('/delivery/deliveryRegist', {
                     method: 'post',
                     headers: {
@@ -1153,8 +1173,11 @@ input[type=date] {
                      console.log("배열 마지막 빼기 전에", filteredRegistData);
                      //배열 마지막 삭제(주문 정보 삭제)
                      //filteredRegistData.length = registData.length - 1;
+                     
                      filteredRegistData.pop();
-                     console.log("배열 마지막 뺀 다음", filteredRegistData);
+                     
+                     console.log("배열 마지막 뺀 다음 여기사 자꾸 undifined가 들어감", filteredRegistData);
+                     
                      restQyGrid.resetData(filteredRegistData);
 
                      // 작업이 성공했으면 잔여량 모달 출력
@@ -1263,7 +1286,8 @@ input[type=date] {
 			    			//allOrderInfo.productDetails[i].productSize
 			    			
 			    			//제품의 한 색상의 사이즈 컬럼을 하나씩 넣어서 그리드를 생성함
-			    			color.push({ header: "출고량", name: 'DE'+sizeCode, align: "right", editor: "text", minWidth: 60, formatter:(row)=>numberFormat(row.value)},
+			    			color.push({ header: "제품명", name: 'productName', align: "right", editor: "text", minWidth: 60, hidden:true},
+			    					{ header: "출고량", name: 'DE'+sizeCode, align: "right", editor: "text", minWidth: 60, formatter:(row)=>numberFormat(row.value)},
 			    					{ header: "잔여량", name: 'RE'+sizeCode , align: "right", minWidth: 60, formatter:(row)=>numberFormat(row.value) },
 			    					{ header: "재고량", name: 'IN'+sizeCode, align: "right", minWidth: 60, formatter:(row)=> { console.log(row.value);
 			    						//요청 수량이 0이 아니라면
@@ -1291,8 +1315,17 @@ input[type=date] {
 		            	if(productCode == allOrderInfo.productDetails[i].qyList[j].PRODUCT_CODE) {	
 			            	//서버에서 가져온 데이터 + 제품 이름 같이 넣었음.
 			            	allOrderInfo.productDetails[i].qyList[j][invenForZero] = 0;
-							products.push({...allOrderInfo.productDetails[i].qyList[j], productName : productSelectedEvData.productName});
 			            	
+							let productListData = productListgrid.getData();
+							
+							console.log("productListData",productListData);
+							
+							for(let n=0; n<productListData.length; n++) {								
+								if(allOrderInfo.productDetails[i].qyList[j].PRODUCT_CODE == productListData[n].productCode) {
+									products.push({...allOrderInfo.productDetails[i].qyList[j], productName : productListData[n].productName});
+								}
+							}
+							//조건절이 있어야함. 제품명이 맞는게 들어가야함.
 		            	}
 		            	
 		            }
@@ -1392,12 +1425,15 @@ input[type=date] {
 		        			val = invenNum == undefined ? 0 : invenNum;
 		        			val = invenNum == null ? 0 : invenNum;
 		        			
+		        			//info[j].productName = '';
 		        			if(reqNum > val) {
 		        				info[j][deliverySize] = val;
 		        			} else {		        				
 			        			info[j][deliverySize] = reqNum;
 		        			}
 	        			}
+	        			
+	        			
 	        		}
 	        	}
 				
