@@ -37,14 +37,14 @@
 		    el: document.getElementById('planGrid'), // 해당 위치에 그리드 출력
 		    data: { api: { readData: { url: '/mtr/orderList', method: 'GET' }, initialRequest: false } },
 		    columns: [
-		        { header: '발주코드', name: 'mtrilOrderCode', align: 'center', width: 110 },
+		        { header: '발주코드', name: 'mtrilOrderCode', align: 'center', width: 130 },
 		        { header: '업체코드', name: 'companyCode', align: 'center', width: 100 },
 		        { header: '업체명', name: 'companyName', width: 150 },
-		        { header: '납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value) },
+		        { header: '납기일', name: 'dueDate', width: 100, formatter: (row) => dateFormatter(row.value), className: 'fw-bold' },
 		        { header: '요약', name: 'summary' },
 		        { header: '발주량', name: 'orderQy', align: 'right',
 		            formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
-	            { header: '발주금액', name: 'amount', align: 'right',
+	            { header: '발주금액', name: 'amount', align: 'right', className: 'fw-bold',
 	                    formatter: (row) => numberFormatter(row.value) }, // 천단위 콤마 포맷 적용
 		        { header: '비고', name: 'remark', whiteSpace: 'pre-line' },
 		        { header: '담당자', name: 'chargerName', align: 'center' },

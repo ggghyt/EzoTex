@@ -171,6 +171,9 @@
 		#productListGrid {
 			width: 1000px;
 		}
+		.tui-grid-layer-state {
+      z-index: 0;
+    }
 	</style>
 </head>
 <body>
@@ -179,7 +182,7 @@
 		<div class="col">			
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar">
 				
-				<b>검색</b>
+				<p class="fs-5 fw-bolder mb-3">검색</p>
 									
 				<!-- 검색조건1: 발주코드, 자재코드, 자재명, 발주담당자 -->
 				<div>
@@ -229,7 +232,7 @@
 				</div>
 			</div>
 			<div class="card card-body mt-3 order-list">
-				<b>목록</b>
+				<p class="fs-5 fw-bolder mb-3">목록</p>
 				<!-- 검색결과 목록 -->
 				<div id="orderListGrid"></div>
 			</div>
@@ -237,7 +240,7 @@
 		
 		
 		<div class="col card card-body order-info">		
-			<b>납품 정보</b>
+			<p class="fs-5 fw-bolder mb-3">납품 정보</p>
 			<div class="p-3 mb-2 bg-secondary text-dark card search-bar read-bar ">
 				<div>				
 					<span class="search-unit info-unit">

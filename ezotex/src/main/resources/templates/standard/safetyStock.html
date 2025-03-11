@@ -34,7 +34,7 @@
 	<div class="col" style="padding: 10px">
 		<div class="row">
 			<!-- 제품 검색 조건 -->
-			<div class="card">
+			<div class="card bg-secondary">
 			<div class="card-body">
 			<div class="search">
 			<div class="row me-2">
@@ -171,6 +171,7 @@
 	let lastClicked = null
 	let safety_labels = []
 	let safety_data = []
+	let selectedRow = null;
 	safety_grid();
 	function safety_grid() {
 		document.getElementById('searchGrid').replaceChildren()
@@ -234,8 +235,6 @@
 			fetch('/standard/safetyStockList?productCode=' + selectedRow.PRODUCT_CODE)
 			.then(response => response.json())
 		    .then(data => {
-		    	console.log(data)
-		    	console.log(data.length)
 		    	chart_data = data
 		    	
 		    	if (data.length > 0) {
@@ -248,8 +247,10 @@
 		    		document.querySelector("#nextSafetyStock").value = parseInt((data[11].qy + data[0].qy)/2)
 		    	} else if (data.length > 1) {
 		    		document.querySelector("#nextSafetyStock").value = parseInt((data[1].qy + data[0].qy)/2)
-		    	} else {
+		    	} else if (data.length > 0) {
 		    		document.querySelector("#nextSafetyStock").value = data[0].qy
+		    	} else {
+		    		document.querySelector("#nextSafetyStock").value = 0;
 		    	}
 		    	
 		    	
@@ -313,22 +314,22 @@
 		let today = new Date();
     	let yyyy = today.getFullYear()
 		let mm = today.getMonth() + 1
-		fetch('/standard/updateSafety?safetyStockMonth=' + chart_data[0].safetyStockMonth
-				                  + '&productCode='	+ chart_data[0].productCode
+		fetch('/standard/updateSafety?safetyStockMonth=' + yyyy + "/" + mm
+				                  + '&productCode='	+ selectedRow.PRODUCT_CODE
 				                  + '&qy=' + document.querySelector("#nowSafetyStock").value
 		)
     	.then(() => {
-    		let nextSafetyStock = 0;
+    		let nextSafetyStock = parseInt(document.querySelector("#nowSafetyStock").value);
+    		
+    		console.log(chart_data)
+    		console.log(chart_data.length)
     		if (chart_data.length > 11) {
-    			nextSafetyStock = parseInt((chart_data[11].qy + parseInt(document.querySelector("#nowSafetyStock").value))/2)
-    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
-    		} else if (data.length > 0) {
-    			nextSafetyStock = chart_data[1].qy
-    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
-    		} else {
-    			nextSafetyStock = 0
-    			document.querySelector("#nextSafetyStock").value = nextSafetyStock
-    		}
+	    		document.querySelector("#nextSafetyStock").value = parseInt((chart_data[11].qy + nextSafetyStock)/2)
+	    	} else if (chart_data.length > 1) {
+	    		document.querySelector("#nextSafetyStock").value = parseInt((chart_data[1].qy + nextSafetyStock)/2)
+	    	} else {
+	    		document.querySelector("#nextSafetyStock").value = nextSafetyStock;
+	    	}
     		
     		safety_data[11] = document.querySelector("#nowSafetyStock").value
     		
@@ -339,8 +340,6 @@
 	}
 	
 	function make_chart(labels, data) {
-		console.log(labels)
-		console.log(data)
 		let chartData = {
 				labels: labels,
 				datasets: [{

@@ -6,11 +6,10 @@
 <title>이조텍스SCM</title>
 <link rel="stylesheet"
 	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 교환 관리</h3>
+	<h3 class="fs-3 fw-bold m-0">| 교환 관리</h3>
 	<br>
 	<!-- 등록 모달 -->
 	<div class="modal fade" id="registModal" tabindex="-1"
@@ -38,23 +37,23 @@
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!---->
 					<button type="button" id="resiBtn"
-						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+						class="btn btn-outline-primary" data-bs-dismiss="modal">등록</button>
 					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="card card-body mt-3">
-	<h4>교환 목록</h4>
-	<div id="changeGrid"></div>
+	<div class="card card-body">
+		<p class="fs-5 fw-bolder mb-3">교환 목록</p>
+		<div id="changeGrid"></div>
 	</div>
 	<div class="card card-body mt-3">
-	<h4>교환할 제품</h4>
-	<div id="changeProductGrid"></div>
-	<div>
-		<button type="button" class="btn btn-primary" id="changeResiBtn">교환등록</button>
-	</div>
+		<p class="fs-5 fw-bolder mb-3">교환할 제품</p>
+		<div id="changeProductGrid"></div>
+		<div>
+			<button type="button" class="btn btn-primary" id="changeResiBtn">교환등록</button>
+		</div>
 	</div>
 	<script th:inline="javascript">
 		// Thymeleaf에서 productOption 데이터를 JSON으로 변환해서 JavaScript로 전달
@@ -71,6 +70,9 @@
 				header : "반품코드",
 				name : "returnCode",
 				align : 'center',
+		        formatter: function({ value }) {
+		            return `<strong>${value}</strong>`; // 글자를 굵게 설정
+		        }
 			}, {
 				header : "납품코드",
 				name : "deliveryCode",
@@ -104,6 +106,7 @@
 				useClient : true, // 페이징을 위해 필요
 				perPage : 5
 			},
+			showDummyRows: true	//더미로우 추가
 		})
 		
 		let lastClickedRowKey = null; // 마지막 클릭된 행의 rowKey 저장
@@ -237,6 +240,7 @@
 				useClient : true, // 페이징을 위해 필요
 				perPage : 5
 			},
+			showDummyRows: true	//더미로우 추가
 		})
 			let selectedProducts = []; // 체크된 데이터 저장 배열
 			let totalUnitPrice = 0; // 수량 * 단가  합산 변수
@@ -280,7 +284,7 @@
 	    const checkedRows = changeProductGrid.getCheckedRows();
 
 	    if (checkedRows.length === 0) {
-	        alert("반품할 제품을 선택해야 합니다."); // 경고 메시지
+	    	failToast("교환할 제품을 선택해야 합니다."); // 경고 메시지
 	        return; // 모달 실행 중단
 	    }
 		
@@ -350,6 +354,7 @@
 					.then(rep => rep.json())
 					.then(result => {
 						if(result === true){
+							successToast("작업이 완료되었습니다.");
 							console.log("show 변경 성공");
 						    setTimeout(function() {
 						        location.reload();  // 페이지 새로 고침
@@ -365,7 +370,7 @@
 		})
 		.catch(error => {
 			console.error("주문 등록 오류:", error);
-			alert("주문 등록 중 오류가 발생했습니다.");
+			failToast("주문 등록 중 오류가 발생했습니다.");
 		})
 	})
 	
@@ -376,7 +381,7 @@
 <style>
 /* 체크박스가 포함된 셀에 마우스를 올리면 커서 변경 */
 #changeProductGrid .tui-grid-cell input[type="checkbox"]:hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 </style>
 </html>

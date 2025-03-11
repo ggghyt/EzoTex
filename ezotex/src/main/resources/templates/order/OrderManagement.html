@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <title>이조텍스SCM</title>
-<link rel="stylesheet"
-	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet"	href="https://uicdn.toast.com/grid/latest/tui-grid.css" />
 <script src="https://uicdn.toast.com/grid/latest/tui-grid.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"></script>
 <script>
 // 인풋 초기화 함수
 function resetForm() {
@@ -15,9 +15,7 @@ function resetForm() {
     document.getElementById('company').value = '';
     document.getElementById('companyCharger').value = '';
     document.getElementById('companyTel').value = '';
-    document.getElementById('orderDate').value = '';
     document.getElementById('deliveryRequestDeadline').value = '';
-    document.getElementById('orderStatus').value = '';
     document.getElementById('remarks').value = '';
 }
 // 모든 제품의 총 수량 계산
@@ -37,7 +35,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 </style>
 </head>
 <body>
-	<h3 class="fs-3 fw-bold">| 주문 등록</h3>
+	<h3 class="fs-3 fw-bold m-0">| 주문 등록</h3>
 	<br>
 
 	<!-- 등록 모달 -->
@@ -66,7 +64,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 					style="display: flex; justify-content: center; border-top: none; padding-bottom: 45px;">
 					<!---->
 					<button type="button" id="resiBtn"
-						class="btn btn-outline-primary checkBtn" data-bs-dismiss="modal">등록</button>
+						class="btn btn-outline-primary" data-bs-dismiss="modal">등록</button>
 					<button type="button" class="btn btn-secondary denyBtn"
 						data-bs-dismiss="modal">취소</button>
 				</div>
@@ -79,8 +77,8 @@ let clickedData = ""; // 클릭한 행의 데이터
 	<div class="card card-body m-2 bg-secondary">
 		<div class="row">
 
-			<p class="fs-5 fw-bolder m-3">주문 정보</p>
-			<table class="table mt-3">
+			<p class="fs-5 fw-bolder m-1">주문 정보</p>
+			<table class="table table-borderless">
 				<tbody>
 					<!-- 첫 번째 줄 -->
 					<tr>
@@ -113,9 +111,6 @@ let clickedData = ""; // 클릭한 행의 데이터
 						<td class="col-auto"><label class="col-form-label">업체
 								전화번호</label> <input type="tel" id="companyTel"
 							class="form-control inputbold" readonly></td>
-						<td class="col-auto"><label class="col-form-label"></label> <input
-							type="text" id="orderStatus" class="form-control inputbold"
-							readonly hidden=true></td>
 					</tr>
 					<tr>
 						<td colspan="4"><label class="col-form-label">비고</label> <input
@@ -125,7 +120,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 				</tbody>
 			</table>
 			<div class="d-flex justify-content-center gap-2">
-				<button type="button" class="btn btn-secondary btn-sm"
+				<button type="button" class="btn btn-secondary btn-sm mt-3"
 					onclick="resetForm()">초기화</button>
 			</div>
 		</div>
@@ -164,7 +159,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 		    // 전화번호가 완성되지 않았거나 길이가 13자 미만일 때 경고만 표시
 		    if (this.value.length === 13 && !/^(\d{3}-\d{4}-\d{4})$/.test(this.value)) {
-		        alert("전화번호 형식이 잘못되었습니다. 올바른 형식: 000-0000-0000");
+		    	failToast("전화번호 형식이 잘못되었습니다. 올바른 형식: 000-0000-0000");
 		    }
 		});
 		
@@ -175,7 +170,7 @@ let clickedData = ""; // 클릭한 행의 데이터
       scrollX: false, // 가로 스크롤바 비활성화
       scrollY: false, // 세로 스크롤바 비활성화
       rowHeight: 'auto',  // 행 높이를 자동으로 조정
-      rowHeaders: ['checkbox',{ type: 'rowNum', header: 'NO' }],
+      rowHeaders: ['checkbox',{ type: 'rowNum', header : 'NO', width: 60 }],
       columns: [  // 컬럼 설정 (빈 컬럼으로 초기화)
         {
           header: '제품 코드',
@@ -186,6 +181,9 @@ let clickedData = ""; // 클릭한 행의 데이터
           header: '제품명',
           name: 'productName',
           align: 'center',
+          formatter: function({ value }) {
+              return `<strong>${value}</strong>`; // 글자를 굵게 설정
+          }
         },
         {
           header: '단가',
@@ -427,10 +425,17 @@ let clickedData = ""; // 클릭한 행의 데이터
 
 		    // 입력값이 0보다 작은 경우 처리
 		    if (Number(value) < 1) {
-		        alert("1보다 적은 수는 입력할 수 없습니다.");
+		    	failToast("1보다 적은 수는 입력할 수 없습니다.");
 
 		        // 값을 0으로 변경하여 음수 입력 방지
 		        optionGrid.setValue(rowKey, columnName, 1);
+		    }
+		    
+		    // 숫자가 아닌 값 입력 방지
+		    if (!/^\d+$/.test(value)) {  
+		    	failToast("숫자만 입력할 수 있습니다.");
+		        optionGrid.setValue(rowKey, columnName, 1); // 기본값 1로 설정
+		        return;
 		    }
 		});
 		// 제품별로 입력된 수량을 저장할 배열
@@ -459,7 +464,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 		    );
 		    
 		    if (!hasSizeInput) {
-		        alert('사이즈를 입력해주세요.');
+		    	failToast('사이즈를 입력해주세요.');
 		        return;
 		    }
 			
@@ -626,6 +631,22 @@ let clickedData = ""; // 클릭한 행의 데이터
 		    
 		    // 삭제된 데이터 반영
 		    grid.removeRows(checkedRows.map(row => row.rowKey));
+		    
+		    // 주문총수량 총합 다시 계산
+		    const orderUnit = grid.getData().map(row => row.orderQuantity || 0); 
+		    const unitSum = orderUnit.reduce((acc, value) => acc + value, 0);
+		    
+		    console.log("열 데이터 출력 (삭제 후 주문 수량):", orderUnit);
+		    console.log("총합 (삭제 후 주문 수량):", unitSum);
+		    document.getElementById('orderQuantity').value = unitSum.toLocaleString();
+
+		    // 주문금액 총합 다시 계산
+		    const orderMoney = grid.getData().map(row => row.orderAmount || 0);
+		    const moneySum = orderMoney.reduce((acc, value) => acc + value, 0);
+
+		    console.log("열 데이터 출력 (삭제 후 주문 금액):", orderMoney);
+		    console.log("총합 (삭제 후 주문 금액):", moneySum);
+		    document.getElementById('orderAmount').value = moneySum.toLocaleString();
 		
 		    // 그리드 다시 렌더링 (필요한 경우)
 		    grid.refreshLayout();
@@ -639,9 +660,10 @@ let clickedData = ""; // 클릭한 행의 데이터
 		  // 등록이벤트
 		  function insertOrder(productCode) {
 		        if (!companyCode.value.trim()) {
-		            alert("업체를 선택해야 합니다.");
+		        	failToast("업체를 선택해야 합니다.");
 		            return false;
 		        }
+		        
 		        
 			    const orderQuantity = document.getElementById("orderQuantity");
 			    const orderAmount = document.getElementById("orderAmount");
@@ -650,13 +672,18 @@ let clickedData = ""; // 클릭한 행의 데이터
 			    console.log("orderAmount",document.getElementById("orderAmount").value);
 			    
 		        if (!orderQuantity.value || orderQuantity.value == 0 || !orderAmount.value || orderAmount.value == 0) {
-		            alert("등록할 제품이 없습니다.");
+		        	failToast("등록할 제품이 없습니다.");
 		            return false;
 	        	}
 		        
+		        if (!deliveryRequestDeadline.value.trim()){
+		        	failToast("납기일을 선택해야 합니다.");
+		            return false;
+		        }
+		        
 		        // newData2가 비어있으면 등록 불가
 		        if (newData2.length === 0) {
-		            alert("등록할 제품이 없습니다.");
+		        	failToast("등록할 제품이 없습니다.");
 		            return false;
 		        }
 			  
@@ -677,7 +704,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 			        companyRepresentative: document.getElementById("companyCharger").value, // 업체담당자
 			        companyTel: document.getElementById("companyTel").value, // 업체담당자 전화번호
 			        deliveryRequestDeadline: document.getElementById("deliveryRequestDeadline").value, // 납기일
-			        orderStatus: document.getElementById("orderStatus").value || "OR01", // 주문 상태 - 기본값 : 대기
+			        orderStatus: "OR01", // 주문 상태 - 기본값 : 대기
 			        remarks: document.getElementById("remarks").value, // 비고 
 			        amount: Number(orderAmount.value.replace(/,/g, '')), // 콤마 제거하고 숫자로 변환
 			    };
@@ -784,12 +811,16 @@ let clickedData = ""; // 클릭한 행의 데이터
 				            throw new Error("주문 등록 실패");
 				        }
 				        console.log("주문 등록 성공:", data);
-				        location.reload();
+				        successToast("작업이 완료되었습니다.");
+				        // 2초 후 리로드 (2000ms)
+				        setTimeout(() => {
+				            location.reload();
+				        }, 2000);
 				    })
 			    })
 			    .catch(error => {
 			        console.error("주문 등록 오류:", error);
-			        alert("주문 등록 중 오류가 발생했습니다.");
+			        failToast("주문 등록 중 오류가 발생했습니다.");
 			        return;
 			    });
 			    
@@ -862,7 +893,7 @@ let clickedData = ""; // 클릭한 행의 데이터
 						resizable : false
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders: [{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '제품코드',
@@ -872,12 +903,19 @@ let clickedData = ""; // 클릭한 행의 데이터
 					{
 						header : '제품명',
 						name : 'productName',
-						align : 'center'
+						align : 'center',
+						width: 250,
+			            formatter: function({ value }) {
+			                return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			            }
 					},
 					{
 						header : '단가',
 						name : 'unitPrice',
-						align : 'right'
+						align : 'right',
+				        formatter: function({ value }) {
+				            return value ? value.toLocaleString() : '0';
+				        },
 					},
 					],
 				    pageOptions: {
@@ -917,7 +955,7 @@ function addProductToOrderList(product) {
     const isDuplicate = currentData.some(item => item.productCode === product.productCode);
 
     if (isDuplicate) {
-        alert('이 제품은 이미 목록에 있습니다.');
+    	failToast('이 제품은 이미 목록에 있습니다.');
         return;  // 중복된 제품은 추가하지 않음
     }
     
@@ -948,7 +986,8 @@ function addProductToOrderList(product) {
 			</div>
 			<div class="modal-body">
 				<!-- 업체 검색창 -->
-				<div class="card card-body mt-3 bg-secondary" style="background-color: #d3d3d3;">
+				<div class="card card-body mt-3 bg-secondary"
+					style="background-color: #d3d3d3;">
 					<h3>검색</h3>
 					<table class="table mt-3">
 						<tbody>
@@ -1000,7 +1039,7 @@ function addProductToOrderList(product) {
 						resizable : false,
 					// 컬럼 크기 조절 가능
 					},
-					rowHeaders:['rowNum'],
+					rowHeaders:[{ type: 'rowNum', width: 60 }],
 					columns : [
 					{ 
 						header : '업체코드',
@@ -1010,7 +1049,10 @@ function addProductToOrderList(product) {
 					{
 						header : '업체명',
 						name : 'companyName',
-						align : 'center'
+						align : 'center',
+			            formatter: function({ value }) {
+			                return `<strong>${value}</strong>`; // 글자를 굵게 설정
+			            }
 					},
 					{
 						header : '업체담당자',
@@ -1161,11 +1203,25 @@ function addProductToOrderList(product) {
 #grid .tui-grid-cell input[type="checkbox"]:hover {
 	cursor: pointer;
 }
+
 .toastui-chart-tooltip-category {
-	width :  100px !important; 
+	width: 100px !important;
 }
+
 input[readonly] {
-    background-color: white !important; /* 배경색을 흰색으로 변경 */
+	background-color: white !important; /* 배경색을 흰색으로 변경 */
+}
+
+td {
+	padding: 0 20px !important;
+}
+
+.tui-grid-cell.tui-grid-cell-row-header {
+	padding: 0 !important;
+}
+
+.tui-grid-layer-state {
+	z-index: 0;
 }
 </style>
 </html>

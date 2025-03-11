@@ -85,10 +85,10 @@
 					<input type="text" class="form-control pointer bg-white storeSearch" id="requestor" placeholder="찾기" >
 				</div>
 				
-				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center wbreak">반품 요청일</label>
+				<label class="col-3 col-sm-2 col-lg-1 d-flex mb-2 align-items-center justify-content-center text-center wbreak">반품 요청일</label>
 				<div class="col-8 col-sm-3 col-lg-2 d-flex mb-2" style="margin-right: 50px;">
-					<input type="date" class="form-control text-end storeSearch" id="startRequestDate" style="margin-right: 10px;"> ~ 
-					<input type="date" class="form-control text-end storeSearch" id="endRequestDate" style="margin-left: 10px;">
+					<input type="date" class="form-control storeSearch" id="startRequestDate" style="margin-right: 10px;"> ~ 
+					<input type="date" class="form-control storeSearch" id="endRequestDate" style="margin-left: 10px;">
 				</div>
 				
 				
@@ -434,7 +434,6 @@
 	            scrollY: true,
 		        scrollX: true,
 		        bodyHeight: 177,
-		        width: 807,
 		        header: {
 		        height: 80,
 		            complexColumns: [
@@ -462,13 +461,13 @@
 		        columns: [
 		            { header: "색상/사이즈", name: "productColor", align: "center", width:80 },
 		            { header: "입고수량", name: "sizeS", editor: "text",  align: 'right', formatter: (row) => numberFormatter(row.value)},
-		            { header: "요청수량", name: "s", align: 'right', formatter: (row) => numberFormatter(row.value)},
-		            { header: "입고수량", name: "sizeM",  align: 'right', formatter: (row) => numberFormatter(row.value), editor: "text"},
-		            { header: "요청수량", name: "m",  align: 'right', formatter: (row) => numberFormatter(row.value)},
-		            { header: "입고수량", name: "sizeL",  align: 'right', formatter: (row) => numberFormatter(row.value), editor: "text"},
-		            { header: "요청수량", name: "l",  align: 'right', formatter: (row) => numberFormatter(row.value) },
-		            { header: "입고수량", name: "sizeXL",  align: 'right', formatter: (row) => numberFormatter(row.value), editor: "text"},
-		            { header: "요청수량", name: "xl",  align: 'right', formatter: (row) => numberFormatter(row.value) }
+		            { header: "요청수량", name: "s", align: 'right', formatter: (row) => row.value === 0 ? "" : numberFormatter(row.value)},
+		            { header: "입고수량", name: "sizeM",  align: 'right', formatter: (row) => row.value === 0 ? "" :  numberFormatter(row.value), editor: "text"},
+		            { header: "요청수량", name: "m",  align: 'right', formatter: (row) => row.value === 0 ? "" :  numberFormatter(row.value)},
+		            { header: "입고수량", name: "sizeL",  align: 'right', formatter: (row) => row.value === 0 ? "" :  numberFormatter(row.value), editor: "text"},
+		            { header: "요청수량", name: "l",  align: 'right', formatter: (row) => row.value === 0 ? "" :  numberFormatter(row.value) },
+		            { header: "입고수량", name: "sizeXL",  align: 'right', formatter: (row) => row.value === 0 ? "" :  numberFormatter(row.value), editor: "text"},
+		            { header: "요청수량", name: "xl",  align: 'right', formatter: (row) => row.value === 0 ? "" : numberFormatter(row.value) }
 		        ],
 		        columnOptions: {
 			        frozenCount: 1,
@@ -559,12 +558,15 @@
 	    		        	console.log('첫번째 그리드 초기화 : ',data)
 	    		            storeGrid.resetData(data);
 	    		        });
+	    		        
+	    		        
+	    		        setTimeout(() => {
+	    		        	window.location.reload();
+			            }, 1500);
+	    		        
 	    	    }
 	    	  )
 	    })
-	    
-	    
-	    
 	    
 	    
 	    let locationData = [];
@@ -601,7 +603,7 @@
 	    
 	    
 	    
-	    
+	    let lastClicked2 = null;
 	    
 	    // 제품 상세보기 그리드 클릭 이벤트
 	    
@@ -609,8 +611,18 @@
 	    let data = storeGrid2.getRow(ev.rowKey);
 	    //productName = data.productName;
 	    
+	    storeGrid2.removeRowClassName(lastClicked2, 'bg-blue');
+	    storeGrid2.addRowClassName(ev.rowKey, 'bg-blue');
+	    lastClicked2 = ev.rowKey;
+	    
+	    console.log('notStoreQy',data.notStoreQy);
 	     console.log("Clicked rowKey:", ev.rowKey);
          console.log("Data location:", data.location);
+         
+        if(data.notStoreQy == 0){
+        	failToast('미처리수량이 없습니다.');
+        	return;
+        }
 	    
 	    if (!data) {
         	console.log("선택된 데이터가 없습니다.");
@@ -655,9 +667,9 @@
 	                        childNames: ['size' + option.productSizeInfo, 'SZ' + option.productSizeInfo.toLowerCase()]
 	                    });
 	                    color.push({
-	                        header: "입고할수량", name: "size" + option.productSizeInfo, align: 'right', formatter: (row) => numberFormatter(row.value), editor: "text"
+	                        header: "입고할수량", name: "size" + option.productSizeInfo, align: 'right', formatter: (row) => !row.value ? "" : numberFormatter(row.value), editor: "text"
 	                    }, {
-	                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: 'right', formatter: (row) => numberFormatter(row.value)
+	                        header: "요청수량", name: "SZ" + option.productSizeInfo.toLowerCase(), align: 'right', formatter: (row) => !row.value ? "" : numberFormatter(row.value)
 	                    }, {
 	                        header: "제품코드", name: "productCode", hidden: true
 	                    }, {
@@ -668,7 +680,8 @@
 	                // 그리드3에 동적 컬럼 설정
 	                storeGrid3.setHeader({ complexColumns: size });
 	                storeGrid3.setColumns(color);
-	
+					
+	                
 	                // 피벗 데이터 생성
 	                let rowData = [];
 	                data.qyList.forEach(pivotData => {
@@ -677,7 +690,12 @@
 	                    // optionList에서 각 사이즈에 해당하는 수량을 pivotList에서 가져오기
 	                    data.optionList.forEach(option => {
 	                        let sizeKey = option.productSizeInfo.toLowerCase();
-	                        row['SZ' + sizeKey] = pivotData['SZ' + sizeKey.toUpperCase()] || "0";
+	                        let requestQty = pivotData['SZ' + sizeKey.toUpperCase()] || 0;
+	                        let receiveQty = pivotData['size' + sizeKey] || 0;
+
+	                        row['SZ' + sizeKey] = requestQty === 0 ? null : requestQty;
+	                        row['size' + sizeKey] = requestQty === 0 ? null : receiveQty;
+	                        
 	                    });
 	
 	                    rowData.push(row);
@@ -727,6 +745,7 @@
 	    }
 	}
 		
+	    
 		// 제품 상세보기 그리드 클릭 이벤트
 		storeGrid2.on('click', ev => {
 			let data = storeGrid2.getRow(ev.rowKey);
@@ -734,7 +753,8 @@
 			 handleStoreGrid2Click(ev); // 분리한 함수를 호출
 		});
 		
-	    
+		let isNotificationShown = false;
+		
 		// 제품 옵션 그리드 체인지 이벤트
 		storeGrid3.on('afterChange', ev => {
 		    console.log('선택 제품코드:', productCode);
@@ -747,7 +767,6 @@
 	   	    let val = changed.value;
 	   	    
 		    
-		    
 		    ev.changes.forEach(change => {
 		        let rowData = storeGrid3.getRow(change.rowKey); // 변경된 행 데이터 가져오기
 		        let columnName = change.columnName; // 변경된 컬럼명
@@ -758,7 +777,7 @@
 		        let sizeCode = getSizeCommonCode(size);
 		        console.log(rowData[columnName], sizeCode, rowData[columnQy]);
 		 
-		        
+		        let requestQy = rowData[columnQy];
 		        
 		     // 입력값이 숫자가 아닌 경우
 		        if (isNaN(newValue)) {
@@ -768,12 +787,32 @@
 		            storeGrid3.setValue(rowKey, columnName, changed.prevValue == null ? 0 : changed.prevValue);
 		            return;
 		        } else if (newValue < 0) { // 음수면 양수로 전환
-		            newValue = Math.abs(newValue);
+		            newValue = 0;
 		            storeGrid3.setValue(rowKey, columnName, newValue);
 		            failToast('입력값은 음수가 될 수 없습니다.');
 		        }
-		        
-		        
+		     // 요청 수량이 없을 때 알림을 띄우고, 값 비우기
+		        if (requestQy == 0 || requestQy == null) {
+		            // 이미 알림이 뜬 상태라면, 알림을 띄우지 않음
+		            if (isNotificationShown) return;
+
+		            // 알림 띄우기
+		            failToast('요청수량이 없습니다.');
+
+		            // 알림이 뜬 상태로 변경
+		            isNotificationShown = true;
+
+		            // 변경된 값을 비우고, 값을 리셋
+		            storeGrid3.setValue(rowKey, columnName, "");
+
+		            // 일정 시간 후 알림을 리셋하고, 이벤트가 다시 작동하도록 설정
+		            setTimeout(() => {
+		                isNotificationShown = false; // 알림 표시 상태 리셋
+		            }, 10); // 2초 후 알림 상태 리셋
+
+		            return; // 알림 후 다음 로직은 실행하지 않음
+		        }
+
 		        
 		        // 해당 productCode의 변경된 데이터를 저장
 		        if (!productChanges[productCode]) {
@@ -830,6 +869,7 @@
 		                            
 		                            if (newStockQy > check) {
 		                                storeGrid3.setValue(change.rowKey, columnName, check);
+		                                failToast(`입고가는수량은 ${check} 입니다.`);
 		                            }
 		                            
 		                            

@@ -192,7 +192,7 @@ function loadBlankGrid(productCode){
 		let data = result.data.contents;
 		console.log(data);
 		
-		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 80, align: "center" }];
+		let columns = [{ header: "색상/사이즈", name: "PRODUCT_COLOR", width: 100, align: "center" }];
 		let sizeNmArr = [];
 		
 		// data 형식: [{"PRODUCT_COLOR": "BLACK", "110": 0, "S": 0, "L": 0, "M": 0, ...}, ...]
@@ -334,16 +334,12 @@ optionGrid.on('afterChange', ev => {
 	let row = optionGrid.getRow(changed.rowKey);
 	
 	// 숫자 유효성 검사
-	if(isNaN(val)){ // 입력값이 숫자가 아닌 경우
-		failToast('입력값은 문자가 들어갈 수 없습니다.');
-		// 이전 값이 있으면 이전 값으로, 없으면 0으로 출력하고 종료
-		row[ev.columnName] = changed.prevValue == null ? 0 : changed.prevValue;
-		optionGrid.setRow(rowKey, row);
-		return;
-	} else if (val < 0){
-		failToast('입력값은 음수가 될 수 없습니다.');
-		row[ev.columnName] = changed.prevValue == null ? 0 : changed.prevValue;
-		optionGrid.setRow(rowKey, row);
+	if(isNaN(val) || val < 0){ // 입력값이 유효하지 않은 경우
+		if(isNaN(val)) failToast('입력값은 문자가 들어갈 수 없습니다.');
+		else failToast('입력값은 음수가 될 수 없습니다.');
+		
+		row[changed.columnName] = changed.prevValue;
+		optionGrid.setRow(row.rowKey, row);
 		return;
 	}
 	
@@ -472,10 +468,10 @@ function validSeason(year){
 	seasonBox.innerHTML = ''; // 내용 비우고 미리 저장해둔 option 노드배열로 재구성
 	if(year == thisYear){
 		if(thisMonth >= 1 && thisMonth <= 3){ // 2~4월인 경우 여름시즌부터 등록 가능
-			seasonBox.append(seasonOpts[2], seasonOpts[3], seasonOpts[4]);
+			seasonBox.append(seasonOpts[0], seasonOpts[2], seasonOpts[3], seasonOpts[4]);
 		} else if(thisMonth >= 4 && thisMonth <= 6){ // 5~7월인 경우 가을시즌부터 등록 가능
-			seasonBox.append(seasonOpts[3], seasonOpts[4]);
-		} else seasonBox.append(seasonOpts[4]); // 8~10월인 경우 겨울시즌만 등록 가능
+			seasonBox.append(seasonOpts[0], seasonOpts[3], seasonOpts[4]);
+		} else seasonBox.append(seasonOpts[0], seasonOpts[4]); // 8~10월인 경우 겨울시즌만 등록 가능
 	} else { // 입력년도가 올해가 아니라면 전체 옵션 표시	
 		seasonBox.append(seasonOpts[0], seasonOpts[1], seasonOpts[2], seasonOpts[3], seasonOpts[4]);
 	}
@@ -576,6 +572,7 @@ function insertPlan(){
 		if(result == true){
 			successToast('작업이 완료되었습니다.');
 			supplyGrid.resetData([]); // 등록 이후 처리 어떻게 할지? 
+      document.getElementById('remark').value = '';
 		} else failToast('작업을 실패했습니다.');
 	});
 }
