@@ -108,7 +108,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 		//자재 가져오기(리스트 마지막이 주문 정보라서 그 전까지만 반복문 실행)
 		for(int i=0; i<orderInfoList.size()-1; i++	) {	
 			//요청수량
-			int reqQy = orderInfoList.get(i).getReqQy();
 			
 			int divyQy = orderInfoList.get(i).getDeliveryQy();
 			
@@ -119,12 +118,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			
 			//로트 검색
 			List<OrderInsertDTO> lotList = mapper.getProductLot(orderInfoList.get(i));
-			//if(lotList.size() <= 0) return "fail";	//로트 수량 없을경우 바로 리턴하면 안됨. 0으로 의도적으로 보낼수도 있음.
-			/*
-			if(lotList.size() <= 0) {
-				throw new LotNotFoundException("fail");
-			}
-			*/
+
 			//로트 재고 수량 총합을 받을 변수
 			int checkSum = 0;
 			
@@ -134,9 +128,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			}
 			
 			//로트 재고 수량 총합이 출고수량보다 작으면 바로 종료
-			//if(checkSum < reqQy) return "fail";			//-------------------------이 조건에 걸리면 전부 롤백해야됨.
 			if(divyQy != 0 && checkSum < divyQy) {
-				System.out.println("==================================================================작동됨" + divyQy + "재고 수량 합계" + checkSum);
 				throw new LotNotFoundException("fail");
 			}
 			
