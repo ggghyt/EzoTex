@@ -8,10 +8,11 @@ const dateOptions = {
 
 // 날짜 포맷 함수 (0000-00-00)
 const dateFormatter = function(value){
-  let date = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
-  date = date.toLocaleDateString('ko-KR', dateOptions); // 한국시간으로 변경 (2025. 03. 08. 형식)
-  
-  return date.replaceAll('. ', '-').slice(0, -1);
+	let data = value == null ? new Date() : new Date(value); // 값이 없으면 오늘 날짜 반환
+	data.setHours(data.getHours() - 9);
+	
+	let str = data.getFullYear() + "-" + ("0" + (data.getMonth() + 1)).slice(-2) + "-" +  ("0" + (data.getDate())).slice(-2);
+	return str;
 }
 
 // 날짜 포맷 함수 (null 그대로 리턴하는 버전)
