@@ -646,55 +646,55 @@ visibility: visible;
 		document.querySelector("#modalColor").value = ""
 		document.querySelector("#modalSize").value = ""
 		
-		fetch('/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value)
+		fetch('/standard/productOption?productCode=' + document.querySelector("#optionModalProductCode").value) // 옵션 데이터 가져오기
 		.then((response) => response.json())
 		.then((data) => {
-			option_columns = [{ header: '색상', name: 'color', align: 'center' }]
-			let option_size = []
-			let push
+			option_columns = [{ header: '색상', name: 'color', align: 'center' }]     // 좌측 인덱스 생성
+			let option_size = []                                                     // 옵션 사이즈 받아올 변수 (동적)
+			let push                                                                 // 옵션 사이즈에 push 여부 확인
 			for (let i = 0 ; i < data.length ; i++) {
-				push = 1
+				push = 1                                                             // 기본적으로 푸쉬를 할 예정
 				for (let j = 0 ; j < option_size.length ; j++) {
-					if (data[i].productSize == option_size[j][1]) {
-						push = 0
+					if (data[i].productSize == option_size[j][1]) {                  // 이미 동일한 사이즈 옵션이 있다면
+						push = 0                                                     // 푸쉬를 하지 않음
 					}
 				}
 				if (push == 1) {
-					option_size.push([data[i].sizeName, data[i].productSize])
+					option_size.push([data[i].sizeName, data[i].productSize])        // 동일한 사이즈가 없다면 푸쉬를 진행
 				}
 			}
-			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))
-			for (let i = 0 ; i < option_size.length ; i++) {
+			option_size.sort((a, b) => a[1].slice(2) - b[1].slice(2))                // 사이즈별 소팅으로 작은게 앞에 오게 배치 (앞의 2자리는 공통코드니까 자름)
+			for (let i = 0 ; i < option_size.length ; i++) {                         // 중복이 없는 사이즈를 그리드 행으로 사용
 				option_columns.push({ header: option_size[i][0], name: option_size[i][1], align: 'center', editor: 'text', align: 'right', formatter: row => numberStringFormatter(row.value) })
 			}
 			
-			let option_color = []
+			let option_color = []                                                    // 옵션 컬러 받아올 변수 (동적)
 			for (let i = 0 ; i < data.length ; i++) {
-				push = 1
+				push = 1                                                             // 기본적으로 푸쉬를 할 예정
 				for (let j = 0 ; j < option_color.length ; j++) {
-					if (data[i].productColor == option_color[j]) {
-						push = 0
+					if (data[i].productColor == option_color[j]) {                   // 이미 동일한 색상 옵션이 있다면
+						push = 0                                                     // 푸쉬를 하지 않음
 					}
 				}
 				if (push == 1) {
-					option_color.push(data[i].productColor)
+					option_color.push(data[i].productColor)                          // 동일한 색상이 없다면 푸쉬를 진행
 				}
 			}
 			
-			option_data = []
+			option_data = []                                                         // 최종적으로 만드는 옵션 그리드 데이터
 			for (let i = 0 ; i < option_color.length ; i++) {
-				option_data.push({"color" : option_color[i]})
+				option_data.push({"color" : option_color[i]})                        // 색깔을 먼저 푸쉬해서 좌측을 채움
 			}
 			
-			for (i = 0 ; i < data.length ; i++) {
-				for (j = 0 ; j < option_data.length ; j++) {
-					if (option_data[j].color == data[i].productColor) {
-						if (data[i].discontinued == "YN01") {
+			for (i = 0 ; i < data.length ; i++) {                                    // 받아온 데이터를 전부 확인
+				for (j = 0 ; j < option_data.length ; j++) {                         // 색깔을 전부 확인
+					if (option_data[j].color == data[i].productColor) {              // 가져온 데이터와 현재 색깔이 일치한다면
+						if (data[i].discontinued == "YN01") {                        // 단종이라면 단종으로 표기
 							option_data[j][data[i].productSize] = "단종"
-						} else {
+						} else {                                                     // 아니라면 객체를 생성하여 단가를 추가
 							option_data[j][data[i].productSize] = data[i].unitPrice
-						}
-					}
+						}                                                            // 최종적으로 option_columns에는 정렬된 열이
+					}                                                                // option_data에는 색상과 사이즈에 맞는 단가가 들어가게됨.
 				} 
 			}
 			

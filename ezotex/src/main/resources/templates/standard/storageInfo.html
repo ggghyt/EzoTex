@@ -395,18 +395,18 @@
         })
 	}
 	
-	function deleteColBtn() {
-		for (let i = 0 ; i < storage_data.length ; i++) {
-			if (storage_data[i][select_col] == undefined) {
+	function deleteColBtn() {                                     // 행 삭제 버튼
+		for (let i = 0 ; i < storage_data.length ; i++) {         // 클릭한 행의 내용물을 전부 확인
+			if (storage_data[i][select_col] == undefined) {       // 내용물이 없다면 정상 진행
 				
-			} else {
+			} else {                                              // 내용물이 존재한다면 break
 				failToast("항목이 존재하여 삭제 할 수 없습니다");
 				document.querySelector("#deleteRow").style.display = "none"
 				document.querySelector("#addRow").style.display = "none"
 				return;
 			}
 		}
-		fetch('/standard/updateStorageCol?num=' + (-1) + 
+		fetch('/standard/updateStorageCol?num=' + (-1) +          // DB에 숫자로 행, 열 정보를 저장해서 간단하게 처리 가능
 				                '&storageCode=' + document.querySelector("#storageSelect").value + 
 				                  '&selectCol=' + select_col)
 		.then(() => {
@@ -415,9 +415,9 @@
 		})
 	}
 	
-	function addColBtn() {
+	function addColBtn() {                                        // 행 등록 버튼
 		console.log(select_col)
-		fetch('/standard/updateStorageCol?num=' + 1 + 
+		fetch('/standard/updateStorageCol?num=' + 1 +             // DB에 숫자로 행, 열 정보를 저장해서 간단하게 처리 가능
                                 '&storageCode=' + document.querySelector("#storageSelect").value + 
                                   '&selectCol=' + select_col)
 		.then(() => {
